@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: aide_market_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aide_market
+      MYSQL_USER: aide_user
+      MYSQL_PASSWORD: aide_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aide_market_network
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./ECSite-server/GIT/ECSite-server
+      dockerfile: Dockerfile
+    container_name: aide_market_backend
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_USERNAME: aide_user
+      DB_PASSWORD: aide_password
+      DB_NAME: aide_market
+      PORT: 8081
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./ECSite-server/GIT/ECSite-server/uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - aide_market_network
+    restart: unless-stopped
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./Electronic-Commerce-Site/grab-market-web
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:8081
+    container_name: aide_market_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - aide_market_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  aide_market_network:
+    driver: bridge
+

@@ -1,0 +1,4269 @@
+{
+  "ai_stats": [
+    {
+      "id": 1,
+      "product_id": 3,
+      "teamwork": 79,
+      "stability": 82,
+      "speed": 73,
+      "creativity": 70,
+      "productivity": 81,
+      "maintainability": 97,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 2,
+      "product_id": 4,
+      "teamwork": 91,
+      "stability": 65,
+      "speed": 52,
+      "creativity": 64,
+      "productivity": 68,
+      "maintainability": 96,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 3,
+      "product_id": 5,
+      "teamwork": 78,
+      "stability": 51,
+      "speed": 73,
+      "creativity": 60,
+      "productivity": 84,
+      "maintainability": 91,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 4,
+      "product_id": 6,
+      "teamwork": 54,
+      "stability": 98,
+      "speed": 76,
+      "creativity": 89,
+      "productivity": 65,
+      "maintainability": 58,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 5,
+      "product_id": 7,
+      "teamwork": 97,
+      "stability": 61,
+      "speed": 65,
+      "creativity": 91,
+      "productivity": 60,
+      "maintainability": 79,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 6,
+      "product_id": 8,
+      "teamwork": 66,
+      "stability": 95,
+      "speed": 76,
+      "creativity": 95,
+      "productivity": 97,
+      "maintainability": 51,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 7,
+      "product_id": 9,
+      "teamwork": 66,
+      "stability": 76,
+      "speed": 85,
+      "creativity": 95,
+      "productivity": 71,
+      "maintainability": 71,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 8,
+      "product_id": 10,
+      "teamwork": 91,
+      "stability": 92,
+      "speed": 86,
+      "creativity": 58,
+      "productivity": 81,
+      "maintainability": 83,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 9,
+      "product_id": 11,
+      "teamwork": 71,
+      "stability": 57,
+      "speed": 71,
+      "creativity": 85,
+      "productivity": 63,
+      "maintainability": 59,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 10,
+      "product_id": 12,
+      "teamwork": 59,
+      "stability": 69,
+      "speed": 67,
+      "creativity": 77,
+      "productivity": 85,
+      "maintainability": 95,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 11,
+      "product_id": 13,
+      "teamwork": 72,
+      "stability": 75,
+      "speed": 61,
+      "creativity": 80,
+      "productivity": 67,
+      "maintainability": 96,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 12,
+      "product_id": 14,
+      "teamwork": 77,
+      "stability": 51,
+      "speed": 73,
+      "creativity": 61,
+      "productivity": 89,
+      "maintainability": 63,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 13,
+      "product_id": 15,
+      "teamwork": 99,
+      "stability": 54,
+      "speed": 76,
+      "creativity": 69,
+      "productivity": 66,
+      "maintainability": 72,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 14,
+      "product_id": 16,
+      "teamwork": 66,
+      "stability": 62,
+      "speed": 62,
+      "creativity": 76,
+      "productivity": 93,
+      "maintainability": 86,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 15,
+      "product_id": 17,
+      "teamwork": 53,
+      "stability": 59,
+      "speed": 86,
+      "creativity": 54,
+      "productivity": 61,
+      "maintainability": 95,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 16,
+      "product_id": 18,
+      "teamwork": 93,
+      "stability": 80,
+      "speed": 70,
+      "creativity": 63,
+      "productivity": 53,
+      "maintainability": 79,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 17,
+      "product_id": 19,
+      "teamwork": 83,
+      "stability": 82,
+      "speed": 59,
+      "creativity": 51,
+      "productivity": 76,
+      "maintainability": 80,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 18,
+      "product_id": 20,
+      "teamwork": 70,
+      "stability": 61,
+      "speed": 95,
+      "creativity": 91,
+      "productivity": 73,
+      "maintainability": 92,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 19,
+      "product_id": 21,
+      "teamwork": 91,
+      "stability": 78,
+      "speed": 67,
+      "creativity": 55,
+      "productivity": 71,
+      "maintainability": 93,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 20,
+      "product_id": 22,
+      "teamwork": 52,
+      "stability": 83,
+      "speed": 58,
+      "creativity": 91,
+      "productivity": 80,
+      "maintainability": 79,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 21,
+      "product_id": 23,
+      "teamwork": 55,
+      "stability": 87,
+      "speed": 73,
+      "creativity": 55,
+      "productivity": 54,
+      "maintainability": 57,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 22,
+      "product_id": 24,
+      "teamwork": 74,
+      "stability": 98,
+      "speed": 70,
+      "creativity": 57,
+      "productivity": 75,
+      "maintainability": 52,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 23,
+      "product_id": 25,
+      "teamwork": 89,
+      "stability": 88,
+      "speed": 72,
+      "creativity": 96,
+      "productivity": 65,
+      "maintainability": 88,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 24,
+      "product_id": 26,
+      "teamwork": 97,
+      "stability": 70,
+      "speed": 60,
+      "creativity": 92,
+      "productivity": 79,
+      "maintainability": 68,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 25,
+      "product_id": 27,
+      "teamwork": 54,
+      "stability": 67,
+      "speed": 73,
+      "creativity": 63,
+      "productivity": 98,
+      "maintainability": 53,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 26,
+      "product_id": 28,
+      "teamwork": 69,
+      "stability": 87,
+      "speed": 78,
+      "creativity": 82,
+      "productivity": 74,
+      "maintainability": 75,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 27,
+      "product_id": 29,
+      "teamwork": 56,
+      "stability": 52,
+      "speed": 94,
+      "creativity": 65,
+      "productivity": 95,
+      "maintainability": 80,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 28,
+      "product_id": 30,
+      "teamwork": 65,
+      "stability": 85,
+      "speed": 80,
+      "creativity": 97,
+      "productivity": 95,
+      "maintainability": 86,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 29,
+      "product_id": 31,
+      "teamwork": 94,
+      "stability": 63,
+      "speed": 83,
+      "creativity": 75,
+      "productivity": 79,
+      "maintainability": 69,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 30,
+      "product_id": 32,
+      "teamwork": 58,
+      "stability": 83,
+      "speed": 92,
+      "creativity": 62,
+      "productivity": 83,
+      "maintainability": 82,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 31,
+      "product_id": 33,
+      "teamwork": 59,
+      "stability": 50,
+      "speed": 74,
+      "creativity": 72,
+      "productivity": 86,
+      "maintainability": 64,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 32,
+      "product_id": 34,
+      "teamwork": 62,
+      "stability": 69,
+      "speed": 62,
+      "creativity": 50,
+      "productivity": 66,
+      "maintainability": 79,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 33,
+      "product_id": 35,
+      "teamwork": 98,
+      "stability": 53,
+      "speed": 71,
+      "creativity": 96,
+      "productivity": 68,
+      "maintainability": 54,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 34,
+      "product_id": 36,
+      "teamwork": 64,
+      "stability": 62,
+      "speed": 66,
+      "creativity": 93,
+      "productivity": 70,
+      "maintainability": 70,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 35,
+      "product_id": 37,
+      "teamwork": 91,
+      "stability": 94,
+      "speed": 51,
+      "creativity": 70,
+      "productivity": 97,
+      "maintainability": 78,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 36,
+      "product_id": 38,
+      "teamwork": 50,
+      "stability": 66,
+      "speed": 80,
+      "creativity": 51,
+      "productivity": 65,
+      "maintainability": 75,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 37,
+      "product_id": 39,
+      "teamwork": 80,
+      "stability": 76,
+      "speed": 89,
+      "creativity": 70,
+      "productivity": 82,
+      "maintainability": 52,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 38,
+      "product_id": 40,
+      "teamwork": 62,
+      "stability": 55,
+      "speed": 91,
+      "creativity": 89,
+      "productivity": 74,
+      "maintainability": 55,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 39,
+      "product_id": 41,
+      "teamwork": 51,
+      "stability": 91,
+      "speed": 52,
+      "creativity": 89,
+      "productivity": 87,
+      "maintainability": 68,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 40,
+      "product_id": 42,
+      "teamwork": 81,
+      "stability": 51,
+      "speed": 62,
+      "creativity": 56,
+      "productivity": 98,
+      "maintainability": 71,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 41,
+      "product_id": 43,
+      "teamwork": 61,
+      "stability": 91,
+      "speed": 73,
+      "creativity": 93,
+      "productivity": 98,
+      "maintainability": 62,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 42,
+      "product_id": 44,
+      "teamwork": 64,
+      "stability": 84,
+      "speed": 80,
+      "creativity": 97,
+      "productivity": 98,
+      "maintainability": 96,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 43,
+      "product_id": 45,
+      "teamwork": 90,
+      "stability": 61,
+      "speed": 85,
+      "creativity": 92,
+      "productivity": 55,
+      "maintainability": 51,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 44,
+      "product_id": 46,
+      "teamwork": 89,
+      "stability": 93,
+      "speed": 50,
+      "creativity": 72,
+      "productivity": 59,
+      "maintainability": 79,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 45,
+      "product_id": 47,
+      "teamwork": 68,
+      "stability": 54,
+      "speed": 66,
+      "creativity": 68,
+      "productivity": 94,
+      "maintainability": 65,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 46,
+      "product_id": 48,
+      "teamwork": 93,
+      "stability": 73,
+      "speed": 84,
+      "creativity": 53,
+      "productivity": 64,
+      "maintainability": 61,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 47,
+      "product_id": 49,
+      "teamwork": 62,
+      "stability": 80,
+      "speed": 63,
+      "creativity": 76,
+      "productivity": 91,
+      "maintainability": 79,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 48,
+      "product_id": 50,
+      "teamwork": 74,
+      "stability": 80,
+      "speed": 79,
+      "creativity": 57,
+      "productivity": 99,
+      "maintainability": 74,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 49,
+      "product_id": 51,
+      "teamwork": 73,
+      "stability": 95,
+      "speed": 57,
+      "creativity": 50,
+      "productivity": 79,
+      "maintainability": 94,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 50,
+      "product_id": 52,
+      "teamwork": 86,
+      "stability": 97,
+      "speed": 77,
+      "creativity": 94,
+      "productivity": 90,
+      "maintainability": 70,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 51,
+      "product_id": 53,
+      "teamwork": 79,
+      "stability": 86,
+      "speed": 95,
+      "creativity": 68,
+      "productivity": 53,
+      "maintainability": 61,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 52,
+      "product_id": 54,
+      "teamwork": 96,
+      "stability": 97,
+      "speed": 98,
+      "creativity": 52,
+      "productivity": 63,
+      "maintainability": 62,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 53,
+      "product_id": 55,
+      "teamwork": 70,
+      "stability": 64,
+      "speed": 62,
+      "creativity": 69,
+      "productivity": 59,
+      "maintainability": 89,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 54,
+      "product_id": 56,
+      "teamwork": 67,
+      "stability": 69,
+      "speed": 95,
+      "creativity": 70,
+      "productivity": 63,
+      "maintainability": 55,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 55,
+      "product_id": 57,
+      "teamwork": 85,
+      "stability": 64,
+      "speed": 65,
+      "creativity": 83,
+      "productivity": 70,
+      "maintainability": 54,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 56,
+      "product_id": 58,
+      "teamwork": 58,
+      "stability": 78,
+      "speed": 67,
+      "creativity": 50,
+      "productivity": 52,
+      "maintainability": 58,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 57,
+      "product_id": 59,
+      "teamwork": 86,
+      "stability": 55,
+      "speed": 67,
+      "creativity": 72,
+      "productivity": 57,
+      "maintainability": 71,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 58,
+      "product_id": 60,
+      "teamwork": 85,
+      "stability": 64,
+      "speed": 63,
+      "creativity": 74,
+      "productivity": 80,
+      "maintainability": 81,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 59,
+      "product_id": 61,
+      "teamwork": 63,
+      "stability": 74,
+      "speed": 82,
+      "creativity": 88,
+      "productivity": 92,
+      "maintainability": 50,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 60,
+      "product_id": 62,
+      "teamwork": 72,
+      "stability": 60,
+      "speed": 87,
+      "creativity": 56,
+      "productivity": 69,
+      "maintainability": 77,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 61,
+      "product_id": 63,
+      "teamwork": 80,
+      "stability": 68,
+      "speed": 53,
+      "creativity": 60,
+      "productivity": 90,
+      "maintainability": 71,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 62,
+      "product_id": 64,
+      "teamwork": 87,
+      "stability": 72,
+      "speed": 50,
+      "creativity": 85,
+      "productivity": 73,
+      "maintainability": 62,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 63,
+      "product_id": 65,
+      "teamwork": 93,
+      "stability": 78,
+      "speed": 61,
+      "creativity": 70,
+      "productivity": 71,
+      "maintainability": 92,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 64,
+      "product_id": 66,
+      "teamwork": 50,
+      "stability": 72,
+      "speed": 63,
+      "creativity": 50,
+      "productivity": 62,
+      "maintainability": 61,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 65,
+      "product_id": 67,
+      "teamwork": 69,
+      "stability": 63,
+      "speed": 60,
+      "creativity": 58,
+      "productivity": 64,
+      "maintainability": 94,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 66,
+      "product_id": 68,
+      "teamwork": 80,
+      "stability": 69,
+      "speed": 53,
+      "creativity": 60,
+      "productivity": 90,
+      "maintainability": 73,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 67,
+      "product_id": 69,
+      "teamwork": 93,
+      "stability": 99,
+      "speed": 65,
+      "creativity": 78,
+      "productivity": 98,
+      "maintainability": 53,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 68,
+      "product_id": 70,
+      "teamwork": 74,
+      "stability": 62,
+      "speed": 89,
+      "creativity": 59,
+      "productivity": 79,
+      "maintainability": 66,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 69,
+      "product_id": 71,
+      "teamwork": 94,
+      "stability": 75,
+      "speed": 92,
+      "creativity": 85,
+      "productivity": 99,
+      "maintainability": 92,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 70,
+      "product_id": 72,
+      "teamwork": 61,
+      "stability": 80,
+      "speed": 69,
+      "creativity": 55,
+      "productivity": 67,
+      "maintainability": 71,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    }
+  ],
+  "banners": [
+    {
+      "id": 1,
+      "imageUrl": "uploads/banners/banner1.png",
+      "href": "/products/1",
+      "createdAt": "2025-11-16T07:40:16.000Z",
+      "updatedAt": "2025-11-16T07:40:16.000Z"
+    },
+    {
+      "id": 2,
+      "imageUrl": "uploads/banners/banner2.png",
+      "href": "/products/2",
+      "createdAt": "2025-11-16T07:40:28.000Z",
+      "updatedAt": "2025-11-16T07:40:28.000Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "frontend",
+      "name_ja": "フロントエンド",
+      "description": "ユーザーインターフェース開発AI",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 2,
+      "name": "backend",
+      "name_ja": "バックエンド",
+      "description": "サーバーサイド開発AI",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 3,
+      "name": "image",
+      "name_ja": "イメージ生成",
+      "description": "AI画像・デザイン生成",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 4,
+      "name": "management",
+      "name_ja": "設計・マネジメント",
+      "description": "プロジェクト管理・設計AI",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 5,
+      "name": "infrastructure",
+      "name_ja": "インフラ",
+      "description": "クラウド・インフラ管理AI",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 6,
+      "name": "security",
+      "name_ja": "セキュリティ",
+      "description": "セキュリティ・監査AI",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 7,
+      "name": "documents",
+      "name_ja": "ドキュメント作業",
+      "description": "ドキュメント・オフィス作業AI",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    }
+  ],
+  "monthly_rankings": [
+    {
+      "id": 1,
+      "product_id": 23,
+      "rank_position": 1,
+      "year": 2025,
+      "month": 11,
+      "score": "1355.00",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 2,
+      "product_id": 7,
+      "rank_position": 2,
+      "year": 2025,
+      "month": 11,
+      "score": "1239.28",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 3,
+      "product_id": 5,
+      "rank_position": 3,
+      "year": 2025,
+      "month": 11,
+      "score": "1209.52",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 4,
+      "product_id": 26,
+      "rank_position": 4,
+      "year": 2025,
+      "month": 11,
+      "score": "1183.68",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 5,
+      "product_id": 15,
+      "rank_position": 5,
+      "year": 2025,
+      "month": 11,
+      "score": "1173.40",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    }
+  ],
+  "product_synergies": [
+    {
+      "id": 1,
+      "product_id": 3,
+      "synergy_product_id": 4,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 2,
+      "product_id": 3,
+      "synergy_product_id": 5,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 3,
+      "product_id": 3,
+      "synergy_product_id": 6,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 4,
+      "product_id": 3,
+      "synergy_product_id": 7,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 5,
+      "product_id": 3,
+      "synergy_product_id": 8,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 6,
+      "product_id": 3,
+      "synergy_product_id": 9,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 7,
+      "product_id": 3,
+      "synergy_product_id": 10,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 8,
+      "product_id": 3,
+      "synergy_product_id": 11,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 9,
+      "product_id": 3,
+      "synergy_product_id": 12,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 10,
+      "product_id": 4,
+      "synergy_product_id": 5,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 11,
+      "product_id": 4,
+      "synergy_product_id": 6,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 12,
+      "product_id": 4,
+      "synergy_product_id": 7,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 13,
+      "product_id": 4,
+      "synergy_product_id": 8,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 14,
+      "product_id": 4,
+      "synergy_product_id": 9,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 15,
+      "product_id": 4,
+      "synergy_product_id": 10,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 16,
+      "product_id": 4,
+      "synergy_product_id": 11,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 17,
+      "product_id": 4,
+      "synergy_product_id": 12,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 18,
+      "product_id": 5,
+      "synergy_product_id": 6,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 19,
+      "product_id": 5,
+      "synergy_product_id": 7,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 20,
+      "product_id": 5,
+      "synergy_product_id": 8,
+      "synergy_score": 85,
+      "description": "フロントエンド開発で相性抜群",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 32,
+      "product_id": 3,
+      "synergy_product_id": 13,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 33,
+      "product_id": 3,
+      "synergy_product_id": 14,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 34,
+      "product_id": 3,
+      "synergy_product_id": 15,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 35,
+      "product_id": 3,
+      "synergy_product_id": 16,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 36,
+      "product_id": 3,
+      "synergy_product_id": 17,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 37,
+      "product_id": 3,
+      "synergy_product_id": 18,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 38,
+      "product_id": 3,
+      "synergy_product_id": 19,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 39,
+      "product_id": 3,
+      "synergy_product_id": 20,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 40,
+      "product_id": 3,
+      "synergy_product_id": 21,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 41,
+      "product_id": 3,
+      "synergy_product_id": 22,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 42,
+      "product_id": 4,
+      "synergy_product_id": 13,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 43,
+      "product_id": 4,
+      "synergy_product_id": 14,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 44,
+      "product_id": 4,
+      "synergy_product_id": 15,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 45,
+      "product_id": 4,
+      "synergy_product_id": 16,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 46,
+      "product_id": 4,
+      "synergy_product_id": 17,
+      "synergy_score": 90,
+      "description": "フルスタック開発に最適な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 47,
+      "product_id": 23,
+      "synergy_product_id": 3,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 48,
+      "product_id": 23,
+      "synergy_product_id": 4,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 49,
+      "product_id": 23,
+      "synergy_product_id": 5,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 50,
+      "product_id": 23,
+      "synergy_product_id": 6,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 51,
+      "product_id": 23,
+      "synergy_product_id": 7,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 52,
+      "product_id": 23,
+      "synergy_product_id": 8,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 53,
+      "product_id": 23,
+      "synergy_product_id": 9,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 54,
+      "product_id": 23,
+      "synergy_product_id": 10,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 55,
+      "product_id": 23,
+      "synergy_product_id": 11,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 56,
+      "product_id": 23,
+      "synergy_product_id": 12,
+      "synergy_score": 80,
+      "description": "UI開発に必要な画像生成をサポート",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 62,
+      "product_id": 13,
+      "synergy_product_id": 14,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 63,
+      "product_id": 13,
+      "synergy_product_id": 15,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 64,
+      "product_id": 13,
+      "synergy_product_id": 16,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 65,
+      "product_id": 13,
+      "synergy_product_id": 17,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 66,
+      "product_id": 13,
+      "synergy_product_id": 18,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 67,
+      "product_id": 13,
+      "synergy_product_id": 19,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 68,
+      "product_id": 13,
+      "synergy_product_id": 20,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 69,
+      "product_id": 13,
+      "synergy_product_id": 21,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 70,
+      "product_id": 13,
+      "synergy_product_id": 22,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 71,
+      "product_id": 14,
+      "synergy_product_id": 15,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 72,
+      "product_id": 14,
+      "synergy_product_id": 16,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 73,
+      "product_id": 14,
+      "synergy_product_id": 17,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 74,
+      "product_id": 14,
+      "synergy_product_id": 18,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 75,
+      "product_id": 14,
+      "synergy_product_id": 19,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 76,
+      "product_id": 14,
+      "synergy_product_id": 20,
+      "synergy_score": 85,
+      "description": "マイクロサービス構築に最適",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 77,
+      "product_id": 43,
+      "synergy_product_id": 13,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 78,
+      "product_id": 43,
+      "synergy_product_id": 14,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 79,
+      "product_id": 43,
+      "synergy_product_id": 15,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 80,
+      "product_id": 43,
+      "synergy_product_id": 16,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 81,
+      "product_id": 43,
+      "synergy_product_id": 17,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 82,
+      "product_id": 43,
+      "synergy_product_id": 18,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 83,
+      "product_id": 43,
+      "synergy_product_id": 19,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 84,
+      "product_id": 43,
+      "synergy_product_id": 20,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 85,
+      "product_id": 43,
+      "synergy_product_id": 21,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 86,
+      "product_id": 43,
+      "synergy_product_id": 22,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 87,
+      "product_id": 44,
+      "synergy_product_id": 13,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 88,
+      "product_id": 44,
+      "synergy_product_id": 14,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 89,
+      "product_id": 44,
+      "synergy_product_id": 15,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 90,
+      "product_id": 44,
+      "synergy_product_id": 16,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 91,
+      "product_id": 44,
+      "synergy_product_id": 17,
+      "synergy_score": 95,
+      "description": "デプロイと開発の完璧な組み合わせ",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 92,
+      "product_id": 53,
+      "synergy_product_id": 13,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 93,
+      "product_id": 53,
+      "synergy_product_id": 14,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 94,
+      "product_id": 53,
+      "synergy_product_id": 15,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 95,
+      "product_id": 53,
+      "synergy_product_id": 16,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 96,
+      "product_id": 53,
+      "synergy_product_id": 17,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 97,
+      "product_id": 53,
+      "synergy_product_id": 18,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 98,
+      "product_id": 53,
+      "synergy_product_id": 19,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 99,
+      "product_id": 53,
+      "synergy_product_id": 20,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 100,
+      "product_id": 53,
+      "synergy_product_id": 21,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 101,
+      "product_id": 53,
+      "synergy_product_id": 22,
+      "synergy_score": 90,
+      "description": "セキュアな開発環境を構築",
+      "created_at": "2025-11-18T11:54:57.000Z"
+    }
+  ],
+  "product_tags": [
+    {
+      "id": 1,
+      "product_id": 3,
+      "tag_id": 1,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 2,
+      "product_id": 4,
+      "tag_id": 2,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 3,
+      "product_id": 5,
+      "tag_id": 3,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 4,
+      "product_id": 6,
+      "tag_id": 4,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 5,
+      "product_id": 7,
+      "tag_id": 5,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 6,
+      "product_id": 8,
+      "tag_id": 6,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 7,
+      "product_id": 9,
+      "tag_id": 7,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 8,
+      "product_id": 10,
+      "tag_id": 8,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 9,
+      "product_id": 11,
+      "tag_id": 9,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 10,
+      "product_id": 12,
+      "tag_id": 10,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 11,
+      "product_id": 13,
+      "tag_id": 11,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 12,
+      "product_id": 14,
+      "tag_id": 12,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 13,
+      "product_id": 15,
+      "tag_id": 13,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 14,
+      "product_id": 16,
+      "tag_id": 14,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 15,
+      "product_id": 17,
+      "tag_id": 15,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 16,
+      "product_id": 18,
+      "tag_id": 16,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 17,
+      "product_id": 19,
+      "tag_id": 17,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 18,
+      "product_id": 20,
+      "tag_id": 18,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 19,
+      "product_id": 21,
+      "tag_id": 19,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 20,
+      "product_id": 22,
+      "tag_id": 20,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 21,
+      "product_id": 23,
+      "tag_id": 21,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 22,
+      "product_id": 24,
+      "tag_id": 22,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 23,
+      "product_id": 25,
+      "tag_id": 23,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 24,
+      "product_id": 26,
+      "tag_id": 24,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 25,
+      "product_id": 27,
+      "tag_id": 25,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 26,
+      "product_id": 28,
+      "tag_id": 26,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 27,
+      "product_id": 29,
+      "tag_id": 27,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 28,
+      "product_id": 30,
+      "tag_id": 28,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 29,
+      "product_id": 31,
+      "tag_id": 29,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 30,
+      "product_id": 32,
+      "tag_id": 30,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 31,
+      "product_id": 33,
+      "tag_id": 31,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 32,
+      "product_id": 34,
+      "tag_id": 32,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 33,
+      "product_id": 35,
+      "tag_id": 33,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 34,
+      "product_id": 36,
+      "tag_id": 34,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 35,
+      "product_id": 37,
+      "tag_id": 35,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 36,
+      "product_id": 38,
+      "tag_id": 36,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 37,
+      "product_id": 39,
+      "tag_id": 37,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 38,
+      "product_id": 40,
+      "tag_id": 38,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 39,
+      "product_id": 41,
+      "tag_id": 39,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 40,
+      "product_id": 42,
+      "tag_id": 40,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 41,
+      "product_id": 43,
+      "tag_id": 41,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 42,
+      "product_id": 44,
+      "tag_id": 42,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 43,
+      "product_id": 45,
+      "tag_id": 43,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 44,
+      "product_id": 46,
+      "tag_id": 44,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 45,
+      "product_id": 47,
+      "tag_id": 45,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 46,
+      "product_id": 48,
+      "tag_id": 46,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 47,
+      "product_id": 49,
+      "tag_id": 47,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 48,
+      "product_id": 50,
+      "tag_id": 48,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 49,
+      "product_id": 51,
+      "tag_id": 49,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 50,
+      "product_id": 52,
+      "tag_id": 50,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 51,
+      "product_id": 53,
+      "tag_id": 51,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 52,
+      "product_id": 54,
+      "tag_id": 52,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 53,
+      "product_id": 55,
+      "tag_id": 53,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 54,
+      "product_id": 56,
+      "tag_id": 54,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 55,
+      "product_id": 57,
+      "tag_id": 55,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 56,
+      "product_id": 58,
+      "tag_id": 56,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 57,
+      "product_id": 59,
+      "tag_id": 57,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 58,
+      "product_id": 60,
+      "tag_id": 58,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 59,
+      "product_id": 61,
+      "tag_id": 59,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 60,
+      "product_id": 62,
+      "tag_id": 60,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 61,
+      "product_id": 63,
+      "tag_id": 61,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 62,
+      "product_id": 64,
+      "tag_id": 62,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 63,
+      "product_id": 65,
+      "tag_id": 63,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 64,
+      "product_id": 66,
+      "tag_id": 64,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 65,
+      "product_id": 67,
+      "tag_id": 65,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 66,
+      "product_id": 68,
+      "tag_id": 66,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 67,
+      "product_id": 69,
+      "tag_id": 67,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 68,
+      "product_id": 70,
+      "tag_id": 68,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 69,
+      "product_id": 71,
+      "tag_id": 69,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    },
+    {
+      "id": 70,
+      "product_id": 72,
+      "tag_id": 70,
+      "created_at": "2025-11-18T11:54:57.000Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 3,
+      "name": "CodePix",
+      "price": 15000,
+      "seller": "佐藤健太",
+      "description": "バニラJavaScript開発の専門家。クリーンなコードを書き、DOM操作やイベント処理を完璧にこなします。",
+      "imageUrl": "uploads/ai/codepix.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 1,
+      "download_count": 1250,
+      "view_count": 3400,
+      "rating_average": "4.80",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 4,
+      "name": "T-Guard",
+      "price": 22000,
+      "seller": "田中美咲",
+      "description": "TypeScript型安全開発の専門家。型エラーを事前に防ぎ、安全で保守性の高いコードを保証します。",
+      "imageUrl": "uploads/ai/tguard.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 2,
+      "download_count": 1450,
+      "view_count": 3800,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 5,
+      "name": "Reacton",
+      "price": 25000,
+      "seller": "山田太郎",
+      "description": "React開発の専門家。Hooks、State管理を完璧にこなし、モダンなSPAを構築します。",
+      "imageUrl": "uploads/ai/reacton.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 3,
+      "download_count": 1650,
+      "view_count": 4200,
+      "rating_average": "4.90",
+      "rating_count": 112,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 6,
+      "name": "Vuelin",
+      "price": 23000,
+      "seller": "鈴木一郎",
+      "description": "Vue.js開発の専門家。テンプレート構文とComposition APIを駆使して効率的な開発を実現します。",
+      "imageUrl": "uploads/ai/vuelin.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 4,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.80",
+      "rating_count": 89,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 7,
+      "name": "Nexty",
+      "price": 28000,
+      "seller": "高橋優子",
+      "description": "Next.js開発の専門家。SSR、SSGを完璧にこなし、SEO最適化された高速Webアプリを構築します。",
+      "imageUrl": "uploads/ai/nexty.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 5,
+      "download_count": 1680,
+      "view_count": 4300,
+      "rating_average": "4.90",
+      "rating_count": 118,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 8,
+      "name": "NgMaster",
+      "price": 24000,
+      "seller": "伊藤大輔",
+      "description": "Angular開発のエキスパート。TypeScriptベースの堅牢なエンタープライズアプリケーションを構築します。",
+      "imageUrl": "uploads/ai/ngmaster.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 6,
+      "download_count": 980,
+      "view_count": 2600,
+      "rating_average": "4.70",
+      "rating_count": 68,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 9,
+      "name": "SvelteFlow",
+      "price": 21000,
+      "seller": "渡辺麻衣",
+      "description": "Svelte開発のスペシャリスト。軽量で高速なリアクティブアプリケーションを作成します。",
+      "imageUrl": "uploads/ai/svelteflow.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 7,
+      "download_count": 720,
+      "view_count": 1900,
+      "rating_average": "4.60",
+      "rating_count": 52,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 10,
+      "name": "jQueryLegacy",
+      "price": 12000,
+      "seller": "中村誠",
+      "description": "jQuery開発の達人。レガシーシステムの保守や簡単なDOM操作をサポートします。",
+      "imageUrl": "uploads/ai/jquerylegacy.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 8,
+      "download_count": 450,
+      "view_count": 1200,
+      "rating_average": "4.30",
+      "rating_count": 38,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 11,
+      "name": "ComponentPro",
+      "price": 20000,
+      "seller": "小林彩",
+      "description": "Web Components開発の専門家。フレームワークに依存しない再利用可能なコンポーネントを作成します。",
+      "imageUrl": "uploads/ai/componentpro.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 9,
+      "download_count": 650,
+      "view_count": 1700,
+      "rating_average": "4.50",
+      "rating_count": 45,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 12,
+      "name": "NuxtMaster",
+      "price": 26000,
+      "seller": "加藤隆",
+      "description": "Nuxt.js開発のエキスパート。Vue.jsベースのSSR/SSGアプリケーションを構築します。",
+      "imageUrl": "uploads/ai/nuxtmaster.png",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": 10,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.80",
+      "rating_count": 95,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 13,
+      "name": "ExpressKid",
+      "price": 24000,
+      "seller": "吉田明",
+      "description": "Node.js Express開発の専門家。RESTful API構築とリアルタイム通信が得意です。",
+      "imageUrl": "uploads/ai/expresskid.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 11,
+      "download_count": 1350,
+      "view_count": 3500,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 14,
+      "name": "DjangoFox",
+      "price": 26000,
+      "seller": "森本真理",
+      "description": "Django開発の専門家。MVTアーキテクチャを完璧に実装し、セキュアなWebアプリを構築します。",
+      "imageUrl": "uploads/ai/djangofox.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 12,
+      "download_count": 1450,
+      "view_count": 3800,
+      "rating_average": "4.90",
+      "rating_count": 102,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 15,
+      "name": "SpringRoot",
+      "price": 28000,
+      "seller": "林拓也",
+      "description": "Spring Boot開発の専門家。エンタープライズJavaアプリケーションをサポートします。",
+      "imageUrl": "uploads/ai/springroot.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 13,
+      "download_count": 1580,
+      "view_count": 4100,
+      "rating_average": "4.90",
+      "rating_count": 115,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 16,
+      "name": "GoSwift",
+      "price": 25000,
+      "seller": "清水香織",
+      "description": "Go言語開発の専門家。並行処理を完璧にこなし、高速なマイクロサービスを構築します。",
+      "imageUrl": "uploads/ai/goswift.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 14,
+      "download_count": 1320,
+      "view_count": 3400,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 17,
+      "name": "Ruston",
+      "price": 27000,
+      "seller": "池田修",
+      "description": "Rust開発の専門家。安全で高速なバックエンドシステムを構築します。",
+      "imageUrl": "uploads/ai/ruston.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 15,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 18,
+      "name": "Laracode",
+      "price": 22000,
+      "seller": "松本千春",
+      "description": "PHP Laravel開発のスペシャリスト。エレガントなMVCアーキテクチャでWebアプリを構築します。",
+      "imageUrl": "uploads/ai/laracode.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 16,
+      "download_count": 1150,
+      "view_count": 3000,
+      "rating_average": "4.70",
+      "rating_count": 82,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 19,
+      "name": "RailsMagic",
+      "price": 23000,
+      "seller": "井上裕太",
+      "description": "Ruby on Rails開発の達人。高速なプロトタイピングと生産性の高い開発を実現します。",
+      "imageUrl": "uploads/ai/railsmagic.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 17,
+      "download_count": 980,
+      "view_count": 2600,
+      "rating_average": "4.70",
+      "rating_count": 71,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 20,
+      "name": "DotNetPro",
+      "price": 26000,
+      "seller": "木村梨花",
+      "description": "C# .NET開発のエキスパート。エンタープライズレベルのアプリケーションを構築します。",
+      "imageUrl": "uploads/ai/dotnetpro.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 18,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.80",
+      "rating_count": 88,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 21,
+      "name": "KotlinForge",
+      "price": 24000,
+      "seller": "斎藤健",
+      "description": "Kotlin Ktor開発のスペシャリスト。モダンで型安全なバックエンドAPIを構築します。",
+      "imageUrl": "uploads/ai/kotlinforge.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 19,
+      "download_count": 850,
+      "view_count": 2200,
+      "rating_average": "4.60",
+      "rating_count": 58,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 22,
+      "name": "ScalaPlay",
+      "price": 25000,
+      "seller": "山口奈々",
+      "description": "Scala Play Framework開発の専門家。関数型プログラミングで堅牢なシステムを構築します。",
+      "imageUrl": "uploads/ai/scalaplay.png",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": 20,
+      "download_count": 920,
+      "view_count": 2400,
+      "rating_average": "4.70",
+      "rating_count": 65,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 23,
+      "name": "Artelia",
+      "price": 30000,
+      "seller": "橋本光",
+      "description": "イラスト生成AIの専門家。美しいイラストを自動生成し、様々なスタイルに対応します。",
+      "imageUrl": "uploads/ai/artelia.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 21,
+      "download_count": 1850,
+      "view_count": 4800,
+      "rating_average": "4.90",
+      "rating_count": 125,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 24,
+      "name": "Pixelbit",
+      "price": 20000,
+      "seller": "遠藤純子",
+      "description": "ドット絵生成の専門家。レトロなピクセルアートを作成し、ゲーム開発をサポートします。",
+      "imageUrl": "uploads/ai/pixelbit.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 22,
+      "download_count": 1120,
+      "view_count": 2900,
+      "rating_average": "4.70",
+      "rating_count": 78,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 25,
+      "name": "Scenerya",
+      "price": 25000,
+      "seller": "藤田浩二",
+      "description": "風景画生成の専門家。自然の美しさを完璧に再現し、リアルな風景画を描きます。",
+      "imageUrl": "uploads/ai/scenerya.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 23,
+      "download_count": 1380,
+      "view_count": 3600,
+      "rating_average": "4.80",
+      "rating_count": 95,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 26,
+      "name": "Modelia",
+      "price": 35000,
+      "seller": "岡田美穂",
+      "description": "3Dモデル生成の専門家。高品質な3Dアセットを作成し、ゲームや映像制作をサポートします。",
+      "imageUrl": "uploads/ai/modelia.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 24,
+      "download_count": 1620,
+      "view_count": 4200,
+      "rating_average": "4.90",
+      "rating_count": 108,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 27,
+      "name": "Animotion",
+      "price": 32000,
+      "seller": "西村慎一",
+      "description": "アニメーション生成の専門家。滑らかな動きを自動生成し、キャラクターに命を吹き込みます。",
+      "imageUrl": "uploads/ai/animotion.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 25,
+      "download_count": 1480,
+      "view_count": 3800,
+      "rating_average": "4.80",
+      "rating_count": 102,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 28,
+      "name": "LogoForge",
+      "price": 22000,
+      "seller": "長谷川愛",
+      "description": "ロゴ・デザイン生成の専門家。企業ロゴやブランドアイデンティティを作成します。",
+      "imageUrl": "uploads/ai/logoforge.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 26,
+      "download_count": 1250,
+      "view_count": 3200,
+      "rating_average": "4.70",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 29,
+      "name": "CharaDesign",
+      "price": 28000,
+      "seller": "石川達也",
+      "description": "キャラクターデザインの専門家。個性的なキャラクターを生成し、ストーリーに合わせたデザインを提供します。",
+      "imageUrl": "uploads/ai/charadesign.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 27,
+      "download_count": 1380,
+      "view_count": 3500,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 30,
+      "name": "UIUXGen",
+      "price": 26000,
+      "seller": "前田千尋",
+      "description": "UI/UXデザイン生成のスペシャリスト。使いやすくて美しいインターフェースをデザインします。",
+      "imageUrl": "uploads/ai/uiuxgen.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 28,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 31,
+      "name": "IconMaker",
+      "price": 18000,
+      "seller": "青木雅人",
+      "description": "アイコンデザインの専門家。アプリやWebサイト用の洗練されたアイコンを生成します。",
+      "imageUrl": "uploads/ai/iconmaker.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 29,
+      "download_count": 980,
+      "view_count": 2600,
+      "rating_average": "4.60",
+      "rating_count": 68,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 32,
+      "name": "TexturePro",
+      "price": 24000,
+      "seller": "村上理恵",
+      "description": "テクスチャ生成のエキスパート。3Dモデル用のリアルなテクスチャを作成します。",
+      "imageUrl": "uploads/ai/texturepro.png",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": 30,
+      "download_count": 1150,
+      "view_count": 3000,
+      "rating_average": "4.70",
+      "rating_count": 82,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 33,
+      "name": "PlanMuse",
+      "price": 28000,
+      "seller": "上田雄介",
+      "description": "プロジェクト企画の専門家。革新的なアイデアを提案し、ビジネス価値を最大化します。",
+      "imageUrl": "uploads/ai/planmuse.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 31,
+      "download_count": 1180,
+      "view_count": 3100,
+      "rating_average": "4.80",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 34,
+      "name": "TaskLord",
+      "price": 26000,
+      "seller": "坂本綾",
+      "description": "プロジェクト管理の専門家。タスク管理を最適化し、チームの生産性を向上させます。",
+      "imageUrl": "uploads/ai/tasklord.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 32,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.80",
+      "rating_count": 88,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 35,
+      "name": "MergeCat",
+      "price": 24000,
+      "seller": "内田康太",
+      "description": "統合作業の専門家。コードのマージやコンフリクト解決を効率的にサポートします。",
+      "imageUrl": "uploads/ai/mergecat.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 33,
+      "download_count": 1050,
+      "view_count": 2800,
+      "rating_average": "4.70",
+      "rating_count": 76,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 36,
+      "name": "ReqMaster",
+      "price": 27000,
+      "seller": "今井優",
+      "description": "要件定義の専門家。ビジネス要件を技術要件に変換し、明確な仕様書を作成します。",
+      "imageUrl": "uploads/ai/reqmaster.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 34,
+      "download_count": 1220,
+      "view_count": 3200,
+      "rating_average": "4.80",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 37,
+      "name": "ArcSmith",
+      "price": 30000,
+      "seller": "原田麻美",
+      "description": "アーキテクチャ設計の専門家。システム全体構造を設計し、スケーラブルなシステムを実現します。",
+      "imageUrl": "uploads/ai/arcsmith.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 35,
+      "download_count": 1480,
+      "view_count": 3800,
+      "rating_average": "4.90",
+      "rating_count": 102,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 38,
+      "name": "Qualitia",
+      "price": 26000,
+      "seller": "野口翔",
+      "description": "品質管理の専門家。コード品質を保証し、バグを事前に防ぎます。",
+      "imageUrl": "uploads/ai/qualitia.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 36,
+      "download_count": 1150,
+      "view_count": 3000,
+      "rating_average": "4.70",
+      "rating_count": 82,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 39,
+      "name": "AgileCoach",
+      "price": 29000,
+      "seller": "川上静香",
+      "description": "アジャイルコーチの専門家。チームのアジャイル導入をサポートし、生産性を向上させます。",
+      "imageUrl": "uploads/ai/agilecoach.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 37,
+      "download_count": 1320,
+      "view_count": 3400,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 40,
+      "name": "ScrumGuide",
+      "price": 28000,
+      "seller": "浜田誠",
+      "description": "スクラムマスターの専門家。スクラムフレームワークを完璧に実践し、チームを導きます。",
+      "imageUrl": "uploads/ai/scrumguide.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 38,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.80",
+      "rating_count": 88,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 41,
+      "name": "ProductVision",
+      "price": 27000,
+      "seller": "古川真由美",
+      "description": "プロダクトオーナーの専門家。プロダクトビジョンを明確にし、価値を最大化します。",
+      "imageUrl": "uploads/ai/productvision.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 39,
+      "download_count": 1220,
+      "view_count": 3200,
+      "rating_average": "4.70",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 42,
+      "name": "TechLeader",
+      "price": 30000,
+      "seller": "松井健",
+      "description": "テックリードの専門家。技術的な意思決定をリードし、チームの技術力を向上させます。",
+      "imageUrl": "uploads/ai/techleader.png",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": 40,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 43,
+      "name": "DockAI",
+      "price": 24000,
+      "seller": "後藤直樹",
+      "description": "Docker専門家。コンテナ化を完璧にサポートし、軽量で効率的なデプロイを実現します。",
+      "imageUrl": "uploads/ai/dockai.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 41,
+      "download_count": 1350,
+      "view_count": 3500,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 44,
+      "name": "CloudEye",
+      "price": 23000,
+      "seller": "岩崎涼子",
+      "description": "Cloudflare専門家。CDN、セキュリティ設定を最適化し、グローバルなコンテンツ配信を実現します。",
+      "imageUrl": "uploads/ai/cloudeye.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 42,
+      "download_count": 1180,
+      "view_count": 3100,
+      "rating_average": "4.70",
+      "rating_count": 82,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 45,
+      "name": "FlyWing",
+      "price": 22000,
+      "seller": "藤原剛",
+      "description": "Fly.io専門家。グローバルデプロイを簡単に実現し、低レイテンシーなアプリを提供します。",
+      "imageUrl": "uploads/ai/flywing.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 43,
+      "download_count": 980,
+      "view_count": 2600,
+      "rating_average": "4.60",
+      "rating_count": 68,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 46,
+      "name": "AWSeraph",
+      "price": 28000,
+      "seller": "中島千佳",
+      "description": "AWS専門家。EC2、S3、RDS等の設定を完璧にこなし、スケーラブルなインフラを構築します。",
+      "imageUrl": "uploads/ai/awseraph.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 44,
+      "download_count": 1580,
+      "view_count": 4100,
+      "rating_average": "4.90",
+      "rating_count": 115,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 47,
+      "name": "GClouder",
+      "price": 27000,
+      "seller": "小川敦",
+      "description": "GCP専門家。Compute Engine、Cloud Storage等を完璧に設定し、高性能なクラウドインフラを実現します。",
+      "imageUrl": "uploads/ai/gclouder.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 45,
+      "download_count": 1450,
+      "view_count": 3800,
+      "rating_average": "4.80",
+      "rating_count": 98,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 48,
+      "name": "KubeKnight",
+      "price": 29000,
+      "seller": "三浦美樹",
+      "description": "Kubernetes専門家。コンテナオーケストレーションを完璧に管理し、高可用性を実現します。",
+      "imageUrl": "uploads/ai/kubeknight.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 46,
+      "download_count": 1520,
+      "view_count": 3900,
+      "rating_average": "4.90",
+      "rating_count": 108,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 49,
+      "name": "AzureGuard",
+      "price": 26000,
+      "seller": "大野裕",
+      "description": "Azure専門家。Microsoft Azureのサービスを活用し、エンタープライズインフラを構築します。",
+      "imageUrl": "uploads/ai/azureguard.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 47,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.70",
+      "rating_count": 88,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 50,
+      "name": "TerraCode",
+      "price": 27000,
+      "seller": "島田沙織",
+      "description": "Terraform専門家。Infrastructure as Codeを実践し、再現可能なインフラを構築します。",
+      "imageUrl": "uploads/ai/terracode.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 48,
+      "download_count": 1350,
+      "view_count": 3500,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 51,
+      "name": "CIPipeline",
+      "price": 25000,
+      "seller": "平野正",
+      "description": "CI/CD専門家。GitHub Actionsを活用し、自動化されたビルド・デプロイパイプラインを構築します。",
+      "imageUrl": "uploads/ai/cipipeline.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 49,
+      "download_count": 1220,
+      "view_count": 3200,
+      "rating_average": "4.70",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 52,
+      "name": "MonitorPro",
+      "price": 24000,
+      "seller": "宮崎恵子",
+      "description": "Monitoring専門家。Prometheusを活用し、システムの健全性を監視します。",
+      "imageUrl": "uploads/ai/monitorpro.png",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": 50,
+      "download_count": 1150,
+      "view_count": 3000,
+      "rating_average": "4.70",
+      "rating_count": 82,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 53,
+      "name": "Securon",
+      "price": 28000,
+      "seller": "佐々木剛",
+      "description": "コード監査の専門家。セキュアなコードを保証し、脆弱性を事前に発見します。",
+      "imageUrl": "uploads/ai/securon.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 51,
+      "download_count": 1380,
+      "view_count": 3600,
+      "rating_average": "4.80",
+      "rating_count": 95,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 54,
+      "name": "Gatekeeper",
+      "price": 26000,
+      "seller": "永井真紀",
+      "description": "アクセス制御の専門家。適切な権限管理を実現し、システムを保護します。",
+      "imageUrl": "uploads/ai/gatekeeper.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 52,
+      "download_count": 1220,
+      "view_count": 3200,
+      "rating_average": "4.70",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 55,
+      "name": "Cryptia",
+      "price": 27000,
+      "seller": "菅原勇",
+      "description": "暗号化の専門家。データと通信を暗号化し、機密情報を保護します。",
+      "imageUrl": "uploads/ai/cryptia.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 53,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.80",
+      "rating_count": 88,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 56,
+      "name": "VulScan",
+      "price": 29000,
+      "seller": "福田陽子",
+      "description": "脆弱性スキャンの専門家。システムの弱点を発見し、セキュリティを強化します。",
+      "imageUrl": "uploads/ai/vulscan.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 54,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 57,
+      "name": "Loghound",
+      "price": 25000,
+      "seller": "横山良太",
+      "description": "ログ分析の専門家。不正アクセスを検知し、セキュリティインシデントに対応します。",
+      "imageUrl": "uploads/ai/loghound.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 55,
+      "download_count": 1150,
+      "view_count": 3000,
+      "rating_average": "4.70",
+      "rating_count": 82,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 58,
+      "name": "NetShield",
+      "price": 28000,
+      "seller": "安藤美和",
+      "description": "ネットワークセキュリティの専門家。ファイアウォールやDDoS対策を実施します。",
+      "imageUrl": "uploads/ai/netshield.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 56,
+      "download_count": 1350,
+      "view_count": 3500,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 59,
+      "name": "PenTester",
+      "price": 30000,
+      "seller": "宮本浩",
+      "description": "ペネトレーションテストの専門家。攻撃者の視点でシステムをテストします。",
+      "imageUrl": "uploads/ai/pentester.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 57,
+      "download_count": 1480,
+      "view_count": 3800,
+      "rating_average": "4.90",
+      "rating_count": 102,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 60,
+      "name": "FirewallPro",
+      "price": 27000,
+      "seller": "河野智子",
+      "description": "ファイアウォール設定の専門家。ネットワークを保護し、不正アクセスを防ぎます。",
+      "imageUrl": "uploads/ai/firewallpro.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 58,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.80",
+      "rating_count": 88,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 61,
+      "name": "IntrusionDef",
+      "price": 28000,
+      "seller": "柴田圭介",
+      "description": "IDS/IPS専門家。侵入検知・防止システムを構築し、リアルタイムで脅威に対応します。",
+      "imageUrl": "uploads/ai/intrusiondef.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 59,
+      "download_count": 1320,
+      "view_count": 3400,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 62,
+      "name": "ComplianceAI",
+      "price": 26000,
+      "seller": "竹内優香",
+      "description": "コンプライアンスの専門家。法規制に準拠したシステムを構築し、監査をサポートします。",
+      "imageUrl": "uploads/ai/complianceai.png",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": 60,
+      "download_count": 1220,
+      "view_count": 3200,
+      "rating_average": "4.70",
+      "rating_count": 85,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 63,
+      "name": "SheetBot",
+      "price": 20000,
+      "seller": "松田隆史",
+      "description": "Excel作業の専門家。データ分析、グラフ作成、マクロ開発をサポートします。",
+      "imageUrl": "uploads/ai/sheetbot.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 61,
+      "download_count": 1450,
+      "view_count": 3800,
+      "rating_average": "4.80",
+      "rating_count": 98,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 64,
+      "name": "SlideMind",
+      "price": 22000,
+      "seller": "小野寺愛",
+      "description": "PowerPoint作業の専門家。プレゼンテーション資料を美しく効率的に作成します。",
+      "imageUrl": "uploads/ai/slidemind.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 62,
+      "download_count": 1350,
+      "view_count": 3500,
+      "rating_average": "4.70",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 65,
+      "name": "CommitSensei",
+      "price": 18000,
+      "seller": "北川誠一",
+      "description": "GitHub文書化の専門家。README、ドキュメントを自動生成し、プロジェクトを分かりやすくします。",
+      "imageUrl": "uploads/ai/commitsensei.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 63,
+      "download_count": 1120,
+      "view_count": 2900,
+      "rating_average": "4.70",
+      "rating_count": 78,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 66,
+      "name": "DocWriter",
+      "price": 21000,
+      "seller": "谷口沙也加",
+      "description": "Word文書作成の専門家。報告書、仕様書、契約書などを効率的に作成します。",
+      "imageUrl": "uploads/ai/docwriter.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 64,
+      "download_count": 1280,
+      "view_count": 3300,
+      "rating_average": "4.80",
+      "rating_count": 88,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 67,
+      "name": "NotiFlow",
+      "price": 24000,
+      "seller": "辻本健太郎",
+      "description": "Notion管理の専門家。ドキュメント、タスク、データベースを統合管理します。",
+      "imageUrl": "uploads/ai/notiflow.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 65,
+      "download_count": 1520,
+      "view_count": 3900,
+      "rating_average": "4.90",
+      "rating_count": 108,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 68,
+      "name": "MailSense",
+      "price": 19000,
+      "seller": "工藤真理",
+      "description": "ビジネスメール生成の専門家。適切な文面のメールを自動生成します。",
+      "imageUrl": "uploads/ai/mailsense.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 66,
+      "download_count": 1180,
+      "view_count": 3100,
+      "rating_average": "4.60",
+      "rating_count": 82,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 69,
+      "name": "ConfluenceDoc",
+      "price": 23000,
+      "seller": "増田雅之",
+      "description": "Confluence文書作成の専門家。チームのナレッジベースを構築します。",
+      "imageUrl": "uploads/ai/confluencedoc.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 67,
+      "download_count": 1080,
+      "view_count": 2800,
+      "rating_average": "4.70",
+      "rating_count": 75,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 70,
+      "name": "MarkdownMaster",
+      "price": 17000,
+      "seller": "杉山亜紀",
+      "description": "Markdown執筆の専門家。技術ブログや文書をMarkdown形式で効率的に執筆します。",
+      "imageUrl": "uploads/ai/markdownmaster.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 68,
+      "download_count": 980,
+      "view_count": 2600,
+      "rating_average": "4.60",
+      "rating_count": 68,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 71,
+      "name": "APIDocGen",
+      "price": 25000,
+      "seller": "西田洋介",
+      "description": "APIドキュメント生成の専門家。OpenAPI仕様書を自動生成し、APIを分かりやすく説明します。",
+      "imageUrl": "uploads/ai/apidocgen.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 69,
+      "download_count": 1350,
+      "view_count": 3500,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 72,
+      "name": "TechWriter",
+      "price": 26000,
+      "seller": "本田理沙",
+      "description": "テクニカルライティングの専門家。技術文書を分かりやすく執筆し、読者に伝わる文章を作成します。",
+      "imageUrl": "uploads/ai/techwriter.png",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": 70,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.80",
+      "rating_count": 95,
+      "createdAt": "2025-11-18T20:50:57.000Z",
+      "updatedAt": "2025-11-18T20:50:57.000Z"
+    },
+    {
+      "id": 73,
+      "name": "RemixPro",
+      "price": 27000,
+      "seller": "岡本健二",
+      "description": "Remix開発の専門家。フルスタックフレームワークで高速なWebアプリを構築します。",
+      "imageUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": null,
+      "download_count": 1380,
+      "view_count": 3600,
+      "rating_average": "4.80",
+      "rating_count": 95,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 74,
+      "name": "SolidWave",
+      "price": 24000,
+      "seller": "高木真央",
+      "description": "SolidJS開発のスペシャリスト。リアクティブで高性能なアプリケーションを作成します。",
+      "imageUrl": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400",
+      "soldout": 0,
+      "category_id": 1,
+      "sub_category_id": null,
+      "download_count": 1180,
+      "view_count": 3100,
+      "rating_average": "4.70",
+      "rating_count": 82,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 75,
+      "name": "NestMaster",
+      "price": 27000,
+      "seller": "村田翔太",
+      "description": "NestJS開発のエキスパート。TypeScriptベースの堅牢なバックエンドを構築します。",
+      "imageUrl": "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=400",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": null,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 76,
+      "name": "FastAPI Pro",
+      "price": 25000,
+      "seller": "山本彩花",
+      "description": "FastAPI開発の専門家。非同期処理で高速なAPIを実装します。",
+      "imageUrl": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400",
+      "soldout": 0,
+      "category_id": 2,
+      "sub_category_id": null,
+      "download_count": 1320,
+      "view_count": 3400,
+      "rating_average": "4.80",
+      "rating_count": 88,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 77,
+      "name": "MidjourneyAI",
+      "price": 32000,
+      "seller": "佐野光一",
+      "description": "Midjourney専門家。プロンプトエンジニアリングで最高品質の画像を生成します。",
+      "imageUrl": "https://images.unsplash.com/photo-1547954575-855750c57bd3?w=400",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": null,
+      "download_count": 1720,
+      "view_count": 4400,
+      "rating_average": "4.90",
+      "rating_count": 118,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 78,
+      "name": "DALLEMaster",
+      "price": 31000,
+      "seller": "片岡美里",
+      "description": "DALL-E開発の専門家。創造的な画像生成とスタイル転送が得意です。",
+      "imageUrl": "https://images.unsplash.com/photo-1?535982330050-f1c2fb79ff78?w=400",
+      "soldout": 0,
+      "category_id": 3,
+      "sub_category_id": null,
+      "download_count": 1650,
+      "view_count": 4200,
+      "rating_average": "4.80",
+      "rating_count": 108,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 79,
+      "name": "DevOpsGuru",
+      "price": 29000,
+      "seller": "石田大地",
+      "description": "DevOps専門家。開発と運用を統合し、デリバリー速度を向上させます。",
+      "imageUrl": "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": null,
+      "download_count": 1380,
+      "view_count": 3600,
+      "rating_average": "4.80",
+      "rating_count": 92,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 80,
+      "name": "DataArchitect",
+      "price": 31000,
+      "seller": "森川由美",
+      "description": "データアーキテクト専門家。データモデリングと最適化を実現します。",
+      "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400",
+      "soldout": 0,
+      "category_id": 4,
+      "sub_category_id": null,
+      "download_count": 1450,
+      "view_count": 3800,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 81,
+      "name": "VercelPro",
+      "price": 25000,
+      "seller": "田村洋平",
+      "description": "Vercel専門家。フロントエンドデプロイを最適化し、高速配信を実現します。",
+      "imageUrl": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": null,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.80",
+      "rating_count": 95,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 82,
+      "name": "NetlifyMaster",
+      "price": 24000,
+      "seller": "中野智子",
+      "description": "Netlify専門家。JAMstack構成で高速なWebサイトを構築します。",
+      "imageUrl": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400",
+      "soldout": 0,
+      "category_id": 5,
+      "sub_category_id": null,
+      "download_count": 1320,
+      "view_count": 3400,
+      "rating_average": "4.70",
+      "rating_count": 88,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 83,
+      "name": "ZeroTrust",
+      "price": 29000,
+      "seller": "井川剛志",
+      "description": "ゼロトラストセキュリティの専門家。最新のセキュリティモデルを実装します。",
+      "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": null,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 84,
+      "name": "ThreatHunter",
+      "price": 30000,
+      "seller": "橋爪亜美",
+      "description": "脅威ハンティングの専門家。未知の脅威を事前に発見し対策します。",
+      "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400",
+      "soldout": 0,
+      "category_id": 6,
+      "sub_category_id": null,
+      "download_count": 1480,
+      "view_count": 3800,
+      "rating_average": "4.90",
+      "rating_count": 102,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 85,
+      "name": "FigmaDoc",
+      "price": 26000,
+      "seller": "吉村真司",
+      "description": "Figmaドキュメント専門家。デザインシステムと仕様書を統合管理します。",
+      "imageUrl": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": null,
+      "download_count": 1420,
+      "view_count": 3700,
+      "rating_average": "4.80",
+      "rating_count": 95,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    },
+    {
+      "id": 86,
+      "name": "SwaggerPro",
+      "price": 27000,
+      "seller": "久保田香織",
+      "description": "Swagger/OpenAPI専門家。自動生成されたAPI仕様書を美しく整理します。",
+      "imageUrl": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400",
+      "soldout": 0,
+      "category_id": 7,
+      "sub_category_id": null,
+      "download_count": 1450,
+      "view_count": 3800,
+      "rating_average": "4.90",
+      "rating_count": 98,
+      "createdAt": "2025-11-19T17:03:54.000Z",
+      "updatedAt": "2025-11-19T17:03:54.000Z"
+    }
+  ],
+  "producttags": [],
+  "stats": [],
+  "sub_categories": [
+    {
+      "id": 1,
+      "category_id": 1,
+      "name": "JavaScript",
+      "tech_stack": "JavaScript",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 2,
+      "category_id": 1,
+      "name": "TypeScript",
+      "tech_stack": "TypeScript",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 3,
+      "category_id": 1,
+      "name": "React",
+      "tech_stack": "React",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 4,
+      "category_id": 1,
+      "name": "Vue.js",
+      "tech_stack": "Vue.js",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 5,
+      "category_id": 1,
+      "name": "Next.js",
+      "tech_stack": "Next.js",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 6,
+      "category_id": 1,
+      "name": "Angular",
+      "tech_stack": "Angular",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 7,
+      "category_id": 1,
+      "name": "Svelte",
+      "tech_stack": "Svelte",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 8,
+      "category_id": 1,
+      "name": "jQuery",
+      "tech_stack": "jQuery",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 9,
+      "category_id": 1,
+      "name": "WebComponents",
+      "tech_stack": "Web Components",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 10,
+      "category_id": 1,
+      "name": "Nuxt.js",
+      "tech_stack": "Nuxt.js",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 11,
+      "category_id": 2,
+      "name": "Node.js",
+      "tech_stack": "Express",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 12,
+      "category_id": 2,
+      "name": "Python",
+      "tech_stack": "Django/FastAPI",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 13,
+      "category_id": 2,
+      "name": "Java",
+      "tech_stack": "Spring Boot",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 14,
+      "category_id": 2,
+      "name": "Go",
+      "tech_stack": "Gin/Fiber",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 15,
+      "category_id": 2,
+      "name": "Rust",
+      "tech_stack": "Actix/Web",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 16,
+      "category_id": 2,
+      "name": "PHP",
+      "tech_stack": "Laravel",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 17,
+      "category_id": 2,
+      "name": "Ruby",
+      "tech_stack": "Rails",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 18,
+      "category_id": 2,
+      "name": "C#",
+      "tech_stack": ".NET",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 19,
+      "category_id": 2,
+      "name": "Kotlin",
+      "tech_stack": "Ktor",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 20,
+      "category_id": 2,
+      "name": "Scala",
+      "tech_stack": "Play Framework",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 21,
+      "category_id": 3,
+      "name": "イラスト",
+      "tech_stack": "Stable Diffusion",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 22,
+      "category_id": 3,
+      "name": "ドット絵",
+      "tech_stack": "Pixel Art",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 23,
+      "category_id": 3,
+      "name": "風景画",
+      "tech_stack": "Landscape",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 24,
+      "category_id": 3,
+      "name": "3Dモデル",
+      "tech_stack": "3D Generation",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 25,
+      "category_id": 3,
+      "name": "アニメーション",
+      "tech_stack": "Animation",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 26,
+      "category_id": 3,
+      "name": "ロゴ・デザイン",
+      "tech_stack": "Design",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 27,
+      "category_id": 3,
+      "name": "キャラクター",
+      "tech_stack": "Character Design",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 28,
+      "category_id": 3,
+      "name": "UI/UXデザイン",
+      "tech_stack": "UI/UX",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 29,
+      "category_id": 3,
+      "name": "アイコン",
+      "tech_stack": "Icon Design",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 30,
+      "category_id": 3,
+      "name": "テクスチャ",
+      "tech_stack": "Texture",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 31,
+      "category_id": 4,
+      "name": "企画",
+      "tech_stack": "Planning",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 32,
+      "category_id": 4,
+      "name": "プロジェクト管理",
+      "tech_stack": "PM Tools",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 33,
+      "category_id": 4,
+      "name": "統合作業",
+      "tech_stack": "Integration",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 34,
+      "category_id": 4,
+      "name": "要件定義",
+      "tech_stack": "Requirements",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 35,
+      "category_id": 4,
+      "name": "アーキテクチャ設計",
+      "tech_stack": "Architecture",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 36,
+      "category_id": 4,
+      "name": "品質管理",
+      "tech_stack": "QA",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 37,
+      "category_id": 4,
+      "name": "アジャイルコーチ",
+      "tech_stack": "Agile",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 38,
+      "category_id": 4,
+      "name": "スクラムマスター",
+      "tech_stack": "Scrum",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 39,
+      "category_id": 4,
+      "name": "プロダクトオーナー",
+      "tech_stack": "PO",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 40,
+      "category_id": 4,
+      "name": "テックリード",
+      "tech_stack": "Tech Lead",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 41,
+      "category_id": 5,
+      "name": "Docker",
+      "tech_stack": "Docker",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 42,
+      "category_id": 5,
+      "name": "Cloudflare",
+      "tech_stack": "Cloudflare",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 43,
+      "category_id": 5,
+      "name": "Fly.io",
+      "tech_stack": "Fly.io",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 44,
+      "category_id": 5,
+      "name": "AWS",
+      "tech_stack": "AWS",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 45,
+      "category_id": 5,
+      "name": "GCP",
+      "tech_stack": "GCP",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 46,
+      "category_id": 5,
+      "name": "Kubernetes",
+      "tech_stack": "K8s",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 47,
+      "category_id": 5,
+      "name": "Azure",
+      "tech_stack": "Azure",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 48,
+      "category_id": 5,
+      "name": "Terraform",
+      "tech_stack": "Terraform",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 49,
+      "category_id": 5,
+      "name": "CI/CD",
+      "tech_stack": "GitHub Actions",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 50,
+      "category_id": 5,
+      "name": "Monitoring",
+      "tech_stack": "Prometheus",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 51,
+      "category_id": 6,
+      "name": "コード監査",
+      "tech_stack": "Code Audit",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 52,
+      "category_id": 6,
+      "name": "アクセス制御",
+      "tech_stack": "Access Control",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 53,
+      "category_id": 6,
+      "name": "暗号化",
+      "tech_stack": "Encryption",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 54,
+      "category_id": 6,
+      "name": "脆弱性スキャン",
+      "tech_stack": "Vulnerability Scan",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 55,
+      "category_id": 6,
+      "name": "ログ分析",
+      "tech_stack": "Log Analysis",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 56,
+      "category_id": 6,
+      "name": "ネットワークセキュリティ",
+      "tech_stack": "Network Security",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 57,
+      "category_id": 6,
+      "name": "ペネトレーションテスト",
+      "tech_stack": "Penetration Test",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 58,
+      "category_id": 6,
+      "name": "ファイアウォール",
+      "tech_stack": "Firewall",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 59,
+      "category_id": 6,
+      "name": "IDS/IPS",
+      "tech_stack": "IDS/IPS",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 60,
+      "category_id": 6,
+      "name": "コンプライアンス",
+      "tech_stack": "Compliance",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 61,
+      "category_id": 7,
+      "name": "Excel",
+      "tech_stack": "Excel",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 62,
+      "category_id": 7,
+      "name": "PowerPoint",
+      "tech_stack": "PowerPoint",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 63,
+      "category_id": 7,
+      "name": "GitHub文書化",
+      "tech_stack": "GitHub Docs",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 64,
+      "category_id": 7,
+      "name": "Word",
+      "tech_stack": "Word",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 65,
+      "category_id": 7,
+      "name": "Notion",
+      "tech_stack": "Notion",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 66,
+      "category_id": 7,
+      "name": "メール",
+      "tech_stack": "Email",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 67,
+      "category_id": 7,
+      "name": "Confluence",
+      "tech_stack": "Confluence",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 68,
+      "category_id": 7,
+      "name": "Markdown",
+      "tech_stack": "Markdown",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 69,
+      "category_id": 7,
+      "name": "APIドキュメント",
+      "tech_stack": "API Docs",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 70,
+      "category_id": 7,
+      "name": "テクニカルライティング",
+      "tech_stack": "Technical Writing",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    }
+  ],
+  "synergies": [],
+  "tags": [
+    {
+      "id": 1,
+      "name": "JavaScript",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 2,
+      "name": "TypeScript",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 3,
+      "name": "React",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 4,
+      "name": "Vue.js",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 5,
+      "name": "Next.js",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 6,
+      "name": "Angular",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 7,
+      "name": "Svelte",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 8,
+      "name": "jQuery",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 9,
+      "name": "WebComponents",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 10,
+      "name": "Nuxt.js",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 11,
+      "name": "Node.js",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 12,
+      "name": "Python",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 13,
+      "name": "Java",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 14,
+      "name": "Go",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 15,
+      "name": "Rust",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 16,
+      "name": "PHP",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 17,
+      "name": "Ruby",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 18,
+      "name": "C#",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 19,
+      "name": "Kotlin",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 20,
+      "name": "Scala",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 21,
+      "name": "イラスト",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 22,
+      "name": "ドット絵",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 23,
+      "name": "風景画",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 24,
+      "name": "3Dモデル",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 25,
+      "name": "アニメーション",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 26,
+      "name": "ロゴ・デザイン",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 27,
+      "name": "キャラクター",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 28,
+      "name": "UI/UXデザイン",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 29,
+      "name": "アイコン",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 30,
+      "name": "テクスチャ",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 31,
+      "name": "企画",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 32,
+      "name": "プロジェクト管理",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 33,
+      "name": "統合作業",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 34,
+      "name": "要件定義",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 35,
+      "name": "アーキテクチャ設計",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 36,
+      "name": "品質管理",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 37,
+      "name": "アジャイルコーチ",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 38,
+      "name": "スクラムマスター",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 39,
+      "name": "プロダクトオーナー",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 40,
+      "name": "テックリード",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 41,
+      "name": "Docker",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 42,
+      "name": "Cloudflare",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 43,
+      "name": "Fly.io",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 44,
+      "name": "AWS",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 45,
+      "name": "GCP",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 46,
+      "name": "Kubernetes",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 47,
+      "name": "Azure",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 48,
+      "name": "Terraform",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 49,
+      "name": "CI/CD",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 50,
+      "name": "Monitoring",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 51,
+      "name": "コード監査",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 52,
+      "name": "アクセス制御",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 53,
+      "name": "暗号化",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 54,
+      "name": "脆弱性スキャン",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 55,
+      "name": "ログ分析",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 56,
+      "name": "ネットワークセキュリティ",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 57,
+      "name": "ペネトレーションテスト",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 58,
+      "name": "ファイアウォール",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 59,
+      "name": "IDS/IPS",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 60,
+      "name": "コンプライアンス",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 61,
+      "name": "Excel",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 62,
+      "name": "PowerPoint",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 63,
+      "name": "GitHub文書化",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 64,
+      "name": "Word",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 65,
+      "name": "Notion",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 66,
+      "name": "メール",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 67,
+      "name": "Confluence",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 68,
+      "name": "Markdown",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 69,
+      "name": "APIドキュメント",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    },
+    {
+      "id": 70,
+      "name": "テクニカルライティング",
+      "created_at": "2025-11-18T11:37:59.000Z"
+    }
+  ]
+}

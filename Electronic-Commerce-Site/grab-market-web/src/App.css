@@ -1,0 +1,58 @@
+* {
+  margin: 0;
+  padding: 0;
+  line-height: normal;
+}
+
+html,
+body,
+#root,
+#root > div {
+  height: 100%;
+}
+
+#header {
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid gray;
+}
+
+#header-area {
+  width: 1024px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#header-area img {
+  width: 128px;
+  height: 36px;
+}
+
+#body {
+  min-height: 100vh;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#footer {
+  height: 200px;
+  background-color: white;
+}
+
+@media screen and (max-width: 400px) {
+  .product-card {
+    width: 100% !important;
+  }
+  #header {
+    padding: 0 8px;
+  }
+  #body {
+    padding: 0 8px;
+  }
+  .ant-carousel {
+    margin: 0 -8px;
+  }
+}

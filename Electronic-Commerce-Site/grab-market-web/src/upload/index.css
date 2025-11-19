@@ -1,0 +1,104 @@
+#upload-container {
+  padding-top: 36px;
+  padding-bottom: 4rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  min-height: calc(100vh - 36px);
+}
+
+/* 반응형 */
+@media (min-width: 1920px) {
+  #upload-container {
+    max-width: 1600px;
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  #upload-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  #upload-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  #upload-img-placeholder,
+  #upload-img {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  #upload-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-bottom: 2rem;
+  }
+  
+  #upload-img-placeholder,
+  #upload-img {
+    width: 120px;
+    height: 120px;
+    margin-left: 0;
+  }
+}
+
+#upload-img-placeholder {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgb(230, 230, 230);
+  background: rgb(250, 250, 253);
+  margin-left: 16px;
+}
+
+#upload-img-placeholder > img {
+  width: 50px;
+  height: 50px;
+}
+
+#upload-img-placeholder > span {
+  font-size: 14px;
+  color: rgb(195, 194, 204);
+}
+
+.upload-name {
+  width: 200px;
+}
+
+.upload-label {
+  font-size: 18px;
+  width: 80px;
+}
+
+#product-description {
+  height: 150px;
+}
+
+#submit-button {
+  float: right;
+  background-color: rgb(30, 120, 225);
+  color: white;
+  border: none;
+  margin-top: 16px;
+}
+
+#upload-img {
+  width: 200px;
+  height: 200px;
+  margin-left: 16px;
+  object-fit: contain;
+}
