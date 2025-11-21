@@ -32,7 +32,7 @@ function findModelFile(featureDir, featureName) {
     if (!fs.existsSync(featureDir) || !fs.statSync(featureDir).isDirectory()) {
         return null;
     }
-    
+
     const files = fs.readdirSync(featureDir);
     // 大文字小文字を考慮したファイル名の検索
     const possibleNames = [
@@ -40,28 +40,53 @@ function findModelFile(featureDir, featureName) {
         `${featureName.charAt(0).toUpperCase() + featureName.slice(1)}Model.js`,
         `${featureName.toLowerCase()}Model.js`,
     ];
-    
-    // まず、定義された名前で検索
+
+    // まず、ルートディレクトリで定義された名前で検索
     for (const name of possibleNames) {
         const testPath = path.join(featureDir, name);
         if (fs.existsSync(testPath)) {
             return testPath;
         }
     }
-    
-    // 見つからない場合、ディレクトリ内のすべてのファイルからmodelを含むファイルを検索
-    const modelFile = files.find(f => 
-        f.toLowerCase().includes('model') && 
+
+    // modelsサブディレクトリを確認
+    const modelsSubDir = path.join(featureDir, 'models');
+    if (fs.existsSync(modelsSubDir) && fs.statSync(modelsSubDir).isDirectory()) {
+        for (const name of possibleNames) {
+            const testPath = path.join(modelsSubDir, name);
+            if (fs.existsSync(testPath)) {
+                return testPath;
+            }
+        }
+
+        // modelsサブディレクトリ内のファイルからmodelを含むファイルを検索
+        const modelsFiles = fs.readdirSync(modelsSubDir);
+        const modelFile = modelsFiles.find(f =>
+            f.toLowerCase().includes('model') &&
+            f.endsWith('.js') &&
+            !f.includes('Controller') &&
+            !f.includes('Service') &&
+            !f.includes('Routes')
+        );
+
+        if (modelFile) {
+            return path.join(modelsSubDir, modelFile);
+        }
+    }
+
+    // 見つからない場合、ルートディレクトリ内のすべてのファイルからmodelを含むファイルを検索
+    const modelFile = files.find(f =>
+        f.toLowerCase().includes('model') &&
         f.endsWith('.js') &&
         !f.includes('Controller') &&
         !f.includes('Service') &&
         !f.includes('Routes')
     );
-    
+
     if (modelFile) {
         return path.join(featureDir, modelFile);
     }
-    
+
     return null;
 }
 
@@ -122,8 +147,15 @@ async function syncDatabase(options = {}) {
             await db.Product.sync({ force, alter });
             console.log('✓ Product テーブルを同期しました');
         }
-        
-        // 4. Productに依存するモデル
+
+        // 4. 中間テーブル（ProductTags）を同期
+        // belongsToManyで自動作成される中間テーブルを明示的に同期
+        if (sequelize.models.ProductTags) {
+            await sequelize.models.ProductTags.sync({ force, alter });
+            console.log('✓ ProductTags テーブルを同期しました');
+        }
+
+        // 5. Productに依存するモデル
         const productDependentModels = ['Stats', 'Synergy'];
         for (const modelName of productDependentModels) {
             if (db[modelName]) {

@@ -67,6 +67,29 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
     });
-    
+
+    // アソシエーション（関連付け）を定義
+    Product.associate = (models) => {
+        // Product - Tag: 多対多
+        Product.belongsToMany(models.Tag, {
+            through: 'ProductTags',
+            foreignKey: 'product_id',
+            otherKey: 'tag_id',
+            as: 'tags'
+        });
+
+        // Product - Category: 多対一
+        Product.belongsTo(models.Category, {
+            foreignKey: 'category_id',
+            as: 'category'
+        });
+
+        // Product - Category (サブカテゴリ): 多対一
+        Product.belongsTo(models.Category, {
+            foreignKey: 'sub_category_id',
+            as: 'subcategory'
+        });
+    };
+
     return Product;
 };

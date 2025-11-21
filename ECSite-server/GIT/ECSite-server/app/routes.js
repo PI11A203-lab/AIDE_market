@@ -1,4 +1,4 @@
-const productRoutes = require("../features/product/productRoutes");
+const productRoutes = require("../features/product/routes");
 const bannerRoutes = require("../features/banner/bannerRoutes");
 const purchaseRoutes = require("../features/purchase/purchaseRoutes");
 const imageRoutes = require("../features/image/routes");
