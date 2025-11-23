@@ -245,7 +245,7 @@ function MainPage() {
         <div className="search-content">
           <h2 className="search-title">Find the Perfect AI Developer</h2>
           <p className="search-subtitle">
-            AI開発者 {products.length} 人があなたのビジョンを実現する準備ができています
+           AI開発者 {categories.find(c => c.id === selectedCategory)?.count || 0} 人があなたのビジョンを実現する準備ができています
           </p>
           
           <div className="search-bar-wrapper">
