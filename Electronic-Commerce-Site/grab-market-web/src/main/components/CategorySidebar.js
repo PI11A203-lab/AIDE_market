@@ -17,6 +17,13 @@ const CategorySidebar = ({ categories, selectedCategory, onCategoryChange, sortB
               onClick={() => onCategoryChange(cat.id)}
               className={`category-btn ${selectedCategory === cat.id ? 'active' : ''}`}
             >
+              {cat.icon && (
+                <img 
+                  src={cat.icon} 
+                  alt={cat.name} 
+                  className="category-icon"
+                />
+              )}
               <span className="category-name">{cat.name}</span>
               <span className="category-count">{cat.count}</span>
             </button>
@@ -30,10 +37,10 @@ const CategorySidebar = ({ categories, selectedCategory, onCategoryChange, sortB
             onChange={(e) => onSortChange(e.target.value)}
             className="sort-select"
           >
-            <option value="download">📥 最多ダウンロード</option>
-            <option value="rating">⭐ 最高評価</option>
-            <option value="price">💰 価格: 低から高</option>
-            <option value="priceDesc">💎 価格: 高から低</option>
+            <option value="download">最多ダウンロード</option>
+            <option value="rating">最高評価</option>
+            <option value="price">価格: 低から高</option>
+            <option value="priceDesc">価格: 高から低</option>
           </select>
         </div>
       </div>

@@ -9,11 +9,19 @@ export default function ProfileHeader({ developer, isLiked, onLikeToggle }) {
         {/* 아바타 & 랭킹 */}
         <div className="relative">
           {/* 실제 이미지 사용 */}
-          <div className="w-28 h-28 rounded-2xl overflow-hidden">
+          <div className="w-28 h-28 rounded-2xl overflow-hidden flex items-center justify-center bg-gray-100">
             <img 
               src={`${API_URL}/${developer.imageUrl}`} 
               alt={developer.name}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                const parent = e.target.parentElement;
+                if (parent) {
+                  parent.textContent = developer.name.substring(0, 2);
+                  parent.classList.add('text-gray-600', 'font-bold', 'text-2xl');
+                }
+              }}
             />
           </div>
           <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
