@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useHistory, useLocation } from 'react-router-dom';
 import TeamHeader from './components/TeamHeader';
 import AvailableDevelopers from './components/AvailableDevelopers';
 import TeamSidebar from './components/TeamSidebar';
@@ -11,6 +12,32 @@ export default function TeamBuilder() {
   const [availableDevelopers, setAvailableDevelopers] = useState([]);
   const [loading, setLoading] = useState(true);
   const maxTeamSize = 5;
+  const history = useHistory();
+  const location = useLocation();
+
+  // URL 파라미터에서 선택된 팀원 ID들을 읽어오는 함수
+  const getSelectedIdsFromURL = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const teamParam = searchParams.get('team');
+    if (teamParam) {
+      return teamParam.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    }
+    return [];
+  };
+
+  // URL 파라미터를 업데이트하는 함수
+  const updateURLParams = (teamIds) => {
+    const searchParams = new URLSearchParams(location.search);
+    if (teamIds.length > 0) {
+      searchParams.set('team', teamIds.join(','));
+    } else {
+      searchParams.delete('team');
+    }
+    history.replace({
+      pathname: location.pathname,
+      search: searchParams.toString()
+    });
+  };
 
   useEffect(() => {
     axios
@@ -34,6 +61,14 @@ export default function TeamBuilder() {
           }
         }));
         setAvailableDevelopers(developers);
+        
+        // URL 파라미터에서 선택된 팀원 복원
+        const selectedIds = getSelectedIdsFromURL();
+        if (selectedIds.length > 0) {
+          const restoredTeam = developers.filter(dev => selectedIds.includes(dev.id));
+          setSelectedTeam(restoredTeam);
+        }
+        
         setLoading(false);
       })
       .catch((error) => {
@@ -45,13 +80,19 @@ export default function TeamBuilder() {
   // 팀에 추가
   const addToTeam = (developer) => {
     if (selectedTeam.length < maxTeamSize && !selectedTeam.find(d => d.id === developer.id)) {
-      setSelectedTeam([...selectedTeam, developer]);
+      const newTeam = [...selectedTeam, developer];
+      setSelectedTeam(newTeam);
+      // URL 파라미터 업데이트
+      updateURLParams(newTeam.map(d => d.id));
     }
   };
 
   // 팀에서 제거
   const removeFromTeam = (developerId) => {
-    setSelectedTeam(selectedTeam.filter(d => d.id !== developerId));
+    const newTeam = selectedTeam.filter(d => d.id !== developerId);
+    setSelectedTeam(newTeam);
+    // URL 파라미터 업데이트
+    updateURLParams(newTeam.map(d => d.id));
   };
 
   // 팀 평균 스탯 계산
