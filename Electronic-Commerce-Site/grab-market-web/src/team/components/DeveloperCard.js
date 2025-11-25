@@ -11,15 +11,19 @@ export default function DeveloperCard({ developer, isSelected, isFull, onAdd, on
         <div className="developer-card-info">
           {/* 실제 이미지 표시 */}
           <div className="developer-avatar">
-            {developer.imageUrl ? (
-              <img 
-                src={`${API_URL}/${developer.imageUrl}`} 
-                alt={developer.name}
-                className="w-full h-full object-cover rounded-lg"
-              />
-            ) : (
-              developer.name.substring(0, 2)
-            )}
+          {developer.imageUrl ? (
+            <img
+            src={`${API_URL}/${developer.imageUrl}`}
+            alt={developer.name}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.parentElement.textContent = developer.name.substring(0, 2);
+            }}
+          />
+          ) : (
+            developer.name.substring(0, 2)
+          )}
+
           </div>
           <div className="developer-details">
             <h4 className="developer-name">{developer.name}</h4>

@@ -35,14 +35,18 @@ export default function TeamSidebar({
               {selectedTeam.map((dev) => (
                 <div key={dev.id} className="team-member-item">
                   <div className="team-member-avatar">
-                    {dev.imageUrl ? (
-                      <img 
-                        src={`${API_URL}/${dev.imageUrl}`} 
-                        alt={dev.name}
-                      />
-                    ) : (
-                      dev.name.substring(0, 2)
-                    )}
+                  {dev.imageUrl ? (
+                    <img
+                    src={`${API_URL}/${dev.imageUrl}`}
+                    alt={dev.name}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.textContent = dev.name.substring(0, 2);
+                    }}
+                  />
+                  ) : (
+                    dev.name.substring(0, 2)
+                  )}
                   </div>
                   <div className="team-member-info">
                     <h4 className="team-member-name">{dev.name}</h4>
