@@ -15,16 +15,6 @@ export default function TeamBuilder() {
   const history = useHistory();
   const location = useLocation();
 
-  // URL 파라미터에서 선택된 팀원 ID들을 읽어오는 함수
-  const getSelectedIdsFromURL = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const teamParam = searchParams.get('team');
-    if (teamParam) {
-      return teamParam.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
-    }
-    return [];
-  };
-
   // URL 파라미터를 업데이트하는 함수
   const updateURLParams = (teamIds) => {
     const searchParams = new URLSearchParams(location.search);
@@ -40,6 +30,16 @@ export default function TeamBuilder() {
   };
 
   useEffect(() => {
+    // URL 파라미터에서 선택된 팀원 ID들을 읽어오는 함수
+    const getSelectedIdsFromURL = () => {
+      const searchParams = new URLSearchParams(location.search);
+      const teamParam = searchParams.get('team');
+      if (teamParam) {
+        return teamParam.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+      }
+      return [];
+    };
+
     axios
       .get(`${API_URL}/products`)
       .then((result) => {
@@ -48,9 +48,10 @@ export default function TeamBuilder() {
         const developers = products.map(product => ({
           id: product.id,
           name: product.name,
-          category: 'NLP', // 기본값
+          category: product.category_name || 'その他', // 카테고리 이름 사용
+          categoryId: product.category_id, // 카테고리 ID 추가
           price: product.price,
-          imageUrl: product.imageUrl, // ← 추가!
+          imageUrl: product.imageUrl,
           stats: {
             technical: 95,
             communication: 90,
@@ -75,7 +76,7 @@ export default function TeamBuilder() {
         console.error('エラー発生 : ', error);
         setLoading(false);
       });
-  }, []);
+  }, [location.search]);
 
   // 팀에 추가
   const addToTeam = (developer) => {
