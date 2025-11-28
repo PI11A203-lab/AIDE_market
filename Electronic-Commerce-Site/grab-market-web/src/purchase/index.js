@@ -8,7 +8,6 @@ import CartItem from './components/CartItem';
 import CouponSection from './components/CouponSection';
 import OrderSummary from './components/OrderSummary';
 import PurchaseProtection from './components/PurchaseProtection';
-import PaymentForm from './components/PaymentForm';
 import EmptyCart from './components/EmptyCart';
 import { API_URL } from '../config/constants';
 import { api } from '../config/api';
@@ -20,7 +19,6 @@ export default function PurchasePage() {
   const [cartItems, setCartItems] = useState([]);
   const [buyNowItem, setBuyNowItem] = useState(null); // 바로 구매 상품
   const [availableCartItems, setAvailableCartItems] = useState([]); // 장바구니에 있는 다른 상품들
-  const [selectedCartItems, setSelectedCartItems] = useState([]); // 선택된 장바구니 상품들
   const [loading, setLoading] = useState(true);
 
   // 상품 정보를 가져오는 함수
@@ -105,41 +103,34 @@ export default function PurchasePage() {
 
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [paymentData, setPaymentData] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // 장바구니에서 제거
   const removeFromCart = (itemId) => {
+    const removedItem = cartItems.find(item => item.id === itemId);
     const updatedItems = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedItems);
-    // 선택된 장바구니 상품에서도 제거
-    setSelectedCartItems(selectedCartItems.filter(id => id !== itemId));
+    
+    // 바로 구매 모드이고, 제거된 상품이 buyNowItem이 아닌 경우 availableCartItems에 다시 추가
+    if (buyNowItem && removedItem && removedItem.id !== buyNowItem.id) {
+      setAvailableCartItems([...availableCartItems, removedItem]);
+    }
+    
     // localStorage도 업데이트
     const updatedIds = updatedItems.map(item => item.id);
     localStorage.setItem('cart', JSON.stringify(updatedIds));
   };
 
-  // 장바구니 상품 선택/해제
-  const toggleCartItemSelection = (itemId) => {
-    setSelectedCartItems(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
-    );
-  };
-
-  // 선택된 장바구니 상품들을 결제 목록에 추가
-  const addSelectedToCart = () => {
-    const selectedItems = availableCartItems.filter(item => 
-      selectedCartItems.includes(item.id) && 
-      !cartItems.some(cartItem => cartItem.id === item.id) // 중복 체크
-    );
-    setCartItems([...cartItems, ...selectedItems]);
-    setSelectedCartItems([]);
-    // 추가된 상품들을 availableCartItems에서 제거
-    setAvailableCartItems(availableCartItems.filter(item => 
-      !selectedCartItems.includes(item.id)
-    ));
+  // 장바구니 상품을 바로 결제 목록에 추가
+  const addCartItemToPurchase = (item) => {
+    // 중복 체크
+    if (cartItems.some(cartItem => cartItem.id === item.id)) {
+      return;
+    }
+    // 구매 목록에 추가
+    setCartItems([...cartItems, item]);
+    // availableCartItems에서 제거
+    setAvailableCartItems(availableCartItems.filter(availableItem => availableItem.id !== item.id));
   };
 
   // 쿠폰 적용
@@ -177,22 +168,7 @@ export default function PurchasePage() {
   const tax = (subtotal - discount) * 0.1;
   const total = subtotal - discount + tax;
 
-  const handleCheckout = () => {
-    // 사용자 정보 확인
-    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
-    if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
-      history.push('/login');
-      return;
-    }
-
-    // 결제 폼 표시
-    setShowPaymentForm(true);
-  };
-
-  const handlePaymentSubmit = async (cardData) => {
-    setPaymentData(cardData);
-    
+  const handleCheckout = async () => {
     // 사용자 정보 확인
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
@@ -204,18 +180,59 @@ export default function PurchasePage() {
     try {
       const user = JSON.parse(userFromStorage);
       
+      // 결제방법 확인
+      const response = await api.paymentMethods.getByUser(user.id);
+      const methods = response.data.paymentMethods || [];
+      
+      if (methods.length === 0) {
+        message.warning('결제를 위해 카드를 등록해주세요.', 3);
+        setTimeout(() => {
+          if (window.confirm('카드 등록 페이지로 이동하시겠습니까?')) {
+            history.push('/profile/settings');
+          }
+        }, 500);
+        return;
+      }
+
+      // 기본 결제방법 선택 (is_default가 true인 것 또는 첫 번째)
+      const defaultPaymentMethod = methods.find(m => m.is_default) || methods[0];
+      
+      // 바로 주문 생성
+      await processPayment(defaultPaymentMethod);
+    } catch (error) {
+      console.error('결제방법 확인 실패:', error);
+      message.error('결제방법을 확인하는 중 오류가 발생했습니다.');
+    }
+  };
+
+  const processPayment = async (paymentMethod) => {
+    setIsProcessing(true);
+    
+    // 사용자 정보 확인
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!userFromStorage) {
+      message.warning('로그인이 필요합니다.');
+      history.push('/login');
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userFromStorage);
+      
       // 주문 생성
       const orderData = {
         user_id: user.id,
-        total_amount: total,
-        payment_method: 'credit_card',
-        card_company: cardData.cardCompany,
-        card_number: cardData.cardNumber.replace(/\s/g, ''),
-        card_cvc: cardData.cardCvc,
-        exp_month: parseInt(cardData.expMonth),
-        exp_year: parseInt(cardData.expYear),
+        total_amount: Math.round(total), // 정수로 반올림
+        payment_method: paymentMethod.payment_method || 'credit_card',
+        card_company: paymentMethod.card_company,
+        card_id: paymentMethod.id, // 결제방법 ID 저장
+        exp_month: paymentMethod.exp_month ? parseInt(paymentMethod.exp_month) : null,
+        exp_year: paymentMethod.exp_year ? parseInt(paymentMethod.exp_year) : null,
         status: 'pending',
       };
+      
+      console.log('주문 데이터:', orderData);
 
       const orderResponse = await api.orders.create(orderData);
       const orderId = orderResponse.data.order.id;
@@ -241,6 +258,20 @@ export default function PurchasePage() {
         });
       }
 
+      // 주문 정보를 sessionStorage에 저장 (confirmation 페이지에서 사용)
+      const orderInfo = {
+        orderId: orderId,
+        orderNumber: orderResponse.data.order?.order_number || `ORD-${Date.now()}`,
+        cartItems: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price
+        })),
+        total: total,
+        orderDate: new Date().toISOString()
+      };
+      sessionStorage.setItem('lastOrder', JSON.stringify(orderInfo));
+
       // 장바구니 비우기
       localStorage.removeItem('cart');
 
@@ -248,8 +279,32 @@ export default function PurchasePage() {
       history.push('/confirmation');
     } catch (error) {
       console.error('Failed to create order:', error);
-      const errorMessage = error.response?.data?.error || '주문 생성에 실패했습니다.';
-      message.error(errorMessage);
+      console.error('Error response:', error.response);
+      
+      let errorMessage = '주문 생성에 실패했습니다.';
+      
+      if (error.response) {
+        // 서버에서 반환한 에러 메시지
+        errorMessage = error.response.data?.error || errorMessage;
+        
+        // HTTP 상태 코드에 따른 메시지
+        if (error.response.status === 400) {
+          errorMessage = `요청 오류: ${errorMessage}`;
+        } else if (error.response.status === 401) {
+          errorMessage = '인증이 필요합니다. 다시 로그인해주세요.';
+          history.push('/login');
+        } else if (error.response.status === 500) {
+          errorMessage = `서버 오류: ${errorMessage}`;
+        }
+      } else if (error.request) {
+        errorMessage = '서버에 연결할 수 없습니다. 네트워크를 확인해주세요.';
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+      
+      message.error(errorMessage, 5);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -301,12 +356,6 @@ export default function PurchasePage() {
                         key={item.id}
                         className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
                       >
-                        <input
-                          type="checkbox"
-                          checked={selectedCartItems.includes(item.id)}
-                          onChange={() => toggleCartItemSelection(item.id)}
-                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
                         <div className="flex-1 flex items-center gap-4">
                           <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 font-semibold">
                             {item.avatar}
@@ -329,17 +378,16 @@ export default function PurchasePage() {
                             ¥{item.price.toLocaleString()}
                           </div>
                         </div>
+                        <button
+                          onClick={() => addCartItemToPurchase(item)}
+                          className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-lg font-bold text-xl hover:bg-blue-700 transition shadow-sm hover:shadow-md"
+                          title="구매 목록에 추가"
+                        >
+                          +
+                        </button>
                       </div>
                     ))}
                   </div>
-                  {selectedCartItems.length > 0 && (
-                    <button
-                      onClick={addSelectedToCart}
-                      className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
-                    >
-                      選択した商品を追加 ({selectedCartItems.length})
-                    </button>
-                  )}
                 </div>
               )}
 
@@ -350,14 +398,6 @@ export default function PurchasePage() {
                 onApplyCoupon={applyCoupon}
                 appliedCoupon={appliedCoupon}
               />
-
-              {/* 결제 폼 */}
-              {showPaymentForm && (
-                <PaymentForm
-                  onSubmit={handlePaymentSubmit}
-                  isLoading={false}
-                />
-              )}
             </div>
 
             {/* 주문 요약 */}
@@ -370,7 +410,7 @@ export default function PurchasePage() {
                 total={total}
                 appliedCoupon={appliedCoupon}
                 onCheckout={handleCheckout}
-                showPaymentForm={showPaymentForm}
+                isProcessing={isProcessing}
               />
 
               {/* 보증 정보 */}

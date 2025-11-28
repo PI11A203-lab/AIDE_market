@@ -613,6 +613,40 @@ export const api = {
         },
       }),
   },
+
+  // ==================== 결제방법 관련 ====================
+  paymentMethods: {
+    /**
+     * 사용자별 결제방법 목록 조회
+     * @param {number} userId - 사용자 ID
+     */
+    getByUser: (userId) => apiClient.get(`/api/payment-methods/users/${userId}`),
+
+    /**
+     * ID로 결제방법 조회
+     * @param {number} id - 결제방법 ID
+     */
+    getById: (id) => apiClient.get(`/api/payment-methods/${id}`),
+
+    /**
+     * 결제방법 생성
+     * @param {Object} data - 결제방법 정보
+     */
+    create: (data) => apiClient.post('/api/payment-methods', data),
+
+    /**
+     * 결제방법 업데이트
+     * @param {number} id - 결제방법 ID
+     * @param {Object} data - 업데이트할 정보
+     */
+    update: (id, data) => apiClient.put(`/api/payment-methods/${id}`, data),
+
+    /**
+     * 결제방법 삭제
+     * @param {number} id - 결제방법 ID
+     */
+    delete: (id) => apiClient.delete(`/api/payment-methods/${id}`),
+  },
 };
 
 export default api;

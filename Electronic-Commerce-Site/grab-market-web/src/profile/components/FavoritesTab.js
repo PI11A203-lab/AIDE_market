@@ -73,7 +73,15 @@ export default function FavoritesTab({ favorites, userId, onRemove }) {
             </span>
             <button 
               className="p-2 bg-transparent border-none cursor-pointer rounded-lg transition-colors hover:bg-red-50"
-              onClick={(e) => handleRemove(e, fav.id || fav.favorite_id, fav.product_id || fav.id)}
+              onClick={(e) => {
+                const favoriteId = fav.id || fav.favorite_id;
+                const productId = fav.product_id;
+                if (!productId) {
+                  message.error('상품 정보를 찾을 수 없습니다.');
+                  return;
+                }
+                handleRemove(e, favoriteId, productId);
+              }}
             >
               <Heart className="w-5 h-5 text-yellow-400 fill-yellow-400" />
             </button>

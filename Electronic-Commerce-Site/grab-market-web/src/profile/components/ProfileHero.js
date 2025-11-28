@@ -1,8 +1,15 @@
 import React from 'react';
-import { Github, Calendar } from 'lucide-react';
+import { Github, Calendar, Settings } from 'lucide-react';
+import { useHistory } from 'react-router-dom';
 import StatsSection from './StatsSection';
 
 export default function ProfileHero({ user }) {
+  const history = useHistory();
+
+  const handleSettingsClick = () => {
+    history.push('/profile/settings');
+  };
+
   return (
     <div className="profile-hero">
       <div className="profile-hero-content">
@@ -11,7 +18,16 @@ export default function ProfileHero({ user }) {
             {user.avatar}
           </div>
           <div className="profile-info">
-            <h2 className="profile-name">{user.name}</h2>
+            <div className="profile-name-container">
+              <h2 className="profile-name">{user.name}</h2>
+              <button 
+                className="profile-settings-btn"
+                onClick={handleSettingsClick}
+                title="설정"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+            </div>
             <p className="profile-email">{user.email}</p>
             <div className="profile-tags">
               {user.tags.map((tag, idx) => (

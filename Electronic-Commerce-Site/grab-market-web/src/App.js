@@ -6,9 +6,11 @@ import UploadPage from "./upload";
 import LoginPage from "./login";
 import SignupPage from "./signup";
 import UserProfile from "./profile";
+import ProfileSettings from "./profile/settings";
 import TeamBuilder from "./team";
 import PurchasePage from "./purchase";
 import PurchaseConfirmation from "./confirmation";
+import OrderDetailPage from "./order";
 
 function App() {
   return (
@@ -33,6 +35,9 @@ function App() {
           <Route exact={true} path="/profile">
             <UserProfile />
           </Route>
+          <Route exact={true} path="/profile/settings">
+            <ProfileSettings />
+          </Route>
           <Route exact={true} path="/team">
             <TeamBuilder />
           </Route>
@@ -41,6 +46,9 @@ function App() {
           </Route>
           <Route exact={true} path="/confirmation">
             <PurchaseConfirmation />
+          </Route>
+          <Route exact={true} path="/order/:orderId">
+            <OrderDetailPage />
           </Route>
         </Switch>
       </div>

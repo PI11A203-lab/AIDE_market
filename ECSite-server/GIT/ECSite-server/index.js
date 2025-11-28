@@ -137,14 +137,28 @@ app.post("/image", upload.single("image"), (req, res) => {
 // 여기를 수정! 0.0.0.0 추가
 app.listen(port, "0.0.0.0", () => {
   console.log(`サーバーが稼働しています。Port: ${port}`);
-  models.sequelize
-    .sync()
-    .then(() => {
-      console.log("DB連結成功");
-    })
-    .catch((err) => {
-      console.error(err);
-      console.log("DB連結失敗");
-      process.exit();
-    });
+  // カスタムsyncメソッドを使用（テーブル作成順序を制御）
+  if (models.sync) {
+    models.sync({ alter: false })
+      .then(() => {
+        console.log("DB連結成功");
+      })
+      .catch((err) => {
+        console.error(err);
+        console.log("DB連結失敗");
+        process.exit();
+      });
+  } else {
+    // フォールバック: 通常のsync
+    models.sequelize
+      .sync()
+      .then(() => {
+        console.log("DB連結成功");
+      })
+      .catch((err) => {
+        console.error(err);
+        console.log("DB連結失敗");
+        process.exit();
+      });
+  }
 });

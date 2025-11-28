@@ -64,6 +64,8 @@ exports.createOrder = async (req, res) => {
     try {
         const { user_id, total_amount, payment_method, card_company, card_number, card_cvc, exp_month, exp_year, card_id, status } = req.body;
         
+        console.log('주문 생성 요청:', { user_id, total_amount, payment_method, card_company, card_id, status });
+        
         if (!user_id || total_amount === undefined || total_amount === null) {
             return res.status(400).json({ error: "user_id와 total_amount는 필수입니다" });
         }
@@ -82,11 +84,12 @@ exports.createOrder = async (req, res) => {
         });
         res.status(201).json({ order });
     } catch (err) {
-        console.error(err);
+        console.error('주문 생성 에러:', err);
+        console.error('에러 스택:', err.stack);
         if (err.message.includes('필수') || err.message.includes('찾을 수 없습니다') || err.message.includes('이어야 합니다')) {
             return res.status(400).json({ error: err.message });
         }
-        res.status(500).json({ error: "주문 생성 실패" });
+        res.status(500).json({ error: err.message || "주문 생성 실패: " + err.toString() });
     }
 };
 

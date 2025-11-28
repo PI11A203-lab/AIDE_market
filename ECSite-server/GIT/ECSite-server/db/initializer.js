@@ -36,6 +36,7 @@ const modelLoadOrder = [
     'order',       // Order - user_idに依存 (usersテーブル)
     'orderitem',   // OrderItem - Order, Product에依存
     'ordercoupon', // OrderCoupon - Order, User, Coupon에依存
+    'paymentmethod', // PaymentMethod - user_idに依存 (usersテーブル)
 ];
 
 // モデルファイルを検索する関数
@@ -355,6 +356,12 @@ async function syncDatabase(options = {}) {
         if (db.OrderCoupon) {
             await db.OrderCoupon.sync({ force, alter });
             console.log('✓ OrderCoupon テーブルを同期しました');
+        }
+        
+        // 12. PaymentMethod（usersに依存）
+        if (db.PaymentMethod) {
+            await db.PaymentMethod.sync({ force, alter });
+            console.log('✓ PaymentMethod テーブルを同期しました');
         }
         
         // 外部キーチェックを再有効化

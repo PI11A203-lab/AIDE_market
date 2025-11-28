@@ -9,7 +9,7 @@ export default function OrderSummary({
   total, 
   appliedCoupon,
   onCheckout,
-  showPaymentForm
+  isProcessing
 }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24">
@@ -36,22 +36,19 @@ export default function OrderSummary({
           </span>
         </div>
       </div>
-      {!showPaymentForm && (
-        <>
-          <button
-            onClick={onCheckout}
-            className="w-full mt-6 py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-xl hover:-translate-y-0.5"
-          >
-            <CreditCard className="w-6 h-6" />
-            Proceed to Checkout
-            <ChevronRight className="w-5 h-5" />
-          </button>
-          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-600">
-            <Lock className="w-4 h-4" />
-            <span>Secure checkout powered by Stripe</span>
-          </div>
-        </>
-      )}
+      <button
+        onClick={onCheckout}
+        disabled={isProcessing}
+        className="w-full mt-6 py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <CreditCard className="w-6 h-6" />
+        {isProcessing ? 'Processing...' : 'Proceed to Checkout'}
+        {!isProcessing && <ChevronRight className="w-5 h-5" />}
+      </button>
+      <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-600">
+        <Lock className="w-4 h-4" />
+        <span>Secure checkout powered by Stripe</span>
+      </div>
     </div>
   );
 }

@@ -84,11 +84,39 @@
     flex: 1;
   }
   
+  .profile-name-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
   .profile-name {
     font-size: 2.5rem;
     font-weight: bold;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
     color: #111827;
+  }
+
+  .profile-settings-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .profile-settings-btn:hover {
+    background: white;
+    color: #3b82f6;
+    border-color: #3b82f6;
+    transform: rotate(90deg);
   }
   
   .profile-email {

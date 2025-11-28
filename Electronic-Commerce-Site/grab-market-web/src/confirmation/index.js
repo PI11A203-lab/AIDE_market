@@ -17,65 +17,84 @@ export default function PurchaseConfirmation() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // localStorage에서 구매한 상품 ID 가져오기
-    const savedCart = localStorage.getItem('cart');
-    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
-    
-    if (userFromStorage) {
-      try {
-        const user = JSON.parse(userFromStorage);
-        setUserEmail(user.email || 'user@example.com');
-      } catch (e) {
-        setUserEmail('user@example.com');
+    const loadOrderData = async () => {
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      
+      if (userFromStorage) {
+        try {
+          const user = JSON.parse(userFromStorage);
+          setUserEmail(user.email || 'user@example.com');
+        } catch (e) {
+          setUserEmail('user@example.com');
+        }
       }
-    }
 
-    if (savedCart) {
-      try {
-        const cartItemIds = JSON.parse(savedCart);
-        Promise.all(
-          cartItemIds.map(id => 
-            axios.get(`${API_URL}/products/${id}`)
-              .then(res => {
-                const product = res.data.product;
-                return {
-                  id: product.id,
-                  name: product.name,
-                  category: 'NLP',
-                  price: product.price,
-                  avatar: product.name.substring(0, 2),
-                  activationCode: `${product.name.toUpperCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-                  documentUrl: '#'
-                };
-              })
-          )
-        ).then(items => {
+      // sessionStorage에서 최근 주문 정보 가져오기
+      const lastOrderStr = sessionStorage.getItem('lastOrder');
+      
+      if (lastOrderStr) {
+        try {
+          const lastOrder = JSON.parse(lastOrderStr);
+          
+          // 주문 상품 정보 가져오기
+          const items = await Promise.all(
+            lastOrder.cartItems.map(item => 
+              axios.get(`${API_URL}/api/products/${item.id}`)
+                .then(res => {
+                  const product = res.data.product;
+                  return {
+                    id: product.id,
+                    name: product.name,
+                    category: product.category_name || 'NLP',
+                    price: product.price,
+                    avatar: product.name.substring(0, 2),
+                    activationCode: `${product.name.toUpperCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                    documentUrl: '#'
+                  };
+                })
+            )
+          );
+          
           setPurchasedAIs(items);
-          setOrderDetails({
-            orderNumber: 'AIDE-2025-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-            orderDate: new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            }),
-            total: items.reduce((sum, ai) => sum + ai.price, 0)
+          
+          // 주문 날짜 포맷팅
+          const orderDate = new Date(lastOrder.orderDate);
+          const formattedDate = orderDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
           });
+          
+          setOrderDetails({
+            orderNumber: lastOrder.orderNumber || 'AIDE-2025-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            orderDate: formattedDate,
+            total: lastOrder.total || items.reduce((sum, ai) => sum + ai.price, 0)
+          });
+          
+          // sessionStorage에서 주문 정보 삭제 (한 번만 표시)
+          sessionStorage.removeItem('lastOrder');
+          
           setLoading(false);
-          // 구매 완료 후 장바구니 비우기
-          localStorage.removeItem('cart');
-        }).catch(error => {
-          console.error('エラー発生 : ', error);
+        } catch (error) {
+          console.error('주문 정보 로드 실패:', error);
           setLoading(false);
-        });
-      } catch (e) {
-        console.error('Failed to parse cart data:', e);
+        }
+      } else {
+        // 주문 정보가 없으면 기본 메시지 표시
+        console.warn('주문 정보를 찾을 수 없습니다.');
         setLoading(false);
+        // 주문 정보가 없어도 빈 상태로 표시
+        setOrderDetails({
+          orderNumber: 'N/A',
+          orderDate: new Date().toLocaleDateString('en-US'),
+          total: 0
+        });
       }
-    } else {
-      setLoading(false);
-    }
+    };
+
+    loadOrderData();
   }, []);
 
   const copyToClipboard = (text) => {
