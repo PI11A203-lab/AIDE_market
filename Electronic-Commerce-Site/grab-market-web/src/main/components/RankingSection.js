@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Star, TrendingUp } from 'lucide-react';
 import { API_URL } from '../../config/constants';
-import '../index.css';
 
 const RankingSection = ({ topProducts }) => {
   if (topProducts.length === 0) {
@@ -10,66 +9,69 @@ const RankingSection = ({ topProducts }) => {
   }
 
   return (
-    <div className="ranking-section">
-      <div className="ranking-header">
-        <h3 className="ranking-title">今月のトップランク開発者</h3>
+    <div className="mb-8">
+      <div className="mb-6">
+        <h3 className="text-2xl font-bold text-gray-900">今月のトップランク開発者</h3>
       </div>
       
-      <div className="ranking-grid">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {topProducts.map((product) => (
           <Link 
             key={product.id} 
             to={`/products/${product.id}`}
-            className="ranking-card"
+            className="relative bg-white rounded-2xl border-2 border-yellow-400 p-6 transition-all hover:shadow-xl hover:-translate-y-1 no-underline"
           >
-            <div className="rank-badge">
+            <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
               #{product.rank}
             </div>
 
             {/* 실제 이미지 사용 */}
-            <div className="ranking-avatar">
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 overflow-hidden">
               <img 
                 src={`${API_URL}/${product.imageUrl}`} 
                 alt={product.name}
-                className="ranking-avatar-img"
+                className="w-full h-full object-cover"
                 onError={(e) => {
                   e.target.style.display = 'none';
-                  const fallback = document.createElement('div');
-                  fallback.className = 'ranking-avatar-fallback';
-                  fallback.textContent = product.name.substring(0, 2);
-                  e.target.parentElement.appendChild(fallback);
+                  e.target.parentElement.textContent = product.name.substring(0, 2);
                 }}
               />
             </div>
 
-            <h4 className="ranking-name">{product.name}</h4>
+            <h4 className="text-xl font-bold text-center mb-3">{product.name}</h4>
             
-            <div className="ranking-rating">
-              <div className="rating-stars">
-                <Star className="star-icon" />
-                <span className="rating-value">4.9</span>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="flex items-center gap-1">
+                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                <span className="font-semibold text-gray-900">
+                  {parseFloat(product.rating_average || 0).toFixed(1)}
+                </span>
               </div>
-              <span className="rating-count">(1,234 reviews)</span>
+              <span className="text-sm text-gray-600">
+                ({(product.rating_count || 0).toLocaleString()} reviews)
+              </span>
             </div>
 
-            <div className="ranking-tags">
-              <span className="product-tag">AI/ML</span>
-              <span className="product-tag">Expert</span>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium">AI/ML</span>
+              <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium">Expert</span>
             </div>
 
-            <div className="ranking-stats">
-              <div className="stat-item">
-                <TrendingUp className="stat-icon" />
-                <span>12.5k</span>
+            <div className="flex items-center justify-center gap-4 mb-4 text-sm text-gray-600">
+              <div className="flex items-center gap-1">
+                <TrendingUp className="w-4 h-4" />
+                <span>{(product.download_count || 0).toLocaleString()}</span>
               </div>
-              <div className="stat-item">
-                <span>Skill 95%</span>
+              <div>
+                <span>Skill {Math.round(parseFloat(product.rating_average || 0) * 20)}%</span>
               </div>
             </div>
 
-            <div className="ranking-footer">
-              <span className="ranking-price">¥{product.price.toLocaleString()}</span>
-              <button className="btn-view">View Profile</button>
+            <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+              <span className="text-2xl font-bold text-blue-600">¥{product.price.toLocaleString()}</span>
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                View Profile
+              </button>
             </div>
           </Link>
         ))}

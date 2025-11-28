@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import ProductPage from "./product";
 import UploadPage from "./upload";
 import LoginPage from "./login";
+import SignupPage from "./signup";
 import UserProfile from "./profile";
 import TeamBuilder from "./team";
 import PurchasePage from "./purchase";
@@ -25,6 +26,9 @@ function App() {
           </Route>
           <Route exact={true} path="/login">
             <LoginPage />
+          </Route>
+          <Route exact={true} path="/signup">
+            <SignupPage />
           </Route>
           <Route exact={true} path="/profile">
             <UserProfile />

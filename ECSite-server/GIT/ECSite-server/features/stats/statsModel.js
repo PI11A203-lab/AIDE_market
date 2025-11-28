@@ -1,13 +1,9 @@
 // features/stats/statsModel.js
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("Stats", {
+    const Stats = sequelize.define("Stats", {
         product_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {
-                model: 'Products',
-                key: 'id'
-            },
             unique: true
         },
         teamwork: {
@@ -64,6 +60,24 @@ module.exports = (sequelize, DataTypes) => {
                 max: 100
             }
         },
+    }, {
+        tableName: 'stats',
+        timestamps: true,
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt'
     });
+
+    // 관계 정의
+    Stats.associate = function(models) {
+        Stats.belongsTo(models.Product, {
+            foreignKey: 'product_id',
+            targetKey: 'id',
+            as: 'product',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
+    };
+
+    return Stats;
 };
 

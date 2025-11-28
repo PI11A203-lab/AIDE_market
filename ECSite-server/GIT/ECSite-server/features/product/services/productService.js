@@ -130,8 +130,14 @@ exports.findAllProducts = async (options = {}) => {
     };
 };
 
+// 상품 조회 (ID로)
+exports.findProductById = async (id) => {
+    const product = await models.Product.findByPk(id);
+    return product ? product.toJSON() : null;
+};
+
 // 商品作成
-exports.createProduct = async ({ name, description, price, seller, imageUrl, category_id, sub_category_id }) => {
+exports.createProduct = async ({ name, description, price, seller, imageUrl, category_id, sub_category_id, tech_stack }) => {
     return await models.Product.create({
         name,
         description,
@@ -139,6 +145,45 @@ exports.createProduct = async ({ name, description, price, seller, imageUrl, cat
         seller,
         imageUrl,
         category_id,
-        sub_category_id
+        sub_category_id,
+        tech_stack
     });
+};
+
+// 상품 업데이트
+exports.updateProduct = async (id, updateData) => {
+    const product = await models.Product.findByPk(id);
+    if (!product) {
+        throw new Error('상품을 찾을 수 없습니다');
+    }
+    
+    // category_id가 변경되는 경우 확인
+    if (updateData.category_id !== undefined) {
+        const category = await models.Category.findByPk(updateData.category_id);
+        if (!category) {
+            throw new Error('카테고리를 찾을 수 없습니다');
+        }
+    }
+    
+    // sub_category_id가 변경되는 경우 확인
+    if (updateData.sub_category_id !== undefined && updateData.sub_category_id !== null) {
+        const subCategory = await models.Category.findByPk(updateData.sub_category_id);
+        if (!subCategory) {
+            throw new Error('서브카테고리를 찾을 수 없습니다');
+        }
+    }
+    
+    await product.update(updateData);
+    return product.toJSON();
+};
+
+// 상품 삭제
+exports.deleteProduct = async (id) => {
+    const product = await models.Product.findByPk(id);
+    if (!product) {
+        throw new Error('상품을 찾을 수 없습니다');
+    }
+    
+    await product.destroy();
+    return true;
 };

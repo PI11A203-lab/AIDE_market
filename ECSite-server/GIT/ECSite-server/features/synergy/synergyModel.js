@@ -30,6 +30,17 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(200),
             allowNull: true,
         },
+    }, {
+        tableName: 'synergies',
+        timestamps: true,
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt',
+        indexes: [
+            {
+                unique: true,
+                fields: ['product_id', 'related_product_id']
+            }
+        ]
     });
 };
 

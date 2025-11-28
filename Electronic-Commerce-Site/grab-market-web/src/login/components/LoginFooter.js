@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function LoginFooter() {
   return (
@@ -7,9 +8,9 @@ export default function LoginFooter() {
       <div className="text-center mt-8">
         <p className="text-gray-600">
           Don't have an account?{' '}
-          <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold">
+          <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
             Sign up for free
-          </a>
+          </Link>
         </p>
       </div>
 

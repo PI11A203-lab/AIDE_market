@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(200),
             allowNull: true,
         },
+    }, {
+        timestamps: true,
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt'
     });
 
     // アソシエーション（関連付け）を定義

@@ -28,7 +28,7 @@ exports.findProductById = async (id) => {
         models.sequelize.query(
             `SELECT t.id, t.name, t.created_at
              FROM Tags t
-             INNER JOIN ProductTags pt ON t.id = pt.tag_id
+             INNER JOIN product_tags pt ON t.id = pt.tag_id
              WHERE pt.product_id = :id`,
             {
                 replacements: { id },
@@ -47,7 +47,7 @@ exports.findProductById = async (id) => {
                 p.imageUrl,
                 p.rating_average,
                 p.rating_count
-             FROM Synergies s
+             FROM synergies s
              INNER JOIN Products p ON s.related_product_id = p.id
              WHERE s.product_id = :id
              ORDER BY s.synergy_score DESC
@@ -104,7 +104,7 @@ exports.getProductSynergies = async (id, limit = 5) => {
             p.view_count,
             p.rating_average,
             p.rating_count
-         FROM Synergies s
+         FROM synergies s
          INNER JOIN Products p ON s.related_product_id = p.id
          WHERE s.product_id = :id
          ORDER BY s.synergy_score DESC

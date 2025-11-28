@@ -8,46 +8,50 @@ export default function OrderSummary({
   tax, 
   total, 
   appliedCoupon,
-  onCheckout 
+  onCheckout,
+  showPaymentForm
 }) {
   return (
-    <div className="order-summary">
-      <h3 className="order-summary-title">Order Summary</h3>
-      <div className="order-summary-details">
-        <div className="order-summary-row">
+    <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24">
+      <h3 className="text-2xl font-bold mb-6">Order Summary</h3>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between">
           <span>Subtotal ({cartItems.length} items)</span>
-          <span className="order-summary-value">¥{subtotal.toLocaleString()}</span>
+          <span className="font-semibold">¥{subtotal.toLocaleString()}</span>
         </div>
         {appliedCoupon && (
-          <div className="order-summary-row discount">
+          <div className="flex justify-between text-green-600">
             <span>Discount ({appliedCoupon.label})</span>
-            <span className="order-summary-value">-¥{discount.toLocaleString()}</span>
+            <span className="font-semibold">-¥{discount.toLocaleString()}</span>
           </div>
         )}
-        <div className="order-summary-row">
+        <div className="flex justify-between">
           <span>Tax (10%)</span>
-          <span className="order-summary-value">¥{tax.toLocaleString()}</span>
+          <span className="font-semibold">¥{tax.toLocaleString()}</span>
         </div>
-        <div className="order-summary-total">
-          <span className="order-summary-total-label">Total</span>
-          <span className="order-summary-total-value">
+        <div className="flex justify-between pt-4 border-t border-gray-200">
+          <span className="text-xl font-bold">Total</span>
+          <span className="text-xl font-bold">
             ¥{Math.round(total).toLocaleString()}
           </span>
         </div>
       </div>
-      <button
-        onClick={onCheckout}
-        className="checkout-btn"
-      >
-        <CreditCard className="checkout-icon" />
-        Proceed to Checkout
-        <ChevronRight className="checkout-arrow" />
-      </button>
-      <div className="checkout-security">
-        <Lock className="checkout-security-icon" />
-        <span>Secure checkout powered by Stripe</span>
-      </div>
+      {!showPaymentForm && (
+        <>
+          <button
+            onClick={onCheckout}
+            className="w-full mt-6 py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-xl hover:-translate-y-0.5"
+          >
+            <CreditCard className="w-6 h-6" />
+            Proceed to Checkout
+            <ChevronRight className="w-5 h-5" />
+          </button>
+          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-600">
+            <Lock className="w-4 h-4" />
+            <span>Secure checkout powered by Stripe</span>
+          </div>
+        </>
+      )}
     </div>
   );
 }
-

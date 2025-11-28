@@ -22,15 +22,72 @@ exports.getSubcategories = async (req, res) => {
     }
 };
 
-// 카테고리 생성
-exports.createCategory = async (req, res) => {
+// ID로 카테고리 조회
+exports.getCategoryById = async (req, res) => {
     try {
-        const { name, name_ja, description } = req.body;
-        const category = await categoryService.createCategory({ name, name_ja, description });
+        const category = await categoryService.findCategoryById(req.params.id);
+        if (!category) {
+            return res.status(404).json({ error: "카테고리를 찾을 수 없습니다" });
+        }
         res.json({ category });
     } catch (err) {
         console.error(err);
+        res.status(500).json({ error: "카테고리 조회 실패" });
+    }
+};
+
+// 카테고리 생성
+exports.createCategory = async (req, res) => {
+    try {
+        const { name, name_ja, description, parentId, category_id, tech_stack } = req.body;
+        const category = await categoryService.createCategory({ 
+            name, 
+            name_ja, 
+            description,
+            parentId,
+            category_id,
+            tech_stack
+        });
+        res.status(201).json({ category });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ error: "카테고리 생성 실패" });
+    }
+};
+
+// 카테고리 업데이트
+exports.updateCategory = async (req, res) => {
+    try {
+        const { name, name_ja, description, parentId, category_id, tech_stack } = req.body;
+        const category = await categoryService.updateCategory(req.params.id, {
+            name,
+            name_ja,
+            description,
+            parentId,
+            category_id,
+            tech_stack
+        });
+        res.json({ category });
+    } catch (err) {
+        console.error(err);
+        if (err.message.includes('찾을 수 없습니다')) {
+            return res.status(404).json({ error: err.message });
+        }
+        res.status(500).json({ error: "카테고리 업데이트 실패" });
+    }
+};
+
+// 카테고리 삭제
+exports.deleteCategory = async (req, res) => {
+    try {
+        await categoryService.deleteCategory(req.params.id);
+        res.json({ result: true });
+    } catch (err) {
+        console.error(err);
+        if (err.message.includes('찾을 수 없습니다') || err.message.includes('삭제할 수 없습니다')) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.status(500).json({ error: "카테고리 삭제 실패" });
     }
 };
 

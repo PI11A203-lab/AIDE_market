@@ -64,9 +64,84 @@ exports.findSubcategories = async (categoryId) => {
     }));
 };
 
+// ID로 카테고리 조회
+exports.findCategoryById = async (id) => {
+    const category = await models.Category.findByPk(id);
+    if (!category) {
+        return null;
+    }
+    
+    const categoryJson = category.toJSON();
+    
+    // 상품 개수 계산
+    const productCount = await models.Product.count({
+        where: {
+            category_id: id,
+            soldout: 0
+        }
+    });
+    
+    return {
+        ...categoryJson,
+        product_count: productCount
+    };
+};
+
 // 카테고리 생성
-exports.createCategory = async ({ name, name_ja, description }) => {
-    return await models.Category.create({ name, name_ja, description });
+exports.createCategory = async ({ name, name_ja, description, parentId, category_id, tech_stack }) => {
+    return await models.Category.create({ 
+        name, 
+        name_ja, 
+        description,
+        parentId,
+        category_id,
+        tech_stack
+    });
+};
+
+// 카테고리 업데이트
+exports.updateCategory = async (id, { name, name_ja, description, parentId, category_id, tech_stack }) => {
+    const category = await models.Category.findByPk(id);
+    if (!category) {
+        throw new Error('카테고리를 찾을 수 없습니다');
+    }
+    
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (name_ja !== undefined) updateData.name_ja = name_ja;
+    if (description !== undefined) updateData.description = description;
+    if (parentId !== undefined) updateData.parentId = parentId;
+    if (category_id !== undefined) updateData.category_id = category_id;
+    if (tech_stack !== undefined) updateData.tech_stack = tech_stack;
+    
+    await category.update(updateData);
+    return category.toJSON();
+};
+
+// 카테고리 삭제
+exports.deleteCategory = async (id) => {
+    const category = await models.Category.findByPk(id);
+    if (!category) {
+        throw new Error('카테고리를 찾을 수 없습니다');
+    }
+    
+    // 하위 카테고리나 상품이 있는지 확인
+    const subcategoriesCount = await models.Category.count({ where: { parentId: id } });
+    const productsCount = await models.Product.count({ 
+        where: { 
+            [models.sequelize.Op.or]: [
+                { category_id: id },
+                { sub_category_id: id }
+            ]
+        }
+    });
+    
+    if (subcategoriesCount > 0 || productsCount > 0) {
+        throw new Error('하위 카테고리나 상품이 있어 삭제할 수 없습니다');
+    }
+    
+    await category.destroy();
+    return true;
 };
 
 // 메인 페이지용: 카테고리 목록과 각 카테고리의 대표 상품

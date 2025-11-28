@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { ShoppingCart } from 'lucide-react';
 import axios from 'axios';
+import { message } from 'antd';
 import PurchaseHeader from './components/PurchaseHeader';
 import CartItem from './components/CartItem';
 import CouponSection from './components/CouponSection';
 import OrderSummary from './components/OrderSummary';
 import PurchaseProtection from './components/PurchaseProtection';
+import PaymentForm from './components/PaymentForm';
 import EmptyCart from './components/EmptyCart';
 import { API_URL } from '../config/constants';
+import { api } from '../config/api';
 import './index.css';
 
 export default function PurchasePage() {
@@ -102,6 +105,8 @@ export default function PurchasePage() {
 
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentData, setPaymentData] = useState(null);
 
   // 장바구니에서 제거
   const removeFromCart = (itemId) => {
@@ -138,36 +143,127 @@ export default function PurchasePage() {
   };
 
   // 쿠폰 적용
-  const applyCoupon = () => {
-    if (couponCode === 'SAVE20') {
-      setAppliedCoupon({ code: 'SAVE20', discount: 0.2, label: '20% OFF' });
-    } else if (couponCode === 'FIRST10') {
-      setAppliedCoupon({ code: 'FIRST10', discount: 0.1, label: '10% OFF' });
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      message.warning('쿠폰 코드를 입력해주세요.');
+      return;
+    }
+
+    try {
+      const response = await api.coupons.validate(couponCode, subtotal);
+      const couponData = response.data.coupon;
+      const discountAmount = parseFloat(response.data.discountAmount);
+      
+      setAppliedCoupon({
+        code: couponData.code,
+        discount: discountAmount / subtotal,
+        discountAmount: discountAmount,
+        label: couponData.discount_type === 'rate' 
+          ? `${couponData.discount_value}% OFF`
+          : `¥${discountAmount.toLocaleString()} OFF`,
+        couponId: couponData.coupon_id
+      });
+      message.success('쿠폰이 적용되었습니다.');
+    } catch (error) {
+      console.error('Failed to apply coupon:', error);
+      const errorMessage = error.response?.data?.error || '쿠폰 적용에 실패했습니다.';
+      message.error(errorMessage);
     }
   };
 
   // 가격 계산 (현재 결제 목록의 상품들만)
   const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
-  const discount = appliedCoupon ? subtotal * appliedCoupon.discount : 0;
+  const discount = appliedCoupon ? (appliedCoupon.discountAmount || subtotal * appliedCoupon.discount) : 0;
   const tax = (subtotal - discount) * 0.1;
   const total = subtotal - discount + tax;
 
   const handleCheckout = () => {
-    // 구매 확정 페이지로 이동
-    history.push('/confirmation');
+    // 사용자 정보 확인
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!userFromStorage) {
+      message.warning('로그인이 필요합니다.');
+      history.push('/login');
+      return;
+    }
+
+    // 결제 폼 표시
+    setShowPaymentForm(true);
+  };
+
+  const handlePaymentSubmit = async (cardData) => {
+    setPaymentData(cardData);
+    
+    // 사용자 정보 확인
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!userFromStorage) {
+      message.warning('로그인이 필요합니다.');
+      history.push('/login');
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userFromStorage);
+      
+      // 주문 생성
+      const orderData = {
+        user_id: user.id,
+        total_amount: total,
+        payment_method: 'credit_card',
+        card_company: cardData.cardCompany,
+        card_number: cardData.cardNumber.replace(/\s/g, ''),
+        card_cvc: cardData.cardCvc,
+        exp_month: parseInt(cardData.expMonth),
+        exp_year: parseInt(cardData.expYear),
+        status: 'pending',
+      };
+
+      const orderResponse = await api.orders.create(orderData);
+      const orderId = orderResponse.data.order.id;
+      
+      // 주문 아이템 생성
+      await Promise.all(cartItems.map(item => 
+        api.orderItems.create({
+          order_id: orderId,
+          product_id: item.id,
+          quantity: 1,
+          unit_price: item.price,
+          has_review: false
+        })
+      ));
+
+      // 쿠폰이 적용된 경우 주문 쿠폰 생성
+      if (appliedCoupon && appliedCoupon.couponId) {
+        await api.orderCoupons.create({
+          order_id: orderId,
+          user_id: user.id,
+          coupon_id: appliedCoupon.couponId,
+          applied_value: discount
+        });
+      }
+
+      // 장바구니 비우기
+      localStorage.removeItem('cart');
+
+      // 구매 확정 페이지로 이동
+      history.push('/confirmation');
+    } catch (error) {
+      console.error('Failed to create order:', error);
+      const errorMessage = error.response?.data?.error || '주문 생성에 실패했습니다.';
+      message.error(errorMessage);
+    }
   };
 
   return (
-    <div className="purchase-page">
+    <div className="min-h-screen bg-gray-50">
       <PurchaseHeader />
 
-      <main className="purchase-main">
-        <div className="purchase-title-section">
-          <h2 className="purchase-title">
-            <ShoppingCart className="purchase-title-icon" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h2 className="flex items-center gap-3 text-3xl font-bold text-gray-900 mb-2">
+            <ShoppingCart className="w-8 h-8" />
             Shopping Cart
           </h2>
-          <p className="purchase-subtitle">
+          <p className="text-gray-600">
             Review your selected AI developers before purchase
           </p>
         </div>
@@ -179,9 +275,9 @@ export default function PurchasePage() {
         ) : cartItems.length === 0 && availableCartItems.length === 0 ? (
           <EmptyCart />
         ) : (
-          <div className="purchase-content">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* 장바구니 아이템 */}
-            <div className="purchase-cart-section">
+            <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <CartItem
                   key={item.id}
@@ -254,10 +350,18 @@ export default function PurchasePage() {
                 onApplyCoupon={applyCoupon}
                 appliedCoupon={appliedCoupon}
               />
+
+              {/* 결제 폼 */}
+              {showPaymentForm && (
+                <PaymentForm
+                  onSubmit={handlePaymentSubmit}
+                  isLoading={false}
+                />
+              )}
             </div>
 
             {/* 주문 요약 */}
-            <div className="purchase-sidebar">
+            <div className="lg:col-span-1">
               <OrderSummary
                 cartItems={cartItems}
                 subtotal={subtotal}
@@ -266,6 +370,7 @@ export default function PurchasePage() {
                 total={total}
                 appliedCoupon={appliedCoupon}
                 onCheckout={handleCheckout}
+                showPaymentForm={showPaymentForm}
               />
 
               {/* 보증 정보 */}

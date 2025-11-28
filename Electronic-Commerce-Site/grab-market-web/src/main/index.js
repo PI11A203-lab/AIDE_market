@@ -204,67 +204,69 @@ function MainPage() {
   const regularProducts = products;
 
   return (
-    <div className="marketplace-container">
+    <div className="min-h-screen bg-gray-50 pb-16">
       {/* 헤더 */}
-      <header className="marketplace-header">
-        <div className="header-content">
-          <div className="header-left">
-            <div className="logo-section">
-              <h1 className="logo">
-                <span className="logo-icon">🤖</span>
-                <span className="logo-text">AIDE Market</span>
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-12">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold flex items-center gap-2 m-0">
+                <span className="text-3xl">🤖</span>
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  AIDE Market
+                </span>
               </h1>
             </div>
-            <nav className="main-nav">
-              <button className="nav-link" type="button">Models</button>
-              <Link to="/team" className="nav-link">Teams</Link>
-              <button className="nav-link" type="button">Leaderboard</button>
-              <button className="nav-link" type="button">Pricing</button>
+            <nav className="hidden md:flex gap-8">
+              <button className="text-gray-700 font-medium hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer p-0 text-base" type="button">Models</button>
+              <Link to="/team" className="text-gray-700 font-medium hover:text-gray-900 transition-colors no-underline">Teams</Link>
+              <button className="text-gray-700 font-medium hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer p-0 text-base" type="button">Leaderboard</button>
+              <button className="text-gray-700 font-medium hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer p-0 text-base" type="button">Pricing</button>
             </nav>
           </div>
-          <div className="header-right">
-            <Link to="/purchase" className="cart-link">
-              <ShoppingCart className="cart-icon" />
+          <div className="flex items-center gap-4">
+            <Link to="/purchase" className="flex items-center justify-center p-2 rounded-lg transition-colors hover:bg-gray-100 no-underline text-gray-700">
+              <ShoppingCart className="w-6 h-6" />
             </Link>
             {user ? (
-              <div className="user-menu">
-                <Link to="/profile" className="btn-signup">
+              <div className="flex items-center gap-3">
+                <Link to="/profile" className="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium no-underline transition-all hover:shadow-lg">
                   {user.nickname}
                 </Link>
                 <LogoutButton onLogout={handleLogout} />
               </div>
             ) : (
-              <Link to="/login" className="btn-signup">Sign in</Link>
+              <Link to="/login" className="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium no-underline transition-all hover:shadow-lg">Sign in</Link>
             )}
           </div>
         </div>
       </header>
 
       {/* 검색 영역 */}
-      <div className="search-section">
-        <div className="search-content">
-          <h2 className="search-title">Find the Perfect AI Developer</h2>
-          <p className="search-subtitle">
+      <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Find the Perfect AI Developer</h2>
+          <p className="text-gray-600 text-lg mb-8">
            AI開発者 {categories.find(c => c.id === selectedCategory)?.count || 0} 人があなたのビジョンを実現する準備ができています
           </p>
           
-          <div className="search-bar-wrapper">
-            <div className="search-bar">
-              <Search className="search-icon" />
+          <div className="max-w-2xl mx-auto">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
               <input
                 type="text"
                 placeholder="あなたが探しているAIは何ですか？"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                className="search-input"
+                className="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
               />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="main-content">
-        <div className="content-wrapper">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
           {/* 사이드바 */}
           <CategorySidebar
             categories={categories}
@@ -275,11 +277,11 @@ function MainPage() {
           />
 
           {/* 메인 콘텐츠 */}
-          <main className="main-products">
+          <main className="flex-1">
             {loading ? (
-              <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <p>読み込み中...</p>
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-gray-600">読み込み中...</p>
               </div>
             ) : (
               <>
@@ -293,26 +295,26 @@ function MainPage() {
 
                 {/* 상품이 없을 때 */}
                 {products.length === 0 && (
-                  <div className="empty-state">
-                    <p>該当する商品がありません</p>
+                  <div className="text-center py-20">
+                    <p className="text-gray-600 text-lg">該当する商品がありません</p>
                   </div>
                 )}
 
                 {/* 페이지네이션 ("すべて" 카테고리일 때만 표시) */}
                 {selectedCategory === 'all' && totalPages > 1 && (
-                  <div className="pagination">
+                  <div className="flex items-center justify-center gap-4 mt-8">
                     <button
-                      className="pagination-btn"
+                      className="px-6 py-2 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
                     >
                       前へ
                     </button>
-                    <span className="pagination-info">
+                    <span className="text-gray-700 font-medium">
                       {currentPage} / {totalPages}
                     </span>
                     <button
-                      className="pagination-btn"
+                      className="px-6 py-2 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
                     >

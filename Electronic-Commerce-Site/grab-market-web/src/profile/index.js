@@ -8,6 +8,7 @@ import ReviewsTab from './components/ReviewsTab';
 import TeamsTab from './components/TeamsTab';
 import FavoritesTab from './components/FavoritesTab';
 import { API_URL } from '../config/constants';
+import { api } from '../config/api';
 import './index.css';
 
 export default function UserProfile() {
@@ -22,9 +23,10 @@ export default function UserProfile() {
   useEffect(() => {
     // 사용자 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    let userData = null;
     if (userFromStorage) {
       try {
-        const userData = JSON.parse(userFromStorage);
+        userData = JSON.parse(userFromStorage);
         setUser({
           name: userData.nickname || userData.name || 'User',
           avatar: (userData.nickname || userData.name || 'User').substring(0, 2),
@@ -77,39 +79,40 @@ export default function UserProfile() {
       }
     }
 
-    // 찜 목록 가져오기 (localStorage에서)
-    const savedFavorites = localStorage.getItem('favorites');
-    if (savedFavorites) {
-      try {
-        const favoriteIds = JSON.parse(savedFavorites);
-        Promise.all(
-          favoriteIds.map(id => 
-            axios.get(`${API_URL}/products/${id}`)
-              .then(res => {
-                const product = res.data.product;
-                return {
-                  id: product.id,
-                  name: product.name,
-                  category: 'NLP',
-                  price: product.price,
-                  rating: 4.7,
-                  avatar: product.name.substring(0, 2)
-                };
-              })
-          )
-        ).then(items => {
-          setFavorites(items);
-          setUser(prev => prev ? { ...prev, stats: { ...prev.stats, favorites: items.length } } : prev);
-        }).catch(error => {
-          console.error('エラー発生 : ', error);
+    // 찜 목록 가져오기 (API에서)
+    if (userData) {
+      const userId = userData.id;
+      
+      // 찜목록 가져오기
+      api.favorites.getByUser(userId)
+        .then(response => {
+          const favoritesList = response.data?.favorites || [];
+          setFavorites(favoritesList);
+          setUser(prev => prev ? { 
+            ...prev, 
+            stats: { ...prev.stats, favorites: favoritesList.length } 
+          } : prev);
+        })
+        .catch(error => {
+          console.error('Failed to load favorites:', error);
         });
-      } catch (e) {
-        console.error('Failed to parse favorites data:', e);
-      }
+
+      // 리뷰 가져오기
+      api.reviews.getByUser(userId)
+        .then(response => {
+          const reviewsList = response.data?.reviews || [];
+          setReviews(reviewsList);
+          setUser(prev => prev ? { 
+            ...prev, 
+            stats: { ...prev.stats, reviews: reviewsList.length } 
+          } : prev);
+        })
+        .catch(error => {
+          console.error('Failed to load reviews:', error);
+        });
     }
 
-    // 리뷰와 팀은 빈 배열로 설정 (나중에 API 추가 가능)
-    setReviews([]);
+    // 팀은 빈 배열로 설정 (나중에 API 추가 가능)
     setTeams([]);
     setLoading(false);
   }, []);
@@ -140,7 +143,19 @@ export default function UserProfile() {
           {activeTab === 'purchases' && <PurchasesTab purchases={purchases} />}
           {activeTab === 'reviews' && <ReviewsTab reviews={reviews} />}
           {activeTab === 'teams' && <TeamsTab teams={teams} />}
-          {activeTab === 'favorites' && <FavoritesTab favorites={favorites} />}
+          {activeTab === 'favorites' && (
+            <FavoritesTab 
+              favorites={favorites} 
+              userId={user.id}
+              onRemove={(favoriteId) => {
+                setFavorites(favorites.filter(fav => (fav.id || fav.favorite_id) !== favoriteId));
+                setUser(prev => prev ? { 
+                  ...prev, 
+                  stats: { ...prev.stats, favorites: Math.max(0, prev.stats.favorites - 1) } 
+                } : prev);
+              }}
+            />
+          )}
         </div>
       </main>
     </div>

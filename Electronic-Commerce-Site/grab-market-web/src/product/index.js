@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
+import { message } from 'antd';
 import ProductHeader from './components/ProductHeader';
 import ProfileHeader from './components/ProfileHeader';
 import TabNavigation from './components/TabNavigation';
 import PriceSidebar from './components/PriceSidebar';
 import TrustBadges from './components/TrustBadges';
 import { API_URL } from '../config/constants';
+import { api } from '../config/api';
 import "./index.css";
 
 export default function ProductPage() {
@@ -15,14 +17,45 @@ export default function ProductPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isLiked, setIsLiked] = useState(false);
   const [developer, setDeveloper] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 사용자 정보 및 찜목록 상태 확인
+  useEffect(() => {
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (userFromStorage) {
+      try {
+        const userData = JSON.parse(userFromStorage);
+        setUser(userData);
+        // 찜목록 확인
+        checkFavoriteStatus(userData.id, parseInt(id));
+      } catch (e) {
+        console.error('Failed to parse user data:', e);
+      }
+    }
+  }, [id]);
+
+  // 찜목록 상태 확인
+  const checkFavoriteStatus = async (userId, productId) => {
+    try {
+      const response = await api.favorites.check(userId, productId);
+      setIsLiked(response.data?.isFavorite || false);
+    } catch (error) {
+      // 찜목록이 없으면 false
+      setIsLiked(false);
+    }
+  };
+
+  // 상품 정보 및 리뷰 로드
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`${API_URL}/api/products/${id}`)
-      .then((result) => {
-        const product = result.data?.product;
+    
+    const loadData = async () => {
+      try {
+        // 상품 정보 가져오기
+        const productResponse = await axios.get(`${API_URL}/api/products/${id}`);
+        const product = productResponse.data?.product;
         
         if (!product) {
           console.error('Product not found');
@@ -31,12 +64,31 @@ export default function ProductPage() {
           return;
         }
         
-        const stats = result.data?.stats || {};
-        const tags = result.data?.tags || [];
-        console.log('Product data:', product); // 디버깅용
-        console.log('Stats data:', stats); // 디버깅용
-        console.log('Tags data:', tags); // 디버깅용
-        console.log('Full API response:', result.data); // 디버깅용
+        const stats = productResponse.data?.stats || {};
+        const tags = productResponse.data?.tags || [];
+        
+        // 리뷰 가져오기
+        try {
+          const reviewsResponse = await api.reviews.getByProduct(parseInt(id));
+          const reviewsData = reviewsResponse.data?.reviews || [];
+          setReviews(reviewsData.map(review => ({
+            id: review.id,
+            author: review.user?.username || 'Anonymous',
+            avatar: (review.user?.username || 'A').substring(0, 2).toUpperCase(),
+            rating: review.rating,
+            text: review.comment || '',
+            date: new Date(review.created_at).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }),
+            project: review.order_item?.product?.name || 'Project',
+            helpful: 0
+          })));
+        } catch (error) {
+          console.error('Failed to load reviews:', error);
+          setReviews([]);
+        }
         
         // 다운로드 수 포맷팅
         const formatDownloads = (count) => {
@@ -85,24 +137,21 @@ export default function ProductPage() {
             { stat: 'Innovation', value: 94 }
           ],
           projects: [],
-          reviews: []
+          reviews: reviews
         });
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('エラー発生 : ', error);
-        console.error('Error response:', error.response); // 디버깅용
-        console.error('Error message:', error.message); // 디버깅용
-        console.error('API URL:', `${API_URL}/api/products/${id}`); // 디버깅용
+        console.error('Error response:', error.response);
+        console.error('Error message:', error.message);
+        console.error('API URL:', `${API_URL}/api/products/${id}`);
         
-        // 에러 응답이 있는 경우 상세 정보 출력
         if (error.response) {
           const status = error.response.status;
           const errorData = error.response.data;
           console.error('Status:', status);
           console.error('Error Data:', errorData);
           
-          // SQL 에러인 경우
           if (errorData?.sql || errorData?.sqlMessage) {
             console.error('SQL Error:', errorData.sqlMessage);
             console.error('SQL Query:', errorData.sql);
@@ -111,7 +160,10 @@ export default function ProductPage() {
         
         setDeveloper(null);
         setLoading(false);
-      });
+      }
+    };
+
+    loadData();
   }, [id]);
 
   // 장바구니에 상품 추가하는 함수
@@ -143,7 +195,35 @@ export default function ProductPage() {
     if (developer && developer.id) {
       addToCart(developer.id);
       // 성공 메시지 표시 (선택사항)
-      alert('カートに追加しました');
+      message.success('カートに追加しました');
+    }
+  };
+
+  // 찜목록 토글 핸들러
+  const handleLikeToggle = async () => {
+    if (!user) {
+      message.warning('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        // 찜목록에서 제거
+        await api.favorites.delete(user.id, developer.id);
+        setIsLiked(false);
+        message.success('찜목록에서 제거되었습니다.');
+      } else {
+        // 찜목록에 추가
+        await api.favorites.create({
+          user_id: user.id,
+          product_id: developer.id,
+        });
+        setIsLiked(true);
+        message.success('찜목록에 추가되었습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      message.error('찜목록 업데이트에 실패했습니다.');
     }
   };
 
@@ -195,12 +275,12 @@ export default function ProductPage() {
             <ProfileHeader 
               developer={developer} 
               isLiked={isLiked} 
-              onLikeToggle={() => setIsLiked(!isLiked)} 
+              onLikeToggle={handleLikeToggle} 
             />
             <TabNavigation 
               activeTab={activeTab} 
               onTabChange={setActiveTab} 
-              developer={developer} 
+              developer={{ ...developer, reviews }} 
             />
           </div>
 
