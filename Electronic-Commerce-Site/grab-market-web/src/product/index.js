@@ -83,6 +83,7 @@ export default function ProductPage() {
         const tags = productResponse.data?.tags || [];
         
         // 리뷰 가져오기
+        let mappedReviews = [];
         try {
           // 로그인한 유저 정보 가져오기 (프로필에서 사용하는 방식과 동일)
           const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -97,49 +98,51 @@ export default function ProductPage() {
 
           const reviewsResponse = await api.reviews.getByProduct(parseInt(id));
           const reviewsData = reviewsResponse.data?.reviews || [];
-          setReviews(
-            reviewsData.map((review) => {
-              // 리뷰 작성자가 현재 로그인한 유저인지 확인
-              const isCurrentUser = currentUser && (
-                review.user_id === currentUser.id ||
-                review.user?.id === currentUser.id
-              );
+          mappedReviews = reviewsData.map((review) => {
+            // 리뷰 작성자가 현재 로그인한 유저인지 확인
+            const isCurrentUser = currentUser && (
+              review.user_id === currentUser.id ||
+              review.user?.id === currentUser.id
+            );
 
-              // 현재 로그인한 유저의 리뷰면 로그인한 유저의 닉네임 사용
-              const displayUserName = isCurrentUser
-                ? (currentUser.nickname || currentUser.username || currentUser.name || 'Anonymous')
-                : (review.user?.nickname ||
-                    review.user?.username ||
-                    review.user?.name ||
-                    'Anonymous');
+            // 현재 로그인한 유저의 리뷰면 로그인한 유저의 닉네임 사용
+            const displayUserName = isCurrentUser
+              ? (currentUser.nickname || currentUser.username || currentUser.name || 'Anonymous')
+              : (review.user?.nickname ||
+                  review.user?.username ||
+                  review.user?.name ||
+                  'Anonymous');
 
-              const rawRating = review.rating ?? review.score ?? 0;
-              const numericRating = Number(rawRating) || 0;
+            const rawRating = review.rating ?? review.score ?? 0;
+            const numericRating = Number(rawRating) || 0;
 
-          return {
-            id: review.id,
-            author: displayUserName,
-            avatar: (displayUserName || 'A').substring(0, 2).toUpperCase(),
-            rating: numericRating,
-            text: review.review_text || review.comment || review.text || '',
-            date: review.created_at
-              ? new Date(review.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })
-              : '',
-            project:
-              review.order_item?.product?.name ||
-              product.name ||
-              'Project',
-            helpful: 0,
-            isCurrentUser: isCurrentUser, // 본인 리뷰 여부
-          };
-            })
-          );
+            return {
+              id: review.id,
+              author: displayUserName,
+              avatar: (displayUserName || 'A').substring(0, 2).toUpperCase(),
+              rating: numericRating,
+              title: review.title || null,
+              text: review.review_text || review.comment || review.text || '',
+              review_images: review.review_images || [],
+              date: review.created_at
+                ? new Date(review.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })
+                : '',
+              project:
+                review.order_item?.product?.name ||
+                product.name ||
+                'Project',
+              helpful: 0,
+              isCurrentUser: isCurrentUser, // 본인 리뷰 여부
+            };
+          });
+          setReviews(mappedReviews);
         } catch (error) {
           console.error('Failed to load reviews:', error);
+          mappedReviews = [];
           setReviews([]);
         }
         
@@ -190,7 +193,7 @@ export default function ProductPage() {
             { stat: 'Innovation', value: 94 }
           ],
           projects: [],
-          reviews: reviews
+          reviews: mappedReviews
         });
         setLoading(false);
       } catch (error) {
@@ -376,7 +379,9 @@ export default function ProductPage() {
                         author: displayUserName,
                         avatar: (displayUserName || 'A').substring(0, 2).toUpperCase(),
                         rating: numericRating,
+                        title: review.title || null,
                         text: review.review_text || review.comment || review.text || '',
+                        review_images: review.review_images || [],
                         date: review.created_at
                           ? new Date(review.created_at).toLocaleDateString('en-US', {
                               year: 'numeric',

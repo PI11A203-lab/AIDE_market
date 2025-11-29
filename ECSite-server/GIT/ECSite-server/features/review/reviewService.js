@@ -8,11 +8,23 @@ exports.findReviewsByProductId = async (productId, page = 1, limit = 20) => {
         where: { product_id: productId },
         limit: parseInt(limit),
         offset: parseInt(offset),
-        order: [['created_at', 'DESC']]
+        order: [['created_at', 'DESC']],
+        attributes: ['id', 'user_id', 'product_id', 'order_item_id', 'rating', 'title', 'review_text', 'review_images', 'created_at', 'updated_at']
     });
     
     // 사용자 정보 조인 (간단하게 user_id만 반환하거나, users 테이블이 있다면 추가)
-    const reviewsWithUsers = rows.map(review => review.toJSON());
+    const reviewsWithUsers = rows.map(review => {
+        const reviewJson = review.toJSON();
+        // review_images가 JSON 문자열인 경우 파싱
+        if (reviewJson.review_images && typeof reviewJson.review_images === 'string') {
+            try {
+                reviewJson.review_images = JSON.parse(reviewJson.review_images);
+            } catch (e) {
+                reviewJson.review_images = [];
+            }
+        }
+        return reviewJson;
+    });
     
     return {
         reviews: reviewsWithUsers,
@@ -33,13 +45,22 @@ exports.findReviewsByUserId = async (userId, page = 1, limit = 20) => {
         where: { user_id: userId },
         limit: parseInt(limit),
         offset: parseInt(offset),
-        order: [['created_at', 'DESC']]
+        order: [['created_at', 'DESC']],
+        attributes: ['id', 'user_id', 'product_id', 'order_item_id', 'rating', 'title', 'review_text', 'review_images', 'created_at', 'updated_at']
     });
     
     // 상품 정보 조인
     const reviewsWithProducts = await Promise.all(
         rows.map(async (review) => {
             const reviewJson = review.toJSON();
+            // review_images가 JSON 문자열인 경우 파싱
+            if (reviewJson.review_images && typeof reviewJson.review_images === 'string') {
+                try {
+                    reviewJson.review_images = JSON.parse(reviewJson.review_images);
+                } catch (e) {
+                    reviewJson.review_images = [];
+                }
+            }
             const product = await models.Product.findByPk(review.product_id, {
                 attributes: ['id', 'name', 'price', 'seller', 'imageUrl']
             });
@@ -62,7 +83,7 @@ exports.findReviewsByUserId = async (userId, page = 1, limit = 20) => {
 };
 
 // 리뷰 생성
-exports.createReview = async (userId, productId, orderItemId, rating, reviewText = null) => {
+exports.createReview = async (userId, productId, orderItemId, rating, reviewText = null, title = null, reviewImages = null) => {
     // 상품 존재 확인
     const product = await models.Product.findByPk(productId);
     if (!product) {
@@ -83,12 +104,29 @@ exports.createReview = async (userId, productId, orderItemId, rating, reviewText
         throw new Error('평점은 1.0부터 5.0 사이여야 합니다');
     }
     
+    // reviewImages가 문자열인 경우 JSON으로 파싱
+    let imagesArray = [];
+    if (reviewImages) {
+        if (typeof reviewImages === 'string') {
+            try {
+                imagesArray = JSON.parse(reviewImages);
+            } catch (e) {
+                // 배열 형태의 문자열인 경우 (예: "['url1', 'url2']")
+                imagesArray = Array.isArray(reviewImages) ? reviewImages : [reviewImages];
+            }
+        } else if (Array.isArray(reviewImages)) {
+            imagesArray = reviewImages;
+        }
+    }
+    
     const review = await models.ProductReview.create({
         user_id: userId,
         product_id: productId,
         order_item_id: orderItemId,
         rating: parseFloat(rating),
-        review_text: reviewText
+        title: title,
+        review_text: reviewText,
+        review_images: imagesArray
     });
     
     // order_items의 has_review 업데이트
@@ -103,11 +141,20 @@ exports.createReview = async (userId, productId, orderItemId, rating, reviewText
     // 상품의 평균 평점 업데이트
     await updateProductRating(productId);
     
-    return review.toJSON();
+    const reviewJson = review.toJSON();
+    // review_images가 JSON 문자열인 경우 파싱
+    if (reviewJson.review_images && typeof reviewJson.review_images === 'string') {
+        try {
+            reviewJson.review_images = JSON.parse(reviewJson.review_images);
+        } catch (e) {
+            reviewJson.review_images = [];
+        }
+    }
+    return reviewJson;
 };
 
 // 리뷰 업데이트
-exports.updateReview = async (reviewId, userId, rating = null, reviewText = null) => {
+exports.updateReview = async (reviewId, userId, rating = null, reviewText = null, title = null, reviewImages = null) => {
     const review = await models.ProductReview.findByPk(reviewId);
     if (!review) {
         throw new Error('리뷰를 찾을 수 없습니다');
@@ -128,6 +175,23 @@ exports.updateReview = async (reviewId, userId, rating = null, reviewText = null
     if (reviewText !== null) {
         updateData.review_text = reviewText;
     }
+    if (title !== null) {
+        updateData.title = title;
+    }
+    if (reviewImages !== null) {
+        // reviewImages가 문자열인 경우 JSON으로 파싱
+        let imagesArray = [];
+        if (typeof reviewImages === 'string') {
+            try {
+                imagesArray = JSON.parse(reviewImages);
+            } catch (e) {
+                imagesArray = Array.isArray(reviewImages) ? reviewImages : [reviewImages];
+            }
+        } else if (Array.isArray(reviewImages)) {
+            imagesArray = reviewImages;
+        }
+        updateData.review_images = imagesArray;
+    }
     
     await review.update(updateData);
     
@@ -136,7 +200,16 @@ exports.updateReview = async (reviewId, userId, rating = null, reviewText = null
         await updateProductRating(review.product_id);
     }
     
-    return review.toJSON();
+    const reviewJson = review.toJSON();
+    // review_images가 JSON 문자열인 경우 파싱
+    if (reviewJson.review_images && typeof reviewJson.review_images === 'string') {
+        try {
+            reviewJson.review_images = JSON.parse(reviewJson.review_images);
+        } catch (e) {
+            reviewJson.review_images = [];
+        }
+    }
+    return reviewJson;
 };
 
 // 리뷰 삭제
@@ -173,12 +246,23 @@ exports.deleteReview = async (reviewId, userId) => {
 
 // ID로 리뷰 조회
 exports.findReviewById = async (id) => {
-    const review = await models.ProductReview.findByPk(id);
+    const review = await models.ProductReview.findByPk(id, {
+        attributes: ['id', 'user_id', 'product_id', 'order_item_id', 'rating', 'title', 'review_text', 'review_images', 'created_at', 'updated_at']
+    });
     if (!review) {
         return null;
     }
     
     const reviewJson = review.toJSON();
+    // review_images가 JSON 문자열인 경우 파싱
+    if (reviewJson.review_images && typeof reviewJson.review_images === 'string') {
+        try {
+            reviewJson.review_images = JSON.parse(reviewJson.review_images);
+        } catch (e) {
+            reviewJson.review_images = [];
+        }
+    }
+    
     const product = await models.Product.findByPk(review.product_id, {
         attributes: ['id', 'name', 'price', 'seller', 'imageUrl']
     });

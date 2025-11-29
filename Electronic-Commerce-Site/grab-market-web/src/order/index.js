@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { ArrowLeft, Star, MessageSquare } from 'lucide-react';
-import { message } from 'antd';
+import { message, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { API_URL } from '../config/constants';
 import { api } from '../config/api';
@@ -17,11 +18,7 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [reviewForms, setReviewForms] = useState({}); // 각 아이템별 리뷰 작성 상태
 
-  useEffect(() => {
-    loadOrderData();
-  }, [orderId]);
-
-  const loadOrderData = async () => {
+  const loadOrderData = useCallback(async () => {
     try {
       // 주문 정보 가져오기
       const orderResponse = await api.orders.getById(orderId);
@@ -56,7 +53,9 @@ export default function OrderDetailPage() {
       itemsWithProducts.forEach(item => {
         forms[item.id] = {
           rating: 0,
+          title: '',
           comment: '',
+          images: [],
           submitting: false
         };
       });
@@ -68,7 +67,11 @@ export default function OrderDetailPage() {
       message.error('주문 정보를 불러오는데 실패했습니다.');
       setLoading(false);
     }
-  };
+  }, [orderId]);
+
+  useEffect(() => {
+    loadOrderData();
+  }, [loadOrderData]);
 
   const handleRatingClick = (itemId, rating) => {
     setReviewForms(prev => ({
@@ -90,6 +93,36 @@ export default function OrderDetailPage() {
     }));
   };
 
+  const handleTitleChange = (itemId, title) => {
+    setReviewForms(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        title
+      }
+    }));
+  };
+
+  const handleImageChange = (itemId, fileList) => {
+    setReviewForms(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        images: fileList
+      }
+    }));
+  };
+
+  const handleImageRemove = (itemId, file) => {
+    setReviewForms(prev => ({
+      ...prev,
+      [itemId]: {
+        ...prev[itemId],
+        images: prev[itemId].images.filter(img => img.uid !== file.uid)
+      }
+    }));
+  };
+
   const handleSubmitReview = async (itemId, productId) => {
     const form = reviewForms[itemId];
     
@@ -98,10 +131,11 @@ export default function OrderDetailPage() {
       return;
     }
 
-    if (!form.comment.trim()) {
-      message.warning('리뷰 내용을 입력해주세요.');
-      return;
-    }
+    // 리뷰 내용은 선택사항으로 변경 (제목만 있어도 가능)
+    // if (!form.comment.trim()) {
+    //   message.warning('리뷰 내용을 입력해주세요.');
+    //   return;
+    // }
 
     // 이미 리뷰가 작성되었는지 확인
     const orderItem = orderItems.find(item => item.id === itemId);
@@ -133,13 +167,41 @@ export default function OrderDetailPage() {
       }
     }));
 
+    // 이미지 업로드 처리 (이미 업로드된 이미지는 response에서 가져오고, 새로 추가된 이미지만 업로드)
+    let imageUrls = [];
+    if (form.images && form.images.length > 0) {
+      try {
+        const uploadPromises = form.images.map(async (img) => {
+          // 이미 업로드 완료된 이미지 (response에 imageUrl이 있음)
+          if (img.response?.imageUrl) {
+            return img.response.imageUrl;
+          }
+          // 새로 추가된 이미지 (originFileObj가 있음)
+          else if (img.originFileObj) {
+            const formData = new FormData();
+            formData.append('image', img.originFileObj);
+            const uploadResponse = await api.upload.image(formData);
+            return uploadResponse.data.imageUrl;
+          }
+          return null;
+        });
+        
+        imageUrls = (await Promise.all(uploadPromises)).filter(url => url !== null);
+      } catch (error) {
+        console.error('Failed to upload images:', error);
+        message.warning('이미지 업로드에 실패했습니다. 리뷰는 작성되지만 이미지는 포함되지 않습니다.');
+      }
+    }
+
     try {
       await api.reviews.create({
         user_id: user.id,
         product_id: productId,
         order_item_id: itemId,
         rating: form.rating,
-        review_text: form.comment.trim()
+        title: form.title.trim() || null,
+        review_text: form.comment.trim() || null,
+        review_images: imageUrls.length > 0 ? imageUrls : null
       });
 
       message.success('리뷰가 작성되었습니다!');
@@ -172,7 +234,9 @@ export default function OrderDetailPage() {
         ...prev,
         [itemId]: {
           rating: 0,
+          title: '',
           comment: '',
+          images: [],
           submitting: false
         }
       }));
@@ -320,17 +384,99 @@ export default function OrderDetailPage() {
                                 <span className="rating-value">{reviewForms[item.id].rating}점</span>
                               )}
                             </div>
-                            <textarea
-                              className="review-comment"
-                              placeholder="리뷰를 작성해주세요..."
-                              value={reviewForms[item.id]?.comment || ''}
-                              onChange={(e) => handleCommentChange(item.id, e.target.value)}
-                              rows={4}
-                            />
+                            
+                            {/* 리뷰 제목 */}
+                            <div className="review-title-input-section" style={{ marginTop: '16px' }}>
+                              <label className="review-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#333' }}>
+                                리뷰 제목
+                              </label>
+                              <input
+                                type="text"
+                                className="review-title-input"
+                                placeholder="리뷰 제목을 입력해주세요 (선택사항)"
+                                value={reviewForms[item.id]?.title || ''}
+                                onChange={(e) => handleTitleChange(item.id, e.target.value)}
+                                style={{
+                                  width: '100%',
+                                  padding: '10px 12px',
+                                  border: '1px solid #d9d9d9',
+                                  borderRadius: '6px',
+                                  fontSize: '14px',
+                                  outline: 'none',
+                                  transition: 'border-color 0.3s'
+                                }}
+                                onFocus={(e) => e.target.style.borderColor = '#1890ff'}
+                                onBlur={(e) => e.target.style.borderColor = '#d9d9d9'}
+                                maxLength={200}
+                              />
+                            </div>
+
+                            {/* 리뷰 내용 */}
+                            <div style={{ marginTop: '16px' }}>
+                              <label className="review-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#333' }}>
+                                리뷰 내용
+                              </label>
+                              <textarea
+                                className="review-comment"
+                                placeholder="리뷰를 작성해주세요... (선택사항)"
+                                value={reviewForms[item.id]?.comment || ''}
+                                onChange={(e) => handleCommentChange(item.id, e.target.value)}
+                                rows={4}
+                              />
+                            </div>
+
+                            {/* 이미지 업로드 */}
+                            <div className="review-image-upload-section" style={{ marginTop: '16px' }}>
+                              <label className="review-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#333' }}>
+                                사진 추가 (선택사항)
+                              </label>
+                              <Upload
+                                listType="picture-card"
+                                fileList={reviewForms[item.id]?.images || []}
+                                onChange={({ fileList }) => handleImageChange(item.id, fileList)}
+                                onRemove={(file) => handleImageRemove(item.id, file)}
+                                beforeUpload={(file) => {
+                                  // 이미지 파일만 허용
+                                  const isImage = file.type.startsWith('image/');
+                                  if (!isImage) {
+                                    message.error('이미지 파일만 업로드 가능합니다.');
+                                    return Upload.LIST_IGNORE;
+                                  }
+                                  // 파일 크기 제한 (5MB)
+                                  const isLt5M = file.size / 1024 / 1024 < 5;
+                                  if (!isLt5M) {
+                                    message.error('이미지 크기는 5MB 이하여야 합니다.');
+                                    return Upload.LIST_IGNORE;
+                                  }
+                                  return false; // 자동 업로드 방지
+                                }}
+                                customRequest={async ({ file, onSuccess, onError }) => {
+                                  try {
+                                    const formData = new FormData();
+                                    formData.append('image', file);
+                                    const response = await api.upload.image(formData);
+                                    onSuccess({ ...file, response: response.data }, file);
+                                  } catch (error) {
+                                    onError(error);
+                                    message.error('이미지 업로드에 실패했습니다.');
+                                  }
+                                }}
+                                maxCount={5}
+                              >
+                                {(reviewForms[item.id]?.images || []).length < 5 && (
+                                  <div>
+                                    <PlusOutlined />
+                                    <div style={{ marginTop: 8 }}>업로드</div>
+                                  </div>
+                                )}
+                              </Upload>
+                            </div>
+
                             <button
                               className="submit-review-button"
                               onClick={() => handleSubmitReview(item.id, item.product_id)}
                               disabled={reviewForms[item.id]?.submitting}
+                              style={{ marginTop: '20px' }}
                             >
                               {reviewForms[item.id]?.submitting ? '작성 중...' : '리뷰 작성'}
                             </button>

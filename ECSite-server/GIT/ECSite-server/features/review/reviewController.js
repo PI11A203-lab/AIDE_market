@@ -52,12 +52,14 @@ exports.createReview = async (req, res) => {
         const orderItemId = parseInt(req.body.order_item_id);
         const rating = parseFloat(req.body.rating);
         const reviewText = req.body.review_text || null;
+        const title = req.body.title || null;
+        const reviewImages = req.body.review_images || null;
         
         if (!userId || !productId || !orderItemId || !rating) {
             return res.status(400).json({ error: "user_id, product_id, order_item_id, rating은 필수입니다" });
         }
         
-        const review = await reviewService.createReview(userId, productId, orderItemId, rating, reviewText);
+        const review = await reviewService.createReview(userId, productId, orderItemId, rating, reviewText, title, reviewImages);
         res.status(201).json({ review });
     } catch (err) {
         console.error(err);
@@ -75,12 +77,14 @@ exports.updateReview = async (req, res) => {
         const userId = parseInt(req.body.user_id);
         const rating = req.body.rating !== undefined ? parseFloat(req.body.rating) : null;
         const reviewText = req.body.review_text !== undefined ? req.body.review_text : null;
+        const title = req.body.title !== undefined ? req.body.title : null;
+        const reviewImages = req.body.review_images !== undefined ? req.body.review_images : null;
         
         if (!userId) {
             return res.status(400).json({ error: "user_id는 필수입니다" });
         }
         
-        const review = await reviewService.updateReview(reviewId, userId, rating, reviewText);
+        const review = await reviewService.updateReview(reviewId, userId, rating, reviewText, title, reviewImages);
         res.json({ review });
     } catch (err) {
         console.error(err);

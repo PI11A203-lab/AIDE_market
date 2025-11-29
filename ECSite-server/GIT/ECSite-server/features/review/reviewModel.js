@@ -26,9 +26,19 @@ module.exports = (sequelize, DataTypes) => {
                 max: 5.0
             }
         },
+        title: {
+            type: DataTypes.STRING(200),
+            allowNull: true,
+        },
         review_text: {
             type: DataTypes.TEXT,
             allowNull: true,
+        },
+        review_images: {
+            type: DataTypes.JSON,
+            allowNull: true,
+            defaultValue: [],
+            comment: '리뷰 이미지 URL 배열'
         },
     }, {
         tableName: 'product_reviews',

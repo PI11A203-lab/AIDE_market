@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Star, ThumbsUp, Edit2, Trash2, X, Check } from 'lucide-react';
-import { message } from 'antd';
+import { message, Image } from 'antd';
 import { api } from '../../config/api';
+import { API_URL } from '../../config/constants';
 import { clearRatingCache } from '../../utils/ratingCache';
 
 export default function ReviewsTab({ reviews, productId, onReviewUpdate }) {
@@ -232,7 +233,42 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate }) {
                   </div>
                 ) : (
                   <>
-                    <p className="text-gray-700 mb-3">{review.text}</p>
+                    {/* 리뷰 제목 */}
+                    {review.title && (
+                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                        {review.title}
+                      </h3>
+                    )}
+                    
+                    {/* 리뷰 내용 */}
+                    {review.text && (
+                      <p className="text-gray-700 mb-3">{review.text}</p>
+                    )}
+                    
+                    {/* 리뷰 이미지 */}
+                    {review.review_images && Array.isArray(review.review_images) && review.review_images.length > 0 && (
+                      <div className="mb-3">
+                        <Image.PreviewGroup>
+                          <div className="flex flex-wrap gap-2">
+                            {review.review_images.map((imageUrl, index) => (
+                              <Image
+                                key={index}
+                                src={imageUrl.startsWith('http') ? imageUrl : `${API_URL}/${imageUrl}`}
+                                alt={`리뷰 이미지 ${index + 1}`}
+                                className="object-cover rounded-lg"
+                                width={100}
+                                height={100}
+                                style={{ cursor: 'pointer' }}
+                                preview={{
+                                  mask: '확대'
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </Image.PreviewGroup>
+                      </div>
+                    )}
+                    
                     <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
                       <ThumbsUp className="w-4 h-4" />
                       Helpful ({review.helpful})
