@@ -1,9 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ShoppingBag, ChevronRight } from 'lucide-react';
+import { api } from '../../config/api';
 
 export default function PurchasesTab({ orders }) {
   const history = useHistory();
+  const [orderItemCounts, setOrderItemCounts] = useState({});
+
+  // 각 주문의 아이템 개수 가져오기
+  useEffect(() => {
+    if (!orders || orders.length === 0) return;
+
+    const fetchItemCounts = async () => {
+      const counts = {};
+      
+      // 모든 주문의 아이템 개수를 병렬로 가져오기
+      const promises = orders.map(async (order) => {
+        try {
+          const response = await api.orderItems.getByOrder(order.id);
+          const items = response.data?.orderItems || [];
+          return { orderId: order.id, count: items.length };
+        } catch (error) {
+          console.error(`Failed to fetch items for order ${order.id}:`, error);
+          return { orderId: order.id, count: 0 };
+        }
+      });
+
+      const results = await Promise.all(promises);
+      results.forEach(({ orderId, count }) => {
+        counts[orderId] = count;
+      });
+
+      setOrderItemCounts(counts);
+    };
+
+    fetchItemCounts();
+  }, [orders]);
 
   // 주문 목록을 날짜별로 그룹화
   const groupOrdersByDate = (orders) => {
@@ -56,30 +88,33 @@ export default function PurchasesTab({ orders }) {
         <div key={date} className="order-date-group">
           <h3 className="order-date-header">{date}</h3>
           <div className="orders-list">
-            {dateOrders.map((order) => (
-              <div
-                key={order.id}
-                className="order-card"
-                onClick={() => handleOrderClick(order.id)}
-              >
-                <div className="order-card-header">
-                  <div className="order-info">
-                    <span className="order-number">주문번호: {order.order_number || `ORD-${order.id}`}</span>
-                    <span className="order-status">{order.status === 'pending' ? '결제 대기' : order.status === 'completed' ? '완료' : order.status}</span>
+            {dateOrders.map((order) => {
+              const itemCount = orderItemCounts[order.id] ?? 0;
+              return (
+                <div
+                  key={order.id}
+                  className="order-card"
+                  onClick={() => handleOrderClick(order.id)}
+                >
+                  <div className="order-card-header">
+                    <div className="order-info">
+                      <span className="order-number">주문번호: {order.order_number || `ORD-${order.id}`}</span>
+                      <span className="order-status">{order.status === 'pending' ? '결제 대기' : order.status === 'completed' ? '완료' : order.status}</span>
+                    </div>
+                    <ChevronRight className="order-arrow" />
                   </div>
-                  <ChevronRight className="order-arrow" />
+                  <div className="order-card-body">
+                    <div className="order-summary">
+                      <span className="order-total-label">총 주문 금액</span>
+                      <span className="order-total-amount">¥{order.total_amount?.toLocaleString() || '0'}</span>
+                    </div>
+                    <div className="order-meta">
+                      <span className="order-item-count">{itemCount}개 주문</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="order-card-body">
-                  <div className="order-summary">
-                    <span className="order-total-label">총 주문 금액</span>
-                    <span className="order-total-amount">¥{order.total_amount?.toLocaleString() || '0'}</span>
-                  </div>
-                  <div className="order-meta">
-                    <span className="order-item-count">{dateOrders.length}개 주문</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ))}
