@@ -35,7 +35,13 @@ export default function TabNavigation({ activeTab, onTabChange, developer }) {
       <div className="p-8">
         {activeTab === 'overview' && <OverviewTab hexagonStats={developer.hexagonStats} />}
         {activeTab === 'projects' && <ProjectsTab projects={developer.projects} />}
-        {activeTab === 'reviews' && <ReviewsTab reviews={developer.reviews} />}
+        {activeTab === 'reviews' && (
+          <ReviewsTab 
+            reviews={developer.reviews} 
+            productId={developer.id}
+            onReviewUpdate={developer.onReviewUpdate}
+          />
+        )}
       </div>
     </div>
   );

@@ -193,7 +193,35 @@ export default function UserProfile() {
 
         <div className="tab-content">
           {activeTab === 'purchases' && <PurchasesTab orders={orders} />}
-          {activeTab === 'reviews' && <ReviewsTab reviews={reviews} />}
+          {activeTab === 'reviews' && (
+            <ReviewsTab 
+              reviews={reviews} 
+              onReviewUpdate={() => {
+                // 리뷰 목록 새로고침
+                const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+                if (userFromStorage) {
+                  try {
+                    const userData = JSON.parse(userFromStorage);
+                    const userId = userData.id;
+                    api.reviews.getByUser(userId)
+                      .then(response => {
+                        const reviewsList = response.data?.reviews || [];
+                        setReviews(reviewsList);
+                        setUser(prev => prev ? { 
+                          ...prev, 
+                          stats: { ...prev.stats, reviews: reviewsList.length } 
+                        } : prev);
+                      })
+                      .catch(error => {
+                        console.error('Failed to reload reviews:', error);
+                      });
+                  } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                  }
+                }
+              }}
+            />
+          )}
           {activeTab === 'teams' && <TeamsTab teams={teams} />}
           {activeTab === 'favorites' && (
             <FavoritesTab 

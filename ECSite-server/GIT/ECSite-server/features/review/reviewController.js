@@ -95,9 +95,14 @@ exports.updateReview = async (req, res) => {
 exports.deleteReview = async (req, res) => {
     try {
         const reviewId = parseInt(req.params.id);
-        const userId = parseInt(req.body.user_id || req.query.user_id);
+        // req.query와 req.body 모두 확인 (안전하게 처리)
+        const userId = parseInt(
+            (req.body && req.body.user_id) || 
+            (req.query && req.query.user_id) || 
+            null
+        );
         
-        if (!userId) {
+        if (!userId || isNaN(userId)) {
             return res.status(400).json({ error: "user_id는 필수입니다" });
         }
         

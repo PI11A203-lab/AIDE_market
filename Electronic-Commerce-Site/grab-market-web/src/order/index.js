@@ -5,6 +5,7 @@ import { message } from 'antd';
 import axios from 'axios';
 import { API_URL } from '../config/constants';
 import { api } from '../config/api';
+import { clearRatingCache, setRatingCache } from '../utils/ratingCache';
 import ProfileHeader from '../profile/components/ProfileHeader';
 import './index.css';
 
@@ -143,6 +144,24 @@ export default function OrderDetailPage() {
 
       message.success('리뷰가 작성되었습니다!');
 
+      // 해당 상품의 별점 캐시 삭제 후 최신 별점으로 갱신
+      clearRatingCache(productId);
+      
+      // 리뷰 작성 후 상품의 최신 별점 정보 가져와서 캐시 갱신
+      try {
+        const productResponse = await axios.get(`${API_URL}/api/products/${productId}`);
+        const updatedProduct = productResponse.data?.product;
+        if (updatedProduct) {
+          setRatingCache(
+            productId,
+            updatedProduct.rating_average || 0,
+            updatedProduct.rating_count || 0
+          );
+        }
+      } catch (error) {
+        console.error('Failed to update rating cache:', error);
+      }
+
       // 주문 아이템의 has_review 업데이트
       setOrderItems(prev => prev.map(item => 
         item.id === itemId ? { ...item, has_review: true } : item
@@ -159,9 +178,6 @@ export default function OrderDetailPage() {
       }));
 
       // 주문 데이터 새로고침 (상품 정보 업데이트 - 리뷰 수 반영)
-      await loadOrderData();
-
-      // 상품 정보 새로고침 (리뷰 수 업데이트)
       await loadOrderData();
     } catch (error) {
       console.error('Failed to submit review:', error);

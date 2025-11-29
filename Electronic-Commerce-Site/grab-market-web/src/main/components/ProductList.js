@@ -4,6 +4,7 @@ import { Star, TrendingUp, Heart } from 'lucide-react';
 import { API_URL } from '../../config/constants';
 import { api } from '../../config/api';
 import { message } from 'antd';
+import { getFilledStars } from '../../utils/ratingCache';
 
 const ProductList = ({ products }) => {
   const [favorites, setFavorites] = useState(new Set());
@@ -120,7 +121,22 @@ const ProductList = ({ products }) => {
               <h4 className="text-lg font-bold text-gray-900 mb-3">{product.name}</h4>
               
               <div className="flex items-center gap-2 mb-3">
-                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => {
+                    const rating = parseFloat(product.rating_average || 0);
+                    const filledStars = getFilledStars(rating);
+                    return (
+                      <Star 
+                        key={i} 
+                        className={`w-4 h-4 ${
+                          i < filledStars 
+                            ? 'text-yellow-400 fill-yellow-400' 
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
                 <span className="font-semibold text-gray-900">
                   {parseFloat(product.rating_average || 0).toFixed(1)}
                 </span>

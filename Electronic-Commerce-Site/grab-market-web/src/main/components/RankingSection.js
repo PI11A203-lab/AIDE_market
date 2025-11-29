@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Star, TrendingUp } from 'lucide-react';
 import { API_URL } from '../../config/constants';
+import { getFilledStars } from '../../utils/ratingCache';
 
 const RankingSection = ({ topProducts }) => {
   if (topProducts.length === 0) {
@@ -42,8 +43,21 @@ const RankingSection = ({ topProducts }) => {
             
             <div className="flex items-center justify-center gap-2 mb-3">
               <div className="flex items-center gap-1">
-                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                <span className="font-semibold text-gray-900">
+                {[...Array(5)].map((_, i) => {
+                  const rating = parseFloat(product.rating_average || 0);
+                  const filledStars = getFilledStars(rating);
+                  return (
+                    <Star 
+                      key={i} 
+                      className={`w-5 h-5 ${
+                        i < filledStars 
+                          ? 'text-yellow-400 fill-yellow-400' 
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  );
+                })}
+                <span className="font-semibold text-gray-900 ml-1">
                   {parseFloat(product.rating_average || 0).toFixed(1)}
                 </span>
               </div>

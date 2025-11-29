@@ -317,8 +317,9 @@ export const api = {
     /**
      * 리뷰 삭제
      * @param {number} id - 리뷰 ID
+     * @param {Object} config - axios config (params, data 등)
      */
-    delete: (id) => apiClient.delete(`/api/reviews/${id}`),
+    delete: (id, config = {}) => apiClient.delete(`/api/reviews/${id}`, config),
   },
 
   // ==================== 주문 관련 ====================

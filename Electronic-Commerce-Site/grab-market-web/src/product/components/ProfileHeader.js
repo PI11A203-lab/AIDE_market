@@ -1,8 +1,13 @@
 import React from 'react';
 import { Star, Heart, Share2 } from 'lucide-react';
 import { API_URL } from '../../config/constants';
+import { getFilledStars } from '../../utils/ratingCache';
 
 export default function ProfileHeader({ developer, isLiked, onLikeToggle }) {
+  // 별점을 숫자로 변환
+  const rating = parseFloat(developer.rating) || 0;
+  const filledStars = getFilledStars(rating);
+
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-6">
       <div className="flex items-start gap-6 mb-6">
@@ -47,13 +52,20 @@ export default function ProfileHeader({ developer, isLiked, onLikeToggle }) {
               </button>
             </div>
           </div>
-          {/* 평점 */}
+          {/* 평점 - 퍼센테이지 기반 별점 표시 */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center gap-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                <Star 
+                  key={i} 
+                  className={`w-5 h-5 ${
+                    i < filledStars 
+                      ? 'text-yellow-400 fill-yellow-400' 
+                      : 'text-gray-300'
+                  }`}
+                />
               ))}
-              <span className="font-bold text-xl">{developer.rating}</span>
+              <span className="font-bold text-xl">{rating.toFixed(1)}</span>
             </div>
             <span className="text-gray-600">({developer.reviewCount.toLocaleString()} reviews)</span>
           </div>

@@ -9,6 +9,7 @@ import PriceSidebar from './components/PriceSidebar';
 import TrustBadges from './components/TrustBadges';
 import { API_URL } from '../config/constants';
 import { api } from '../config/api';
+import { getRatingCache, setRatingCache } from '../utils/ratingCache';
 import "./index.css";
 
 export default function ProductPage() {
@@ -64,27 +65,79 @@ export default function ProductPage() {
           return;
         }
         
+        // 별점 캐시 확인 및 업데이트
+        const cachedRating = getRatingCache(parseInt(id));
+        let ratingAverage = product.rating_average || 0;
+        let ratingCount = product.rating_count || 0;
+        
+        // 캐시가 있고 최신이면 캐시 사용, 아니면 API 값 사용하고 캐시 갱신
+        if (cachedRating) {
+          ratingAverage = cachedRating.rating_average;
+          ratingCount = cachedRating.rating_count;
+        } else {
+          // API에서 받은 값으로 캐시 저장
+          setRatingCache(parseInt(id), ratingAverage, ratingCount);
+        }
+        
         const stats = productResponse.data?.stats || {};
         const tags = productResponse.data?.tags || [];
         
         // 리뷰 가져오기
         try {
+          // 로그인한 유저 정보 가져오기 (프로필에서 사용하는 방식과 동일)
+          const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+          let currentUser = null;
+          if (userFromStorage) {
+            try {
+              currentUser = JSON.parse(userFromStorage);
+            } catch (e) {
+              console.error('Failed to parse user data:', e);
+            }
+          }
+
           const reviewsResponse = await api.reviews.getByProduct(parseInt(id));
           const reviewsData = reviewsResponse.data?.reviews || [];
-          setReviews(reviewsData.map(review => ({
+          setReviews(
+            reviewsData.map((review) => {
+              // 리뷰 작성자가 현재 로그인한 유저인지 확인
+              const isCurrentUser = currentUser && (
+                review.user_id === currentUser.id ||
+                review.user?.id === currentUser.id
+              );
+
+              // 현재 로그인한 유저의 리뷰면 로그인한 유저의 닉네임 사용
+              const displayUserName = isCurrentUser
+                ? (currentUser.nickname || currentUser.username || currentUser.name || 'Anonymous')
+                : (review.user?.nickname ||
+                    review.user?.username ||
+                    review.user?.name ||
+                    'Anonymous');
+
+              const rawRating = review.rating ?? review.score ?? 0;
+              const numericRating = Number(rawRating) || 0;
+
+          return {
             id: review.id,
-            author: review.user?.username || 'Anonymous',
-            avatar: (review.user?.username || 'A').substring(0, 2).toUpperCase(),
-            rating: review.rating,
-            text: review.comment || '',
-            date: new Date(review.created_at).toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            }),
-            project: review.order_item?.product?.name || 'Project',
-            helpful: 0
-          })));
+            author: displayUserName,
+            avatar: (displayUserName || 'A').substring(0, 2).toUpperCase(),
+            rating: numericRating,
+            text: review.review_text || review.comment || review.text || '',
+            date: review.created_at
+              ? new Date(review.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              : '',
+            project:
+              review.order_item?.product?.name ||
+              product.name ||
+              'Project',
+            helpful: 0,
+            isCurrentUser: isCurrentUser, // 본인 리뷰 여부
+          };
+            })
+          );
         } catch (error) {
           console.error('Failed to load reviews:', error);
           setReviews([]);
@@ -112,8 +165,8 @@ export default function ProductPage() {
           imageUrl: product.imageUrl,
           downloads: formatDownloads(product.download_count || 0),
           likes: 0, // API에 없음
-          rating: parseFloat(product.rating_average || 0).toFixed(1),
-          reviewCount: product.rating_count || 0,
+          rating: parseFloat(ratingAverage || 0).toFixed(1),
+          reviewCount: ratingCount || 0,
           category: product.category_name || 'NLP',
           tags: tags.map(tag => tag.name || tag),
           location: 'San Francisco, CA', // API에 없음
@@ -280,7 +333,86 @@ export default function ProductPage() {
             <TabNavigation 
               activeTab={activeTab} 
               onTabChange={setActiveTab} 
-              developer={{ ...developer, reviews }} 
+              developer={{ 
+                ...developer, 
+                reviews,
+                onReviewUpdate: async () => {
+                  // 리뷰 목록 새로고침
+                  try {
+                    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+                    let currentUser = null;
+                    if (userFromStorage) {
+                      try {
+                        currentUser = JSON.parse(userFromStorage);
+                      } catch (e) {
+                        console.error('Failed to parse user data:', e);
+                      }
+                    }
+
+                    // 상품 정보 먼저 가져오기
+                    const productResponse = await axios.get(`${API_URL}/api/products/${id}`);
+                    const updatedProduct = productResponse.data?.product;
+
+                    const reviewsResponse = await api.reviews.getByProduct(parseInt(id));
+                    const reviewsData = reviewsResponse.data?.reviews || [];
+                    const updatedReviews = reviewsData.map((review) => {
+                      const isCurrentUser = currentUser && (
+                        review.user_id === currentUser.id ||
+                        review.user?.id === currentUser.id
+                      );
+
+                      const displayUserName = isCurrentUser
+                        ? (currentUser.nickname || currentUser.username || currentUser.name || 'Anonymous')
+                        : (review.user?.nickname ||
+                            review.user?.username ||
+                            review.user?.name ||
+                            'Anonymous');
+
+                      const rawRating = review.rating ?? review.score ?? 0;
+                      const numericRating = Number(rawRating) || 0;
+
+                      return {
+                        id: review.id,
+                        author: displayUserName,
+                        avatar: (displayUserName || 'A').substring(0, 2).toUpperCase(),
+                        rating: numericRating,
+                        text: review.review_text || review.comment || review.text || '',
+                        date: review.created_at
+                          ? new Date(review.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            })
+                          : '',
+                        project: updatedProduct?.name || developer?.name || 'Project',
+                        helpful: 0,
+                        isCurrentUser: isCurrentUser,
+                      };
+                    });
+                    setReviews(updatedReviews);
+                    if (updatedProduct) {
+                      const cachedRating = getRatingCache(parseInt(id));
+                      let ratingAverage = updatedProduct.rating_average || 0;
+                      let ratingCount = updatedProduct.rating_count || 0;
+                      
+                      if (cachedRating) {
+                        ratingAverage = cachedRating.rating_average;
+                        ratingCount = cachedRating.rating_count;
+                      } else {
+                        setRatingCache(parseInt(id), ratingAverage, ratingCount);
+                      }
+
+                      setDeveloper(prev => ({
+                        ...prev,
+                        rating: parseFloat(ratingAverage || 0).toFixed(1),
+                        reviewCount: ratingCount || 0,
+                      }));
+                    }
+                  } catch (error) {
+                    console.error('Failed to reload reviews:', error);
+                  }
+                }
+              }} 
             />
           </div>
 
