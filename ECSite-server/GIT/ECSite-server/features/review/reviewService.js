@@ -1,7 +1,7 @@
 const models = require("../../db/initializer");
 
 // 상품별 리뷰 목록 조회
-exports.findReviewsByProductId = async (productId, page = 1, limit = 20) => {
+exports.findReviewsByProductId = async (productId, page = 1, limit = 20, currentUserId = null) => {
     const offset = (page - 1) * limit;
     
     const { count, rows } = await models.ProductReview.findAndCountAll({
@@ -12,19 +12,41 @@ exports.findReviewsByProductId = async (productId, page = 1, limit = 20) => {
         attributes: ['id', 'user_id', 'product_id', 'order_item_id', 'rating', 'title', 'review_text', 'review_images', 'created_at', 'updated_at']
     });
     
-    // 사용자 정보 조인 (간단하게 user_id만 반환하거나, users 테이블이 있다면 추가)
-    const reviewsWithUsers = rows.map(review => {
-        const reviewJson = review.toJSON();
-        // review_images가 JSON 문자열인 경우 파싱
-        if (reviewJson.review_images && typeof reviewJson.review_images === 'string') {
-            try {
-                reviewJson.review_images = JSON.parse(reviewJson.review_images);
-            } catch (e) {
-                reviewJson.review_images = [];
+    // helpful_count와 현재 사용자의 helpful 여부 포함
+    const reviewsWithUsers = await Promise.all(
+        rows.map(async (review) => {
+            const reviewJson = review.toJSON();
+            // review_images가 JSON 문자열인 경우 파싱
+            if (reviewJson.review_images && typeof reviewJson.review_images === 'string') {
+                try {
+                    reviewJson.review_images = JSON.parse(reviewJson.review_images);
+                } catch (e) {
+                    reviewJson.review_images = [];
+                }
             }
-        }
-        return reviewJson;
-    });
+            
+            // helpful_count 계산
+            const helpfulCount = await models.ReviewHelpful.count({
+                where: { review_id: review.id }
+            });
+            reviewJson.helpful_count = helpfulCount || 0;
+            
+            // 현재 사용자가 helpful 했는지 확인
+            if (currentUserId) {
+                const isHelpful = await models.ReviewHelpful.findOne({
+                    where: {
+                        review_id: review.id,
+                        user_id: currentUserId
+                    }
+                });
+                reviewJson.is_helpful = !!isHelpful;
+            } else {
+                reviewJson.is_helpful = false;
+            }
+            
+            return reviewJson;
+        })
+    );
     
     return {
         reviews: reviewsWithUsers,
@@ -38,7 +60,7 @@ exports.findReviewsByProductId = async (productId, page = 1, limit = 20) => {
 };
 
 // 사용자별 리뷰 목록 조회
-exports.findReviewsByUserId = async (userId, page = 1, limit = 20) => {
+exports.findReviewsByUserId = async (userId, page = 1, limit = 20, currentUserId = null) => {
     const offset = (page - 1) * limit;
     
     const { count, rows } = await models.ProductReview.findAndCountAll({
@@ -49,7 +71,7 @@ exports.findReviewsByUserId = async (userId, page = 1, limit = 20) => {
         attributes: ['id', 'user_id', 'product_id', 'order_item_id', 'rating', 'title', 'review_text', 'review_images', 'created_at', 'updated_at']
     });
     
-    // 상품 정보 조인
+    // 상품 정보 조인 + helpful_count와 현재 사용자의 helpful 여부 포함
     const reviewsWithProducts = await Promise.all(
         rows.map(async (review) => {
             const reviewJson = review.toJSON();
@@ -64,6 +86,26 @@ exports.findReviewsByUserId = async (userId, page = 1, limit = 20) => {
             const product = await models.Product.findByPk(review.product_id, {
                 attributes: ['id', 'name', 'price', 'seller', 'imageUrl']
             });
+            
+            // helpful_count 계산
+            const helpfulCount = await models.ReviewHelpful.count({
+                where: { review_id: review.id }
+            });
+            reviewJson.helpful_count = helpfulCount || 0;
+            
+            // 현재 사용자가 helpful 했는지 확인
+            if (currentUserId) {
+                const isHelpful = await models.ReviewHelpful.findOne({
+                    where: {
+                        review_id: review.id,
+                        user_id: currentUserId
+                    }
+                });
+                reviewJson.is_helpful = !!isHelpful;
+            } else {
+                reviewJson.is_helpful = false;
+            }
+            
             return {
                 ...reviewJson,
                 product: product ? product.toJSON() : null
@@ -259,7 +301,7 @@ exports.deleteReview = async (reviewId, userId) => {
 };
 
 // ID로 리뷰 조회
-exports.findReviewById = async (id) => {
+exports.findReviewById = async (id, currentUserId = null) => {
     const review = await models.ProductReview.findByPk(id, {
         attributes: ['id', 'user_id', 'product_id', 'order_item_id', 'rating', 'title', 'review_text', 'review_images', 'created_at', 'updated_at']
     });
@@ -281,10 +323,64 @@ exports.findReviewById = async (id) => {
         attributes: ['id', 'name', 'price', 'seller', 'imageUrl']
     });
     
+    // helpful_count 계산
+    const helpfulCount = await models.ReviewHelpful.count({
+        where: { review_id: review.id }
+    });
+    reviewJson.helpful_count = helpfulCount || 0;
+    
+    // 현재 사용자가 helpful 했는지 확인
+    if (currentUserId) {
+        const isHelpful = await models.ReviewHelpful.findOne({
+            where: {
+                review_id: review.id,
+                user_id: currentUserId
+            }
+        });
+        reviewJson.is_helpful = !!isHelpful;
+    } else {
+        reviewJson.is_helpful = false;
+    }
+    
     return {
         ...reviewJson,
         product: product ? product.toJSON() : null
     };
+};
+
+// 리뷰 helpful 추가/삭제
+exports.toggleReviewHelpful = async (reviewId, userId) => {
+    // 리뷰 존재 확인
+    const review = await models.ProductReview.findByPk(reviewId);
+    if (!review) {
+        throw new Error('리뷰를 찾을 수 없습니다');
+    }
+    
+    // 본인의 리뷰에는 helpful 할 수 없음
+    if (review.user_id === userId) {
+        throw new Error('본인의 리뷰에는 helpful을 할 수 없습니다');
+    }
+    
+    // 이미 helpful 했는지 확인
+    const existingHelpful = await models.ReviewHelpful.findOne({
+        where: {
+            review_id: reviewId,
+            user_id: userId
+        }
+    });
+    
+    if (existingHelpful) {
+        // 이미 helpful 했으면 삭제
+        await existingHelpful.destroy();
+        return { action: 'removed', helpful_count: await models.ReviewHelpful.count({ where: { review_id: reviewId } }) };
+    } else {
+        // helpful 추가
+        await models.ReviewHelpful.create({
+            review_id: reviewId,
+            user_id: userId
+        });
+        return { action: 'added', helpful_count: await models.ReviewHelpful.count({ where: { review_id: reviewId } }) };
+    }
 };
 
 // 상품 평균 평점 업데이트 헬퍼 함수

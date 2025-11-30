@@ -6,8 +6,9 @@ exports.getReviewsByProductId = async (req, res) => {
         const productId = parseInt(req.params.productId);
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
+        const currentUserId = req.query.user_id ? parseInt(req.query.user_id) : null;
         
-        const result = await reviewService.findReviewsByProductId(productId, page, limit);
+        const result = await reviewService.findReviewsByProductId(productId, page, limit, currentUserId);
         res.json(result);
     } catch (err) {
         console.error(err);
@@ -21,8 +22,9 @@ exports.getReviewsByUserId = async (req, res) => {
         const userId = parseInt(req.params.userId);
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
+        const currentUserId = req.query.current_user_id ? parseInt(req.query.current_user_id) : null;
         
-        const result = await reviewService.findReviewsByUserId(userId, page, limit);
+        const result = await reviewService.findReviewsByUserId(userId, page, limit, currentUserId);
         res.json(result);
     } catch (err) {
         console.error(err);
@@ -33,7 +35,8 @@ exports.getReviewsByUserId = async (req, res) => {
 // ID로 리뷰 조회
 exports.getReviewById = async (req, res) => {
     try {
-        const review = await reviewService.findReviewById(req.params.id);
+        const currentUserId = req.query.user_id ? parseInt(req.query.user_id) : null;
+        const review = await reviewService.findReviewById(req.params.id, currentUserId);
         if (!review) {
             return res.status(404).json({ error: "리뷰를 찾을 수 없습니다" });
         }
@@ -118,6 +121,27 @@ exports.deleteReview = async (req, res) => {
             return res.status(400).json({ error: err.message });
         }
         res.status(500).json({ error: "리뷰 삭제 실패" });
+    }
+};
+
+// 리뷰 helpful 추가/삭제
+exports.toggleReviewHelpful = async (req, res) => {
+    try {
+        const reviewId = parseInt(req.params.reviewId);
+        const userId = parseInt(req.body.user_id);
+        
+        if (!userId || isNaN(userId)) {
+            return res.status(400).json({ error: "user_id는 필수입니다" });
+        }
+        
+        const result = await reviewService.toggleReviewHelpful(reviewId, userId);
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        if (err.message.includes('찾을 수 없습니다') || err.message.includes('본인의')) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.status(500).json({ error: "helpful 처리 실패" });
     }
 };
 

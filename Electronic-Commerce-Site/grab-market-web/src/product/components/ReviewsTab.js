@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, ThumbsUp, Edit2, Trash2, X, Check } from 'lucide-react';
 import { message, Image } from 'antd';
 import { api } from '../../config/api';
 import { API_URL } from '../../config/constants';
 import { clearRatingCache } from '../../utils/ratingCache';
 
-export default function ReviewsTab({ reviews, productId, onReviewUpdate }) {
+export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpfulUpdate }) {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ rating: 0, comment: '' });
   const [deletingId, setDeletingId] = useState(null);
+  const [helpfulLoading, setHelpfulLoading] = useState({});
+  const [reviewsState, setReviewsState] = useState(reviews);
+  
+  // reviews prop이 변경되면 상태 업데이트
+  useEffect(() => {
+    setReviewsState(reviews);
+  }, [reviews]);
 
   // 수정 시작
   const handleEditStart = (review) => {
@@ -75,6 +82,73 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate }) {
     }
   };
 
+  // helpful 버튼 클릭 핸들러
+  const handleHelpfulToggle = async (reviewId, e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    
+    // 로그인한 유저 정보 가져오기
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!userFromStorage) {
+      message.warning('로그인이 필요합니다.');
+      return;
+    }
+
+    let userData;
+    try {
+      userData = JSON.parse(userFromStorage);
+    } catch (e) {
+      message.error('사용자 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    // 본인 리뷰는 helpful 할 수 없음
+    const review = reviewsState.find(r => r.id === reviewId);
+    if (review && review.isCurrentUser) {
+      message.warning('본인의 리뷰에는 helpful을 할 수 없습니다.');
+      return;
+    }
+
+    setHelpfulLoading({ ...helpfulLoading, [reviewId]: true });
+    
+    try {
+      const response = await api.reviews.toggleHelpful(reviewId, userData.id);
+      const { helpful_count, action } = response.data;
+
+      const newHelpfulCount = helpful_count || 0;
+      const newIsHelpful = action === 'added';
+
+      // 로컬 리뷰 상태 즉시 업데이트
+      setReviewsState(prevReviews => 
+        prevReviews.map(r => 
+          r.id === reviewId 
+            ? { 
+                ...r, 
+                helpful: newHelpfulCount,
+                is_helpful: newIsHelpful
+              }
+            : r
+        )
+      );
+
+      // 부모 컴포넌트에 즉시 업데이트
+      if (onHelpfulUpdate) {
+        onHelpfulUpdate(reviewId, newHelpfulCount, newIsHelpful);
+      }
+
+      // 백그라운드에서 전체 리뷰 목록 새로고침 (선택적)
+      if (onReviewUpdate) {
+        onReviewUpdate();
+      }
+    } catch (error) {
+      console.error('Failed to toggle helpful:', error);
+      const errorMessage = error.response?.data?.error || 'helpful 처리에 실패했습니다.';
+      message.error(errorMessage);
+    } finally {
+      setHelpfulLoading({ ...helpfulLoading, [reviewId]: false });
+    }
+  };
+
   // 삭제
   const handleDelete = async (reviewId) => {
     if (!window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
@@ -123,7 +197,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate }) {
 
   return (
     <div className="space-y-6">
-      {reviews.map((review) => {
+      {reviewsState.map((review) => {
         const isEditing = editingId === review.id;
         const isDeleting = deletingId === review.id;
         const isCurrentUserReview = review.isCurrentUser || false;
@@ -269,10 +343,43 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate }) {
                       </div>
                     )}
                     
-                    <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-                      <ThumbsUp className="w-4 h-4" />
-                      Helpful ({review.helpful})
-                    </button>
+                    {/* Helpful 정보 표시 */}
+                    <div className="mt-3 flex items-center gap-3">
+                      {/* Helpful 수 표시 (모든 리뷰에 표시) */}
+                      <span className="text-sm text-gray-600">
+                        {review.helpful || 0}人のお客様がこれが役に立ったと考えています
+                      </span>
+                      
+                      {/* Helpful 버튼 (본인 리뷰가 아닐 때만 표시) */}
+                      {!isCurrentUserReview && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleHelpfulToggle(review.id, e);
+                          }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                          }}
+                          disabled={helpfulLoading[review.id]}
+                          className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                            review.is_helpful
+                              ? 'bg-blue-50 text-blue-700 border-blue-300'
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                          }`}
+                          style={{ 
+                            pointerEvents: helpfulLoading[review.id] ? 'none' : 'auto',
+                            cursor: helpfulLoading[review.id] ? 'not-allowed' : 'pointer',
+                            zIndex: 10,
+                            position: 'relative'
+                          }}
+                        >
+                          <ThumbsUp className={`w-4 h-4 ${review.is_helpful ? 'fill-current' : ''}`} />
+                          参考になった
+                        </button>
+                      )}
+                    </div>
                   </>
                 )}
               </div>

@@ -96,7 +96,9 @@ export default function ProductPage() {
             }
           }
 
-          const reviewsResponse = await api.reviews.getByProduct(parseInt(id));
+          const reviewsResponse = await api.reviews.getByProduct(parseInt(id), {
+            user_id: currentUser?.id || null
+          });
           const reviewsData = reviewsResponse.data?.reviews || [];
           mappedReviews = reviewsData.map((review) => {
             // 리뷰 작성자가 현재 로그인한 유저인지 확인
@@ -135,7 +137,8 @@ export default function ProductPage() {
                 review.order_item?.product?.name ||
                 product.name ||
                 'Project',
-              helpful: 0,
+              helpful: review.helpful_count || 0,
+              is_helpful: review.is_helpful || false,
               isCurrentUser: isCurrentUser, // 본인 리뷰 여부
             };
           });
@@ -356,7 +359,9 @@ export default function ProductPage() {
                     const productResponse = await axios.get(`${API_URL}/api/products/${id}`);
                     const updatedProduct = productResponse.data?.product;
 
-                    const reviewsResponse = await api.reviews.getByProduct(parseInt(id));
+                    const reviewsResponse = await api.reviews.getByProduct(parseInt(id), {
+                      user_id: currentUser?.id || null
+                    });
                     const reviewsData = reviewsResponse.data?.reviews || [];
                     const updatedReviews = reviewsData.map((review) => {
                       const isCurrentUser = currentUser && (
@@ -390,7 +395,8 @@ export default function ProductPage() {
                             })
                           : '',
                         project: updatedProduct?.name || developer?.name || 'Project',
-                        helpful: 0,
+                        helpful: review.helpful_count || 0,
+                        is_helpful: review.is_helpful || false,
                         isCurrentUser: isCurrentUser,
                       };
                     });
@@ -412,6 +418,20 @@ export default function ProductPage() {
                   } catch (error) {
                     console.error('Failed to reload reviews:', error);
                   }
+                },
+                onHelpfulUpdate: (reviewId, helpfulCount, isHelpful) => {
+                  // helpful 즉시 업데이트
+                  setReviews(prevReviews => 
+                    prevReviews.map(r => 
+                      r.id === reviewId 
+                        ? { 
+                            ...r, 
+                            helpful: helpfulCount || 0,
+                            is_helpful: isHelpful
+                          }
+                        : r
+                    )
+                  );
                 }
               }} 
             />

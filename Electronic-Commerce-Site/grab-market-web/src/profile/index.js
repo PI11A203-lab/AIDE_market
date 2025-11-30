@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import ProfileHeader from './components/ProfileHeader';
 import ProfileHero from './components/ProfileHero';
 import TabNavigation from './components/TabNavigation';
@@ -7,7 +6,6 @@ import PurchasesTab from './components/PurchasesTab';
 import ReviewsTab from './components/ReviewsTab';
 import TeamsTab from './components/TeamsTab';
 import FavoritesTab from './components/FavoritesTab';
-import { API_URL } from '../config/constants';
 import { api } from '../config/api';
 import './index.css';
 

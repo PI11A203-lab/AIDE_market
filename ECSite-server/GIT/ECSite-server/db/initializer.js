@@ -121,6 +121,18 @@ modelLoadOrder.forEach((feature) => {
     }
 });
 
+// 追加のモデル読み込み: reviewHelpful (reviewに依存)
+const reviewHelpfulModelPath = path.join(modelsDir, 'review', 'reviewHelpfulModel.js');
+if (fs.existsSync(reviewHelpfulModelPath)) {
+    try {
+        const reviewHelpfulModel = require(reviewHelpfulModelPath)(sequelize, Sequelize.DataTypes);
+        db[reviewHelpfulModel.name] = reviewHelpfulModel;
+        console.log(`✓ モデル ${reviewHelpfulModel.name} を読み込みました`);
+    } catch (error) {
+        console.error(`✗ reviewHelpfulモデルの読み込みに失敗しました:`, error.message);
+    }
+}
+
 // モデル間の関連付けを定義
 Object.keys(db).forEach(modelName => {
     if (db[modelName] && typeof db[modelName].associate === 'function') {

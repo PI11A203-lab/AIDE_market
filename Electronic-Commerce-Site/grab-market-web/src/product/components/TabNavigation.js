@@ -40,6 +40,7 @@ export default function TabNavigation({ activeTab, onTabChange, developer }) {
             reviews={developer.reviews} 
             productId={developer.id}
             onReviewUpdate={developer.onReviewUpdate}
+            onHelpfulUpdate={developer.onHelpfulUpdate}
           />
         )}
       </div>

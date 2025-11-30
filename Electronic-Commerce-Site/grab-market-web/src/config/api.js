@@ -282,7 +282,7 @@ export const api = {
     /**
      * 상품별 리뷰 목록 조회
      * @param {number} productId - 상품 ID
-     * @param {Object} params - { page, limit }
+     * @param {Object} params - { page, limit, user_id }
      */
     getByProduct: (productId, params = {}) =>
       apiClient.get(`/api/reviews/products/${productId}`, { params }),
@@ -290,7 +290,7 @@ export const api = {
     /**
      * 사용자별 리뷰 목록 조회
      * @param {number} userId - 사용자 ID
-     * @param {Object} params - { page, limit }
+     * @param {Object} params - { page, limit, current_user_id }
      */
     getByUser: (userId, params = {}) =>
       apiClient.get(`/api/reviews/users/${userId}`, { params }),
@@ -298,8 +298,9 @@ export const api = {
     /**
      * ID로 리뷰 조회
      * @param {number} id - 리뷰 ID
+     * @param {Object} params - { user_id }
      */
-    getById: (id) => apiClient.get(`/api/reviews/${id}`),
+    getById: (id, params = {}) => apiClient.get(`/api/reviews/${id}`, { params }),
 
     /**
      * 리뷰 생성
@@ -320,6 +321,14 @@ export const api = {
      * @param {Object} config - axios config (params, data 등)
      */
     delete: (id, config = {}) => apiClient.delete(`/api/reviews/${id}`, config),
+
+    /**
+     * 리뷰 helpful 추가/삭제
+     * @param {number} reviewId - 리뷰 ID
+     * @param {number} userId - 사용자 ID
+     */
+    toggleHelpful: (reviewId, userId) =>
+      apiClient.post(`/api/reviews/${reviewId}/helpful`, { user_id: userId }),
   },
 
   // ==================== 주문 관련 ====================
