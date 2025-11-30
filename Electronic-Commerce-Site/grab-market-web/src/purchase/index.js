@@ -24,7 +24,21 @@ export default function PurchasePage() {
   // 상품 정보를 가져오는 함수
   const fetchProduct = async (id) => {
     try {
-      const res = await axios.get(`${API_URL}/api/products/${id}`);
+      // 사용자 정보 가져오기
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      let currentUserId = null;
+      if (userFromStorage) {
+        try {
+          const userData = JSON.parse(userFromStorage);
+          currentUserId = userData.id;
+        } catch (e) {
+          console.error('Failed to parse user data:', e);
+        }
+      }
+
+      const res = await axios.get(`${API_URL}/api/products/${id}`, {
+        params: currentUserId ? { user_id: currentUserId } : {}
+      });
       const product = res.data?.product;
       const tags = res.data?.tags || [];
       if (!product) {
@@ -36,6 +50,7 @@ export default function PurchasePage() {
         category: product.category_name || 'NLP',
         price: product.price,
         avatar: product.name.substring(0, 2),
+        is_purchased: product.is_purchased === 1 || product.is_purchased === true,
         tags: tags.map(tag => tag.name || tag).length > 0 
           ? tags.map(tag => tag.name || tag) 
           : ['AI/ML', 'Expert']
@@ -56,6 +71,11 @@ export default function PurchasePage() {
         if (buyNowId) {
           // 바로 구매 모드: 해당 상품만 표시
           const product = await fetchProduct(buyNowId);
+          if (product.is_purchased) {
+            message.warning('이미 구매한 상품입니다. 한 유저당 한 상품은 한 번만 구매 가능합니다.');
+            history.push('/');
+            return;
+          }
           setBuyNowItem(product);
           setCartItems([product]);
 
@@ -85,7 +105,18 @@ export default function PurchasePage() {
               const items = await Promise.all(
                 cartItemIds.map(id => fetchProduct(id))
               );
-              setCartItems(items);
+              // 이미 구매한 상품 필터링
+              const purchasedItems = items.filter(item => item.is_purchased);
+              const availableItems = items.filter(item => !item.is_purchased);
+              
+              if (purchasedItems.length > 0) {
+                message.warning(`${purchasedItems.length}개의 상품이 이미 구매되어 장바구니에서 제거되었습니다.`);
+                // 장바구니에서 구매한 상품 제거
+                const updatedCartIds = availableItems.map(item => item.id);
+                localStorage.setItem('cart', JSON.stringify(updatedCartIds));
+              }
+              
+              setCartItems(availableItems);
             } catch (e) {
               console.error('Failed to parse cart data:', e);
             }
@@ -237,8 +268,20 @@ export default function PurchasePage() {
       const orderResponse = await api.orders.create(orderData);
       const orderId = orderResponse.data.order.id;
       
-      // 주문 아이템 생성
-      await Promise.all(cartItems.map(item => 
+      // 주문 아이템 생성 (이미 구매한 상품은 제외)
+      const validItems = cartItems.filter(item => !item.is_purchased);
+      
+      if (validItems.length === 0) {
+        message.error('구매 가능한 상품이 없습니다.');
+        setIsProcessing(false);
+        return;
+      }
+      
+      if (validItems.length < cartItems.length) {
+        message.warning('이미 구매한 상품은 제외하고 주문을 진행합니다.');
+      }
+      
+      await Promise.all(validItems.map(item => 
         api.orderItems.create({
           order_id: orderId,
           product_id: item.id,

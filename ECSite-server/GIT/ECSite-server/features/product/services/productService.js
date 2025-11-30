@@ -9,7 +9,8 @@ exports.findAllProducts = async (options = {}) => {
         category,
         subcategory,
         search,
-        sort = 'download'
+        sort = 'download',
+        user_id = null
     } = options;
 
     const offset = (page - 1) * limit;
@@ -81,11 +82,25 @@ exports.findAllProducts = async (options = {}) => {
         }).join(', ');
     }
 
+    // is_purchased 필드 추가를 위한 서브쿼리
+    const isPurchasedSubquery = user_id 
+        ? `CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM order_items oi 
+                JOIN orders o ON oi.order_id = o.id 
+                WHERE o.user_id = :user_id AND oi.product_id = p.id
+            ) THEN 1 
+            ELSE 0 
+        END as is_purchased`
+        : `0 as is_purchased`;
+
     const products = await models.sequelize.query(
         `SELECT
             p.*,
             c.name_ja as category_name,
-            sc.name as subcategory_name
+            sc.name as subcategory_name,
+            ${isPurchasedSubquery}
          FROM Products p
          LEFT JOIN Categories c ON p.category_id = c.id
          LEFT JOIN Categories sc ON p.sub_category_id = sc.id
@@ -93,7 +108,10 @@ exports.findAllProducts = async (options = {}) => {
          ORDER BY ${orderClause}
          LIMIT :limit OFFSET :offset`,
         {
-            replacements,
+            replacements: {
+                ...replacements,
+                ...(user_id ? { user_id: parseInt(user_id) } : {})
+            },
             type: models.sequelize.QueryTypes.SELECT
         }
     );

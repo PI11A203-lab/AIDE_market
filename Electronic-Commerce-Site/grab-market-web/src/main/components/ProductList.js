@@ -80,17 +80,16 @@ const ProductList = ({ products }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((product) => {
           const isFavorite = favorites.has(product.id);
+          const isPurchased = product.is_purchased === 1 || product.is_purchased === true;
           
           return (
             <Link 
               key={product.id} 
               to={`/products/${product.id}`}
-              className={`relative bg-white rounded-2xl border border-gray-200 p-6 transition-all hover:shadow-lg hover:-translate-y-1 no-underline ${
-                product.soldout === 1 ? 'opacity-50' : ''
-              }`}
+              className="relative bg-white rounded-2xl border border-gray-200 p-6 transition-all hover:shadow-lg hover:-translate-y-1 no-underline"
             >
-              {product.soldout === 1 && (
-                <div className="absolute inset-0 bg-gray-900 bg-opacity-50 rounded-2xl backdrop-blur-sm z-10" />
+              {isPurchased && (
+                <div className="absolute inset-0 bg-gray-200 bg-opacity-80 rounded-2xl z-10" />
               )}
               
               <div className="flex items-start justify-between mb-4">
@@ -157,7 +156,19 @@ const ProductList = ({ products }) => {
 
               <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                 <span className="text-xl font-bold text-blue-600">¥{product.price.toLocaleString()}</span>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <button 
+                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    isPurchased 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                  disabled={isPurchased}
+                  onClick={(e) => {
+                    if (isPurchased) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
                   View
                 </button>
               </div>

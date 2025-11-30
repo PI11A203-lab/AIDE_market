@@ -171,6 +171,17 @@ function MainPage() {
       }
     }
 
+    // 사용자 정보 가져오기
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (userFromStorage) {
+      try {
+        const userData = JSON.parse(userFromStorage);
+        params.user_id = userData.id;
+      } catch (e) {
+        console.error('Failed to parse user data:', e);
+      }
+    }
+
     console.log('API 호출 파라미터:', params); // 디버깅용
 
     axios

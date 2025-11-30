@@ -110,6 +110,21 @@ exports.createOrderItem = async ({ order_id, product_id, quantity, unit_price, h
         throw new Error('상품을 찾을 수 없습니다');
     }
     
+    // 이미 구매한 상품인지 체크
+    const existingOrderItem = await models.OrderItem.findOne({
+        where: { product_id: parseInt(product_id) },
+        include: [{
+            model: models.Order,
+            as: 'order',
+            where: { user_id: order.user_id },
+            required: true
+        }]
+    });
+    
+    if (existingOrderItem) {
+        throw new Error('이미 구매한 상품입니다. 한 유저당 한 상품은 한 번만 구매 가능합니다.');
+    }
+    
     // quantity 유효성 검사
     const finalQuantity = quantity !== undefined && quantity !== null ? parseInt(quantity) : 1;
     if (finalQuantity < 1) {

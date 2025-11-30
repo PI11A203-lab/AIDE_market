@@ -3,14 +3,15 @@ const productService = require("../services/productService");
 // 全商品一覧 (ページネーション + フィルタ + ソート)
 exports.getProducts = async (req, res) => {
     try {
-        const { page, limit, category, subcategory, search, sort } = req.query;
+        const { page, limit, category, subcategory, search, sort, user_id } = req.query;
         const result = await productService.findAllProducts({
             page: parseInt(page) || 1,
             limit: parseInt(limit) || 20,
             category,
             subcategory,
             search,
-            sort
+            sort,
+            user_id: user_id || null
         });
         res.json(result);
     } catch (err) {

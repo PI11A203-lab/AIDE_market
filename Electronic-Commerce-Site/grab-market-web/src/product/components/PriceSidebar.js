@@ -1,9 +1,17 @@
 import React from 'react';
 import { MapPin, Calendar, Clock, Award } from 'lucide-react';
 
-export default function PriceSidebar({ developer, onBuyNow, onAddToCart }) {
+export default function PriceSidebar({ developer, onBuyNow, onAddToCart, isPurchased }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24">
+    <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24 relative">
+      {isPurchased && (
+        <>
+          <div className="absolute inset-0 bg-gray-200 bg-opacity-80 rounded-2xl z-10" />
+          <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold z-20">
+            購入済み
+          </div>
+        </>
+      )}
       <div className="mb-6">
         <div className="text-sm text-gray-600 mb-2">価格</div>
         <div className="text-5xl font-bold text-gray-900 mb-1">
@@ -12,14 +20,24 @@ export default function PriceSidebar({ developer, onBuyNow, onAddToCart }) {
       </div>
       <button 
         onClick={onBuyNow}
-        className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-xl transition mb-3"
+        disabled={isPurchased}
+        className={`w-full py-4 rounded-xl font-bold text-lg transition mb-3 ${
+          isPurchased
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-xl'
+        }`}
       >
         今すぐ買う
       </button>
       
       <button 
         onClick={onAddToCart}
-        className="w-full py-4 border-2 border-gray-300 rounded-xl font-bold hover:border-gray-400 hover:bg-gray-50 transition"
+        disabled={isPurchased}
+        className={`w-full py-4 border-2 rounded-xl font-bold transition ${
+          isPurchased
+            ? 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
+            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+        }`}
       >
         カートに入れる
       </button>

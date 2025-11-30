@@ -21,6 +21,7 @@ export default function ProductPage() {
   const [reviews, setReviews] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isPurchased, setIsPurchased] = useState(false);
 
   // 사용자 정보 및 찜목록 상태 확인
   useEffect(() => {
@@ -54,8 +55,22 @@ export default function ProductPage() {
     
     const loadData = async () => {
       try {
+        // 사용자 정보 가져오기
+        const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+        let currentUserId = null;
+        if (userFromStorage) {
+          try {
+            const userData = JSON.parse(userFromStorage);
+            currentUserId = userData.id;
+          } catch (e) {
+            console.error('Failed to parse user data:', e);
+          }
+        }
+
         // 상품 정보 가져오기
-        const productResponse = await axios.get(`${API_URL}/api/products/${id}`);
+        const productResponse = await axios.get(`${API_URL}/api/products/${id}`, {
+          params: currentUserId ? { user_id: currentUserId } : {}
+        });
         const product = productResponse.data?.product;
         
         if (!product) {
@@ -157,6 +172,10 @@ export default function ProductPage() {
           return count.toString();
         };
 
+        // 구매 완료 여부 확인
+        const purchased = product.is_purchased === 1 || product.is_purchased === true;
+        setIsPurchased(purchased);
+
         // API 응답을 developer 형식으로 변환
         setDeveloper({
           id: product.id,
@@ -243,6 +262,10 @@ export default function ProductPage() {
 
   // "今すぐ買う" 버튼 클릭 핸들러 - 장바구니에 추가하지 않고 바로 구매 페이지로 이동
   const handleBuyNow = () => {
+    if (isPurchased) {
+      message.warning('이미 구매한 상품입니다.');
+      return;
+    }
     if (developer && developer.id) {
       // URL 파라미터로 상품 ID 전달 (바로 구매 모드)
       history.push(`/purchase?buyNow=${developer.id}`);
@@ -251,6 +274,10 @@ export default function ProductPage() {
 
   // "カートに入れる" 버튼 클릭 핸들러
   const handleAddToCart = () => {
+    if (isPurchased) {
+      message.warning('이미 구매한 상품입니다.');
+      return;
+    }
     if (developer && developer.id) {
       addToCart(developer.id);
       // 성공 메시지 표시 (선택사항)
@@ -443,6 +470,7 @@ export default function ProductPage() {
               developer={developer} 
               onBuyNow={handleBuyNow}
               onAddToCart={handleAddToCart}
+              isPurchased={isPurchased}
             />
             <TrustBadges />
           </div>

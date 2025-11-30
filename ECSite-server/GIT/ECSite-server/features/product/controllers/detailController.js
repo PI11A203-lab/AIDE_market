@@ -3,7 +3,8 @@ const detailService = require("../services/detailService");
 // 商品詳細情報 (stats + tags + synergies 含む)
 exports.getProductById = async (req, res) => {
     try {
-        const result = await detailService.findProductById(req.params.id);
+        const { user_id } = req.query;
+        const result = await detailService.findProductById(req.params.id, user_id || null);
         if (!result) {
             return res.status(404).json({ error: "상품을 찾을 수 없습니다" });
         }
