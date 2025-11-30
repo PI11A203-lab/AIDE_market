@@ -396,16 +396,12 @@ export default function ProductPage() {
                     });
                     setReviews(updatedReviews);
                     if (updatedProduct) {
-                      const cachedRating = getRatingCache(parseInt(id));
-                      let ratingAverage = updatedProduct.rating_average || 0;
-                      let ratingCount = updatedProduct.rating_count || 0;
+                      // 리뷰 삭제/수정 후에는 항상 최신 상품 정보 사용
+                      const ratingAverage = updatedProduct.rating_average || 0;
+                      const ratingCount = updatedProduct.rating_count || 0;
                       
-                      if (cachedRating) {
-                        ratingAverage = cachedRating.rating_average;
-                        ratingCount = cachedRating.rating_count;
-                      } else {
-                        setRatingCache(parseInt(id), ratingAverage, ratingCount);
-                      }
+                      // 캐시 업데이트 (최신 정보로)
+                      setRatingCache(parseInt(id), ratingAverage, ratingCount);
 
                       setDeveloper(prev => ({
                         ...prev,

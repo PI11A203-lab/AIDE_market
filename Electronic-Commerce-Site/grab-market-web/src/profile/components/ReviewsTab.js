@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Edit2, Trash2, X, Check } from 'lucide-react';
 import { message, Image } from 'antd';
+import axios from 'axios';
 import { api } from '../../config/api';
 import { API_URL } from '../../config/constants';
-import { clearRatingCache } from '../../utils/ratingCache';
+import { clearRatingCache, setRatingCache } from '../../utils/ratingCache';
 
 export default function ReviewsTab({ reviews, onReviewUpdate }) {
   const [editingId, setEditingId] = useState(null);
@@ -60,6 +61,29 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
       // 별점 캐시 삭제 (다음 로드 시 최신 별점으로 갱신)
       if (productId) {
         clearRatingCache(productId);
+        
+        // 상품 정보를 즉시 업데이트하여 별점과 리뷰 수를 최신화
+        let updateSuccess = false;
+        try {
+          const productResponse = await axios.get(`${API_URL}/api/products/${productId}`);
+          const updatedProduct = productResponse.data?.product;
+          
+          if (updatedProduct) {
+            // 업데이트된 상품 정보로 별점 캐시 갱신
+            setRatingCache(productId, updatedProduct.rating_average, updatedProduct.rating_count);
+            updateSuccess = true;
+          }
+        } catch (productError) {
+          console.error('Failed to update product info after review update:', productError);
+        }
+        
+        // 업데이트 실패 시에도 문제없음:
+        // 1. 캐시는 이미 삭제되어 다음 로드 시 최신 정보를 받을 수 있음
+        // 2. 백엔드에서는 이미 별점과 리뷰 수가 업데이트됨
+        // 3. 페이지 새로고침 또는 상품 페이지 방문 시 자동으로 최신 정보 반영
+        if (!updateSuccess) {
+          console.warn(`상품 정보 즉시 업데이트 실패 (productId: ${productId}). 다음 로드 시 최신 정보가 반영됩니다.`);
+        }
       }
 
       // 부모 컴포넌트에 리뷰 목록 새로고침 요청
@@ -78,6 +102,11 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
 
   // 삭제
   const handleDelete = async (reviewId, productId) => {
+    if (!reviewId) {
+      message.error('리뷰 ID를 찾을 수 없습니다.');
+      return;
+    }
+
     if (!window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
       return;
     }
@@ -97,25 +126,87 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
       return;
     }
 
+    if (!userData || !userData.id) {
+      message.error('사용자 ID를 찾을 수 없습니다.');
+      return;
+    }
+
     setDeletingId(reviewId);
     try {
+      console.log('리뷰 삭제 시도:', { 
+        reviewId, 
+        userId: userData.id, 
+        productId,
+        review: reviews.find(r => (r.id || r.review_id) === reviewId)
+      });
+      
       // DELETE 요청에 user_id를 query parameter로 전달
-      await api.reviews.delete(reviewId, { params: { user_id: userData.id } });
+      const deleteResponse = await api.reviews.delete(reviewId, { params: { user_id: userData.id } });
+      
+      console.log('리뷰 삭제 API 응답:', deleteResponse.data);
+
+      if (!deleteResponse || !deleteResponse.data) {
+        throw new Error('삭제 응답이 올바르지 않습니다.');
+      }
 
       message.success('리뷰가 삭제되었습니다.');
       
       // 별점 캐시 삭제 (다음 로드 시 최신 별점으로 갱신)
       if (productId) {
         clearRatingCache(productId);
+        
+        // 상품 정보를 즉시 업데이트하여 별점과 리뷰 수를 최신화
+        let updateSuccess = false;
+        try {
+          const productResponse = await axios.get(`${API_URL}/api/products/${productId}`);
+          const updatedProduct = productResponse.data?.product;
+          
+          if (updatedProduct) {
+            // 업데이트된 상품 정보로 별점 캐시 갱신
+            setRatingCache(productId, updatedProduct.rating_average, updatedProduct.rating_count);
+            updateSuccess = true;
+          }
+        } catch (productError) {
+          console.error('Failed to update product info after review deletion:', productError);
+        }
+        
+        // 업데이트 실패 시에도 문제없음:
+        // 1. 캐시는 이미 삭제되어 다음 로드 시 최신 정보를 받을 수 있음
+        // 2. 백엔드에서는 이미 별점과 리뷰 수가 업데이트됨
+        // 3. 페이지 새로고침 또는 상품 페이지 방문 시 자동으로 최신 정보 반영
+        if (!updateSuccess) {
+          console.warn(`상품 정보 즉시 업데이트 실패 (productId: ${productId}). 다음 로드 시 최신 정보가 반영됩니다.`);
+        }
       }
 
-      // 부모 컴포넌트에 리뷰 목록 새로고침 요청
+      // 부모 컴포넌트에 리뷰 목록 새로고침 요청 (즉시 실행)
+      console.log('리뷰 목록 새로고침 요청');
       if (onReviewUpdate) {
         onReviewUpdate();
+      } else {
+        console.warn('onReviewUpdate 콜백이 없습니다.');
       }
     } catch (error) {
-      console.error('Failed to delete review:', error);
-      const errorMessage = error.response?.data?.error || '리뷰 삭제에 실패했습니다.';
+      console.error('리뷰 삭제 실패:', {
+        error,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data,
+        reviewId,
+        userId: userData?.id
+      });
+      
+      let errorMessage = '리뷰 삭제에 실패했습니다.';
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.status === 400) {
+        errorMessage = '리뷰를 삭제할 권한이 없습니다.';
+      } else if (error.response?.status === 404) {
+        errorMessage = '리뷰를 찾을 수 없습니다.';
+      } else if (error.response?.status === 500) {
+        errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      }
+      
       message.error(errorMessage);
     } finally {
       setDeletingId(null);

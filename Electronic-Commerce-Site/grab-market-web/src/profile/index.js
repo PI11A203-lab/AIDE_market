@@ -15,7 +15,6 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState('purchases');
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]); // 주문 목록
-  const [purchases, setPurchases] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -68,37 +67,6 @@ export default function UserProfile() {
           setOrders([]);
         });
       
-      // 구매 내역 (기존 코드 유지 - 하위 호환성)
-      const savedPurchases = localStorage.getItem('purchases');
-      if (savedPurchases) {
-        try {
-          const purchaseIds = JSON.parse(savedPurchases);
-          Promise.all(
-            purchaseIds.map(id => 
-              axios.get(`${API_URL}/api/products/${id}`)
-                .then(res => {
-                  const product = res.data.product;
-                  return {
-                    id: product.id,
-                    name: product.name,
-                    category: 'NLP',
-                    price: product.price,
-                    purchaseDate: new Date().toISOString().split('T')[0],
-                    avatar: product.name.substring(0, 2),
-                    code: `${product.name.toUpperCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-                  };
-                })
-            )
-          ).then(items => {
-            setPurchases(items);
-          }).catch(error => {
-            console.error('エラー発生 : ', error);
-          });
-        } catch (e) {
-          console.error('Failed to parse purchases data:', e);
-        }
-      }
-
       // 찜목록 가져오기
       api.favorites.getByUser(userId)
         .then(response => {

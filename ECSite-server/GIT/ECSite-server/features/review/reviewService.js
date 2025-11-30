@@ -214,20 +214,33 @@ exports.updateReview = async (reviewId, userId, rating = null, reviewText = null
 
 // 리뷰 삭제
 exports.deleteReview = async (reviewId, userId) => {
+    console.log(`🗑️ 리뷰 삭제 요청: reviewId=${reviewId}, userId=${userId}`);
+    
     const review = await models.ProductReview.findByPk(reviewId);
     if (!review) {
+        console.error(`❌ 리뷰를 찾을 수 없습니다: reviewId=${reviewId}`);
         throw new Error('리뷰를 찾을 수 없습니다');
     }
     
     // 본인의 리뷰만 삭제 가능
     if (review.user_id !== userId) {
+        console.error(`❌ 권한 없음: review.user_id=${review.user_id}, 요청한 userId=${userId}`);
         throw new Error('본인의 리뷰만 삭제할 수 있습니다');
     }
     
     const productId = review.product_id;
     const orderItemId = review.order_item_id;
     
+    console.log(`📝 삭제할 리뷰 정보:`, {
+        reviewId,
+        productId,
+        orderItemId,
+        rating: review.rating,
+        user_id: review.user_id
+    });
+    
     await review.destroy();
+    console.log(`✅ 리뷰 삭제 완료: reviewId=${reviewId}`);
     
     // order_items의 has_review 업데이트
     await models.sequelize.query(
@@ -239,6 +252,7 @@ exports.deleteReview = async (reviewId, userId) => {
     ).catch(() => {}); // order_items 테이블이 없을 수도 있으므로 에러 무시
     
     // 상품의 평균 평점 업데이트
+    console.log(`📊 상품 평점 업데이트 시작: productId=${productId}`);
     await updateProductRating(productId);
     
     return true;
@@ -286,21 +300,57 @@ async function updateProductRating(productId) {
             }
         );
         
-        if (result && result[0]) {
-            const avgRating = parseFloat(result[0].avg_rating) || 0;
+        if (result && result.length > 0) {
+            // 리뷰가 0개일 때: count는 0, avg_rating은 NULL
             const ratingCount = parseInt(result[0].count) || 0;
+            let avgRating = 0;
             
-            await models.Product.update(
-                {
-                    rating_average: avgRating.toFixed(2),
-                    rating_count: ratingCount
-                },
+            if (ratingCount > 0 && result[0].avg_rating !== null) {
+                avgRating = parseFloat(result[0].avg_rating) || 0;
+            }
+            
+            const updateData = {
+                rating_average: avgRating.toFixed(2),
+                rating_count: ratingCount
+            };
+            
+            const [updatedRows] = await models.Product.update(
+                updateData,
                 { where: { id: productId } }
             );
+            
+            if (updatedRows > 0) {
+                console.log(`✅ 상품 ${productId}의 평점 업데이트 성공:`, updateData);
+            } else {
+                console.warn(`⚠️ 상품 ${productId}를 찾을 수 없어 평점을 업데이트할 수 없습니다.`);
+            }
+        } else {
+            // 리뷰가 없는 경우 (데이터가 없는 경우)
+            const updateData = {
+                rating_average: '0.00',
+                rating_count: 0
+            };
+            
+            const [updatedRows] = await models.Product.update(
+                updateData,
+                { where: { id: productId } }
+            );
+            
+            if (updatedRows > 0) {
+                console.log(`✅ 상품 ${productId}의 평점을 0으로 초기화:`, updateData);
+            } else {
+                console.warn(`⚠️ 상품 ${productId}를 찾을 수 없어 평점을 업데이트할 수 없습니다.`);
+            }
         }
     } catch (error) {
-        console.error('평점 업데이트 실패:', error);
-        // 에러가 발생해도 계속 진행
+        console.error(`❌ 상품 ${productId}의 평점 업데이트 실패:`, error);
+        console.error('에러 상세:', {
+            message: error.message,
+            stack: error.stack,
+            productId
+        });
+        // 에러가 발생해도 계속 진행 (리뷰 삭제/수정은 성공한 상태)
+        // 다음 로드 시 자동으로 올바른 값이 계산됨
     }
 }
 
