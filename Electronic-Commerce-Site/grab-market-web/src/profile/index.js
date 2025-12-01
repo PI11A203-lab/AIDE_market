@@ -7,6 +7,7 @@ import ReviewsTab from './components/ReviewsTab';
 import TeamsTab from './components/TeamsTab';
 import FavoritesTab from './components/FavoritesTab';
 import { api } from '../config/api';
+import { API_URL } from '../config/constants';
 import './index.css';
 
 export default function UserProfile() {
@@ -18,36 +19,72 @@ export default function UserProfile() {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loadUserData = () => {
+  const loadUserData = async () => {
     // 사용자 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     let userData = null;
     if (userFromStorage) {
       try {
         userData = JSON.parse(userFromStorage);
-        setUser({
-          id: userData.id,
-          name: userData.nickname || userData.name || 'User',
-          avatar: (userData.nickname || userData.name || 'User').substring(0, 2),
-          email: userData.email || 'user@example.com',
-          joinDate: 'January 2025',
-          tags: ['React', 'Node.js', 'Python', 'AI/ML'],
-          github: 'user',
-          bio: 'Full-stack developer passionate about AI and web technologies',
-          stats: {
-            purchases: 0,
-            reviews: 0,
-            teams: 0,
-            favorites: 0
-          }
-        });
+        const userId = userData.id;
+        
+        // API에서 최신 사용자 정보 가져오기
+        try {
+          const userResponse = await api.users.getById(userId);
+          const apiUser = userResponse.data.user;
+          
+          // 프로필 이미지 URL 생성
+          const avatarDisplay = apiUser.profile_image 
+            ? `${API_URL}/${apiUser.profile_image}`
+            : null;
+          
+          setUser({
+            id: apiUser.id,
+            name: apiUser.username || apiUser.nickname || 'User',
+            avatar: avatarDisplay || (apiUser.username || 'User').substring(0, 2),
+            email: apiUser.email || 'user@example.com',
+            is_email_public: apiUser.is_email_public || false,
+            profile_image: apiUser.profile_image || null,
+            github_url: apiUser.github_url || null,
+            tags: Array.isArray(apiUser.tags) ? apiUser.tags.map(t => typeof t === 'object' ? t.name : t) : [],
+            joinDate: apiUser.createdAt ? new Date(apiUser.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' }) : 'January 2025',
+            stats: {
+              purchases: 0,
+              reviews: 0,
+              teams: 0,
+              favorites: 0
+            }
+          });
+          
+          userData = apiUser; // API에서 가져온 데이터로 업데이트
+        } catch (apiError) {
+          console.error('Failed to load user from API:', apiError);
+          // API 실패 시 로컬 스토리지 데이터 사용
+          setUser({
+            id: userData.id,
+            name: userData.nickname || userData.name || 'User',
+            avatar: (userData.nickname || userData.name || 'User').substring(0, 2),
+            email: userData.email || 'user@example.com',
+            is_email_public: userData.is_email_public || false,
+            profile_image: userData.profile_image || null,
+            github_url: userData.github_url || null,
+            tags: Array.isArray(userData.tags) ? userData.tags.map(t => typeof t === 'object' ? t.name : t) : [],
+            joinDate: 'January 2025',
+            stats: {
+              purchases: 0,
+              reviews: 0,
+              teams: 0,
+              favorites: 0
+            }
+          });
+        }
       } catch (e) {
         console.error('Failed to parse user data:', e);
       }
     }
 
     // 주문 목록 가져오기 (API에서)
-    if (userData) {
+    if (userData && userData.id) {
       const userId = userData.id;
       
       // 주문 목록 가져오기

@@ -1,57 +1,86 @@
-import React from 'react';
-import { Filter } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const CategorySidebar = ({ categories, selectedCategory, onCategoryChange, sortBy, onSortChange }) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // 드롭다운 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 정렬 옵션
+  const sortOptions = [
+    { value: 'download', label: 'Most Downloaded' },
+    { value: 'rating', label: 'Highest Rated' },
+    { value: 'price', label: 'Price: Low to High' },
+    { value: 'priceDesc', label: 'Recently Added' },
+  ];
+
+  const currentSortLabel = sortOptions.find(opt => opt.value === sortBy)?.label || 'Most Downloaded';
+
+  const handleSortChange = (value) => {
+    onSortChange(value);
+    setDropdownOpen(false);
+  };
+
+  // 카테고리 필터 탭 (MainPageModern.html 스타일)
+  const filterTabs = [
+    { id: 'all', name: 'All Developers' },
+    { id: 'fe', name: 'Frontend' },
+    { id: 'be', name: 'Backend' },
+    { id: 'design', name: 'Design' },
+    { id: 'mg', name: 'AI/ML' },
+  ];
+
   return (
-    <aside className="w-64 flex-shrink-0">
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24">
-        <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-6">
-          <Filter className="w-5 h-5" />
-          Categories
-        </h3>
-        <div className="space-y-2 mb-8">
-          {categories.map((cat) => (
+    <>
+      {/* 필터 섹션 */}
+      <div className="filter-section">
+        <div className="filter-tabs">
+          {filterTabs.map((tab) => (
             <button
-              key={cat.id}
-              onClick={() => onCategoryChange(cat.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                selectedCategory === cat.id 
-                  ? 'bg-blue-50 border-2 border-blue-500 text-blue-700 font-semibold' 
-                  : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-transparent'
-              }`}
+              key={tab.id}
+              className={`filter-tab ${selectedCategory === tab.id ? 'active' : ''}`}
+              onClick={() => onCategoryChange(tab.id)}
             >
-              {cat.icon && (
-                <img 
-                  src={cat.icon} 
-                  alt={cat.name} 
-                  className="w-6 h-6 object-contain"
-                />
-              )}
-              <span className="flex-1 text-left">{cat.name}</span>
-              <span className={`px-2 py-1 rounded-lg text-sm font-medium ${
-                selectedCategory === cat.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-600'
-              }`}>
-                {cat.count}
-              </span>
+              {tab.name}
             </button>
           ))}
         </div>
-
-        <div className="border-t border-gray-200 pt-6">
-          <h4 className="text-sm font-semibold text-gray-700 mb-3">Sort by</h4>
-          <select 
-            value={sortBy}
-            onChange={(e) => onSortChange(e.target.value)}
-            className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        <div className="custom-dropdown" ref={dropdownRef}>
+          <button 
+            className={`dropdown-button ${dropdownOpen ? 'active' : ''}`}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
           >
-            <option value="download">最多ダウンロード</option>
-            <option value="rating">最高評価</option>
-            <option value="price">価格: 低から高</option>
-            <option value="priceDesc">価格: 高から低</option>
-          </select>
+            <span className="dropdown-label">{currentSortLabel}</span>
+            <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1.5L6 6.5L11 1.5" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <div className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`}>
+            {sortOptions.map((option) => (
+              <div
+                key={option.value}
+                className={`dropdown-item ${sortBy === option.value ? 'active' : ''}`}
+                onClick={() => handleSortChange(option.value)}
+              >
+                {option.label}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </aside>
+    </>
   );
 };
 

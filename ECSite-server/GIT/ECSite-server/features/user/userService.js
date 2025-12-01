@@ -30,7 +30,27 @@ exports.findUserById = async (id) => {
         return null;
     }
     
-    return user.toJSON();
+    const userData = user.toJSON();
+    
+    // 사용자의 태그 목록 가져오기
+    try {
+        const userTags = await models.sequelize.query(
+            `SELECT t.id, t.name, t.description 
+             FROM user_tags ut 
+             JOIN tags t ON ut.tag_id = t.id 
+             WHERE ut.user_id = :userId`,
+            {
+                replacements: { userId: id },
+                type: models.sequelize.QueryTypes.SELECT
+            }
+        );
+        userData.tags = userTags || [];
+    } catch (error) {
+        console.error('사용자 태그 조회 실패:', error);
+        userData.tags = [];
+    }
+    
+    return userData;
 };
 
 // 이메일로 사용자 조회 (로그인용 - 비밀번호 포함)
@@ -96,7 +116,7 @@ exports.createUser = async ({ username, email, password, role, profile_image }) 
 };
 
 // 사용자 업데이트
-exports.updateUser = async (id, { username, email, password, role, profile_image }) => {
+exports.updateUser = async (id, { username, email, password, role, profile_image, is_email_public, bio, github_url }) => {
     const user = await models.User.findByPk(id);
     if (!user) {
         throw new Error('사용자를 찾을 수 없습니다');
@@ -149,6 +169,18 @@ exports.updateUser = async (id, { username, email, password, role, profile_image
         updateData.profile_image = profile_image || null;
     }
     
+    if (is_email_public !== undefined) {
+        updateData.is_email_public = is_email_public === true || is_email_public === 'true' || is_email_public === 1;
+    }
+    
+    if (bio !== undefined) {
+        updateData.bio = bio || null;
+    }
+    
+    if (github_url !== undefined) {
+        updateData.github_url = github_url || null;
+    }
+    
     await user.update(updateData);
     
     // 비밀번호 제외하고 반환
@@ -174,5 +206,37 @@ exports.validatePassword = async (userId, password) => {
     }
     
     return await user.validatePassword(password);
+};
+
+// 사용자 태그 업데이트
+exports.updateUserTags = async (userId, tagIds) => {
+    try {
+        // 기존 태그 삭제
+        await models.sequelize.query(
+            'DELETE FROM user_tags WHERE user_id = :userId',
+            {
+                replacements: { userId },
+                type: models.sequelize.QueryTypes.DELETE
+            }
+        );
+        
+        // 새 태그 추가
+        if (tagIds && tagIds.length > 0) {
+            for (const tagId of tagIds) {
+                await models.sequelize.query(
+                    'INSERT INTO user_tags (user_id, tag_id, created_at) VALUES (:userId, :tagId, NOW())',
+                    {
+                        replacements: { userId, tagId },
+                        type: models.sequelize.QueryTypes.INSERT
+                    }
+                );
+            }
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('사용자 태그 업데이트 실패:', error);
+        throw new Error('사용자 태그 업데이트에 실패했습니다');
+    }
 };
 

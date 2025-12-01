@@ -6,7 +6,9 @@ import { API_URL } from '../config/constants';
 import LogoutButton from './components/LogoutButton';
 import CategorySidebar from './components/CategorySidebar';
 import RankingSection from './components/RankingSection';
+import RecommendedSection from './components/RecommendedSection';
 import ProductList from './components/ProductList';
+import TopCreators from './components/TopCreators';
 import './index.css';
 
 // 카테고리 ID 매핑 (문자열 → 숫자)
@@ -25,6 +27,7 @@ function MainPage() {
   const [products, setProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]); // 모든 상품 (카테고리 카운트용)
   const [topRankingProducts, setTopRankingProducts] = useState([]); // 고정 랭킹 3개
+  const [recommendedProducts, setRecommendedProducts] = useState([]); // 추천 상품 6개
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all'); // 문자열 ID 사용
   const [sortBy, setSortBy] = useState('download');
@@ -101,6 +104,26 @@ function MainPage() {
         setTopRankingProducts([]);
       });
   }, []);
+
+  // 추천 상품 9개 가져오기 (평점 높은 순, 랭킹 제외)
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/api/products`, { params: { limit: 100, sort: 'rating' } })
+      .then((result) => {
+        const allProductsData = result.data.products || result.data || [];
+        // 랭킹 상품 ID 제외하고 평점 높은 순으로 9개 선택
+        const rankingIds = new Set(topRankingProducts.map(p => p.id));
+        const recommended = [...allProductsData]
+          .filter(p => !rankingIds.has(p.id) && parseFloat(p.rating_average || 0) > 0)
+          .sort((a, b) => parseFloat(b.rating_average || 0) - parseFloat(a.rating_average || 0))
+          .slice(0, 9);
+        setRecommendedProducts(recommended);
+      })
+      .catch((error) => {
+        console.error('추천 상품 로드 에러:', error);
+        setRecommendedProducts([]);
+      });
+  }, [topRankingProducts]);
 
   // 로그아웃 함수
   const handleLogout = () => {
@@ -215,119 +238,174 @@ function MainPage() {
   const regularProducts = products;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
+    <div className="page-container">
       {/* 헤더 */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-12">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold flex items-center gap-2 m-0">
-                <span className="text-3xl">🤖</span>
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  AIDE Market
-                </span>
-              </h1>
+      <header className="header">
+        <div className="header-inner">
+          <Link to="/" className="logo" style={{ color: '#1A1A1A', textDecoration: 'none' }}>
+            <span className="logo-text" style={{ color: '#1A1A1A' }}>AIDE Market</span>
+          </Link>
+          
+          <nav className="nav">
+            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Marketplace</button>
+            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Rankings</button>
+            <Link to="/team" className="nav-link">Teams</Link>
+            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Resources</button>
+          </nav>
+
+          <div className="header-actions">
+            <div style={{ position: 'relative' }}>
+              <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', color: '#9CA3AF', pointerEvents: 'none' }} />
+              <input
+                type="text"
+                placeholder="Search developers..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{
+                  width: '200px',
+                  height: '40px',
+                  padding: '0 16px 0 40px',
+                  background: '#F3F4F6',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  color: '#1A1A1A',
+                  outline: 'none',
+                  transition: 'all 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.background = '#E5E7EB';
+                }}
+                onBlur={(e) => {
+                  e.target.style.background = '#F3F4F6';
+                }}
+              />
             </div>
-            <nav className="hidden md:flex gap-8">
-              <button className="text-gray-700 font-medium hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer p-0 text-base" type="button">Models</button>
-              <Link to="/team" className="text-gray-700 font-medium hover:text-gray-900 transition-colors no-underline">Teams</Link>
-              <button className="text-gray-700 font-medium hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer p-0 text-base" type="button">Leaderboard</button>
-              <button className="text-gray-700 font-medium hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer p-0 text-base" type="button">Pricing</button>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/purchase" className="flex items-center justify-center p-2 rounded-lg transition-colors hover:bg-gray-100 no-underline text-gray-700">
-              <ShoppingCart className="w-6 h-6" />
+            <Link to="/purchase" className="icon-btn">
+              <ShoppingCart width={20} height={20} />
             </Link>
             {user ? (
-              <div className="flex items-center gap-3">
-                <Link to="/profile" className="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium no-underline transition-all hover:shadow-lg">
+              <>
+                <Link to="/profile" className="btn-primary">
                   {user.nickname}
                 </Link>
                 <LogoutButton onLogout={handleLogout} />
-              </div>
+              </>
             ) : (
-              <Link to="/login" className="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium no-underline transition-all hover:shadow-lg">Sign in</Link>
+              <Link to="/login" className="btn-primary">ログイン</Link>
             )}
           </div>
         </div>
       </header>
 
-      {/* 검색 영역 */}
-      <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Find the Perfect AI Developer</h2>
-          <p className="text-gray-600 text-lg mb-8">
-           AI開発者 {categories.find(c => c.id === selectedCategory)?.count || 0} 人があなたのビジョンを実現する準備ができています
-          </p>
-          
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
-              <input
-                type="text"
-                placeholder="あなたが探しているAIは何ですか？"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-              />
+      {/* 메인 */}
+      <main className="main" style={{ maxWidth: '1400px', margin: '0 auto', padding: '40px' }}>
+        {/* 히어로 섹션 */}
+        <div className="hero-section">
+          <div className="hero-content">
+            <h1 className="hero-title">Discover, Create and Hire Top AI Developers</h1>
+            <p className="hero-subtitle">
+              Browse through {categories.find(c => c.id === selectedCategory)?.count || allProducts.length}+ verified AI developers ready to bring your vision to life. Start building your dream team today.
+            </p>
+            <div className="hero-buttons">
+              <button className="btn-hero-primary">Explore Now</button>
+              <button className="btn-hero-secondary">Learn More</button>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* 사이드바 */}
-          <CategorySidebar
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-          />
+        {/* 이번달 랭킹 AI */}
+        {topRankingProducts.length > 0 && (
+          <div className="featured-section">
+            <div className="featured-card ranking-card">
+              <div className="featured-header">
+                <div>
+                  <h2 className="featured-title">This Month's Top Ranking</h2>
+                  <p className="featured-subtitle">Best performing AI developers of the month</p>
+                </div>
+                <button type="button" className="see-all-link" style={{ background: 'none', border: 'none', padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>View All</button>
+              </div>
+              <RankingSection topProducts={topRankingProducts} />
+            </div>
 
-          {/* 메인 콘텐츠 */}
-          <main className="flex-1">
+            {/* 추천 AI */}
+            {recommendedProducts.length > 0 && (
+              <RecommendedSection products={recommendedProducts} />
+            )}
+          </div>
+        )}
+
+        {/* 컨텐츠 그리드 */}
+        <div className="content-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '30px' }}>
+          {/* 메인 컨텐츠 */}
+          <div className="main-content" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* 필터 섹션 */}
+            <CategorySidebar
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+            />
+
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-gray-600">読み込み中...</p>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0' }}>
+                <div style={{ width: '48px', height: '48px', border: '4px solid #667eea', borderTop: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '16px' }}></div>
+                <p style={{ color: '#6B7280' }}>読み込み中...</p>
               </div>
             ) : (
               <>
-                {/* 고정 Top 3 랭킹 ("すべて" 카테고리일 때만 표시) */}
-                {selectedCategory === 'all' && topRankingProducts.length > 0 && (
-                  <RankingSection topProducts={topRankingProducts} />
-                )}
-
-                {/* 나머지 제품 목록 (랭킹 제외) */}
+                {/* 제품 그리드 */}
                 <ProductList products={regularProducts} />
 
                 {/* 상품이 없을 때 */}
                 {products.length === 0 && (
-                  <div className="text-center py-20">
-                    <p className="text-gray-600 text-lg">該当する商品がありません</p>
+                  <div style={{ textAlign: 'center', padding: '80px 0' }}>
+                    <p style={{ color: '#6B7280', fontSize: '18px' }}>該当する商品がありません</p>
                   </div>
                 )}
 
                 {/* 페이지네이션 ("すべて" 카테고리일 때만 표시) */}
                 {selectedCategory === 'all' && totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-4 mt-8">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '32px' }}>
                     <button
-                      className="px-6 py-2 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        padding: '8px 24px',
+                        background: 'white',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                        opacity: currentPage === 1 ? 0.5 : 1,
+                        transition: 'background 0.2s'
+                      }}
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
+                      onMouseEnter={(e) => { if (currentPage !== 1) e.target.style.background = '#F9FAFB'; }}
+                      onMouseLeave={(e) => { if (currentPage !== 1) e.target.style.background = 'white'; }}
                     >
                       前へ
                     </button>
-                    <span className="text-gray-700 font-medium">
+                    <span style={{ color: '#374151', fontWeight: '500' }}>
                       {currentPage} / {totalPages}
                     </span>
                     <button
-                      className="px-6 py-2 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        padding: '8px 24px',
+                        background: 'white',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        opacity: currentPage === totalPages ? 0.5 : 1,
+                        transition: 'background 0.2s'
+                      }}
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
+                      onMouseEnter={(e) => { if (currentPage !== totalPages) e.target.style.background = '#F9FAFB'; }}
+                      onMouseLeave={(e) => { if (currentPage !== totalPages) e.target.style.background = 'white'; }}
                     >
                       次へ
                     </button>
@@ -335,9 +413,14 @@ function MainPage() {
                 )}
               </>
             )}
-          </main>
+          </div>
+
+          {/* 사이드바 */}
+          <aside className="sidebar">
+            <TopCreators />
+          </aside>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

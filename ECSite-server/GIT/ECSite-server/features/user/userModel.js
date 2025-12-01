@@ -47,6 +47,19 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(500),
             allowNull: true,
         },
+        is_email_public: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+        },
+        bio: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        github_url: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+        },
     }, {
         tableName: 'users',
         timestamps: true,

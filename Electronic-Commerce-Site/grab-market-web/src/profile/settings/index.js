@@ -50,15 +50,21 @@ export default function ProfileSettings() {
   const handleUserUpdate = async (updatedData) => {
     try {
       const response = await api.users.update(user.id, updatedData);
-      setUser(response.data.user);
+      const updatedUser = response.data.user;
+      setUser(updatedUser);
       
       // localStorage/sessionStorage 업데이트
       const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
       if (userFromStorage) {
         const userData = JSON.parse(userFromStorage);
-        const updatedUser = { ...userData, ...updatedData };
+        const mergedUser = { 
+          ...userData, 
+          ...updatedUser,
+          // 태그는 배열 형태로 저장
+          tags: updatedUser.tags || []
+        };
         const storage = localStorage.getItem('user') ? localStorage : sessionStorage;
-        storage.setItem('user', JSON.stringify(updatedUser));
+        storage.setItem('user', JSON.stringify(mergedUser));
       }
       
       return { success: true };

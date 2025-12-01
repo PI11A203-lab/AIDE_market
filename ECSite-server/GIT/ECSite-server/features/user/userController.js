@@ -71,16 +71,28 @@ exports.createUser = async (req, res) => {
 // 사용자 업데이트
 exports.updateUser = async (req, res) => {
     try {
-        const { username, email, password, role, profile_image } = req.body;
+        const { username, email, password, role, profile_image, is_email_public, bio, github_url, tags } = req.body;
         
         const user = await userService.updateUser(req.params.id, {
             username,
             email,
             password,
             role,
-            profile_image
+            profile_image,
+            is_email_public,
+            bio,
+            github_url
         });
-        res.json({ user });
+        
+        // 태그 업데이트 (태그가 제공된 경우)
+        if (tags !== undefined) {
+            await userService.updateUserTags(req.params.id, Array.isArray(tags) ? tags : []);
+        }
+        
+        // 업데이트된 사용자 정보 다시 가져오기 (태그 포함)
+        const updatedUser = await userService.findUserById(req.params.id);
+        
+        res.json({ user: updatedUser });
     } catch (err) {
         console.error(err);
         if (err.message.includes('찾을 수 없습니다') || err.message.includes('이미 사용') || err.message.includes('role은')) {
