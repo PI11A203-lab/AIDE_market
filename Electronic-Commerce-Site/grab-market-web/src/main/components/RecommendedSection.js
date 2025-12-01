@@ -8,6 +8,7 @@ const RecommendedSection = ({ products }) => {
   const containerRef = useRef(null);
   const isTransitioningRef = useRef(false);
   const currentIndexRef = useRef(3);
+  const [activeIndicator, setActiveIndicator] = useState(0); // 인디케이터 업데이트용 state
 
   const totalItems = products.length; // 실제 상품 개수 (9개)
   const cloneCount = 3; // 앞뒤 복제 개수
@@ -53,6 +54,11 @@ const RecommendedSection = ({ products }) => {
 
     const nextIndex = currentIndexRef.current + 1;
     currentIndexRef.current = nextIndex;
+    
+    // 인디케이터 업데이트
+    const realIndex = (nextIndex - cloneCount + totalItems) % totalItems;
+    setActiveIndicator(realIndex % indicatorCount);
+    
     updateCarousel(nextIndex, true);
 
     // 마지막 복제본에 도달하면 첫 번째 원본으로 점프 (트랜지션 없이)
@@ -61,13 +67,15 @@ const RecommendedSection = ({ products }) => {
         currentIndexRef.current = cloneCount;
         updateCarousel(cloneCount, false);
         isTransitioningRef.current = false;
+        // 인디케이터도 첫 번째로 리셋
+        setActiveIndicator(0);
       }, 600); // 전환 시간과 동일하게
     } else {
       setTimeout(() => {
         isTransitioningRef.current = false;
       }, 600); // 전환 시간과 동일하게
     }
-  }, [totalItems, cloneCount, updateCarousel]);
+  }, [totalItems, cloneCount, indicatorCount, updateCarousel]);
 
   // 자동 슬라이드 초기화
   useEffect(() => {
@@ -76,6 +84,7 @@ const RecommendedSection = ({ products }) => {
     // 초기 위치 설정 (트랜지션 없이)
     currentIndexRef.current = cloneCount;
     updateCarousel(cloneCount, false);
+    setActiveIndicator(0); // 초기 인디케이터 설정
 
     autoSlideRef.current = setInterval(() => {
       nextSlide();
@@ -109,6 +118,7 @@ const RecommendedSection = ({ products }) => {
     const targetIndex = cloneCount + targetProductIndex;
     
     currentIndexRef.current = targetIndex;
+    setActiveIndicator(indicatorIndex); // 인디케이터 업데이트
     updateCarousel(targetIndex, true);
     
     // 자동 슬라이드 타이머 리셋
@@ -214,7 +224,7 @@ const RecommendedSection = ({ products }) => {
           {Array.from({ length: indicatorCount }).map((_, index) => (
             <button
               key={index}
-              className={`indicator ${getActiveIndicator() === index ? 'active' : ''}`}
+              className={`indicator ${activeIndicator === index ? 'active' : ''}`}
               onClick={() => handleIndicatorClick(index)}
               aria-label={`Go to slide ${index + 1}`}
             />
