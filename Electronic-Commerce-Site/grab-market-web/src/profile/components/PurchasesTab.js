@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ShoppingBag, ChevronRight } from 'lucide-react';
 import { api } from '../../config/api';
 
 export default function PurchasesTab({ orders }) {
@@ -73,9 +72,7 @@ export default function PurchasesTab({ orders }) {
   if (!orders || orders.length === 0) {
     return (
       <div className="text-center py-12">
-        <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-600 text-lg">주문 내역이 없습니다</p>
-        <p className="text-gray-500 text-sm mt-2">구매한 AI 개발자들이 여기에 표시됩니다</p>
+        <p className="text-gray-600 text-lg">구매한 상품이 없습니다</p>
       </div>
     );
   }
@@ -85,37 +82,41 @@ export default function PurchasesTab({ orders }) {
   return (
     <div className="purchases-container">
       {groupedOrders.map(([date, dateOrders]) => (
-        <div key={date} className="order-date-group">
-          <h3 className="order-date-header">{date}</h3>
+        <div key={date}>
+          <h3 className="order-date-header section-subtitle">{date}</h3>
           <div className="orders-list">
-            {dateOrders.map((order) => {
-              const itemCount = orderItemCounts[order.id] ?? 0;
-              return (
-                <div
-                  key={order.id}
-                  className="order-card"
-                  onClick={() => handleOrderClick(order.id)}
-                >
-                  <div className="order-card-header">
-                    <div className="order-info">
-                      <span className="order-number">주문번호: {order.order_number || `ORD-${order.id}`}</span>
-                      <span className="order-status">{order.status === 'pending' ? '결제 대기' : order.status === 'completed' ? '완료' : order.status}</span>
+              {dateOrders.map((order) => {
+                const itemCount = orderItemCounts[order.id] ?? 0;
+                return (
+                  <div
+                    key={order.id}
+                    className="order-card"
+                    onClick={() => handleOrderClick(order.id)}
+                  >
+                    <div className="order-card-header">
+                      <div className="order-info">
+                        <span className="order-number">Order: {order.order_number || `ORD-${order.id}`}</span>
+                        <span className={`order-status ${order.status === 'completed' ? 'completed' : order.status === 'pending' ? 'pending' : ''}`}>
+                          {order.status === 'pending' ? 'Pending' : order.status === 'completed' ? 'Completed' : order.status}
+                        </span>
+                      </div>
+                      <svg className="order-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
                     </div>
-                    <ChevronRight className="order-arrow" />
+                    <div className="order-card-body">
+                      <div className="order-summary">
+                        <span className="order-total-label">Total Amount</span>
+                        <span className="order-total-amount">¥{order.total_amount?.toLocaleString() || '0'}</span>
+                      </div>
+                      <div className="order-meta">
+                        <span className="order-item-count">{itemCount} items</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="order-card-body">
-                    <div className="order-summary">
-                      <span className="order-total-label">총 주문 금액</span>
-                      <span className="order-total-amount">¥{order.total_amount?.toLocaleString() || '0'}</span>
-                    </div>
-                    <div className="order-meta">
-                      <span className="order-item-count">{itemCount}개 주문</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
         </div>
       ))}
     </div>

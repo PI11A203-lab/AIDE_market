@@ -130,15 +130,6 @@ const RecommendedSection = ({ products }) => {
     }, 5000);
   }, [cloneCount, totalItems, indicatorCount, updateCarousel, nextSlide]);
 
-  // 현재 활성 인디케이터 계산 (하나씩 넘어갈 때마다 0-1-2-0-1-2 순환)
-  const getActiveIndicator = useCallback(() => {
-    if (products.length === 0) return 0;
-    // 실제 상품 인덱스 계산 (복제본 제외)
-    const realIndex = (currentIndexRef.current - cloneCount + totalItems) % totalItems;
-    // 인디케이터 인덱스 계산 (하나씩 넘어갈 때마다 0-1-2 순환)
-    return realIndex % indicatorCount;
-  }, [products.length, totalItems, cloneCount, indicatorCount]);
-
   // 마우스 hover 시 자동 슬라이드 멈춤
   const handleMouseEnter = useCallback(() => {
     if (autoSlideRef.current) {

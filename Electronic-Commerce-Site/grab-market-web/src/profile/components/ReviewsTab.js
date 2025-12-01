@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Edit2, Trash2, X, Check } from 'lucide-react';
+import { Star, X, Check } from 'lucide-react';
 import { message, Image } from 'antd';
 import axios from 'axios';
 import { api } from '../../config/api';
@@ -215,20 +215,14 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
 
   if (reviews.length === 0) {
     return (
-      <div className="text-center py-16 px-8">
-        <p className="text-lg text-gray-600 mb-4">작성한 리뷰가 없습니다.</p>
-        <Link 
-          to="/" 
-          className="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold no-underline transition-all hover:shadow-lg hover:-translate-y-0.5"
-        >
-          상품 둘러보기
-        </Link>
+      <div className="text-center py-12">
+        <p className="text-gray-600 text-lg">작성한 리뷰가 없습니다</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="reviews-container">
       {reviews.map((review) => {
         const reviewId = review.id || review.review_id;
         const productId = review.product_id || review.order_item?.product_id;
@@ -238,61 +232,70 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
         return (
           <div
             key={reviewId}
-            className="relative bg-white border border-gray-200 rounded-xl p-6 transition-all hover:shadow-md"
+            className="review-card"
           >
-            {/* 수정/삭제 버튼 */}
-            <div className="absolute top-4 right-4 flex items-center gap-2">
-              <button
-                onClick={() => handleEditStart(review)}
-                disabled={isEditing || isDeleting}
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title="수정"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleDelete(reviewId, productId)}
-                disabled={isEditing || isDeleting}
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title="삭제"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="flex items-start justify-between mb-3 gap-4 pr-20">
-              {/* AI 이미지 / 아바타 영역 */}
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+            <div className="review-header">
+              <div className="review-avatar">
                 {(review.product?.name || review.order_item?.product?.name || review.aiName || 'AI').substring(0, 2)}
               </div>
-
-              {/* 상품명 + 별점 */}
-              <div className="flex-1 flex items-start justify-between gap-4">
-                <div>
-                  <Link
-                    to={`/products/${productId}`}
-                    className="text-xl font-bold text-gray-900 hover:text-blue-600 no-underline"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {review.product?.name || review.order_item?.product?.name || review.aiName || 'AI Developer'}
-                  </Link>
-                </div>
+              <div className="review-info">
+                <Link
+                  to={`/products/${productId}`}
+                  className="review-product-name"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {review.product?.name || review.order_item?.product?.name || review.aiName || 'AI Developer'}
+                </Link>
                 {!isEditing && (
-                  <div className="flex items-center gap-1">
+                  <div className="review-rating">
                     {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`w-4 h-4 ${i < (review.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                      />
+                      <svg 
+                        key={i}
+                        className={`star ${i < (review.rating || 0) ? 'filled' : 'empty'}`}
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill={i < (review.rating || 0) ? 'currentColor' : 'none'}
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                      </svg>
                     ))}
                   </div>
                 )}
+              </div>
+              
+              {/* 수정/삭제 버튼 */}
+              <div className="review-actions">
+                <button
+                  onClick={() => handleEditStart(review)}
+                  disabled={isEditing || isDeleting}
+                  className="btn-icon"
+                  title="Edit"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button
+                  onClick={() => handleDelete(reviewId, productId)}
+                  disabled={isEditing || isDeleting}
+                  className="btn-icon btn-delete"
+                  title="Delete"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
               </div>
             </div>
 
             {/* 수정 모드 */}
             {isEditing ? (
-              <div className="space-y-4">
+              <div className="space-y-4 px-6 pb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">별점</label>
                   <div className="flex items-center gap-2">
@@ -338,17 +341,17 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                 </div>
               </div>
             ) : (
-              <>
+              <div className="review-body">
                 {/* 리뷰 제목 */}
                 {review.title && (
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  <h3 className="review-title">
                     {review.title}
                   </h3>
                 )}
                 
                 {/* 리뷰 내용 */}
                 {(review.comment || review.text || review.review_text) && (
-                  <p className="text-gray-700 mb-3">
+                  <p className="review-content">
                     {review.comment || review.text || review.review_text}
                   </p>
                 )}
@@ -377,7 +380,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                   </div>
                 )}
                 
-                <span className="text-sm text-gray-500">
+                <span className="review-date">
                   {review.created_at 
                     ? new Date(review.created_at).toLocaleDateString('ko-KR', {
                         year: 'numeric',
@@ -386,7 +389,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                       })
                     : review.date || ''}
                 </span>
-              </>
+              </div>
             )}
           </div>
         );

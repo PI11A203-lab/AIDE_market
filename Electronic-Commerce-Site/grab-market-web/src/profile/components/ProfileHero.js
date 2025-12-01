@@ -46,52 +46,54 @@ export default function ProfileHero({ user }) {
   return (
     <div className="profile-hero">
       <div className="profile-hero-content">
-        <div className="profile-avatar-section">
-          <div className="profile-avatar-large">
-            {renderAvatar()}
-          </div>
-          <div className="profile-info">
-            <div className="profile-name-container">
-              <h2 className="profile-name">{user.name}</h2>
-              <button 
-                className="profile-settings-btn"
-                onClick={handleSettingsClick}
-                title="설정"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
+        <div className="profile-hero-layout">
+          <div className="profile-avatar-section">
+            <div className="profile-avatar-large">
+              {renderAvatar()}
             </div>
-            {user.is_email_public && (
-              <p className="profile-email">{user.email}</p>
-            )}
-            {user.tags && user.tags.length > 0 && (
-              <div className="profile-tags">
-                {user.tags.map((tag, idx) => (
-                  <span key={idx} className="profile-tag">#{tag}</span>
-                ))}
-              </div>
-            )}
-            <div className="profile-links">
-              {user.github_url && (
-                <a 
-                  href={user.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="profile-github"
+            <div className="profile-info">
+              <div className="profile-name-row">
+                <h1 className="profile-name">{user.name}</h1>
+                <button 
+                  className="profile-settings-btn"
+                  onClick={handleSettingsClick}
+                  title="설정"
                 >
-                  <Github className="w-5 h-5" />
-                  {githubUsername ? `@${githubUsername}` : 'GitHub'}
-                </a>
-              )}
-              <div className="profile-join">
-                <Calendar className="w-5 h-5" />
-                Joined {user.joinDate}
+                  <Settings className="w-5 h-5" />
+                </button>
               </div>
+              {user.is_email_public && (
+                <p className="profile-email">{user.email}</p>
+              )}
+              <div className="profile-meta">
+                {user.github_url && (
+                  <a 
+                    href={user.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="profile-link"
+                  >
+                    <Github className="w-5 h-5" />
+                    {githubUsername ? `@${githubUsername}` : 'GitHub'}
+                  </a>
+                )}
+                <div className="profile-link">
+                  <Calendar className="w-5 h-5" />
+                  Joined {user.joinDate}
+                </div>
+              </div>
+              {user.tags && user.tags.length > 0 && (
+                <div className="profile-tags">
+                  {user.tags.map((tag, idx) => (
+                    <span key={idx} className="profile-tag">#{tag}</span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        </div>
 
-        <StatsSection stats={user.stats} />
+          <StatsSection stats={user.stats} />
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 export default function ProfileHeader() {
   const history = useHistory();
@@ -7,15 +7,17 @@ export default function ProfileHeader() {
   return (
     <header className="profile-header">
       <div className="header-content">
-        <h1 className="logo">
-          <span className="logo-icon">🤖</span>
+        <Link to="/" className="logo">
           <span className="logo-text">AIDE Market</span>
-        </h1>
+        </Link>
         <button 
           onClick={() => history.push('/')}
           className="btn-back"
         >
-          ← Back to Home
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back to Home
         </button>
       </div>
     </header>
