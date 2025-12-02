@@ -94,12 +94,10 @@ export default function PurchasesTab({ orders }) {
                     onClick={() => handleOrderClick(order.id)}
                   >
                     <div className="order-card-header">
-                      <div className="order-info">
-                        <span className="order-number">Order: {order.order_number || `ORD-${order.id}`}</span>
-                        <span className={`order-status ${order.status === 'completed' ? 'completed' : order.status === 'pending' ? 'pending' : ''}`}>
-                          {order.status === 'pending' ? 'Pending' : order.status === 'completed' ? 'Completed' : order.status}
-                        </span>
-                      </div>
+                      <span className="order-number">Order: {order.order_number || `ORD-${order.id}`}</span>
+                      <span className={`order-status ${order.status === 'completed' ? 'completed' : order.status === 'pending' ? 'pending' : ''}`}>
+                        {order.status === 'pending' ? 'Pending' : order.status === 'completed' ? 'Completed' : order.status}
+                      </span>
                       <svg className="order-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="9 18 15 12 9 6"/>
                       </svg>

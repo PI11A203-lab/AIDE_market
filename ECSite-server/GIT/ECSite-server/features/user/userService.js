@@ -1,4 +1,5 @@
 const models = require("../../db/initializer");
+const { Op } = require("sequelize");
 
 // 전체 사용자 목록 조회
 exports.findAllUsers = async (page = 1, limit = 20) => {
@@ -129,7 +130,7 @@ exports.updateUser = async (id, { username, email, password, role, profile_image
         const existing = await models.User.findOne({
             where: {
                 username: username,
-                id: { [models.sequelize.Op.ne]: id }
+                id: { [Op.ne]: id }
             }
         });
         
@@ -144,7 +145,7 @@ exports.updateUser = async (id, { username, email, password, role, profile_image
         const existing = await models.User.findOne({
             where: {
                 email: email,
-                id: { [models.sequelize.Op.ne]: id }
+                id: { [Op.ne]: id }
             }
         });
         
@@ -208,8 +209,8 @@ exports.validatePassword = async (userId, password) => {
     return await user.validatePassword(password);
 };
 
-// 사용자 태그 업데이트
-exports.updateUserTags = async (userId, tagIds) => {
+// 사용자 태그 업데이트 (태그 이름 배열을 받아서 처리)
+exports.updateUserTags = async (userId, tagNames) => {
     try {
         // 기존 태그 삭제
         await models.sequelize.query(
@@ -220,23 +221,51 @@ exports.updateUserTags = async (userId, tagIds) => {
             }
         );
         
-        // 새 태그 추가
-        if (tagIds && tagIds.length > 0) {
-            for (const tagId of tagIds) {
-                await models.sequelize.query(
-                    'INSERT INTO user_tags (user_id, tag_id, created_at) VALUES (:userId, :tagId, NOW())',
+        // 새 태그 추가 (태그 이름으로 처리)
+        if (tagNames && tagNames.length > 0) {
+            for (const tagName of tagNames) {
+                if (!tagName || typeof tagName !== 'string') {
+                    continue; // 유효하지 않은 태그 이름은 건너뛰기
+                }
+                
+                // 태그 이름으로 태그 찾기 또는 생성
+                let tag = await models.Tag.findOne({
+                    where: { name: tagName.trim() }
+                });
+                
+                if (!tag) {
+                    // 태그가 없으면 생성
+                    tag = await models.Tag.create({
+                        name: tagName.trim(),
+                        description: null
+                    });
+                }
+                
+                // user_tags에 추가 (중복 체크)
+                const existingUserTag = await models.sequelize.query(
+                    'SELECT id FROM user_tags WHERE user_id = :userId AND tag_id = :tagId',
                     {
-                        replacements: { userId, tagId },
-                        type: models.sequelize.QueryTypes.INSERT
+                        replacements: { userId, tagId: tag.id },
+                        type: models.sequelize.QueryTypes.SELECT
                     }
                 );
+                
+                if (existingUserTag.length === 0) {
+                    await models.sequelize.query(
+                        'INSERT INTO user_tags (user_id, tag_id, created_at) VALUES (:userId, :tagId, NOW())',
+                        {
+                            replacements: { userId, tagId: tag.id },
+                            type: models.sequelize.QueryTypes.INSERT
+                        }
+                    );
+                }
             }
         }
         
         return true;
     } catch (error) {
         console.error('사용자 태그 업데이트 실패:', error);
-        throw new Error('사용자 태그 업데이트에 실패했습니다');
+        throw new Error('사용자 태그 업데이트에 실패했습니다: ' + error.message);
     }
 };
 

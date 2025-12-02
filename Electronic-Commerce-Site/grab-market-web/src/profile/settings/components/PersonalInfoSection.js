@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { User, Mail, Lock, Save } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Lock, Save, Github, Hash, X, Eye, EyeOff } from 'lucide-react';
 import { message } from 'antd';
 
 export default function PersonalInfoSection({ user, onUpdate }) {
@@ -7,11 +7,31 @@ export default function PersonalInfoSection({ user, onUpdate }) {
   const [formData, setFormData] = useState({
     username: user.username || '',
     email: user.email || '',
+    is_email_public: user.is_email_public || false,
+    github_url: user.github_url || '',
+    tags: Array.isArray(user.tags) ? user.tags.map(t => typeof t === 'object' ? t.name : t) : [],
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
+  const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // user가 변경될 때 formData 업데이트
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        email: user.email || '',
+        is_email_public: user.is_email_public || false,
+        github_url: user.github_url || '',
+        tags: Array.isArray(user.tags) ? user.tags.map(t => typeof t === 'object' ? t.name : t) : [],
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +39,31 @@ export default function PersonalInfoSection({ user, onUpdate }) {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleAddTag = () => {
+    const trimmedTag = tagInput.trim();
+    if (trimmedTag && !formData.tags.includes(trimmedTag)) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, trimmedTag]
+      }));
+      setTagInput('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
+  const handleTagInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTag();
+    }
   };
 
   const handleSave = async () => {
@@ -37,7 +82,10 @@ export default function PersonalInfoSection({ user, onUpdate }) {
     try {
       const updateData = {
         username: formData.username,
-        email: formData.email
+        email: formData.email,
+        is_email_public: formData.is_email_public,
+        github_url: formData.github_url || null,
+        tags: formData.tags
       };
 
       // 비밀번호 변경이 있는 경우
@@ -75,11 +123,22 @@ export default function PersonalInfoSection({ user, onUpdate }) {
     setFormData({
       username: user.username || '',
       email: user.email || '',
+      is_email_public: user.is_email_public || false,
+      github_url: user.github_url || '',
+      tags: Array.isArray(user.tags) ? user.tags.map(t => typeof t === 'object' ? t.name : t) : [],
       currentPassword: '',
       newPassword: '',
       confirmPassword: ''
     });
+    setTagInput('');
     setIsEditing(false);
+  };
+
+  const toggleEmailPublic = () => {
+    setFormData(prev => ({
+      ...prev,
+      is_email_public: !prev.is_email_public
+    }));
   };
 
   return (
@@ -125,16 +184,156 @@ export default function PersonalInfoSection({ user, onUpdate }) {
             이메일
           </label>
           {isEditing ? (
+            <div>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="form-input mb-2"
+                placeholder="이메일을 입력하세요"
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={toggleEmailPublic}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                    formData.is_email_public
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {formData.is_email_public ? (
+                    <>
+                      <Eye className="w-4 h-4" />
+                      <span>공개</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-4 h-4" />
+                      <span>비공개</span>
+                    </>
+                  )}
+                </button>
+                <span className="text-sm text-gray-600">
+                  {formData.is_email_public 
+                    ? '프로필 페이지에 이메일이 표시됩니다' 
+                    : '프로필 페이지에 이메일이 표시되지 않습니다'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="form-value">
+              <div className="mb-1">{user.email || '-'}</div>
+              <div className="text-sm text-gray-500">
+                {user.is_email_public ? (
+                  <span className="flex items-center gap-1 text-green-600">
+                    <Eye className="w-3 h-3" />
+                    공개
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-gray-500">
+                    <EyeOff className="w-3 h-3" />
+                    비공개
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            <Github className="w-4 h-4" />
+            GitHub URL
+          </label>
+          {isEditing ? (
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type="url"
+              name="github_url"
+              value={formData.github_url}
               onChange={handleChange}
               className="form-input"
-              placeholder="이메일을 입력하세요"
+              placeholder="https://github.com/username"
             />
           ) : (
-            <div className="form-value">{user.email || '-'}</div>
+            <div className="form-value">
+              {user.github_url ? (
+                <a 
+                  href={user.github_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  {user.github_url}
+                </a>
+              ) : '-'}
+            </div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            <Hash className="w-4 h-4" />
+            해시태그
+          </label>
+          {isEditing ? (
+            <div>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyPress={handleTagInputKeyPress}
+                  className="form-input flex-1"
+                  placeholder="해시태그를 입력하고 Enter를 누르세요"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddTag}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                  추가
+                </button>
+              </div>
+              {formData.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {formData.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                    >
+                      #{tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="hover:text-blue-600"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="form-value">
+              {user.tags && user.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {Array.isArray(user.tags) ? user.tags.map((tag, idx) => {
+                    const tagName = typeof tag === 'object' ? tag.name : tag;
+                    return (
+                      <span
+                        key={idx}
+                        className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                      >
+                        #{tagName}
+                      </span>
+                    );
+                  }) : null}
+                </div>
+              ) : '-'}
+            </div>
           )}
         </div>
 
