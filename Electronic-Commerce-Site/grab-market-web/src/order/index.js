@@ -62,12 +62,6 @@ export default function OrderDetailPage() {
       <header className="header">
         <div className="header-content">
           <Link to="/" className="logo">AIDE Market</Link>
-          <Link to="/" className="btn-back-home">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            Back to Home
-          </Link>
         </div>
       </header>
 

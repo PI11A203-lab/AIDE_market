@@ -127,29 +127,30 @@ export default function ProfileSettings() {
     <div className="profile-container">
       <ProfileHeader />
       <main className="profile-settings-main">
-        <div className="settings-container">
-          <div className="settings-header">
-            <h1 className="settings-title">설정</h1>
-            <button 
-              className="btn-back-to-profile"
-              onClick={() => history.push('/profile')}
-            >
-              ← 프로필로 돌아가기
-            </button>
-          </div>
+        <div className="settings-header">
+          <h1 className="settings-title">설정</h1>
+          <button 
+            className="btn-back-to-profile"
+            onClick={() => history.push('/profile')}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            프로필로 돌아가기
+          </button>
+        </div>
 
-          <div className="settings-content">
-            <PersonalInfoSection 
-              user={user}
-              onUpdate={handleUserUpdate}
-            />
+        <div className="settings-content">
+          <PersonalInfoSection 
+            user={user}
+            onUpdate={handleUserUpdate}
+          />
 
-            <PaymentMethodsSection
-              paymentMethods={paymentMethods}
-              onAdd={handlePaymentMethodAdd}
-              onDelete={handlePaymentMethodDelete}
-            />
-          </div>
+          <PaymentMethodsSection
+            paymentMethods={paymentMethods}
+            onAdd={handlePaymentMethodAdd}
+            onDelete={handlePaymentMethodDelete}
+          />
         </div>
       </main>
     </div>

@@ -130,12 +130,12 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
         {showAddForm && (
           <div className="payment-form">
             <div className="form-group">
-              <label className="form-label">결제 방법</label>
+              <label className="form-label no-icon">결제 방법</label>
               <select
                 name="payment_method"
                 value={formData.payment_method}
                 onChange={handleChange}
-                className="form-input"
+                className="form-select"
               >
                 <option value="credit_card">신용카드</option>
                 <option value="debit_card">체크카드</option>
@@ -143,12 +143,12 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
             </div>
 
             <div className="form-group">
-              <label className="form-label">카드사</label>
+              <label className="form-label no-icon">카드사</label>
               <select
                 name="card_company"
                 value={formData.card_company}
                 onChange={handleChange}
-                className="form-input"
+                className="form-select"
               >
                 <option value="VISA">VISA</option>
                 <option value="Master">Master</option>
@@ -160,7 +160,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
             </div>
 
             <div className="form-group">
-              <label className="form-label">카드 번호</label>
+              <label className="form-label no-icon">카드 번호</label>
               <input
                 type="text"
                 name="card_number"
@@ -174,7 +174,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
 
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label">만료 월</label>
+                <label className="form-label no-icon">만료 월</label>
                 <input
                   type="number"
                   name="exp_month"
@@ -189,7 +189,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
               </div>
 
               <div className="form-group">
-                <label className="form-label">만료 연도</label>
+                <label className="form-label no-icon">만료 연도</label>
                 <input
                   type="number"
                   name="exp_year"
@@ -203,7 +203,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
               </div>
 
               <div className="form-group">
-                <label className="form-label">CVC</label>
+                <label className="form-label no-icon">CVC</label>
                 <input
                   type="text"
                   name="card_cvc"
@@ -241,7 +241,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                 disabled={saving}
               >
                 <Save className="w-4 h-4" />
-                {saving ? '저장 중...' : '저장'}
+                저장
               </button>
             </div>
           </div>
@@ -250,22 +250,22 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
         <div className="payment-methods-list">
           {paymentMethods.length === 0 ? (
             <div className="empty-state">
-              <CreditCard className="w-12 h-12 text-gray-400" />
+              <CreditCard className="w-12 h-12" />
               <p className="empty-state-text">등록된 결제방법이 없습니다.</p>
             </div>
           ) : (
             paymentMethods.map((method) => (
               <div key={method.id} className="payment-method-card">
                 <div className="payment-method-info">
-                  <div className="payment-method-header">
-                    <CreditCard className="w-5 h-5" />
-                    <span className="payment-method-company">{method.card_company}</span>
-                  </div>
-                  <div className="payment-method-number">
-                    {method.card_number || maskCardNumber(method.card_number_encrypted)}
-                  </div>
-                  <div className="payment-method-expiry">
-                    만료일: {String(method.exp_month).padStart(2, '0')}/{method.exp_year}
+                  <CreditCard className="w-5 h-5" />
+                  <div className="payment-method-details">
+                    <div className="payment-method-company">{method.card_company}</div>
+                    <div className="payment-method-number">
+                      {method.card_number || maskCardNumber(method.card_number_encrypted)}
+                    </div>
+                    <div className="payment-method-expiry">
+                      만료일: {String(method.exp_month).padStart(2, '0')}/{method.exp_year}
+                    </div>
                   </div>
                 </div>
                 <button

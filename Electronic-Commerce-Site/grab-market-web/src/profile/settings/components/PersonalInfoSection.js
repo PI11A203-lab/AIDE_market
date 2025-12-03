@@ -160,10 +160,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
 
       <div className="settings-section-content">
         <div className="form-group">
-          <label className="form-label">
-            <User className="w-4 h-4" />
-            사용자명
-          </label>
+          <label className="form-label no-icon">사용자명</label>
           {isEditing ? (
             <input
               type="text"
@@ -190,32 +187,28 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="form-input mb-2"
+                className="form-input"
                 placeholder="이메일을 입력하세요"
               />
-              <div className="flex items-center gap-3">
+              <div className="email-visibility">
                 <button
                   type="button"
                   onClick={toggleEmailPublic}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-                    formData.is_email_public
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  className={`visibility-badge ${!formData.is_email_public ? 'private' : ''}`}
                 >
                   {formData.is_email_public ? (
                     <>
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3 h-3" />
                       <span>공개</span>
                     </>
                   ) : (
                     <>
-                      <EyeOff className="w-4 h-4" />
+                      <EyeOff className="w-3 h-3" />
                       <span>비공개</span>
                     </>
                   )}
                 </button>
-                <span className="text-sm text-gray-600">
+                <span className="visibility-text">
                   {formData.is_email_public 
                     ? '프로필 페이지에 이메일이 표시됩니다' 
                     : '프로필 페이지에 이메일이 표시되지 않습니다'}
@@ -224,19 +217,21 @@ export default function PersonalInfoSection({ user, onUpdate }) {
             </div>
           ) : (
             <div className="form-value">
-              <div className="mb-1">{user.email || '-'}</div>
-              <div className="text-sm text-gray-500">
-                {user.is_email_public ? (
-                  <span className="flex items-center gap-1 text-green-600">
-                    <Eye className="w-3 h-3" />
-                    공개
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 text-gray-500">
-                    <EyeOff className="w-3 h-3" />
-                    비공개
-                  </span>
-                )}
+              <div>{user.email || '-'}</div>
+              <div className="email-visibility">
+                <span className={`visibility-badge ${!user.is_email_public ? 'private' : ''}`}>
+                  {user.is_email_public ? (
+                    <>
+                      <Eye className="w-3 h-3" />
+                      <span>공개</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-3 h-3" />
+                      <span>비공개</span>
+                    </>
+                  )}
+                </span>
               </div>
             </div>
           )}
@@ -263,7 +258,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                   href={user.github_url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
+                  className="form-value-link"
                 >
                   {user.github_url}
                 </a>
@@ -279,35 +274,32 @@ export default function PersonalInfoSection({ user, onUpdate }) {
           </label>
           {isEditing ? (
             <div>
-              <div className="flex gap-2 mb-2">
+              <div className="tag-input-wrapper">
                 <input
                   type="text"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={handleTagInputKeyPress}
-                  className="form-input flex-1"
+                  className="form-input"
                   placeholder="해시태그를 입력하고 Enter를 누르세요"
                 />
                 <button
                   type="button"
                   onClick={handleAddTag}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  className="btn-add"
                 >
                   추가
                 </button>
               </div>
               {formData.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="tags-container">
                   {formData.tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                    >
+                    <span key={idx} className="tag">
                       #{tag}
                       <button
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
-                        className="hover:text-blue-600"
+                        className="tag-remove"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -319,14 +311,11 @@ export default function PersonalInfoSection({ user, onUpdate }) {
           ) : (
             <div className="form-value">
               {user.tags && user.tags.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
+                <div className="tags-container">
                   {Array.isArray(user.tags) ? user.tags.map((tag, idx) => {
                     const tagName = typeof tag === 'object' ? tag.name : tag;
                     return (
-                      <span
-                        key={idx}
-                        className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                      >
+                      <span key={idx} className="tag">
                         #{tagName}
                       </span>
                     );
@@ -400,7 +389,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 disabled={saving}
               >
                 <Save className="w-4 h-4" />
-                {saving ? '저장 중...' : '저장'}
+                저장
               </button>
             </div>
           </>

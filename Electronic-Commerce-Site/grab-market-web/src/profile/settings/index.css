@@ -2,357 +2,421 @@
 .profile-settings-main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem 4rem;
+  padding: 24px 48px 60px;
 }
 
 .settings-container {
   background: white;
-  border-radius: 1.5rem;
-  padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .settings-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid #E5E7EB;
 }
 
 .settings-title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #111827;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1A1A1A;
 }
 
 .btn-back-to-profile {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: #f3f4f6;
+  gap: 8px;
+  padding: 0;
+  background: none;
   border: none;
-  border-radius: 0.75rem;
-  color: #374151;
-  font-weight: 600;
+  font-size: 16px;
+  color: #6B7280;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: color 0.2s;
+  text-decoration: none;
 }
 
 .btn-back-to-profile:hover {
-  background: #e5e7eb;
-  color: #111827;
+  color: #1A1A1A;
 }
 
 .settings-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
 /* 설정 섹션 */
 .settings-section {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 1rem;
-  padding: 1.5rem;
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.settings-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .settings-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .settings-section-title {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.settings-section-title h2 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #111827;
+  gap: 12px;
 }
 
 .settings-section-title svg {
-  color: #3b82f6;
+  width: 26px;
+  height: 26px;
+  color: #1A1A1A;
+}
+
+.settings-section-title h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1A1A1A;
 }
 
 /* 버튼 스타일 */
 .btn-edit,
 .btn-add {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #3b82f6;
+  padding: 9px 22px;
+  background: #000000;
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 6px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-edit:hover,
 .btn-add:hover {
-  background: #2563eb;
+  background: #1A1A1A;
 }
 
 /* 폼 스타일 */
 .settings-section-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  margin-bottom: 22px;
 }
 
 .form-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
+  font-size: 15px;
   font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
+  color: #1A1A1A;
+  margin-bottom: 9px;
+}
+
+.form-label svg {
+  width: 17px;
+  height: 17px;
+  color: #6B7280;
+}
+
+.form-label.no-icon {
+  gap: 0;
+}
+
+.form-value {
+  padding: 10px 0;
+  font-size: 16px;
+  color: #4B5563;
+}
+
+.form-value-link {
+  color: #2563EB;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.form-value-link:hover {
+  text-decoration: underline;
 }
 
 .form-input,
 .form-select {
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
   transition: all 0.2s;
 }
 
 .form-input:focus,
 .form-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
-.form-value {
-  padding: 0.75rem;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  color: #111827;
-  font-size: 1rem;
+/* 이메일 공개 토글 */
+.email-visibility {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
 }
 
+.visibility-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #F0FDF4;
+  color: #166534;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.visibility-badge.private {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+.visibility-text {
+  font-size: 14px;
+  color: #6B7280;
+}
+
+/* 태그 */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #EFF6FF;
+  color: #1E40AF;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tag-input-wrapper {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  color: #1E40AF;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* 폼 액션 */
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
 }
 
-.btn-save,
-.btn-cancel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+.btn-cancel,
+.btn-save {
+  padding: 11px 26px;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 6px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.btn-save {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-save:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-.btn-save:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-cancel {
-  background: #f3f4f6;
+  background: #F3F4F6;
   color: #374151;
 }
 
-.btn-cancel:hover:not(:disabled) {
-  background: #e5e7eb;
+.btn-cancel:hover {
+  background: #E5E7EB;
+}
+
+.btn-save {
+  background: #000000;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #1A1A1A;
+}
+
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* 결제방법 폼 */
 .payment-form {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: 24px;
+  background: #FAFAFA;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
 /* 결제방법 목록 */
 .payment-methods-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0;
 }
 
 .payment-method-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  transition: all 0.2s;
+  padding: 18px 0;
+  border-bottom: 1px solid #F3F4F6;
 }
 
-.payment-method-card:hover {
-  border-color: #93c5fd;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+.payment-method-card:last-child {
+  border-bottom: none;
 }
 
 .payment-method-info {
-  flex: 1;
-}
-
-.payment-method-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 12px;
+}
+
+.payment-method-info svg {
+  width: 22px;
+  height: 22px;
+  color: #1A1A1A;
+}
+
+.payment-method-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .payment-method-company {
-  font-weight: bold;
-  color: #111827;
-  font-size: 1.125rem;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1A1A1A;
 }
 
 .payment-method-number {
+  font-size: 15px;
+  color: #6B7280;
   font-family: monospace;
-  font-size: 1.125rem;
-  color: #374151;
-  margin-bottom: 0.25rem;
 }
 
 .payment-method-expiry {
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: 14px;
+  color: #9CA3AF;
 }
 
 .btn-delete-payment {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  background: #fef2f2;
+  padding: 8px;
+  background: #FEF2F2;
+  color: #DC2626;
   border: none;
-  border-radius: 0.5rem;
-  color: #ef4444;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
 }
 
 .btn-delete-payment:hover {
-  background: #fee2e2;
+  background: #FEE2E2;
 }
 
 /* 빈 상태 */
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
   text-align: center;
+  padding: 50px 20px;
+  color: #9CA3AF;
+}
+
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: #D1D5DB;
 }
 
 .empty-state-text {
-  margin-top: 1rem;
-  color: #6b7280;
-  font-size: 1rem;
-}
-
-/* 프로필 설정 버튼 스타일 */
-.profile-name-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.profile-settings-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.profile-settings-btn:hover {
-  background: white;
-  color: #3b82f6;
-  border-color: #3b82f6;
-  transform: rotate(90deg);
+  font-size: 16px;
 }
 
 /* 반응형 */
-@media (max-width: 1024px) {
-  .profile-settings-main {
-    padding: 2rem;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 768px) {
   .profile-settings-main {
-    padding: 1.5rem 1rem;
-  }
-
-  .settings-container {
-    padding: 1.5rem;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .settings-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 16px;
   }
 
   .settings-section-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 12px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    width: 100%;
+    justify-content: center;
   }
 }
 
