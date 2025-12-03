@@ -135,6 +135,40 @@ export default function PurchasePage() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // localStorage에서 쿠폰 정보 복원
+  useEffect(() => {
+    const savedCouponCode = localStorage.getItem('purchaseCouponCode');
+    const savedAppliedCoupon = localStorage.getItem('purchaseAppliedCoupon');
+    
+    if (savedCouponCode) {
+      setCouponCode(savedCouponCode);
+    }
+    
+    if (savedAppliedCoupon) {
+      try {
+        const coupon = JSON.parse(savedAppliedCoupon);
+        setAppliedCoupon(coupon);
+      } catch (e) {
+        console.error('Failed to parse saved coupon:', e);
+      }
+    }
+  }, []);
+
+  // 쿠폰 코드 변경 핸들러
+  const handleCouponCodeChange = (value) => {
+    setCouponCode(value);
+    // 쿠폰 코드만 localStorage에 저장 (적용된 쿠폰이 있으면 유지)
+    if (value.trim()) {
+      localStorage.setItem('purchaseCouponCode', value.trim());
+    } else {
+      localStorage.removeItem('purchaseCouponCode');
+      // 쿠폰 코드가 비어있고 적용된 쿠폰도 없으면 적용된 쿠폰 정보도 제거
+      if (!appliedCoupon) {
+        localStorage.removeItem('purchaseAppliedCoupon');
+      }
+    }
+  };
+
   // 장바구니에서 제거
   const removeFromCart = (itemId) => {
     const removedItem = cartItems.find(item => item.id === itemId);
@@ -175,7 +209,7 @@ export default function PurchasePage() {
       const couponData = response.data.coupon;
       const discountAmount = parseFloat(response.data.discountAmount);
       
-      setAppliedCoupon({
+      const couponInfo = {
         code: couponData.code,
         discount: discountAmount / subtotal,
         discountAmount: discountAmount,
@@ -183,13 +217,34 @@ export default function PurchasePage() {
           ? `${couponData.discount_value}% OFF`
           : `¥${discountAmount.toLocaleString()} OFF`,
         couponId: couponData.coupon_id
-      });
+      };
+      
+      setAppliedCoupon(couponInfo);
+      
+      // localStorage에 저장
+      localStorage.setItem('purchaseCouponCode', couponCode.trim());
+      localStorage.setItem('purchaseAppliedCoupon', JSON.stringify(couponInfo));
+      
       message.success('쿠폰이 적용되었습니다.');
     } catch (error) {
       console.error('Failed to apply coupon:', error);
       const errorMessage = error.response?.data?.error || '쿠폰 적용에 실패했습니다.';
       message.error(errorMessage);
+      
+      // 에러 발생 시 localStorage에서 제거
+      localStorage.removeItem('purchaseCouponCode');
+      localStorage.removeItem('purchaseAppliedCoupon');
+      setAppliedCoupon(null);
     }
+  };
+
+  // 쿠폰 제거
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    localStorage.removeItem('purchaseCouponCode');
+    localStorage.removeItem('purchaseAppliedCoupon');
+    message.info('쿠폰이 제거되었습니다.');
   };
 
   // 가격 계산 (현재 결제 목록의 상품들만)
@@ -316,6 +371,10 @@ export default function PurchasePage() {
 
       // 장바구니 비우기
       localStorage.removeItem('cart');
+      
+      // 쿠폰 정보 제거 (결제 완료 후)
+      localStorage.removeItem('purchaseCouponCode');
+      localStorage.removeItem('purchaseAppliedCoupon');
 
       // 구매 확정 페이지로 이동
       history.push('/confirmation');
@@ -457,8 +516,9 @@ export default function PurchasePage() {
                 {/* 쿠폰 */}
                 <CouponSection
                   couponCode={couponCode}
-                  onCouponCodeChange={setCouponCode}
+                  onCouponCodeChange={handleCouponCodeChange}
                   onApplyCoupon={applyCoupon}
+                  onRemoveCoupon={removeCoupon}
                   appliedCoupon={appliedCoupon}
                 />
 

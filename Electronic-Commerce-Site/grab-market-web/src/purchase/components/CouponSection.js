@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CouponSection({ couponCode, onCouponCodeChange, onApplyCoupon, appliedCoupon }) {
+export default function CouponSection({ couponCode, onCouponCodeChange, onApplyCoupon, onRemoveCoupon, appliedCoupon }) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-6 mt-4">
       <div className="flex items-center gap-2.5 mb-4">
@@ -23,12 +23,21 @@ export default function CouponSection({ couponCode, onCouponCodeChange, onApplyC
             }
           }}
         />
-        <button
-          onClick={onApplyCoupon}
-          className="px-7 py-3.5 bg-gray-900 text-white border-none rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all whitespace-nowrap hover:bg-black hover:-translate-y-px hover:shadow-md active:translate-y-0"
-        >
-          Apply
-        </button>
+        {appliedCoupon ? (
+          <button
+            onClick={onRemoveCoupon}
+            className="px-7 py-3.5 bg-red-600 text-white border-none rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all whitespace-nowrap hover:bg-red-700 hover:-translate-y-px hover:shadow-md active:translate-y-0"
+          >
+            Remove
+          </button>
+        ) : (
+          <button
+            onClick={onApplyCoupon}
+            className="px-7 py-3.5 bg-gray-900 text-white border-none rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all whitespace-nowrap hover:bg-black hover:-translate-y-px hover:shadow-md active:translate-y-0"
+          >
+            Apply
+          </button>
+        )}
       </div>
       {appliedCoupon && (
         <div className="mt-4 px-4 py-3 bg-green-100 border border-green-300 rounded-[10px] text-sm font-semibold text-green-800 flex items-center gap-2">
