@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
 import axios from 'axios';
 import { message } from 'antd';
 import PurchaseHeader from './components/PurchaseHeader';
@@ -130,7 +129,7 @@ export default function PurchasePage() {
     };
 
     loadData();
-  }, [location.search]);
+  }, [location.search, history]);
 
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -352,16 +351,20 @@ export default function PurchasePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ backgroundColor: '#FAFAFA' }}>
       <PurchaseHeader />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="flex items-center gap-3 text-3xl font-bold text-gray-900 mb-2">
-            <ShoppingCart className="w-8 h-8" />
+      <main className="max-w-[1400px] mx-auto px-5 md:px-12 py-10">
+        <div className="mb-10">
+          <h1 className="flex items-center gap-3 text-4xl font-bold text-gray-900 mb-2">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
             Shopping Cart
-          </h2>
-          <p className="text-gray-600">
+          </h1>
+          <p className="text-base text-gray-500">
             Review your selected AI developers before purchase
           </p>
         </div>
@@ -373,9 +376,9 @@ export default function PurchasePage() {
         ) : cartItems.length === 0 && availableCartItems.length === 0 ? (
           <EmptyCart />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
             {/* 장바구니 아이템 */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="flex flex-col gap-4">
               {cartItems.map((item) => (
                 <CartItem
                   key={item.id}
@@ -434,30 +437,34 @@ export default function PurchasePage() {
                 </div>
               )}
 
-              {/* 쿠폰 */}
-              <CouponSection
-                couponCode={couponCode}
-                onCouponCodeChange={setCouponCode}
-                onApplyCoupon={applyCoupon}
-                appliedCoupon={appliedCoupon}
-              />
             </div>
 
             {/* 주문 요약 */}
             <div className="lg:col-span-1">
-              <OrderSummary
-                cartItems={cartItems}
-                subtotal={subtotal}
-                discount={discount}
-                tax={tax}
-                total={total}
-                appliedCoupon={appliedCoupon}
-                onCheckout={handleCheckout}
-                isProcessing={isProcessing}
-              />
+              {/* sticky 컨테이너: 주문 요약 + 보증 정보 함께 고정 */}
+              <div className="sticky top-24">
+                <OrderSummary
+                  cartItems={cartItems}
+                  subtotal={subtotal}
+                  discount={discount}
+                  tax={tax}
+                  total={total}
+                  appliedCoupon={appliedCoupon}
+                  onCheckout={handleCheckout}
+                  isProcessing={isProcessing}
+                />
 
-              {/* 보증 정보 */}
-              <PurchaseProtection />
+                {/* 쿠폰 */}
+                <CouponSection
+                  couponCode={couponCode}
+                  onCouponCodeChange={setCouponCode}
+                  onApplyCoupon={applyCoupon}
+                  appliedCoupon={appliedCoupon}
+                />
+
+                {/* 보증 정보 */}
+                <PurchaseProtection />
+              </div>
             </div>
           </div>
         )}
