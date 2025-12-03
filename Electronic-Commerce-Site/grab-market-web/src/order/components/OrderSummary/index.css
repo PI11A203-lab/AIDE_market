@@ -1,0 +1,57 @@
+/* 주문 요약 */
+.order-summary {
+  padding-bottom: 25px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+
+.summary-row:first-child {
+  border-bottom: none;
+}
+
+.summary-row:last-child {
+  padding-top: 20px;
+  margin-top: 8px;
+  border-top: 2px solid #E5E7EB;
+}
+
+.summary-label {
+  font-size: 15px;
+  color: #6B7280;
+}
+
+.summary-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.summary-value.status {
+  padding: 4px 12px;
+  background: #D1FAE5;
+  color: #065F46;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.summary-value.status.pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.summary-value.total {
+  font-size: 24px;
+  font-weight: 700;
+}
+

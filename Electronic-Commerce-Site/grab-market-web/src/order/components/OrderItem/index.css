@@ -1,0 +1,95 @@
+.order-item {
+  padding: 32px 0;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+/* 상품 정보 */
+.product-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 32px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.product-avatar {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #1A1A1A 0%, #4B5563 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 6px;
+}
+
+.product-category {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 12px;
+}
+
+.product-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.product-tag {
+  padding: 4px 10px;
+  background: #F9FAFB;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.product-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+/* 리뷰 섹션 */
+.review-section {
+  margin-top: 0;
+}
+
+.order-item-error {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .product-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-name {
+    font-size: 20px;
+  }
+}
+

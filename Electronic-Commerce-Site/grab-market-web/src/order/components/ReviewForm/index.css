@@ -1,0 +1,100 @@
+.review-completed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: #F0FDF4;
+  border-left: 4px solid #10B981;
+  color: #065F46;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.review-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 24px;
+}
+
+/* 별점 */
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.rating-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+  min-width: 60px;
+}
+
+/* 입력 필드 */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-bottom: 8px;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
+  background: white;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 이미지 업로드 */
+.image-upload-area {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 제출 버튼 */
+.btn-submit {
+  padding: 12px 28px;
+  background: #000000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-submit:hover {
+  background: #1A1A1A;
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

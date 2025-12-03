@@ -1,0 +1,46 @@
+/* Back 버튼 */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 15px;
+  color: #6B7280;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+  margin-bottom: 24px;
+}
+
+.btn-back:hover {
+  color: #1A1A1A;
+}
+
+/* 페이지 타이틀 */
+.page-header {
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+  border-bottom: 2px solid #E5E7EB;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 12px;
+}
+
+.order-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.order-number,
+.order-date {
+  font-size: 14px;
+  color: #6B7280;
+}
+

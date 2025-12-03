@@ -1,0 +1,33 @@
+.rating-stars {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.star-icon {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.star-icon.empty {
+  color: #E5E7EB;
+}
+
+.star-icon.filled {
+  color: #FCD34D;
+  fill: #FCD34D;
+}
+
+.star-icon:hover {
+  transform: scale(1.1);
+}
+
+.rating-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-left: 0;
+}
+
