@@ -1,6 +1,8 @@
-import React from 'react';
-import { Users, X, Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, X, Award, Save } from 'lucide-react';
 import { API_URL } from '../../config/constants';
+import { api } from '../../config/api';
+import { message } from 'antd';
 import TeamStatsChart from './TeamStatsChart';
 import SynergyScore from './SynergyScore';
 
@@ -12,6 +14,75 @@ export default function TeamSidebar({
   totalPrice, 
   onRemoveFromTeam 
 }) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [teamName, setTeamName] = useState('');
+
+  const handleSaveTeam = async () => {
+    if (selectedTeam.length === 0) {
+      message.warning('팀원을 선택해주세요.');
+      return;
+    }
+
+    // 팀 이름이 없으면 입력 받기
+    if (!teamName.trim()) {
+      setShowNameInput(true);
+      return;
+    }
+
+    // 팀 이름이 있으면 저장 진행
+    await saveTeamToServer();
+  };
+
+  const saveTeamToServer = async () => {
+    setIsSaving(true);
+
+    try {
+      // 사용자 정보 가져오기
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (!userFromStorage) {
+        message.error('로그인이 필요합니다.');
+        setIsSaving(false);
+        return;
+      }
+
+      const userData = JSON.parse(userFromStorage);
+      const userId = userData.id;
+
+      // 1. 팀 구성 생성
+      const teamCompositionResponse = await api.teamCompositions.create({
+        user_id: userId,
+        name: teamName.trim(),
+        total_synergy_score: synergyScore
+      });
+
+      const teamId = teamCompositionResponse.data.teamComposition.id;
+
+      // 2. 각 팀원을 팀 멤버로 추가
+      const memberPromises = selectedTeam.map((dev, index) => 
+        api.teamMembers.create({
+          team_id: teamId,
+          product_id: dev.id,
+          category_id: dev.categoryId,
+          position: index + 1
+        })
+      );
+
+      await Promise.all(memberPromises);
+
+      message.success('팀이 저장되었습니다!');
+      setTeamName('');
+      setShowNameInput(false);
+      
+      // 저장 후 선택된 팀 초기화 (선택사항)
+      // setSelectedTeam([]);
+    } catch (error) {
+      console.error('팀 저장 실패:', error);
+      message.error('팀 저장에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
   return (
     <div className="team-sidebar">
       <div className="sidebar-card">
@@ -76,9 +147,39 @@ export default function TeamSidebar({
               </div>
             </div>
 
-            {/* 확정 버튼 */}
-            <button className="btn-confirm">
-              Confirm Team & Proceed
+            {/* 팀 이름 입력 */}
+            {showNameInput && (
+              <div className="team-name-input-section" style={{ marginBottom: '1rem' }}>
+                <input
+                  type="text"
+                  placeholder="팀 이름을 입력하세요"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && teamName.trim()) {
+                      saveTeamToServer();
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '0.5rem',
+                    fontSize: '0.875rem'
+                  }}
+                  autoFocus
+                />
+              </div>
+            )}
+
+            {/* 팀 저장 버튼 */}
+            <button 
+              className="btn-confirm"
+              onClick={handleSaveTeam}
+              disabled={isSaving || selectedTeam.length === 0}
+            >
+              <Save style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
+              {isSaving ? '저장 중...' : '팀 저장하기'}
             </button>
           </>
         )}
@@ -90,7 +191,7 @@ export default function TeamSidebar({
           <div className="tip-content">
             <Award className="tip-icon" />
             <div className="tip-text">
-              <p className="tip-title">💡 プロダクトドキュメント</p>
+              <p className="tip-title">プロダクトドキュメント</p>
               <p className="tip-description">
               異なる専門分野を持つチームを作り、最大限活用して最高の結果を得てください！
               </p>

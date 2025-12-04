@@ -129,10 +129,45 @@ export default function UserProfile() {
         .catch(error => {
           console.error('Failed to load reviews:', error);
         });
+
+      // 팀 목록 가져오기
+      api.teamCompositions.getByUser(userId)
+        .then(response => {
+          const teamsList = response.data?.teamCompositions || [];
+          // 각 팀의 멤버 정보도 가져오기
+          Promise.all(
+            teamsList.map(async (team) => {
+              try {
+                const membersResponse = await api.teamMembers.getByTeam(team.id);
+                const members = membersResponse.data?.teamMembers || [];
+                return {
+                  ...team,
+                  members: members.map(m => ({
+                    id: m.product_id,
+                    name: m.product?.name || 'Unknown',
+                    category: m.category?.name || 'その他',
+                    imageUrl: m.product?.imageUrl
+                  }))
+                };
+              } catch (err) {
+                console.error(`Failed to load members for team ${team.id}:`, err);
+                return { ...team, members: [] };
+              }
+            })
+          ).then(teamsWithMembers => {
+            setTeams(teamsWithMembers);
+            setUser(prev => prev ? { 
+              ...prev, 
+              stats: { ...prev.stats, teams: teamsWithMembers.length } 
+            } : prev);
+          });
+        })
+        .catch(error => {
+          console.error('Failed to load teams:', error);
+          setTeams([]);
+        });
     }
 
-    // 팀은 빈 배열로 설정 (나중에 API 추가 가능)
-    setTeams([]);
     setLoading(false);
   };
 
@@ -225,7 +260,56 @@ export default function UserProfile() {
               }}
             />
           )}
-          {activeTab === 'teams' && <TeamsTab teams={teams} />}
+          {activeTab === 'teams' && (
+            <TeamsTab 
+              teams={teams} 
+              onTeamUpdate={() => {
+                // 팀 목록 새로고침
+                const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+                if (userFromStorage) {
+                  try {
+                    const userData = JSON.parse(userFromStorage);
+                    const userId = userData.id;
+                    api.teamCompositions.getByUser(userId)
+                      .then(response => {
+                        const teamsList = response.data?.teamCompositions || [];
+                        Promise.all(
+                          teamsList.map(async (team) => {
+                            try {
+                              const membersResponse = await api.teamMembers.getByTeam(team.id);
+                              const members = membersResponse.data?.teamMembers || [];
+                              return {
+                                ...team,
+                                members: members.map(m => ({
+                                  id: m.product_id,
+                                  name: m.product?.name || 'Unknown',
+                                  category: m.category?.name || 'その他',
+                                  imageUrl: m.product?.imageUrl
+                                }))
+                              };
+                            } catch (err) {
+                              console.error(`Failed to load members for team ${team.id}:`, err);
+                              return { ...team, members: [] };
+                            }
+                          })
+                        ).then(teamsWithMembers => {
+                          setTeams(teamsWithMembers);
+                          setUser(prev => prev ? { 
+                            ...prev, 
+                            stats: { ...prev.stats, teams: teamsWithMembers.length } 
+                          } : prev);
+                        });
+                      })
+                      .catch(error => {
+                        console.error('Failed to reload teams:', error);
+                      });
+                  } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                  }
+                }
+              }}
+            />
+          )}
           {activeTab === 'favorites' && (
             <FavoritesTab 
               favorites={favorites} 

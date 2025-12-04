@@ -5,6 +5,7 @@ import TeamHeader from './components/TeamHeader';
 import AvailableDevelopers from './components/AvailableDevelopers';
 import TeamSidebar from './components/TeamSidebar';
 import { API_URL } from '../config/constants';
+import { api } from '../config/api';
 import './index.css';
 
 export default function TeamBuilder() {
@@ -40,12 +41,44 @@ export default function TeamBuilder() {
       return [];
     };
 
-    axios
-      .get(`${API_URL}/products`)
-      .then((result) => {
-        const products = result.data.products;
+    const loadData = async () => {
+      try {
+        // 사용자 정보 가져오기
+        const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+        if (!userFromStorage) {
+          setLoading(false);
+          return;
+        }
+
+        const userData = JSON.parse(userFromStorage);
+        const userId = userData.id;
+
+        // 찜목록 가져오기
+        const favoritesResponse = await api.favorites.getByUser(userId);
+        const favoritesList = favoritesResponse.data?.favorites || [];
+        
+        // 찜목록에 있는 상품 ID만 추출 (여러 가능한 필드명 처리)
+        const favoriteProductIds = favoritesList
+          .map(fav => fav.product_id || fav.product?.id || fav.id)
+          .filter(id => id != null);
+
+        if (favoriteProductIds.length === 0) {
+          setAvailableDevelopers([]);
+          setLoading(false);
+          return;
+        }
+
+        // 모든 상품 가져오기
+        const productsResponse = await axios.get(`${API_URL}/api/products`);
+        const allProducts = productsResponse.data?.products || [];
+        
+        // 찜목록에 있는 상품만 필터링
+        const favoriteProducts = allProducts.filter(product => 
+          favoriteProductIds.includes(product.id)
+        );
+
         // API 응답을 developer 형식으로 변환
-        const developers = products.map(product => ({
+        const developers = favoriteProducts.map(product => ({
           id: product.id,
           name: product.name,
           category: product.category_name || 'その他', // 카테고리 이름 사용
@@ -61,6 +94,7 @@ export default function TeamBuilder() {
             innovation: 90
           }
         }));
+        
         setAvailableDevelopers(developers);
         
         // URL 파라미터에서 선택된 팀원 복원
@@ -71,11 +105,13 @@ export default function TeamBuilder() {
         }
         
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('エラー発生 : ', error);
         setLoading(false);
-      });
+      }
+    };
+
+    loadData();
   }, [location.search]);
 
   // 팀에 추가

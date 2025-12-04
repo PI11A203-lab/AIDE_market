@@ -665,6 +665,138 @@ font-weight: 700;
 color: #1A1A1A;
 }
 
+/* 팀 목록 */
+.teams-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+gap: 20px;
+}
+
+.team-card {
+background: white;
+border: 1px solid #E5E7EB;
+border-radius: 8px;
+padding: 20px;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.team-card:hover {
+border-color: #1A1A1A;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.team-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 16px;
+}
+
+.team-name {
+font-size: 18px;
+font-weight: 700;
+color: #1A1A1A;
+margin-bottom: 4px;
+line-height: 1.2;
+}
+
+.team-date {
+font-size: 13px;
+color: #9CA3AF;
+line-height: 1.2;
+}
+
+.synergy-badge {
+background: linear-gradient(135deg, #000000 0%, #7c7c7c 100%);
+color: white;
+padding: 8px 12px;
+border-radius: 6px;
+font-size: 13px;
+font-weight: 600;
+text-align: center;
+min-width: 60px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+.synergy-badge .synergy-score {
+font-size: 20px;
+line-height: 1;
+display: block;
+font-weight: 700;
+background: none;
+}
+
+.synergy-badge .synergy-label {
+font-size: 10px;
+opacity: 0.8;
+margin-top: 2px;
+line-height: 1;
+}
+
+.team-members {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.member-item {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 8px;
+background: #FAFAFA;
+border-radius: 6px;
+}
+
+.member-avatar {
+width: 32px;
+height: 32px;
+background: linear-gradient(135deg, #1A1A1A 0%, #7c7c7c 100%);
+border-radius: 6px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-size: 12px;
+font-weight: 700;
+flex-shrink: 0;
+overflow: hidden;
+min-width: 32px;
+}
+
+.member-avatar img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+}
+
+.member-avatar span {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 100%;
+height: 100%;
+}
+
+.member-name {
+font-size: 14px;
+font-weight: 600;
+color: #1A1A1A;
+line-height: 1.2;
+margin-bottom: 2px;
+}
+
+.member-category {
+font-size: 12px;
+color: #6B7280;
+line-height: 1.2;
+}
+
 .btn-favorite-remove {
 width: 40px;
 height: 40px;
@@ -688,29 +820,288 @@ transform: scale(1.05);
 /* 빈 상태 */
 .empty-state {
 text-align: center;
-padding: 80px 32px;
-background: white;
-border: 1px solid #E5E7EB;
-border-radius: 16px;
+padding: 80px 20px;
+color: #9CA3AF;
 }
 
 .empty-icon {
 width: 64px;
 height: 64px;
+margin: 0 auto 16px;
 color: #D1D5DB;
-margin: 0 auto 24px;
 }
 
-.empty-title {
-font-size: 20px;
-font-weight: 700;
-color: #1A1A1A;
+.empty-text {
+font-size: 16px;
+color: #6B7280;
 margin-bottom: 8px;
 }
 
-.empty-subtitle {
-font-size: 15px;
+.empty-subtext {
+font-size: 14px;
+color: #9CA3AF;
+}
+
+/* 모달 */
+.modal-overlay {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0, 0, 0, 0.6);
+z-index: 1000;
+align-items: center;
+justify-content: center;
+padding: 20px;
+}
+
+.modal-overlay.active {
+display: flex;
+}
+
+.modal {
+background: white;
+border-radius: 12px;
+max-width: 800px;
+width: 100%;
+max-height: 90vh;
+overflow-y: auto;
+position: relative;
+}
+
+.modal-header {
+padding: 24px 32px;
+border-bottom: 1px solid #E5E7EB;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.modal-title {
+font-size: 24px;
+font-weight: 700;
+color: #1A1A1A;
+}
+
+.btn-close {
+width: 32px;
+height: 32px;
+background: none;
+border: none;
 color: #6B7280;
+cursor: pointer;
+border-radius: 6px;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.btn-close:hover {
+background: #F3F4F6;
+color: #1A1A1A;
+}
+
+.modal-body {
+padding: 32px;
+}
+
+/* 모달 내 팀 정보 */
+.team-info-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 24px;
+margin-bottom: 32px;
+}
+
+.info-item {
+display: flex;
+flex-direction: column;
+gap: 6px;
+}
+
+.info-label {
+font-size: 13px;
+color: #6B7280;
+font-weight: 600;
+}
+
+.info-value {
+font-size: 16px;
+color: #1A1A1A;
+font-weight: 600;
+}
+
+/* 시너지 스코어 (모달) */
+.synergy-card {
+background: linear-gradient(135deg, #000000 0%, #7c7c7c 100%);
+color: white;
+border-radius: 8px;
+padding: 24px;
+text-align: center;
+margin-bottom: 32px;
+}
+
+.synergy-card-label {
+font-size: 14px;
+font-weight: 600;
+margin-bottom: 8px;
+opacity: 0.95;
+}
+
+.synergy-card-value {
+font-size: 56px;
+font-weight: 700;
+line-height: 1;
+margin-bottom: 8px;
+}
+
+.synergy-card-message {
+font-size: 14px;
+opacity: 0.9;
+font-weight: 500;
+}
+
+/* 팀원 상세 */
+.members-title {
+font-size: 18px;
+font-weight: 700;
+color: #1A1A1A;
+margin-bottom: 16px;
+}
+
+.members-list {
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+.member-card {
+border: 1px solid #E5E7EB;
+border-radius: 8px;
+padding: 16px;
+display: flex;
+align-items: center;
+gap: 16px;
+}
+
+.member-card-avatar {
+width: 56px;
+height: 56px;
+background: linear-gradient(135deg, #1A1A1A 0%, #4B5563 100%);
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-size: 20px;
+font-weight: 700;
+flex-shrink: 0;
+overflow: hidden;
+min-width: 56px;
+}
+
+.member-card-avatar img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+}
+
+.member-card-avatar span {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 100%;
+height: 100%;
+}
+
+.member-card-info {
+flex: 1;
+}
+
+.member-card-name {
+font-size: 16px;
+font-weight: 700;
+color: #1A1A1A;
+margin-bottom: 2px;
+}
+
+.member-card-category {
+font-size: 14px;
+color: #6B7280;
+margin-bottom: 8px;
+}
+
+.member-card-stats {
+display: flex;
+gap: 12px;
+font-size: 12px;
+}
+
+.stat {
+color: #6B7280;
+}
+
+.stat strong {
+color: #1A1A1A;
+}
+
+/* 모달 푸터 */
+.modal-footer {
+padding: 20px 32px;
+border-top: 1px solid #E5E7EB;
+display: flex;
+gap: 12px;
+justify-content: flex-end;
+}
+
+.btn-secondary,
+.btn-primary {
+padding: 10px 20px;
+border: none;
+border-radius: 6px;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.btn-secondary {
+background: white;
+color: #374151;
+border: 1px solid #E5E7EB;
+}
+
+.btn-secondary:hover {
+background: #F3F4F6;
+}
+
+.btn-primary {
+background: #000000;
+color: white;
+}
+
+.btn-primary:hover {
+background: #1A1A1A;
+}
+
+.btn-danger {
+background: white;
+color: #DC2626;
+padding: 10px 20px;
+border: 1px solid #DC2626;
+border-radius: 6px;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.btn-danger:hover {
+background: #FEF2F2;
 }
 
 /* 반응형 */
@@ -771,6 +1162,18 @@ color: #6B7280;
   .profile-tabs {
     overflow-x: auto;
     flex-wrap: nowrap;
+  }
+
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-body {
+    padding: 20px;
   }
 }
 

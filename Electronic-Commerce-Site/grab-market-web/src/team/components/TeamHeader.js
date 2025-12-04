@@ -8,7 +8,6 @@ export default function TeamHeader() {
     <header className="profile-header">
       <div className="header-content">
         <h1 className="logo">
-          <span className="logo-icon">🤖</span>
           <span className="logo-text">AIDE Market</span>
         </h1>
         <button 

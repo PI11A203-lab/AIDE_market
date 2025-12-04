@@ -1,5 +1,4 @@
 import React from 'react';
-import { Plus, X } from 'lucide-react';
 import { API_URL } from '../../config/constants';
 
 export default function DeveloperCard({ developer, isSelected, isFull, onAdd, onRemove }) {
@@ -55,7 +54,6 @@ export default function DeveloperCard({ developer, isSelected, isFull, onAdd, on
             onClick={() => onRemove(developer.id)}
             className="btn-remove"
           >
-            <X className="btn-icon" />
             Remove
           </button>
         ) : (
@@ -64,7 +62,6 @@ export default function DeveloperCard({ developer, isSelected, isFull, onAdd, on
             disabled={isFull}
             className="btn-add"
           >
-            <Plus className="btn-icon" />
             Add
           </button>
         )}

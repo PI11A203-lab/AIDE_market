@@ -147,13 +147,6 @@ function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onR
   return (
     <div className="category-section">
       <h4 className="category-title">
-        {category.icon && (
-          <img 
-            src={category.icon} 
-            alt={category.name} 
-            className="category-title-icon"
-          />
-        )}
         {category.name}
       </h4>
       <div className="category-content-wrapper">

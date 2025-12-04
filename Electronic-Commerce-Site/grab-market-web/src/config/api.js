@@ -657,6 +657,90 @@ export const api = {
      */
     delete: (id) => apiClient.delete(`/api/payment-methods/${id}`),
   },
+
+  // ==================== 팀 구성 관련 (Team Compositions) ====================
+  teamCompositions: {
+    /**
+     * 사용자별 팀 구성 목록 조회
+     * @param {number} userId - 사용자 ID
+     * @param {Object} params - { page, limit }
+     */
+    getByUser: (userId, params = {}) =>
+      apiClient.get(`/api/team-compositions/users/${userId}`, { params }),
+
+    /**
+     * 전체 팀 구성 목록 조회
+     * @param {Object} params - { page, limit }
+     */
+    getList: (params = {}) => apiClient.get('/api/team-compositions', { params }),
+
+    /**
+     * ID로 팀 구성 조회
+     * @param {number} id - 팀 구성 ID
+     */
+    getById: (id) => apiClient.get(`/api/team-compositions/${id}`),
+
+    /**
+     * 팀 구성 생성
+     * @param {Object} data - { user_id, name, total_synergy_score }
+     */
+    create: (data) => apiClient.post('/api/team-compositions', data),
+
+    /**
+     * 팀 구성 업데이트
+     * @param {number} id - 팀 구성 ID
+     * @param {Object} data - { name, total_synergy_score }
+     */
+    update: (id, data) => apiClient.put(`/api/team-compositions/${id}`, data),
+
+    /**
+     * 팀 구성 삭제
+     * @param {number} id - 팀 구성 ID
+     */
+    delete: (id) => apiClient.delete(`/api/team-compositions/${id}`),
+  },
+
+  // ==================== 팀 멤버 관련 (Team Members) ====================
+  teamMembers: {
+    /**
+     * 팀별 멤버 목록 조회
+     * @param {number} teamId - 팀 구성 ID
+     */
+    getByTeam: (teamId) => apiClient.get(`/api/team-members/teams/${teamId}`),
+
+    /**
+     * ID로 팀 멤버 조회
+     * @param {number} id - 팀 멤버 ID
+     */
+    getById: (id) => apiClient.get(`/api/team-members/${id}`),
+
+    /**
+     * 팀 멤버 추가
+     * @param {Object} data - { team_id, product_id, category_id, position }
+     */
+    create: (data) => apiClient.post('/api/team-members', data),
+
+    /**
+     * 팀 멤버 업데이트
+     * @param {number} id - 팀 멤버 ID
+     * @param {Object} data - { category_id, position }
+     */
+    update: (id, data) => apiClient.put(`/api/team-members/${id}`, data),
+
+    /**
+     * 팀 멤버 삭제 (ID로)
+     * @param {number} id - 팀 멤버 ID
+     */
+    delete: (id) => apiClient.delete(`/api/team-members/${id}`),
+
+    /**
+     * 팀 멤버 삭제 (team_id와 product_id로)
+     * @param {number} teamId - 팀 구성 ID
+     * @param {number} productId - 상품 ID
+     */
+    deleteByTeamAndProduct: (teamId, productId) =>
+      apiClient.delete(`/api/team-members/teams/${teamId}/products/${productId}`),
+  },
 };
 
 export default api;
