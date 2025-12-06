@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Edit2, Trash2, X, Check } from 'lucide-react';
-import { message, Image } from 'antd';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Edit2, Trash2, X, Check, ChevronLeft, ChevronRight, Heart, ChevronDown, ChevronUp } from 'lucide-react';
+import { message, Image, Modal } from 'antd';
 import { api } from '../../config/api';
 import { API_URL } from '../../config/constants';
 import { clearRatingCache } from '../../utils/ratingCache';
@@ -11,11 +11,173 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
   const [deletingId, setDeletingId] = useState(null);
   const [helpfulLoading, setHelpfulLoading] = useState({});
   const [reviewsState, setReviewsState] = useState(reviews);
+  const [showAllImagesModal, setShowAllImagesModal] = useState(false);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isReviewExpanded, setIsReviewExpanded] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const slideContainerRef = useRef(null);
   
   // reviews prop이 변경되면 상태 업데이트
   useEffect(() => {
     setReviewsState(reviews);
   }, [reviews]);
+
+  // 리뷰 선택 시 이미지 인덱스 및 확장 상태 초기화
+  useEffect(() => {
+    setCurrentImageIndex(0);
+    setIsReviewExpanded(false);
+  }, [selectedReviewId]);
+
+  // 찜하기 상태 확인
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!productId) return;
+      
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (!userFromStorage) {
+        setIsLiked(false);
+        return;
+      }
+
+      try {
+        const userData = JSON.parse(userFromStorage);
+        const response = await api.favorites.check(userData.id, productId);
+        setIsLiked(response.data?.isFavorite || false);
+      } catch (error) {
+        setIsLiked(false);
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [productId]);
+
+  // 찜하기 토글 핸들러
+  const handleFavoriteToggle = async () => {
+    if (!productId) return;
+
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!userFromStorage) {
+      message.warning('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      const userData = JSON.parse(userFromStorage);
+      
+      if (isLiked) {
+        // 찜목록에서 제거
+        await api.favorites.delete(userData.id, productId);
+        setIsLiked(false);
+        message.success('찜목록에서 제거되었습니다.');
+      } else {
+        // 찜목록에 추가
+        await api.favorites.create({
+          user_id: userData.id,
+          product_id: productId,
+        });
+        setIsLiked(true);
+        message.success('찜목록에 추가되었습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      message.error('찜목록 업데이트에 실패했습니다.');
+    }
+  };
+
+  // 리뷰 이미지 수집 (리뷰 ID와 함께 저장)
+  const reviewImages = useMemo(() => {
+    const images = [];
+    reviewsState.forEach(review => {
+      if (review.review_images && Array.isArray(review.review_images) && review.review_images.length > 0) {
+        review.review_images.forEach((imageUrl, index) => {
+          images.push({
+            url: imageUrl.startsWith('http') ? imageUrl : `${API_URL}/${imageUrl}`,
+            reviewId: review.id,
+            reviewIndex: reviewsState.indexOf(review),
+            imageIndex: index
+          });
+        });
+      }
+    });
+    return images;
+  }, [reviewsState]);
+
+  // 스크롤 가능 여부 확인
+  useEffect(() => {
+    const checkScroll = () => {
+      const container = slideContainerRef.current;
+      if (!container) return;
+      
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(
+        container.scrollLeft < container.scrollWidth - container.clientWidth - 10
+      );
+    };
+
+    const container = slideContainerRef.current;
+    if (container) {
+      checkScroll();
+      container.addEventListener('scroll', checkScroll);
+      return () => container.removeEventListener('scroll', checkScroll);
+    }
+  }, [reviewImages.length]);
+
+  // 별점 분포 계산
+  const calculateRatingDistribution = () => {
+    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    const total = reviewsState.length;
+
+    reviewsState.forEach(review => {
+      const rating = review.rating || 0;
+      if (rating >= 1 && rating <= 5) {
+        distribution[rating]++;
+      }
+    });
+
+    return {
+      distribution,
+      total,
+      percentages: {
+        5: total > 0 ? (distribution[5] / total) * 100 : 0,
+        4: total > 0 ? (distribution[4] / total) * 100 : 0,
+        3: total > 0 ? (distribution[3] / total) * 100 : 0,
+        2: total > 0 ? (distribution[2] / total) * 100 : 0,
+        1: total > 0 ? (distribution[1] / total) * 100 : 0,
+      }
+    };
+  };
+
+  const ratingStats = calculateRatingDistribution();
+
+  // 슬라이드 이동
+  const handleSlide = (direction) => {
+    const container = slideContainerRef.current;
+    if (!container) return;
+
+    const itemWidth = 120 + 12; // 각 이미지 너비(120px) + gap(12px)
+
+    if (direction === 'left') {
+      container.scrollBy({ left: -itemWidth * 2, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: itemWidth * 2, behavior: 'smooth' });
+    }
+  };
+
+  // 특정 리뷰로 스크롤
+  const scrollToReview = (reviewId) => {
+    const reviewElement = document.querySelector(`[data-review-id="${reviewId}"]`);
+    if (reviewElement) {
+      reviewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // 하이라이트 효과
+      reviewElement.style.backgroundColor = '#fef3c7';
+      setTimeout(() => {
+        reviewElement.style.backgroundColor = '';
+      }, 2000);
+    }
+  };
 
   // 수정 시작
   const handleEditStart = (review) => {
@@ -197,13 +359,366 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
 
   return (
     <div className="flex flex-col gap-8">
+      {/* 별점 분포 차트 */}
+      {reviewsState.length > 0 && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">レビュー評価分布</h3>
+          <div className="space-y-3">
+            {[5, 4, 3, 2, 1].map((rating) => {
+              const count = ratingStats.distribution[rating];
+              const percentage = ratingStats.percentages[rating];
+              
+              return (
+                <div key={rating} className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 w-16">
+                    <span className="text-base font-bold" style={{ color: '#717171' }}>★</span>
+                    <span className="text-base font-bold text-gray-700">{rating}</span>
+                  </div>
+                  <div className="flex-1 bg-gray-100 rounded-md h-6 relative overflow-hidden">
+                    <div
+                      className="bg-yellow-400 h-full rounded-md transition-all duration-300"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <div className="w-12 text-right">
+                    <span className="text-sm text-gray-600">{count}件</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 리뷰 사진 섹션 */}
+      {reviewImages.length > 0 && (
+        <div className="bg-white py-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-900">イメージ付きのレビュー</h3>
+            <button
+              onClick={() => setShowAllImagesModal(true)}
+              className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              すべての写真を見る &gt;
+            </button>
+          </div>
+          
+          <div className="relative">
+            {/* 왼쪽 화살표 */}
+            {reviewImages.length > 4 && canScrollLeft && (
+              <button
+                onClick={() => handleSlide('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-md hover:bg-gray-50 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-700" />
+              </button>
+            )}
+            
+            {/* 이미지 슬라이드 */}
+            <div
+              ref={slideContainerRef}
+              className="flex gap-3 overflow-x-auto scroll-smooth hide-scrollbar"
+              style={{ 
+                scrollbarWidth: 'none', 
+                msOverflowStyle: 'none'
+              }}
+              onScroll={() => {
+                const container = slideContainerRef.current;
+                if (container) {
+                  setCanScrollLeft(container.scrollLeft > 0);
+                  setCanScrollRight(
+                    container.scrollLeft < container.scrollWidth - container.clientWidth - 10
+                  );
+                }
+              }}
+            >
+              {reviewImages.map((imageData, index) => (
+                <div
+                  key={`${imageData.reviewId}-${imageData.imageIndex}`}
+                  className="flex-shrink-0 cursor-pointer group"
+                  onClick={() => scrollToReview(imageData.reviewId)}
+                >
+                  <Image
+                    src={imageData.url}
+                    alt={`리뷰 이미지 ${index + 1}`}
+                    className="object-cover rounded-lg transition-transform group-hover:scale-105"
+                    width={120}
+                    height={120}
+                    preview={false}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* 오른쪽 화살표 */}
+            {reviewImages.length > 4 && canScrollRight && (
+              <button
+                onClick={() => handleSlide('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-md hover:bg-gray-50 transition-colors"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-700" />
+              </button>
+            )}
+          </div>
+          {/* 구분선 */}
+          {reviewsState.length > 0 && (
+            <div className="border-t border-gray-200 mt-6"></div>
+          )}
+        </div>
+      )}
+
+      {/* 전체 사진 팝업 모달 */}
+      <Modal
+        open={showAllImagesModal}
+        onCancel={() => {
+          setShowAllImagesModal(false);
+          setSelectedReviewId(null);
+        }}
+        footer={null}
+        width="80%"
+        style={{ maxWidth: '1000px' }}
+        centered
+        closeIcon={<X className="w-5 h-5" />}
+        className="review-images-modal"
+      >
+        {selectedReviewId ? (
+          // 선택된 리뷰 상세 정보 표시
+          (() => {
+            const selectedReview = reviewsState.find(r => r.id === selectedReviewId);
+            const reviewImagesList = reviewImages.filter(img => img.reviewId === selectedReviewId);
+            const currentImage = reviewImagesList[currentImageIndex] || reviewImagesList[0];
+            const hasMultipleImages = reviewImagesList.length > 1;
+            
+            if (!selectedReview) return null;
+            
+            // 이미지 변경 핸들러
+            const handlePreviousImage = () => {
+              setCurrentImageIndex((prev) => 
+                prev > 0 ? prev - 1 : reviewImagesList.length - 1
+              );
+            };
+            
+            const handleNextImage = () => {
+              setCurrentImageIndex((prev) => 
+                prev < reviewImagesList.length - 1 ? prev + 1 : 0
+              );
+            };
+            
+            return (
+              <div className="p-6 relative">
+                {/* 뒤로가기 버튼 - 왼쪽 위, X 버튼과 같은 높이, hover 시 밑줄 표시 */}
+                <button
+                  onClick={() => {
+                    setSelectedReviewId(null);
+                    setCurrentImageIndex(0);
+                  }}
+                  className="absolute -top-4 left-0 px-4 py-2 text-gray-700 rounded-lg hover:underline transition-colors z-10"
+                >
+                  ← すべての写真に戻る
+                </button>
+                
+                <div className="flex gap-6">
+                  {/* 왼쪽: 이미지 - 50% */}
+                  <div className="flex-1 relative">
+                    {currentImage && (
+                      <>
+                        <Image
+                          src={currentImage.url}
+                          alt="리뷰 이미지"
+                          className="object-cover rounded-lg w-full h-full"
+                          style={{ maxHeight: '600px', objectFit: 'contain' }}
+                          preview={false}
+                        />
+                        
+                        {/* 화살표 버튼들 */}
+                        {hasMultipleImages && (
+                          <>
+                            {/* 왼쪽 화살표 */}
+                            <button
+                              onClick={handlePreviousImage}
+                              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 border border-gray-300 rounded-lg p-2 shadow-md transition-all z-10"
+                            >
+                              <ChevronLeft className="w-6 h-6 text-gray-700" />
+                            </button>
+                            
+                            {/* 오른쪽 화살표 */}
+                            <button
+                              onClick={handleNextImage}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 border border-gray-300 rounded-lg p-2 shadow-md transition-all z-10"
+                            >
+                              <ChevronRight className="w-6 h-6 text-gray-700" />
+                            </button>
+                          </>
+                        )}
+                        
+                        {/* 찜하기 버튼 - 오른쪽 아래 */}
+                        <button
+                          onClick={handleFavoriteToggle}
+                          className={`absolute bottom-4 right-4 w-11 h-11 border rounded-lg flex items-center justify-center transition-all z-10 shadow-md ${
+                            isLiked 
+                              ? 'bg-red-50 border-red-600 text-red-600' 
+                              : 'bg-white bg-opacity-80 hover:bg-opacity-100 border-gray-300 text-gray-700'
+                          }`}
+                        >
+                          <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                        </button>
+                        
+                        {/* 이미지 인덱스 표시 */}
+                        {hasMultipleImages && (
+                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm z-10">
+                            {currentImageIndex + 1} / {reviewImagesList.length}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* 오른쪽: 리뷰 정보 - 50% */}
+                  <div className="flex-1">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
+                        {selectedReview.avatar}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-base text-gray-900 mb-0.5">{selectedReview.author}</div>
+                        <div className="text-[13px] text-gray-400">{selectedReview.date}</div>
+                      </div>
+                    </div>
+                    
+                    {/* 별점 */}
+                    <div className="flex items-center gap-1 mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          className={`w-5 h-5 ${
+                            i < (selectedReview.rating || 0)
+                              ? 'text-yellow-400 fill-yellow-400'
+                              : 'text-gray-200 fill-gray-200'
+                          }`}
+                          viewBox="0 0 24 24"
+                        >
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                      ))}
+                    </div>
+                    
+                    {/* 프로젝트명 */}
+                    <div className="mb-3">
+                      <span className="inline-block px-3.5 py-1.5 bg-blue-50 text-blue-700 rounded-md text-[13px] font-semibold">
+                        {selectedReview.project}
+                      </span>
+                    </div>
+                    
+                    {/* 리뷰 제목 */}
+                    {selectedReview.title && (
+                      <h4 className="text-base font-bold text-gray-900 mb-2">
+                        {selectedReview.title}
+                      </h4>
+                    )}
+                    
+                    {/* 리뷰 내용 */}
+                    {selectedReview.text && (() => {
+                      const maxLength = 200; // 표시할 최대 글자 수
+                      const isLongText = selectedReview.text.length > maxLength;
+                      const displayText = isLongText && !isReviewExpanded 
+                        ? selectedReview.text.substring(0, maxLength) + '...'
+                        : selectedReview.text;
+                      
+                      return (
+                        <div className="mb-4">
+                          <p className="text-[15px] text-gray-600 leading-[1.7]">{displayText}</p>
+                          {isLongText && (
+                            <button
+                              onClick={() => setIsReviewExpanded(!isReviewExpanded)}
+                              className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                            >
+                              {isReviewExpanded ? (
+                                <>
+                                  詳細を非表示
+                                  <ChevronUp className="w-4 h-4" />
+                                </>
+                              ) : (
+                                <>
+                                  詳細を表示
+                                  <ChevronDown className="w-4 h-4" />
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+                    
+                    {/* 리뷰 이미지들 */}
+                    {selectedReview.review_images && Array.isArray(selectedReview.review_images) && selectedReview.review_images.length > 0 && (
+                      <div className="mb-4">
+                        <Image.PreviewGroup>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedReview.review_images.map((imageUrl, index) => (
+                              <Image
+                                key={index}
+                                src={imageUrl.startsWith('http') ? imageUrl : `${API_URL}/${imageUrl}`}
+                                alt={`리뷰 이미지 ${index + 1}`}
+                                className="object-cover rounded-lg"
+                                width={100}
+                                height={100}
+                                style={{ cursor: 'pointer' }}
+                                preview={{
+                                  mask: '확대'
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </Image.PreviewGroup>
+                      </div>
+                    )}
+                    
+                    {/* Helpful 정보 */}
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-gray-500">
+                        {selectedReview.helpful || 0}人のお客様がこれが役に立ったと考えています
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()
+        ) : (
+          // 전체 사진 그리드
+          <div className="p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">すべての写真</h3>
+            <div className="grid grid-cols-3 gap-4 max-h-[70vh] overflow-y-scroll pr-2">
+              {reviewImages.map((imageData, index) => (
+                <div
+                  key={`${imageData.reviewId}-${imageData.imageIndex}`}
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedReviewId(imageData.reviewId)}
+                >
+                  <Image
+                    src={imageData.url}
+                    alt={`리뷰 이미지 ${index + 1}`}
+                    className="object-cover rounded-lg w-full h-40"
+                    preview={false}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Modal>
+      
       {reviewsState.map((review) => {
         const isEditing = editingId === review.id;
         const isDeleting = deletingId === review.id;
         const isCurrentUserReview = review.isCurrentUser || false;
 
         return (
-          <div key={review.id} className="pb-8 border-b border-gray-200 last:border-0 last:pb-0">
+          <div 
+            key={review.id} 
+            data-review-id={review.id}
+            className="pb-8 border-b border-gray-200 last:border-0 last:pb-0 transition-colors duration-500"
+          >
             <div className="flex items-start gap-4">
               {/* 48px 아바타 */}
               <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-white text-lg font-bold flex-shrink-0">

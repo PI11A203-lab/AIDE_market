@@ -12,6 +12,25 @@
   object-fit: contain; /* cover에서 contain으로 변경 */
 }
 
+/* 스크롤바 숨기기 */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 리뷰 이미지 모달 X 버튼 배경색 제거 */
+.review-images-modal .ant-modal-close {
+  background: transparent !important;
+}
+
+.review-images-modal .ant-modal-close:hover {
+  background: transparent !important;
+}
+
 /* 반응형 - 1920px 이상 대형 화면 지원 */
 @media (min-width: 1920px) {
   .max-w-\[1400px\] {
