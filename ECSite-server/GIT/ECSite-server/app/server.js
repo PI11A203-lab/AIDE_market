@@ -1,7 +1,33 @@
+// 환경 변수 로드 (맨 위에 위치) - 경로 명시적으로 지정
+const path = require('path');
+const dotenv = require('dotenv');
+const envPath = path.resolve(__dirname, '../.env');
+const result = dotenv.config({ path: envPath });
+
+// ⭐ 환경 변수 로드 디버깅
+console.log('\n=== 환경 변수 로드 확인 (app/server.js) ===');
+console.log('현재 작업 디렉토리:', process.cwd());
+console.log('__dirname:', __dirname);
+console.log('.env 파일 경로:', envPath);
+console.log('.env 파일 존재:', require('fs').existsSync(envPath));
+
+if (result.error) {
+    console.error('❌ .env 파일 로드 실패:', result.error);
+} else {
+    console.log('✅ .env 파일 로드 성공');
+    console.log('주입된 환경 변수 개수:', Object.keys(result.parsed || {}).length);
+}
+
+console.log('SMTP_HOST:', process.env.SMTP_HOST || '(없음)');
+console.log('SMTP_PORT:', process.env.SMTP_PORT || '(없음)');
+console.log('SMTP_USER:', process.env.SMTP_USER || '(없음)');
+console.log('SMTP_PASSWORD:', process.env.SMTP_PASSWORD ? '✅ 설정됨 (' + process.env.SMTP_PASSWORD.substring(0, 3) + '...)' : '❌ 설정 안됨');
+console.log('SMTP_SECURE:', process.env.SMTP_SECURE || '(없음)');
+console.log('==========================================\n');
+
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const path = require("path");
 const models = require("../db/initializer");
 const registerRoutes = require("./routes"); // routesまとめ役
 

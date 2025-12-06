@@ -23,5 +23,14 @@ router.delete("/:id", userController.deleteUser);
 // 비밀번호 검증
 router.post("/:id/validate-password", userController.validatePassword);
 
+// 비밀번호 재설정 요청 (6자리 코드 전송)
+router.post("/forgot-password", userController.requestPasswordReset);
+
+// 인증 코드 검증
+router.post("/verify-reset-code", userController.verifyResetCode);
+
+// 비밀번호 재설정 (토큰으로)
+router.post("/reset-password", userController.resetPassword);
+
 module.exports = router;
 

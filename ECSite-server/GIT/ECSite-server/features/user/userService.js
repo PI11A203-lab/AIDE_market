@@ -269,3 +269,152 @@ exports.updateUserTags = async (userId, tagNames) => {
     }
 };
 
+// 비밀번호 재설정 토큰 저장소 (메모리 기반, 프로덕션에서는 DB 사용 권장)
+const passwordResetTokens = new Map();
+
+// 비밀번호 재설정 요청 (6자리 숫자 코드 생성)
+exports.requestPasswordReset = async (email) => {
+    const user = await exports.findUserByEmail(email);
+    if (!user) {
+        // 보안을 위해 사용자가 없어도 성공 메시지 반환
+        return { success: true, message: '이메일이 등록되어 있다면 인증 코드를 전송했습니다.' };
+    }
+    
+    // 6자리 숫자 코드 생성 (000000-999999)
+    const crypto = require('crypto');
+    const code = Math.floor(100000 + crypto.randomInt(0, 900000)).toString().padStart(6, '0');
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10분 후 만료
+    
+    // 코드 저장 (이메일을 키로 사용하여 기존 코드 덮어쓰기)
+    passwordResetTokens.set(user.email, {
+        userId: user.id,
+        email: user.email,
+        code: code,
+        expiresAt: expiresAt
+    });
+    
+    // 만료된 코드 정리 (10분 후)
+    setTimeout(() => {
+        const stored = passwordResetTokens.get(user.email);
+        if (stored && stored.code === code) {
+            passwordResetTokens.delete(user.email);
+        }
+    }, 10 * 60 * 1000);
+    
+    // 이메일 전송 시도
+    const emailService = require('./emailService');
+    try {
+        const emailResult = await emailService.sendPasswordResetCode(user.email, code);
+        
+        // 이메일이 성공적으로 전송된 경우 (코드 반환 안 함)
+        if (emailResult.sent) {
+            return {
+                success: true,
+                message: '이메일이 등록되어 있다면 인증 코드를 전송했습니다.',
+            };
+        }
+        
+        // 이메일 서버 설정이 없어서 전송되지 않은 경우에만 코드 반환 (개발 편의)
+        if (!emailResult.sent && emailResult.code) {
+            console.log('\n⚠️ 이메일 서버가 설정되지 않아 코드를 반환합니다.');
+            console.log('실제 이메일을 받으려면 .env 파일에 SMTP_PASSWORD를 설정하세요.\n');
+            return {
+                success: true,
+                message: '이메일이 등록되어 있다면 인증 코드를 전송했습니다.',
+                // 이메일 서버가 없을 때만 코드 반환
+                code: emailResult.code,
+            };
+        }
+        
+        // 기본 응답
+        return {
+            success: true,
+            message: '이메일이 등록되어 있다면 인증 코드를 전송했습니다.',
+        };
+    } catch (error) {
+        // 이메일 전송 실패
+        console.error('이메일 전송 중 오류:', error);
+        
+        // 이메일 서버 설정이 있지만 전송 실패한 경우 (코드 반환 안 함)
+        // 사용자에게는 성공 메시지만 표시 (보안)
+        return {
+            success: true,
+            message: '이메일이 등록되어 있다면 인증 코드를 전송했습니다.',
+        };
+    }
+};
+
+// 인증 코드 검증
+exports.verifyResetCode = async (email, code) => {
+    if (!email || !code) {
+        throw new Error('이메일과 인증 코드는 필수입니다');
+    }
+    
+    // 코드 검증
+    const codeData = passwordResetTokens.get(email);
+    if (!codeData) {
+        throw new Error('인증 코드가 없거나 만료되었습니다');
+    }
+    
+    // 만료 확인
+    if (new Date() > codeData.expiresAt) {
+        passwordResetTokens.delete(email);
+        throw new Error('인증 코드가 만료되었습니다');
+    }
+    
+    // 코드 일치 확인
+    if (codeData.code !== code) {
+        throw new Error('인증 코드가 일치하지 않습니다');
+    }
+    
+    // 검증 성공 - 토큰 생성하여 반환 (비밀번호 재설정 페이지에서 사용)
+    const crypto = require('crypto');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30분 후 만료
+    
+    // 토큰 저장 (이메일을 키로 사용)
+    passwordResetTokens.set(`token_${resetToken}`, {
+        userId: codeData.userId,
+        email: codeData.email,
+        expiresAt: tokenExpiresAt
+    });
+    
+    // 코드 삭제 (한 번만 사용 가능)
+    passwordResetTokens.delete(email);
+    
+    return { 
+        success: true, 
+        message: '인증 코드가 확인되었습니다.',
+        resetToken: resetToken
+    };
+};
+
+// 비밀번호 재설정 (토큰으로)
+exports.resetPassword = async (resetToken, newPassword) => {
+    if (!resetToken || !newPassword) {
+        throw new Error('토큰과 새 비밀번호는 필수입니다');
+    }
+    
+    // 토큰 검증
+    const tokenData = passwordResetTokens.get(`token_${resetToken}`);
+    if (!tokenData) {
+        throw new Error('유효하지 않거나 만료된 토큰입니다');
+    }
+    
+    // 만료 확인
+    if (new Date() > tokenData.expiresAt) {
+        passwordResetTokens.delete(`token_${resetToken}`);
+        throw new Error('토큰이 만료되었습니다');
+    }
+    
+    // 비밀번호 업데이트
+    await exports.updateUser(tokenData.userId, {
+        password: newPassword
+    });
+    
+    // 토큰 삭제 (한 번만 사용 가능)
+    passwordResetTokens.delete(`token_${resetToken}`);
+    
+    return { success: true, message: '비밀번호가 성공적으로 변경되었습니다' };
+};
+

@@ -137,3 +137,64 @@ exports.validatePassword = async (req, res) => {
     }
 };
 
+// 비밀번호 재설정 요청
+exports.requestPasswordReset = async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ error: "email은 필수입니다" });
+        }
+        
+        const result = await userService.requestPasswordReset(email);
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "비밀번호 재설정 요청 실패" });
+    }
+};
+
+// 인증 코드 검증
+exports.verifyResetCode = async (req, res) => {
+    try {
+        const { email, code } = req.body;
+        
+        if (!email || !code) {
+            return res.status(400).json({ error: "email과 code는 필수입니다" });
+        }
+        
+        const result = await userService.verifyResetCode(email, code);
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        if (err.message.includes('인증 코드') || err.message.includes('만료') || err.message.includes('일치하지 않습니다')) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.status(500).json({ error: "인증 코드 검증 실패" });
+    }
+};
+
+// 비밀번호 재설정 (토큰으로)
+exports.resetPassword = async (req, res) => {
+    try {
+        const { resetToken, newPassword } = req.body;
+        
+        if (!resetToken || !newPassword) {
+            return res.status(400).json({ error: "resetToken과 newPassword는 필수입니다" });
+        }
+        
+        if (newPassword.length < 8) {
+            return res.status(400).json({ error: "비밀번호는 최소 8자 이상이어야 합니다" });
+        }
+        
+        const result = await userService.resetPassword(resetToken, newPassword);
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        if (err.message.includes('유효하지 않거나 만료된') || err.message.includes('만료되었습니다')) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.status(500).json({ error: "비밀번호 재설정 실패" });
+    }
+};
+

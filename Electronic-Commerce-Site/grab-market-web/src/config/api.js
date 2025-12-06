@@ -236,6 +236,29 @@ export const api = {
      */
     validatePassword: (id, password) =>
       apiClient.post(`/api/users/${id}/validate-password`, { password }),
+
+    /**
+     * 비밀번호 재설정 요청 (이메일로 6자리 코드 전송)
+     * @param {string} email - 사용자 이메일
+     */
+    requestPasswordReset: (email) =>
+      apiClient.post('/api/users/forgot-password', { email }),
+
+    /**
+     * 인증 코드 검증
+     * @param {string} email - 사용자 이메일
+     * @param {string} code - 6자리 인증 코드
+     */
+    verifyResetCode: (email, code) =>
+      apiClient.post('/api/users/verify-reset-code', { email, code }),
+
+    /**
+     * 비밀번호 재설정 (토큰으로)
+     * @param {string} resetToken - 재설정 토큰
+     * @param {string} newPassword - 새 비밀번호
+     */
+    resetPassword: (resetToken, newPassword) =>
+      apiClient.post('/api/users/reset-password', { resetToken, newPassword }),
   },
 
   // ==================== 찜목록 관련 (Favorites) ====================

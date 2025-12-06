@@ -1,4 +1,8 @@
-require('dotenv').config();
+// 환경 변수 로드 (경로 명시적으로 지정)
+const path = require('path');
+const dotenv = require('dotenv');
+const envPath = path.resolve(__dirname, '../.env');
+dotenv.config({ path: envPath });
 
 // Docker環境でのデフォルト値
 const getDbConfig = () => {
