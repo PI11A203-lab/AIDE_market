@@ -1,11 +1,4 @@
 import React, { useState } from 'react';
-import { 
-  MailOutlined, 
-  LockOutlined, 
-  UserOutlined,
-  EyeInvisibleOutlined, 
-  EyeOutlined 
-} from '@ant-design/icons';
 
 export default function SignupForm({ onSubmit, isLoading }) {
   const [formData, setFormData] = useState({
@@ -73,69 +66,102 @@ export default function SignupForm({ onSubmit, isLoading }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit}>
       {/* 사용자명 */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <div className="mb-5">
+        <label className="block text-sm font-semibold text-[#374151] mb-2">
           Username
         </label>
         <div className="relative">
-          <UserOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+          <svg 
+            className="absolute left-[14px] top-1/2 transform -translate-y-1/2 text-[#9CA3AF] w-5 h-5" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
           <input
             type="text"
             value={formData.username}
             onChange={(e) => handleChange('username', e.target.value)}
             placeholder="username"
-            className={`w-full pl-12 pr-4 py-4 bg-gray-50 border rounded-xl focus:outline-none focus:bg-white transition text-lg ${
-              errors.username ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-blue-500'
+            className={`w-full pl-[44px] pr-[14px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
+              errors.username 
+                ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
+                : 'border-[#E5E7EB] focus:border-[#1A1A1A] focus:shadow-[0_0_0_3px_rgba(26,26,26,0.05)]'
             }`}
             required
             disabled={isLoading}
           />
         </div>
         {errors.username && (
-          <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+          <p className="mt-1.5 text-[13px] text-[#DC2626]">{errors.username}</p>
         )}
       </div>
 
       {/* 이메일 */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <div className="mb-5">
+        <label className="block text-sm font-semibold text-[#374151] mb-2">
           Email Address
         </label>
         <div className="relative">
-          <MailOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+          <svg 
+            className="absolute left-[14px] top-1/2 transform -translate-y-1/2 text-[#9CA3AF] w-5 h-5" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2"
+          >
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
           <input
             type="email"
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
             placeholder="your@email.com"
-            className={`w-full pl-12 pr-4 py-4 bg-gray-50 border rounded-xl focus:outline-none focus:bg-white transition text-lg ${
-              errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-blue-500'
+            className={`w-full pl-[44px] pr-[14px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
+              errors.email 
+                ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
+                : 'border-[#E5E7EB] focus:border-[#1A1A1A] focus:shadow-[0_0_0_3px_rgba(26,26,26,0.05)]'
             }`}
             required
             disabled={isLoading}
           />
         </div>
         {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          <p className="mt-1.5 text-[13px] text-[#DC2626]">{errors.email}</p>
         )}
       </div>
 
       {/* 비밀번호 */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <div className="mb-5">
+        <label className="block text-sm font-semibold text-[#374151] mb-2">
           Password
         </label>
         <div className="relative">
-          <LockOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+          <svg 
+            className="absolute left-[14px] top-1/2 transform -translate-y-1/2 text-[#9CA3AF] w-5 h-5" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
           <input
             type={showPassword ? 'text' : 'password'}
             value={formData.password}
             onChange={(e) => handleChange('password', e.target.value)}
             placeholder="••••••••"
-            className={`w-full pl-12 pr-12 py-4 bg-gray-50 border rounded-xl focus:outline-none focus:bg-white transition text-lg ${
-              errors.password ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-blue-500'
+            className={`w-full pl-[44px] pr-[44px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
+              errors.password 
+                ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
+                : 'border-[#E5E7EB] focus:border-[#1A1A1A] focus:shadow-[0_0_0_3px_rgba(26,26,26,0.05)]'
             }`}
             required
             disabled={isLoading}
@@ -143,35 +169,61 @@ export default function SignupForm({ onSubmit, isLoading }) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-[14px] top-1/2 transform -translate-y-1/2 text-[#9CA3AF] hover:text-[#6B7280] p-1"
             disabled={isLoading}
           >
-            {showPassword ? (
-              <EyeInvisibleOutlined className="text-lg" />
-            ) : (
-              <EyeOutlined className="text-lg" />
-            )}
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              {showPassword ? (
+                <>
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </>
+              ) : (
+                <>
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </>
+              )}
+            </svg>
           </button>
         </div>
         {errors.password && (
-          <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          <p className="mt-1.5 text-[13px] text-[#DC2626]">{errors.password}</p>
         )}
       </div>
 
       {/* 비밀번호 확인 */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <div className="mb-5">
+        <label className="block text-sm font-semibold text-[#374151] mb-2">
           Confirm Password
         </label>
         <div className="relative">
-          <LockOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+          <svg 
+            className="absolute left-[14px] top-1/2 transform -translate-y-1/2 text-[#9CA3AF] w-5 h-5" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
           <input
             type={showConfirmPassword ? 'text' : 'password'}
             value={formData.confirmPassword}
             onChange={(e) => handleChange('confirmPassword', e.target.value)}
             placeholder="••••••••"
-            className={`w-full pl-12 pr-12 py-4 bg-gray-50 border rounded-xl focus:outline-none focus:bg-white transition text-lg ${
-              errors.confirmPassword ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-blue-500'
+            className={`w-full pl-[44px] pr-[44px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
+              errors.confirmPassword 
+                ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
+                : 'border-[#E5E7EB] focus:border-[#1A1A1A] focus:shadow-[0_0_0_3px_rgba(26,26,26,0.05)]'
             }`}
             required
             disabled={isLoading}
@@ -179,32 +231,47 @@ export default function SignupForm({ onSubmit, isLoading }) {
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-[14px] top-1/2 transform -translate-y-1/2 text-[#9CA3AF] hover:text-[#6B7280] p-1"
             disabled={isLoading}
           >
-            {showConfirmPassword ? (
-              <EyeInvisibleOutlined className="text-lg" />
-            ) : (
-              <EyeOutlined className="text-lg" />
-            )}
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              {showConfirmPassword ? (
+                <>
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </>
+              ) : (
+                <>
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </>
+              )}
+            </svg>
           </button>
         </div>
         {errors.confirmPassword && (
-          <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+          <p className="mt-1.5 text-[13px] text-[#DC2626]">{errors.confirmPassword}</p>
         )}
       </div>
 
       {/* Remember Me */}
-      <div>
+      <div className="mb-6">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={formData.rememberMe}
             onChange={(e) => handleChange('rememberMe', e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="w-[18px] h-[18px] border border-[#D1D5DB] rounded checked:bg-[#1A1A1A] checked:border-[#1A1A1A] cursor-pointer"
             disabled={isLoading}
           />
-          <span className="text-sm text-gray-700">Remember me</span>
+          <span className="text-sm text-[#6B7280]">Remember me</span>
         </label>
       </div>
 
@@ -212,7 +279,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-xl transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3.5 bg-[#000000] text-white rounded-lg text-base font-semibold hover:bg-[#1A1A1A] transition-all disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed mb-6"
       >
         {isLoading ? 'Creating Account...' : 'Create Account'}
       </button>

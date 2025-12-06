@@ -1,31 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SocialLogin from './SocialLogin';
 
 export default function LoginFooter() {
   return (
     <>
+      <SocialLogin />
+      
       {/* 회원가입 링크 */}
-      <div className="text-center mt-8">
-        <p className="text-gray-600">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-semibold">
-            Sign up for free
-          </Link>
-        </p>
-      </div>
-
-      {/* 푸터 */}
-      <div className="text-center mt-8 text-sm text-gray-500">
-        <p>By signing in, you agree to our</p>
-        <div className="flex items-center justify-center gap-4 mt-2">
-          <a href="#" className="hover:text-gray-700">
-            Terms of Service
-          </a>
-          <span>•</span>
-          <a href="#" className="hover:text-gray-700">
-            Privacy Policy
-          </a>
-        </div>
+      <div className="text-center text-sm text-[#6B7280] mb-6">
+        Don't have an account?{' '}
+        <Link to="/signup" className="text-[#1A1A1A] font-semibold hover:underline">
+          Sign up for free
+        </Link>
       </div>
     </>
   );

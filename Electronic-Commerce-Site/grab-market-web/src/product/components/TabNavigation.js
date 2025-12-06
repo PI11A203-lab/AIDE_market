@@ -5,28 +5,34 @@ import ReviewsTab from './ReviewsTab';
 
 export default function TabNavigation({ activeTab, onTabChange, developer }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 mb-6">
+    <div className="bg-white border border-gray-200 rounded-xl mb-6 overflow-hidden">
       <div className="flex border-b border-gray-200">
         <button
           onClick={() => onTabChange('overview')}
-          className={`flex-1 py-4 font-semibold transition ${
-            activeTab === 'overview' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'
+          className={`flex-1 py-[18px] px-6 text-[15px] font-semibold transition-all border-b-2 ${
+            activeTab === 'overview' 
+              ? 'text-gray-900 border-gray-900' 
+              : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
           Overview
         </button>
         <button
           onClick={() => onTabChange('projects')}
-          className={`flex-1 py-4 font-semibold transition ${
-            activeTab === 'projects' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'
+          className={`flex-1 py-[18px] px-6 text-[15px] font-semibold transition-all border-b-2 ${
+            activeTab === 'projects' 
+              ? 'text-gray-900 border-gray-900' 
+              : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
           Projects
         </button>
         <button
           onClick={() => onTabChange('reviews')}
-          className={`flex-1 py-4 font-semibold transition ${
-            activeTab === 'reviews' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'
+          className={`flex-1 py-[18px] px-6 text-[15px] font-semibold transition-all border-b-2 ${
+            activeTab === 'reviews' 
+              ? 'text-gray-900 border-gray-900' 
+              : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
           Reviews ({developer.reviewCount})

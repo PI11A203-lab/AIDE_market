@@ -351,13 +351,13 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <ProductHeader />
 
-      <main className="max-w-[1400px] mx-auto px-8 py-12">
-        <div className="grid grid-cols-3 gap-8">
+      <main className="max-w-[1400px] mx-auto px-12 py-8 pb-20">
+        <div className="grid grid-cols-[1fr_400px] gap-8">
           {/* 메인 컨텐츠 */}
-          <div className="col-span-2">
+          <div>
             <ProfileHeader 
               developer={developer} 
               isLiked={isLiked} 
@@ -465,7 +465,7 @@ export default function ProductPage() {
           </div>
 
           {/* 사이드바 */}
-          <div className="space-y-6">
+          <div className="flex flex-col gap-5 sticky top-[100px] self-start">
             <PriceSidebar 
               developer={developer} 
               onBuyNow={handleBuyNow}

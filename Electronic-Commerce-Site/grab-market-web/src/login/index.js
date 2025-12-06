@@ -58,12 +58,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-8 px-3 md:px-6 lg:px-12">
-      <div className="w-full max-w-md lg:max-w-lg">
+    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center py-10 px-5">
+      <div className="w-full max-w-[440px]">
         <LoginHeader />
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-10 lg:p-12">
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-8 sm:p-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-6 text-center">Sign In</h2>
           <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
           <LoginFooter />
+        </div>
+        
+        {/* 푸터 */}
+        <div className="text-center mt-8 text-[13px] text-[#9CA3AF]">
+          <p>By signing in, you agree to our</p>
+          <div className="flex items-center justify-center gap-4 mt-2">
+            <Link to="/terms" className="text-[#6B7280] hover:text-[#1A1A1A]">
+              Terms of Service
+            </Link>
+            <span className="text-[#D1D5DB]">•</span>
+            <Link to="/privacy" className="text-[#6B7280] hover:text-[#1A1A1A]">
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </div>
     </div>

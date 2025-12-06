@@ -52,12 +52,28 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center py-10 px-5">
+      <div className="w-full max-w-[440px]">
         <SignupHeader />
-        <div className="bg-white p-10 rounded-2xl shadow-xl">
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-8 sm:p-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-2 text-center">Create Your Account</h2>
+          <p className="text-sm text-[#6B7280] text-center mb-8">Join thousands of developers building amazing AI solutions</p>
           <SignupForm onSubmit={handleSignup} isLoading={isLoading} />
           <SignupFooter />
+        </div>
+        
+        {/* 푸터 */}
+        <div className="text-center mt-8 text-[13px] text-[#9CA3AF]">
+          <p>By signing up, you agree to our</p>
+          <div className="flex items-center justify-center gap-4 mt-2">
+            <Link to="/terms" className="text-[#6B7280] hover:text-[#1A1A1A]">
+              Terms of Service
+            </Link>
+            <span className="text-[#D1D5DB]">•</span>
+            <Link to="/privacy" className="text-[#6B7280] hover:text-[#1A1A1A]">
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </div>
     </div>

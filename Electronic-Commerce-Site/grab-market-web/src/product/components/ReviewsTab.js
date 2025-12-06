@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, ThumbsUp, Edit2, Trash2, X, Check } from 'lucide-react';
+import { Edit2, Trash2, X, Check } from 'lucide-react';
 import { message, Image } from 'antd';
 import { api } from '../../config/api';
 import { API_URL } from '../../config/constants';
@@ -196,64 +196,66 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-8">
       {reviewsState.map((review) => {
         const isEditing = editingId === review.id;
         const isDeleting = deletingId === review.id;
         const isCurrentUserReview = review.isCurrentUser || false;
 
         return (
-          <div key={review.id} className="border-b border-gray-200 pb-6 last:border-0">
+          <div key={review.id} className="pb-8 border-b border-gray-200 last:border-0 last:pb-0">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white font-bold">
+              {/* 48px 아바타 */}
+              <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
                 {review.avatar}
               </div>
               <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h4 className="font-bold">{review.author}</h4>
-                    <p className="text-sm text-gray-600">{review.date}</p>
+                    <div className="font-bold text-base text-gray-900 mb-0.5">{review.author}</div>
+                    <div className="text-[13px] text-gray-400">{review.date}</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {!isEditing && (
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < (review.rating || 0)
-                                ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    )}
-                    {/* 본인 리뷰만 수정/삭제 버튼 표시 */}
-                    {isCurrentUserReview && !isEditing && (
-                      <div className="flex items-center gap-1 ml-2">
-                        <button
-                          onClick={() => handleEditStart(review)}
-                          disabled={isDeleting}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="수정"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(review.id)}
-                          disabled={isDeleting}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="삭제"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                  {/* 본인 리뷰만 수정/삭제 버튼 표시 */}
+                  {isCurrentUserReview && !isEditing && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleEditStart(review)}
+                        disabled={isDeleting}
+                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="수정"
+                      >
+                        <Edit2 className="w-4.5 h-4.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(review.id)}
+                        disabled={isDeleting}
+                        className="p-2 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="삭제"
+                      >
+                        <Trash2 className="w-4.5 h-4.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <div className="mb-2">
-                  <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium">
+                {!isEditing && (
+                  <div className="flex items-center gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        className={`w-5 h-5 ${
+                          i < (review.rating || 0)
+                            ? 'text-yellow-400 fill-yellow-400'
+                            : 'text-gray-200 fill-gray-200'
+                        }`}
+                        viewBox="0 0 24 24"
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                      </svg>
+                    ))}
+                  </div>
+                )}
+                <div className="mb-3">
+                  <span className="inline-block px-3.5 py-1.5 bg-blue-50 text-blue-700 rounded-md text-[13px] font-semibold">
                     {review.project}
                   </span>
                 </div>
@@ -265,15 +267,18 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                       <label className="block text-sm font-medium text-gray-700 mb-2">별점</label>
                       <div className="flex items-center gap-2">
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
+                          <svg
                             key={star}
                             className={`w-6 h-6 cursor-pointer transition-colors ${
                               star <= editForm.rating
                                 ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-300'
+                                : 'text-gray-300 fill-gray-300'
                             }`}
                             onClick={() => setEditForm({ ...editForm, rating: star })}
-                          />
+                            viewBox="0 0 24 24"
+                          >
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                          </svg>
                         ))}
                         <span className="ml-2 text-sm text-gray-600">{editForm.rating}점</span>
                       </div>
@@ -309,19 +314,19 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                   <>
                     {/* 리뷰 제목 */}
                     {review.title && (
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      <h4 className="text-base font-bold text-gray-900 mb-2">
                         {review.title}
-                      </h3>
+                      </h4>
                     )}
                     
                     {/* 리뷰 내용 */}
                     {review.text && (
-                      <p className="text-gray-700 mb-3">{review.text}</p>
+                      <p className="text-[15px] text-gray-600 leading-[1.7] mb-4">{review.text}</p>
                     )}
                     
                     {/* 리뷰 이미지 */}
                     {review.review_images && Array.isArray(review.review_images) && review.review_images.length > 0 && (
-                      <div className="mb-3">
+                      <div className="mb-4">
                         <Image.PreviewGroup>
                           <div className="flex flex-wrap gap-2">
                             {review.review_images.map((imageUrl, index) => (
@@ -344,9 +349,9 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     )}
                     
                     {/* Helpful 정보 표시 */}
-                    <div className="mt-3 flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       {/* Helpful 수 표시 (모든 리뷰에 표시) */}
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-500">
                         {review.helpful || 0}人のお客様がこれが役に立ったと考えています
                       </span>
                       
@@ -363,10 +368,10 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                             e.preventDefault();
                           }}
                           disabled={helpfulLoading[review.id]}
-                          className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                          className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                             review.is_helpful
                               ? 'bg-blue-50 text-blue-700 border-blue-300'
-                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                              : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
                           }`}
                           style={{ 
                             pointerEvents: helpfulLoading[review.id] ? 'none' : 'auto',
@@ -375,7 +380,9 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                             position: 'relative'
                           }}
                         >
-                          <ThumbsUp className={`w-4 h-4 ${review.is_helpful ? 'fill-current' : ''}`} />
+                          <svg className={`w-4 h-4 ${review.is_helpful ? 'fill-current' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                          </svg>
                           参考になった
                         </button>
                       )}
