@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Edit2, Trash2, X, Check, ChevronLeft, ChevronRight, Heart, ChevronDown, ChevronUp } from 'lucide-react';
-import { message, Image, Modal } from 'antd';
+import { message, Image, Modal, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import { api } from '../../config/api';
 import { API_URL } from '../../config/constants';
 import { clearRatingCache } from '../../utils/ratingCache';
 
 export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpfulUpdate }) {
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ rating: 0, comment: '' });
+  const [editForm, setEditForm] = useState({ rating: 0, comment: '', images: [] });
+  const [uploadingImages, setUploadingImages] = useState([]);
   const [deletingId, setDeletingId] = useState(null);
   const [helpfulLoading, setHelpfulLoading] = useState({});
   const [reviewsState, setReviewsState] = useState(reviews);
@@ -184,14 +187,17 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     setEditingId(review.id);
     setEditForm({
       rating: review.rating || 0,
-      comment: review.text || ''
+      comment: review.text || '',
+      images: review.review_images || []
     });
+    setUploadingImages([]);
   };
 
   // 수정 취소
   const handleEditCancel = () => {
     setEditingId(null);
-    setEditForm({ rating: 0, comment: '' });
+    setEditForm({ rating: 0, comment: '', images: [] });
+    setUploadingImages([]);
   };
 
   // 수정 저장
@@ -217,10 +223,26 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     }
 
     try {
+      // 업로드된 새 이미지 URL 가져오기
+      const uploadedImageUrls = await Promise.all(
+        uploadingImages.map(async (file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+          const response = await axios.post(`${API_URL}/image`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          return response.data.imageUrl;
+        })
+      );
+
+      // 기존 이미지와 새로 업로드한 이미지 합치기
+      const allImages = [...editForm.images, ...uploadedImageUrls];
+
       await api.reviews.update(reviewId, {
         user_id: userData.id,
         rating: editForm.rating,
-        review_text: editForm.comment.trim()
+        review_text: editForm.comment.trim(),
+        review_images: allImages
       });
 
       message.success('리뷰가 수정되었습니다.');
@@ -236,7 +258,8 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
       }
 
       setEditingId(null);
-      setEditForm({ rating: 0, comment: '' });
+      setEditForm({ rating: 0, comment: '', images: [] });
+      setUploadingImages([]);
     } catch (error) {
       console.error('Failed to update review:', error);
       const errorMessage = error.response?.data?.error || '리뷰 수정에 실패했습니다.';
@@ -807,6 +830,70 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                         rows={4}
                         placeholder="리뷰를 작성해주세요..."
                       />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">리뷰 이미지</label>
+                      <div className="flex flex-wrap gap-3">
+                        {/* 기존 이미지 표시 */}
+                        {editForm.images.map((imageUrl, index) => (
+                          <div key={index} className="relative">
+                            <Image
+                              src={imageUrl.startsWith('http') ? imageUrl : `${API_URL}/${imageUrl}`}
+                              alt={`리뷰 이미지 ${index + 1}`}
+                              className="object-cover rounded-lg"
+                              width={100}
+                              height={100}
+                              preview={false}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newImages = editForm.images.filter((_, i) => i !== index);
+                                setEditForm({ ...editForm, images: newImages });
+                              }}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                        
+                        {/* 업로드 중인 이미지 표시 */}
+                        {uploadingImages.map((file, index) => (
+                          <div key={`uploading-${index}`} className="relative">
+                            <Image
+                              src={URL.createObjectURL(file)}
+                              alt={`업로드 중 ${index + 1}`}
+                              className="object-cover rounded-lg opacity-50"
+                              width={100}
+                              height={100}
+                              preview={false}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-xs text-gray-600">업로드 중...</span>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {/* 이미지 업로드 버튼 */}
+                        <Upload
+                          name="image"
+                          action={`${API_URL}/image`}
+                          listType="picture-card"
+                          showUploadList={false}
+                          beforeUpload={(file) => {
+                            setUploadingImages([...uploadingImages, file]);
+                            return false; // 자동 업로드 방지
+                          }}
+                          accept="image/*"
+                          multiple
+                        >
+                          <div>
+                            <PlusOutlined />
+                            <div className="mt-2 text-xs">이미지 추가</div>
+                          </div>
+                        </Upload>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
