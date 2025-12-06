@@ -1,6 +1,14 @@
 import React from 'react';
+import { API_URL } from '../../config/constants';
 
 export default function SocialLogin() {
+  // 구글 로그인 버튼 클릭 핸들러
+  const handleGoogleLogin = () => {
+    console.log('구글 로그인 시작');
+    // 서버의 구글 로그인 엔드포인트로 리다이렉트
+    window.location.href = `${API_URL}/auth/google`;
+  };
+
   return (
     <>
       {/* 구분선 */}
@@ -15,6 +23,7 @@ export default function SocialLogin() {
       <div className="flex flex-col gap-3 mb-6">
         <button
           type="button"
+          onClick={handleGoogleLogin}
           className="flex items-center justify-center gap-3 py-3 border border-[#E5E7EB] rounded-lg bg-white text-[15px] font-medium text-[#374151] hover:bg-[#FAFAFA] hover:border-[#D1D5DB] transition-all"
         >
           <svg width="20" height="20" viewBox="0 0 24 24">

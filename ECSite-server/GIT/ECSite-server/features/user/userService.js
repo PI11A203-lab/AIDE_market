@@ -90,6 +90,10 @@ exports.createUser = async ({ username, email, password, role, profile_image }) 
     // 이메일 중복 확인
     const existingEmail = await models.User.findOne({ where: { email } });
     if (existingEmail) {
+        // 구글 로그인 사용자인 경우 특별한 메시지
+        if (existingEmail.auth_provider === 'google') {
+            throw new Error('이 이메일은 구글 계정으로 가입되어 있습니다. 구글 로그인을 사용해주세요.');
+        }
         throw new Error('이미 사용 중인 이메일입니다');
     }
     
@@ -116,8 +120,45 @@ exports.createUser = async ({ username, email, password, role, profile_image }) 
     return user.toSafeJSON();
 };
 
+// 구글 계정으로 신규 사용자 생성
+exports.createGoogleUser = async ({ username, email, profile_image, google_id }) => {
+    if (!username || !email) {
+        throw new Error('username, email은 필수입니다');
+    }
+    
+    // 이메일 중복 확인
+    const existingEmail = await models.User.findOne({ where: { email } });
+    if (existingEmail) {
+        throw new Error('이미 사용 중인 이메일입니다');
+    }
+    
+    // 사용자명 중복 확인
+    const existingUsername = await models.User.findOne({ where: { username } });
+    if (existingUsername) {
+        // 사용자명이 중복되는 경우 이메일 기반으로 고유한 사용자명 생성
+        const emailPrefix = email.split('@')[0];
+        username = `${username}_${emailPrefix}_${Date.now()}`;
+        console.log('사용자명 중복으로 인한 자동 변경:', username);
+    }
+    
+    const user = await models.User.create({
+        username,
+        email,
+        password_hash: null, // ⭐ 구글 로그인은 비밀번호 불필요
+        role: 'user',
+        profile_image: profile_image || null,
+        google_id: google_id || null, // 구글 고유 ID 저장
+        auth_provider: 'google' // 인증 제공자: google
+    });
+    
+    console.log('구글 사용자 생성 완료:', user.id, user.email);
+    
+    // 비밀번호 제외하고 반환
+    return user.toSafeJSON();
+};
+
 // 사용자 업데이트
-exports.updateUser = async (id, { username, email, password, role, profile_image, is_email_public, bio, github_url }) => {
+exports.updateUser = async (id, { username, email, password, role, profile_image, is_email_public, bio, github_url, google_id, auth_provider }) => {
     const user = await models.User.findByPk(id);
     if (!user) {
         throw new Error('사용자를 찾을 수 없습니다');
@@ -180,6 +221,17 @@ exports.updateUser = async (id, { username, email, password, role, profile_image
     
     if (github_url !== undefined) {
         updateData.github_url = github_url || null;
+    }
+    
+    if (google_id !== undefined) {
+        updateData.google_id = google_id || null;
+    }
+    
+    if (auth_provider !== undefined) {
+        if (auth_provider !== 'local' && auth_provider !== 'google') {
+            throw new Error('auth_provider는 "local" 또는 "google"이어야 합니다');
+        }
+        updateData.auth_provider = auth_provider;
     }
     
     await user.update(updateData);

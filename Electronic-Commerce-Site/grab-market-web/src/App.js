@@ -14,6 +14,7 @@ import TeamBuilder from "./team";
 import PurchasePage from "./purchase";
 import PurchaseConfirmation from "./confirmation";
 import OrderDetailPage from "./order";
+import AuthCallback from "./auth/callback";
 
 function App() {
   return (
@@ -61,6 +62,9 @@ function App() {
           </Route>
           <Route exact={true} path="/order/:orderId">
             <OrderDetailPage />
+          </Route>
+          <Route exact={true} path="/auth/callback">
+            <AuthCallback />
           </Route>
         </Switch>
       </div>

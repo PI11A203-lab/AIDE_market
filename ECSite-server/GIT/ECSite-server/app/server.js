@@ -28,8 +28,13 @@ console.log('==========================================\n');
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
+const session = require("express-session");
+const passport = require("passport");
 const models = require("../db/initializer");
 const registerRoutes = require("./routes"); // routesまとめ役
+
+// Passport 설정 로드
+require("../features/auth/passport");
 
 const app = express();
 const PORT = process.env.PORT || 8081;
@@ -37,6 +42,24 @@ const PORT = process.env.PORT || 8081;
 // ミドルウェア設定
 app.use(express.json());
 app.use(cors());
+
+// express-session 설정 (Passport 사용을 위해 필요)
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || 'your-secret',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: process.env.NODE_ENV === "production", // HTTPS에서만 쿠키 전송 (프로덕션)
+            httpOnly: true, // XSS 공격 방지
+            maxAge: 24 * 60 * 60 * 1000 // 24시간
+        }
+    })
+);
+
+// Passport 초기화
+app.use(passport.initialize());
+app.use(passport.session());
 
 // uploadsフォルダを静的公開
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));

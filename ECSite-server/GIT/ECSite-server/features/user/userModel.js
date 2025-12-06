@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         password_hash: {
             type: DataTypes.STRING(255),
-            allowNull: false,
+            allowNull: true, // 구글 로그인 사용자는 비밀번호가 없을 수 있음
         },
         role: {
             type: DataTypes.ENUM('admin', 'user'),
@@ -60,6 +60,17 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(255),
             allowNull: true,
         },
+        google_id: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            comment: '구글 고유 ID 저장'
+        },
+        auth_provider: {
+            type: DataTypes.ENUM('local', 'google'),
+            allowNull: true,
+            defaultValue: 'local',
+            comment: '인증 제공자: local 또는 google'
+        },
     }, {
         tableName: 'users',
         timestamps: true,
@@ -67,6 +78,8 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: 'updatedAt',
         hooks: {
             beforeCreate: async (user) => {
+                // password_hash가 있고 해시되지 않은 경우에만 해시 처리
+                // 구글 로그인 사용자는 password_hash가 null일 수 있음
                 if (user.password_hash && !user.password_hash.startsWith('$2')) {
                     // 비밀번호가 해시되지 않은 경우 해시 처리
                     const saltRounds = 10;
@@ -74,7 +87,8 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             beforeUpdate: async (user) => {
-                if (user.changed('password_hash') && !user.password_hash.startsWith('$2')) {
+                // password_hash가 변경되었고, 값이 있고 해시되지 않은 경우에만 해시 처리
+                if (user.changed('password_hash') && user.password_hash && !user.password_hash.startsWith('$2')) {
                     // 비밀번호가 변경되었고 해시되지 않은 경우 해시 처리
                     const saltRounds = 10;
                     user.password_hash = await bcrypt.hash(user.password_hash, saltRounds);
@@ -85,6 +99,10 @@ module.exports = (sequelize, DataTypes) => {
     
     // 비밀번호 검증 메서드
     User.prototype.validatePassword = async function(password) {
+        // password_hash가 null인 경우 (구글 로그인 사용자)는 검증 불가
+        if (!this.password_hash) {
+            return false;
+        }
         return await bcrypt.compare(password, this.password_hash);
     };
     

@@ -19,6 +19,7 @@ const orderRoutes = require("../features/order/orderRoutes");
 const orderItemRoutes = require("../features/orderitem/orderItemRoutes");
 const orderCouponRoutes = require("../features/ordercoupon/orderCouponRoutes");
 const paymentMethodRoutes = require("../features/paymentmethod/paymentMethodRoutes");
+const authRoutes = require("../features/auth/authRoutes");
 
 module.exports = (app) => {
     // 기존 라우트 (하위 호환성)
@@ -46,4 +47,7 @@ module.exports = (app) => {
     app.use("/api/order-items", orderItemRoutes);
     app.use("/api/order-coupons", orderCouponRoutes);
     app.use("/api/payment-methods", paymentMethodRoutes);
+    
+    // 인증 라우트 (구글 OAuth)
+    app.use("/auth", authRoutes);
 };
