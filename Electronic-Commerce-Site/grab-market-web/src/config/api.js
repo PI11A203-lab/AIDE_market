@@ -807,6 +807,15 @@ export const api = {
       apiClient.delete(`/api/team-members/teams/${teamId}/products/${productId}`),
   },
 
+  // ==================== 인증 관련 (Auth) ====================
+  auth: {
+    /**
+     * 일반 로그인 (이메일/비밀번호)
+     * @param {Object} data - { email, password }
+     */
+    login: (data) => apiClient.post('/auth/login', data),
+  },
+
   // ==================== Admin 관련 ====================
   admin: {
     /**

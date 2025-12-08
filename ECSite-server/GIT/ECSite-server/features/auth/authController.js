@@ -1,6 +1,69 @@
 const jwt = require('jsonwebtoken');
 const userService = require('../user/userService');
 
+// 일반 로그인 (이메일/비밀번호)
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
+        }
+
+        // 이메일로 사용자 찾기 (비밀번호 포함)
+        const user = await userService.findUserByEmail(email);
+        
+        if (!user) {
+            return res.status(401).json({ error: '이메일 또는 비밀번호가 올바르지 않습니다.' });
+        }
+
+        // 구글 로그인 사용자인 경우
+        if (user.auth_provider === 'google') {
+            return res.status(401).json({ error: '이 계정은 구글 로그인을 사용해주세요.' });
+        }
+
+        // 비밀번호 검증
+        const isValidPassword = await user.validatePassword(password);
+        
+        if (!isValidPassword) {
+            return res.status(401).json({ error: '이메일 또는 비밀번호가 올바르지 않습니다.' });
+        }
+
+        // JWT 토큰 생성
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email
+            },
+            process.env.JWT_SECRET || 'jwt-secret',
+            {
+                expiresIn: '7d' // 7일 후 만료
+            }
+        );
+
+        // 사용자 정보 (비밀번호 제외)
+        const userData = user.toSafeJSON ? user.toSafeJSON() : {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            profile_image: user.profile_image,
+            bio: user.bio,
+            github_url: user.github_url,
+            follower_count: user.follower_count
+        };
+
+        res.json({
+            success: true,
+            token,
+            user: userData
+        });
+    } catch (error) {
+        console.error('로그인 오류:', error);
+        res.status(500).json({ error: '로그인 중 오류가 발생했습니다.' });
+    }
+};
+
 // 구글 로그인 시작
 exports.googleAuth = (req, res, next) => {
     console.log('구글 로그인 요청 받음');

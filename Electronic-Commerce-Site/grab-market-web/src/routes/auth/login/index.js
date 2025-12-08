@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, useLocation, Link } from 'react-router-dom';
 import { message } from 'antd';
 import LoginHeader from './components/LoginHeader';
 import LoginForm from './components/LoginForm';
@@ -10,43 +10,35 @@ import './index.css';
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
+  const location = useLocation();
 
   const handleLogin = async ({ email, password, rememberMe }) => {
     setIsLoading(true);
 
     try {
-      // 사용자 목록에서 이메일로 사용자 찾기 (임시 - 실제로는 로그인 API가 필요)
-      // TODO: 서버에 로그인 API가 추가되면 api.auth.login() 사용
-      const usersResponse = await api.users.getList({ limit: 1000 });
-      const users = usersResponse.data?.users || [];
-      const user = users.find(u => u.email === email);
-
-      if (!user) {
-        message.error('이메일 또는 비밀번호가 올바르지 않습니다.');
-        setIsLoading(false);
-        return;
-      }
-
-      // 비밀번호 검증 (실제로는 서버에서 처리해야 함)
-      // TODO: 서버에 로그인 API가 추가되면 이 부분 제거
-      const passwordValid = await api.users.validatePassword(user.id, password);
+      // 실제 로그인 API 호출
+      const response = await api.auth.login({ email, password });
       
-      if (passwordValid.data?.valid) {
-        // 토큰 저장 (실제로는 서버에서 받아야 함)
+      if (response.data?.success && response.data?.token) {
+        // 토큰과 사용자 정보 저장
         const storage = rememberMe ? localStorage : sessionStorage;
-        storage.setItem('token', `mock-token-${user.id}`); // 임시 토큰
+        storage.setItem('token', response.data.token);
         storage.setItem('user', JSON.stringify({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          nickname: user.username,
+          id: response.data.user.id,
+          username: response.data.user.username,
+          email: response.data.user.email,
+          role: response.data.user.role,
+          nickname: response.data.user.username,
+          profile_image: response.data.user.profile_image,
         }));
 
         message.success('로그인에 성공했습니다.');
-        history.push('/');
+        
+        // 원래 접근하려던 페이지로 리다이렉트 (없으면 홈으로)
+        const from = location.state?.from?.pathname || '/';
+        history.push(from);
       } else {
-        message.error('이메일 또는 비밀번호가 올바르지 않습니다.');
+        message.error('로그인에 실패했습니다.');
       }
     } catch (error) {
       console.error('Login error:', error);

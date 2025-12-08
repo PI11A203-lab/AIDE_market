@@ -3,6 +3,10 @@ const router = express.Router();
 const passport = require('passport');
 const authController = require('./authController');
 
+// 일반 로그인 (이메일/비밀번호)
+// POST /auth/login
+router.post('/login', authController.login);
+
 // 구글 로그인 시작
 // GET /auth/google
 router.get(
