@@ -10,6 +10,10 @@ import VerifyCodePage from "./routes/auth/verify-code";
 import ResetPasswordPage from "./routes/auth/reset-password";
 import UserProfile from "./routes/profile";
 import ProfileSettings from "./routes/profile/settings";
+import AdminProducts from "./routes/product/admin/AdminProducts";
+import AdminProductDetail from "./routes/product/admin/[id]/AdminProductDetail";
+import AdminReviews from "./routes/profile/admin/reviews/AdminReviews";
+import AdminOrders from "./routes/profile/admin/order/AdminOrders";
 import TeamBuilder from "./routes/team";
 import PurchasePage from "./routes/purchase";
 import PurchaseConfirmation from "./routes/confirmation";
@@ -48,8 +52,20 @@ function App() {
           <Route exact={true} path="/profile">
             <UserProfile />
           </Route>
+        <Route exact={true} path="/profile/products/:id">
+          <AdminProductDetail />
+        </Route>
           <Route exact={true} path="/profile/settings">
             <ProfileSettings />
+          </Route>
+          <Route exact={true} path="/profile/products">
+            <AdminProducts />
+          </Route>
+          <Route exact={true} path="/profile/reviews">
+            <AdminReviews />
+          </Route>
+          <Route exact={true} path="/profile/orders">
+            <AdminOrders />
           </Route>
           <Route exact={true} path="/team">
             <TeamBuilder />

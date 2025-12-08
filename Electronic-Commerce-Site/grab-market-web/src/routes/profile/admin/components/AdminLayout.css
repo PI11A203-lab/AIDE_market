@@ -1,0 +1,31 @@
+.admin-layout {
+  min-height: 100vh;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-layout-content {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.admin-main-content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+/* 오버레이 백드롭 - 사이드바 열릴 때만 표시 */
+.admin-sidebar-backdrop {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+

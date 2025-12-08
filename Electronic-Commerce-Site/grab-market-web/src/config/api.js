@@ -825,6 +825,59 @@ export const api = {
      * @param {Object} params - { limit }
      */
     getReviews: (params = {}) => apiClient.get('/api/admin/reviews', { params }),
+
+    /**
+     * Admin 상품 삭제
+     * @param {number} id - 상품 ID
+     */
+    deleteProduct: (id) => apiClient.delete(`/api/admin/products/${id}`),
+
+    /**
+     * Admin 상품 상세
+     * @param {number|string} id - 상품 ID
+     */
+    getProductDetail: (id) => apiClient.get(`/api/admin/products/${id}`),
+
+    /**
+     * Admin 상품 통계
+     * @param {number|string} id - 상품 ID
+     */
+    getProductStats: (id) => apiClient.get(`/api/admin/products/${id}/stats`),
+
+    /**
+     * Admin 상품 월별 판매 차트
+     * @param {number|string} id - 상품 ID
+     */
+    getProductSalesChart: (id) => apiClient.get(`/api/admin/products/${id}/sales-chart`),
+
+    /**
+     * Admin 상품 리뷰 (최근 N개)
+     * @param {number|string} id - 상품 ID
+     * @param {Object} params - { limit }
+     */
+    getProductReviews: (id, params = {}) => apiClient.get(`/api/admin/products/${id}/reviews`, { params }),
+
+    /**
+     * Admin 주문 목록 조회
+     * @param {Object} params - { page, limit, dateRange, product, status, sort }
+     */
+    getOrders: (params = {}) => apiClient.get('/api/admin/orders', { params }),
+
+    /**
+     * Admin 주문 통계 조회
+     */
+    getOrderStats: () => apiClient.get('/api/admin/orders/stats'),
+
+    /**
+     * Admin 리뷰 목록 조회
+     * @param {Object} params - { page, limit, search, product, rating, sort }
+     */
+    getReviewsList: (params = {}) => apiClient.get('/api/admin/reviews', { params }),
+
+    /**
+     * Admin 리뷰 통계 조회
+     */
+    getReviewsStats: () => apiClient.get('/api/admin/reviews/stats'),
   },
 };
 

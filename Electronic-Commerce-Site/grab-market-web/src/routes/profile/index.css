@@ -20,7 +20,30 @@ margin: 0 auto;
 padding: 20px 40px;
 display: flex;
 align-items: center;
-justify-content: space-between;
+justify-content: flex-start;
+}
+
+.profile-header .menu-toggle-btn {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #1A1A1A;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+  z-index: 101;
+}
+
+.profile-header .menu-toggle-btn:hover {
+  background: #F3F4F6;
 }
 
 .profile-header .logo {
