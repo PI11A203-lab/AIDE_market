@@ -13,10 +13,13 @@ import './index.css';
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState('purchases');
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [orders, setOrders] = useState([]); // 주문 목록
   const [favorites, setFavorites] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const loadUserData = async () => {
@@ -27,6 +30,9 @@ export default function UserProfile() {
       try {
         userData = JSON.parse(userFromStorage);
         const userId = userData.id;
+        
+        // 현재 로그인한 사용자 정보 저장
+        setCurrentUser(userData);
         
         // API에서 최신 사용자 정보 가져오기
         try {
@@ -46,6 +52,7 @@ export default function UserProfile() {
             is_email_public: apiUser.is_email_public || false,
             profile_image: apiUser.profile_image || null,
             github_url: apiUser.github_url || null,
+            role: apiUser.role || 'user',
             tags: Array.isArray(apiUser.tags) ? apiUser.tags.map(t => typeof t === 'object' ? t.name : t) : [],
             joinDate: apiUser.createdAt ? new Date(apiUser.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' }) : 'January 2025',
             stats: {
@@ -55,6 +62,28 @@ export default function UserProfile() {
               favorites: 0
             }
           });
+          
+          // 팔로워 수 가져오기 (admin 권한인 경우)
+          if (apiUser.role === 'admin') {
+            try {
+              const followersResponse = await api.users.getFollowers(apiUser.id, { page: 1, limit: 1 });
+              setFollowerCount(followersResponse.data.pagination?.total || apiUser.follower_count || 0);
+            } catch (error) {
+              console.error('팔로워 수 로드 실패:', error);
+              setFollowerCount(apiUser.follower_count || 0);
+            }
+          }
+          
+          // 팔로잉 수 가져오기 (user 권한인 경우)
+          if (apiUser.role === 'user') {
+            try {
+              const followingResponse = await api.users.getFollowing(apiUser.id, { page: 1, limit: 1 });
+              setFollowingCount(followingResponse.data.pagination?.total || 0);
+            } catch (error) {
+              console.error('팔로잉 수 로드 실패:', error);
+              setFollowingCount(0);
+            }
+          }
           
           userData = apiUser; // API에서 가져온 데이터로 업데이트
         } catch (apiError) {
@@ -225,7 +254,31 @@ export default function UserProfile() {
       <ProfileHeader />
 
       <main className="profile-main">
-        <ProfileHero user={user} />
+        <ProfileHero 
+          user={user} 
+          currentUser={currentUser}
+          followerCount={followerCount}
+          followingCount={followingCount}
+          onFollowChange={async () => {
+            // 팔로우 변경 시 데이터 새로고침
+            if (user.role === 'admin') {
+              try {
+                const followersResponse = await api.users.getFollowers(user.id, { page: 1, limit: 1 });
+                setFollowerCount(followersResponse.data.pagination?.total || 0);
+              } catch (error) {
+                console.error('팔로워 수 업데이트 실패:', error);
+              }
+            }
+            if (user.role === 'user') {
+              try {
+                const followingResponse = await api.users.getFollowing(user.id, { page: 1, limit: 1 });
+                setFollowingCount(followingResponse.data.pagination?.total || 0);
+              } catch (error) {
+                console.error('팔로잉 수 업데이트 실패:', error);
+              }
+            }
+          }}
+        />
 
         <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 

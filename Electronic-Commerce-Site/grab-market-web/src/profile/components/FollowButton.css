@@ -1,0 +1,42 @@
+.follow-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  outline: none;
+}
+
+.follow-button.follow {
+  background-color: #2563eb;
+  color: white;
+}
+
+.follow-button.follow:hover {
+  background-color: #1d4ed8;
+}
+
+.follow-button.following {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.follow-button.following:hover {
+  background-color: #d1d5db;
+}
+
+.follow-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.follow-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+

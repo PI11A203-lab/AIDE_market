@@ -71,6 +71,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'local',
             comment: '인증 제공자: local 또는 google'
         },
+        follower_count: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '팔로워 수'
+        },
     }, {
         tableName: 'users',
         timestamps: true,

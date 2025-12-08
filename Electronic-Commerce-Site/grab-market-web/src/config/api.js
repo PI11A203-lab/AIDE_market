@@ -259,6 +259,48 @@ export const api = {
      */
     resetPassword: (resetToken, newPassword) =>
       apiClient.post('/api/users/reset-password', { resetToken, newPassword }),
+
+    /**
+     * 팔로우하기
+     * @param {number} userId - 팔로우할 사용자 ID (following_id)
+     * @param {number} followerId - 팔로우하는 사용자 ID (follower_id)
+     */
+    follow: (userId, followerId) =>
+      apiClient.post(`/api/users/${userId}/follow`, { follower_id: followerId }),
+
+    /**
+     * 언팔로우하기
+     * @param {number} userId - 언팔로우할 사용자 ID (following_id)
+     * @param {number} followerId - 언팔로우하는 사용자 ID (follower_id)
+     */
+    unfollow: (userId, followerId) =>
+      apiClient.post(`/api/users/${userId}/unfollow`, { follower_id: followerId }),
+
+    /**
+     * 팔로우 상태 확인
+     * @param {number} userId - 확인할 사용자 ID (following_id)
+     * @param {number} followerId - 팔로우하는 사용자 ID (follower_id, 선택사항)
+     */
+    checkFollowStatus: (userId, followerId) =>
+      apiClient.get(`/api/users/${userId}/follow-status`, {
+        params: followerId ? { follower_id: followerId } : {}
+      }),
+
+    /**
+     * 팔로워 목록 조회
+     * @param {number} userId - 사용자 ID
+     * @param {Object} params - { page, limit }
+     */
+    getFollowers: (userId, params = {}) =>
+      apiClient.get(`/api/users/${userId}/followers`, { params }),
+
+    /**
+     * 팔로잉 목록 조회
+     * @param {number} userId - 사용자 ID
+     * @param {Object} params - { page, limit }
+     */
+    getFollowing: (userId, params = {}) =>
+      apiClient.get(`/api/users/${userId}/following`, { params }),
   },
 
   // ==================== 찜목록 관련 (Favorites) ====================

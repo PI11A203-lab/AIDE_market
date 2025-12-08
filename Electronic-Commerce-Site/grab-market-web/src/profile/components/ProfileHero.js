@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Github, Calendar, Settings } from 'lucide-react';
 import { useHistory } from 'react-router-dom';
 import { API_URL } from '../../config/constants';
 import StatsSection from './StatsSection';
+import FollowButton from './FollowButton';
+import FollowListModal from './FollowListModal';
 
-export default function ProfileHero({ user }) {
+export default function ProfileHero({ user, currentUser, followerCount, followingCount, onFollowChange }) {
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
   const history = useHistory();
 
   const handleSettingsClick = () => {
@@ -89,12 +93,83 @@ export default function ProfileHero({ user }) {
                   ))}
                 </div>
               )}
+              
+              {/* 팔로워/팔로잉 수 및 FollowButton */}
+              <div className="profile-follow-section" style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                {/* admin 권한 계정: 팔로워 수 표시 */}
+                {user.role === 'admin' && (
+                  <button
+                    className="profile-follow-count"
+                    onClick={() => setShowFollowersModal(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      color: '#374151',
+                      fontSize: '0.875rem',
+                      fontWeight: 500
+                    }}
+                  >
+                    <strong style={{ color: '#111827' }}>{followerCount || 0}</strong> 팔로워
+                  </button>
+                )}
+                
+                {/* user 권한 계정: 팔로잉 수 표시 */}
+                {user.role === 'user' && (
+                  <button
+                    className="profile-follow-count"
+                    onClick={() => setShowFollowingModal(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      color: '#374151',
+                      fontSize: '0.875rem',
+                      fontWeight: 500
+                    }}
+                  >
+                    <strong style={{ color: '#111827' }}>{followingCount || 0}</strong> 팔로잉
+                  </button>
+                )}
+                
+                {/* FollowButton: admin 권한이고 본인이 아닌 경우에만 표시 */}
+                {currentUser && currentUser.id !== user.id && user.role === 'admin' && (
+                  <FollowButton
+                    targetUserId={user.id}
+                    targetUsername={user.name}
+                    currentUserId={currentUser.id}
+                    onFollowChange={onFollowChange}
+                  />
+                )}
+              </div>
             </div>
           </div>
 
           <StatsSection stats={user.stats} />
         </div>
       </div>
+      
+      {/* 팔로워/팔로잉 목록 모달 */}
+      {user.role === 'admin' && (
+        <FollowListModal
+          isOpen={showFollowersModal}
+          onClose={() => setShowFollowersModal(false)}
+          userId={user.id}
+          type="followers"
+          userRole={user.role}
+        />
+      )}
+      {user.role === 'user' && (
+        <FollowListModal
+          isOpen={showFollowingModal}
+          onClose={() => setShowFollowingModal(false)}
+          userId={user.id}
+          type="following"
+          userRole={user.role}
+        />
+      )}
     </div>
   );
 }

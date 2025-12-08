@@ -747,10 +747,6 @@
   cursor: pointer;
 }
 
-.creator-item:hover {
-  background: #F9FAFB;
-}
-
 .rank-number {
   width: 24px;
   font-size: 14px;

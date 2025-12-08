@@ -137,6 +137,18 @@ if (fs.existsSync(reviewHelpfulModelPath)) {
     }
 }
 
+// 追加のモデル読み込み: UserFollow (userに依存)
+const userFollowModelPath = path.join(modelsDir, 'user', 'userFollowModel.js');
+if (fs.existsSync(userFollowModelPath)) {
+    try {
+        const userFollowModel = require(userFollowModelPath)(sequelize, Sequelize.DataTypes);
+        db[userFollowModel.name] = userFollowModel;
+        console.log(`✓ モデル ${userFollowModel.name} を読み込みました`);
+    } catch (error) {
+        console.error(`✗ UserFollowモデルの読み込みに失敗しました:`, error.message);
+    }
+}
+
 // モデル間の関連付けを定義
 Object.keys(db).forEach(modelName => {
     if (db[modelName] && typeof db[modelName].associate === 'function') {
@@ -159,6 +171,12 @@ async function syncDatabase(options = {}) {
         if (db.User) {
             await db.User.sync({ force, alter });
             console.log('✓ User テーブルを同期しました');
+        }
+        
+        // 1-1. UserFollow（Userに依存）
+        if (db.UserFollow) {
+            await db.UserFollow.sync({ force, alter });
+            console.log('✓ UserFollow テーブルを同期しました');
         }
         
         // 2. 独立したモデル（依存なし）
