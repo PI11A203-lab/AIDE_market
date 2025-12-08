@@ -1,5 +1,5 @@
 import React from 'react';
-import { RadarChart } from '../../../components/chart';
+import { RadarChart } from '../../../components/charts';
 
 export default function OverviewTab({ hexagonStats }) {
   return (

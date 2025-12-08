@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Github, Calendar, Package, DollarSign, Users, Star, TrendingUp, Ticket } from 'lucide-react';
-import { LineChart, BarChart } from '../../components/chart';
-import ProfileHeader from './components/ProfileHeader';
-import { api } from '../../config/api';
-import { API_URL } from '../../config/constants';
-import './index.css';
+import { Github, Calendar, Package, DollarSign, Users, Star } from 'lucide-react';
+import { DashboardChart } from '../../../components/charts';
+import ProfileHeader from '../components/ProfileHeader';
+import { api } from '../../../config/api';
+import { API_URL } from '../../../config/constants';
+import '../index.css';
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
@@ -18,10 +18,6 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [graphTab, setGraphTab] = useState('revenue'); // 'revenue' or 'coupons'
-  const [revenueData, setRevenueData] = useState([]);
-  const [couponData, setCouponData] = useState([]);
-
   useEffect(() => {
     loadAdminData();
   }, []);
@@ -79,13 +75,6 @@ export default function AdminDashboard() {
           reviews: statsData.reviews || 0
         });
 
-        // 그래프 데이터 설정
-        if (statsData.monthly_revenue) {
-          setRevenueData(statsData.monthly_revenue);
-        }
-        if (statsData.coupon_usage) {
-          setCouponData(statsData.coupon_usage);
-        }
       } catch (error) {
         console.error('Failed to load stats:', error);
       }
@@ -320,78 +309,9 @@ export default function AdminDashboard() {
 
         {/* 그래프 카드 */}
         <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '24px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          border: '1px solid #E5E7EB',
           marginBottom: '40px'
         }}>
-          <div style={{ 
-            display: 'flex', 
-            borderBottom: '1px solid #E5E7EB', 
-            marginBottom: '24px' 
-          }}>
-            <button
-              onClick={() => setGraphTab('revenue')}
-              style={{
-                flex: 1,
-                padding: '12px 24px',
-                fontSize: '15px',
-                fontWeight: 600,
-                border: 'none',
-                background: 'none',
-                cursor: 'pointer',
-                borderBottom: graphTab === 'revenue' ? '2px solid #1A1A1A' : '2px solid transparent',
-                color: graphTab === 'revenue' ? '#1A1A1A' : '#6B7280',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              <TrendingUp size={16} />
-              월별 매출
-            </button>
-            <button
-              onClick={() => setGraphTab('coupons')}
-              style={{
-                flex: 1,
-                padding: '12px 24px',
-                fontSize: '15px',
-                fontWeight: 600,
-                border: 'none',
-                background: 'none',
-                cursor: 'pointer',
-                borderBottom: graphTab === 'coupons' ? '2px solid #1A1A1A' : '2px solid transparent',
-                color: graphTab === 'coupons' ? '#1A1A1A' : '#6B7280',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              <Ticket size={16} />
-              쿠폰 사용량
-            </button>
-          </div>
-          <div style={{ height: '300px' }}>
-            {graphTab === 'revenue' ? (
-              <LineChart 
-                data={revenueData.length > 0 ? revenueData : [{ month: '1월', revenue: 0 }]}
-                dataKey="revenue"
-                name="매출 (¥)"
-              />
-            ) : (
-              <BarChart 
-                data={couponData.length > 0 ? couponData : [{ month: '1월', usage: 0 }]}
-                dataKey="usage"
-                name="사용량"
-              />
-            )}
-          </div>
+          <DashboardChart />
         </div>
 
         {/* 내 상품 최근 5개 */}

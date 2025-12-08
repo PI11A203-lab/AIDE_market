@@ -1,7 +1,17 @@
 import React from 'react';
 import { RadarChart as RechartsRadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 
-export default function RadarChartComponent({ data, name = 'Skills', dataKey = 'value', stroke = '#1a1a1a', fill = '#1a1a1a', fillOpacity = 0.6 }) {
+/**
+ * 기본 레이더 차트 컴포넌트
+ */
+export default function RadarChartComponent({
+  data,
+  name = 'Skills',
+  dataKey = 'value',
+  stroke = '#1a1a1a',
+  fill = '#1a1a1a',
+  fillOpacity = 0.6,
+}) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <RechartsRadarChart data={data}>

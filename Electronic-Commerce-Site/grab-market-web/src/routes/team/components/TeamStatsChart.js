@@ -1,6 +1,6 @@
 import React from 'react';
 import { Target } from 'lucide-react';
-import { RadarChart } from '../../../components/chart';
+import { RadarChart } from '../../../components/charts';
 
 export default function TeamStatsChart({ teamStats }) {
   return (

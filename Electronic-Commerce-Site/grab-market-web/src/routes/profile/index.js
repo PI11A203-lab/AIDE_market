@@ -6,7 +6,7 @@ import PurchasesTab from './components/PurchasesTab';
 import ReviewsTab from './components/ReviewsTab';
 import TeamsTab from './components/TeamsTab';
 import FavoritesTab from './components/FavoritesTab';
-import AdminDashboard from './AdminDashboard';
+import AdminDashboard from './admin/AdminDashboard';
 import { api } from '../../config/api';
 import { API_URL } from '../../config/constants';
 import './index.css';
