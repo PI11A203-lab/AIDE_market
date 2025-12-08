@@ -1,0 +1,240 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useHistory, useLocation } from 'react-router-dom';
+import TeamHeader from './components/TeamHeader';
+import AvailableDevelopers from './components/AvailableDevelopers';
+import TeamSidebar from './components/TeamSidebar';
+import { API_URL } from '../../config/constants';
+import { api } from '../../config/api';
+import './index.css';
+
+export default function TeamBuilder() {
+  const [selectedTeam, setSelectedTeam] = useState([]);
+  const [availableDevelopers, setAvailableDevelopers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const maxTeamSize = 5;
+  const history = useHistory();
+  const location = useLocation();
+
+  // URL 파라미터를 업데이트하는 함수
+  const updateURLParams = (teamIds) => {
+    const searchParams = new URLSearchParams(location.search);
+    if (teamIds.length > 0) {
+      searchParams.set('team', teamIds.join(','));
+    } else {
+      searchParams.delete('team');
+    }
+    history.replace({
+      pathname: location.pathname,
+      search: searchParams.toString()
+    });
+  };
+
+  useEffect(() => {
+    // URL 파라미터에서 선택된 팀원 ID들을 읽어오는 함수
+    const getSelectedIdsFromURL = () => {
+      const searchParams = new URLSearchParams(location.search);
+      const teamParam = searchParams.get('team');
+      if (teamParam) {
+        return teamParam.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+      }
+      return [];
+    };
+
+    const loadData = async () => {
+      try {
+        // 사용자 정보 가져오기
+        const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+        if (!userFromStorage) {
+          setLoading(false);
+          return;
+        }
+
+        const userData = JSON.parse(userFromStorage);
+        const userId = userData.id;
+
+        // 찜목록 가져오기
+        const favoritesResponse = await api.favorites.getByUser(userId);
+        const favoritesList = favoritesResponse.data?.favorites || [];
+        
+        // 찜목록에 있는 상품 ID만 추출 (여러 가능한 필드명 처리)
+        const favoriteProductIds = favoritesList
+          .map(fav => fav.product_id || fav.product?.id || fav.id)
+          .filter(id => id != null);
+
+        if (favoriteProductIds.length === 0) {
+          setAvailableDevelopers([]);
+          setLoading(false);
+          return;
+        }
+
+        // 모든 상품 가져오기
+        const productsResponse = await axios.get(`${API_URL}/api/products`);
+        const allProducts = productsResponse.data?.products || [];
+        
+        // 찜목록에 있는 상품만 필터링
+        const favoriteProducts = allProducts.filter(product => 
+          favoriteProductIds.includes(product.id)
+        );
+
+        // API 응답을 developer 형식으로 변환
+        const developers = favoriteProducts.map(product => ({
+          id: product.id,
+          name: product.name,
+          category: product.category_name || 'その他', // 카테고리 이름 사용
+          categoryId: product.category_id, // 카테고리 ID 추가
+          price: product.price,
+          imageUrl: product.imageUrl,
+          stats: {
+            technical: 95,
+            communication: 90,
+            creativity: 88,
+            speed: 92,
+            reliability: 93,
+            innovation: 90
+          }
+        }));
+        
+        setAvailableDevelopers(developers);
+        
+        // URL 파라미터에서 선택된 팀원 복원
+        const selectedIds = getSelectedIdsFromURL();
+        if (selectedIds.length > 0) {
+          const restoredTeam = developers.filter(dev => selectedIds.includes(dev.id));
+          setSelectedTeam(restoredTeam);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('エラー発生 : ', error);
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [location.search]);
+
+  // 팀에 추가
+  const addToTeam = (developer) => {
+    if (selectedTeam.length < maxTeamSize && !selectedTeam.find(d => d.id === developer.id)) {
+      const newTeam = [...selectedTeam, developer];
+      setSelectedTeam(newTeam);
+      // URL 파라미터 업데이트
+      updateURLParams(newTeam.map(d => d.id));
+    }
+  };
+
+  // 팀에서 제거
+  const removeFromTeam = (developerId) => {
+    const newTeam = selectedTeam.filter(d => d.id !== developerId);
+    setSelectedTeam(newTeam);
+    // URL 파라미터 업데이트
+    updateURLParams(newTeam.map(d => d.id));
+  };
+
+  // 팀 평균 스탯 계산
+  const calculateTeamStats = () => {
+    if (selectedTeam.length === 0) {
+      return [
+        { stat: 'Technical', value: 0 },
+        { stat: 'Communication', value: 0 },
+        { stat: 'Creativity', value: 0 },
+        { stat: 'Speed', value: 0 },
+        { stat: 'Reliability', value: 0 },
+        { stat: 'Innovation', value: 0 }
+      ];
+    }
+
+    const avgStats = selectedTeam.reduce((acc, dev) => ({
+      technical: acc.technical + dev.stats.technical,
+      communication: acc.communication + dev.stats.communication,
+      creativity: acc.creativity + dev.stats.creativity,
+      speed: acc.speed + dev.stats.speed,
+      reliability: acc.reliability + dev.stats.reliability,
+      innovation: acc.innovation + dev.stats.innovation
+    }), { technical: 0, communication: 0, creativity: 0, speed: 0, reliability: 0, innovation: 0 });
+
+    const teamSize = selectedTeam.length;
+    return [
+      { stat: 'Technical', value: Math.round(avgStats.technical / teamSize) },
+      { stat: 'Communication', value: Math.round(avgStats.communication / teamSize) },
+      { stat: 'Creativity', value: Math.round(avgStats.creativity / teamSize) },
+      { stat: 'Speed', value: Math.round(avgStats.speed / teamSize) },
+      { stat: 'Reliability', value: Math.round(avgStats.reliability / teamSize) },
+      { stat: 'Innovation', value: Math.round(avgStats.innovation / teamSize) }
+    ];
+  };
+
+  // 총 가격 계산
+  const calculateTotalPrice = () => {
+    return selectedTeam.reduce((sum, dev) => sum + dev.price, 0);
+  };
+
+  // 시너지 스코어 계산
+  const calculateSynergyScore = () => {
+    if (selectedTeam.length === 0) return 0;
+    
+    const teamStats = calculateTeamStats();
+    const avgScore = teamStats.reduce((sum, stat) => sum + stat.value, 0) / teamStats.length;
+    
+    // 팀 크기 보너스
+    const sizeBonus = selectedTeam.length * 3;
+    
+    // 다양성 보너스 (다른 카테고리)
+    const categories = new Set(selectedTeam.map(d => d.category));
+    const diversityBonus = categories.size * 5;
+    
+    return Math.round(avgScore + sizeBonus + diversityBonus);
+  };
+
+  const teamStats = calculateTeamStats();
+  const synergyScore = calculateSynergyScore();
+  const totalPrice = calculateTotalPrice();
+
+  if (loading) {
+    return (
+      <div className="team-builder">
+        <TeamHeader />
+        <main className="team-main">
+          <div className="text-center py-12">
+            <div className="text-xl text-gray-600">Loading...</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="team-builder">
+      <TeamHeader />
+      
+      <main className="team-main">
+        <div className="team-intro">
+          <h2 className="team-title">あなたの理想のAIチームを構成してみましょう</h2>
+          <p className="team-subtitle">
+            最大 {maxTeamSize} 人まで選択して、理想的なAIチームを作成しましょう
+          </p>
+        </div>
+
+        <div className="team-content-grid">
+          <AvailableDevelopers
+            developers={availableDevelopers}
+            selectedTeam={selectedTeam}
+            maxTeamSize={maxTeamSize}
+            onAddToTeam={addToTeam}
+            onRemoveFromTeam={removeFromTeam}
+          />
+
+          <TeamSidebar
+            selectedTeam={selectedTeam}
+            maxTeamSize={maxTeamSize}
+            teamStats={teamStats}
+            synergyScore={synergyScore}
+            totalPrice={totalPrice}
+            onRemoveFromTeam={removeFromTeam}
+          />
+        </div>
+      </main>
+    </div>
+  );
+}

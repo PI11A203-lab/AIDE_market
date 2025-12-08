@@ -806,6 +806,26 @@ export const api = {
     deleteByTeamAndProduct: (teamId, productId) =>
       apiClient.delete(`/api/team-members/teams/${teamId}/products/${productId}`),
   },
+
+  // ==================== Admin 관련 ====================
+  admin: {
+    /**
+     * Admin 통계 데이터 조회
+     */
+    getStats: () => apiClient.get('/api/admin/stats'),
+
+    /**
+     * Admin의 최근 상품 목록 조회
+     * @param {Object} params - { limit }
+     */
+    getProducts: (params = {}) => apiClient.get('/api/admin/products', { params }),
+
+    /**
+     * Admin의 최근 리뷰 목록 조회
+     * @param {Object} params - { limit }
+     */
+    getReviews: (params = {}) => apiClient.get('/api/admin/reviews', { params }),
+  },
 };
 
 export default api;

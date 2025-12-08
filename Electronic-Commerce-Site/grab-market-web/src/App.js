@@ -1,19 +1,19 @@
 import "./App.css";
-import MainPageComponent from "./main";
+import MainPageComponent from "./routes/home";
 import { Switch, Route } from "react-router-dom";
-import ProductPage from "./product";
-import UploadPage from "./upload";
-import LoginPage from "./login";
-import SignupPage from "./signup";
-import ForgotPasswordPage from "./forgot-password";
-import VerifyCodePage from "./verify-code";
-import ResetPasswordPage from "./reset-password";
-import UserProfile from "./profile";
-import ProfileSettings from "./profile/settings";
-import TeamBuilder from "./team";
-import PurchasePage from "./purchase";
-import PurchaseConfirmation from "./confirmation";
-import OrderDetailPage from "./order";
+import ProductPage from "./routes/product";
+import UploadPage from "./routes/upload";
+import LoginPage from "./routes/auth/login";
+import SignupPage from "./routes/auth/signup";
+import ForgotPasswordPage from "./routes/auth/forgot-password";
+import VerifyCodePage from "./routes/auth/verify-code";
+import ResetPasswordPage from "./routes/auth/reset-password";
+import UserProfile from "./routes/profile";
+import ProfileSettings from "./routes/profile/settings";
+import TeamBuilder from "./routes/team";
+import PurchasePage from "./routes/purchase";
+import PurchaseConfirmation from "./routes/confirmation";
+import OrderDetailPage from "./routes/order";
 import AuthCallback from "./auth/callback";
 
 function App() {
