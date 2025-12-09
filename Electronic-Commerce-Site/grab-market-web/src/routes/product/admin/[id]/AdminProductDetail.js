@@ -17,6 +17,7 @@ import StatsSection from './components/StatsSection';
 import SalesChartSection from './components/SalesChartSection';
 import InfoGrid from './components/InfoGrid';
 import LatestReviewSection from './components/LatestReviewSection';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminProductDetail() {
   const { id } = useParams();
@@ -26,22 +27,26 @@ export default function AdminProductDetail() {
   const [chart, setChart] = useState(mockSalesChart);
   const [latestReview, setLatestReview] = useState(mockReview);
   const [loading, setLoading] = useState(true);
+  const { t, i18n } = useTranslation();
 
   const formatCurrency = (value) => {
     const numeric = Number(value) || 0;
     return `¥${numeric.toLocaleString()}`;
   };
 
-  const formatDate = (value) => {
-    if (!value) return '-';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '-';
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  const formatDate = useCallback(
+    (value) => {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '-';
+      return date.toLocaleDateString(i18n.language || 'en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    },
+    [i18n.language]
+  );
 
   const normalizeProduct = (raw) => {
     if (!raw) return null;
@@ -123,7 +128,7 @@ export default function AdminProductDetail() {
       setLatestReview(normalizeReview(reviews[0]));
     } catch (error) {
       console.error('Failed to load admin product detail:', error);
-      message.warning('일부 데이터를 불러오지 못해 예시 데이터로 표시합니다.');
+      message.warning(t('productAdmin.list.messages.loadFail'));
       setProduct((prev) => prev || mockProductDetail);
       setStats((prev) => prev || mockProductStats);
       setChart((prev) => prev || mockSalesChart);
@@ -131,7 +136,7 @@ export default function AdminProductDetail() {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     loadData();
@@ -139,18 +144,18 @@ export default function AdminProductDetail() {
 
   const productMeta = useMemo(() => {
     return [
-      { label: 'Creator', value: product?.createdBy || 'Unknown' },
-      { label: 'Created', value: formatDate(product?.createdAt) },
-      { label: 'Views', value: (product?.views || 0).toLocaleString() },
+      { label: t('productAdmin.detail.meta.creator'), value: product?.createdBy || 'Unknown' },
+      { label: t('productAdmin.detail.meta.created'), value: formatDate(product?.createdAt) },
+      { label: t('productAdmin.detail.meta.views'), value: (product?.views || 0).toLocaleString() },
     ];
-  }, [product]);
+  }, [product, formatDate, t]);
 
   if (loading) {
     return (
       <div className="admin-product-detail">
         <ProfileHeader />
         <main className="admin-product-detail__main">
-          <div className="admin-product-detail__loading">Loading product...</div>
+          <div className="admin-product-detail__loading">{t('productAdmin.detail.loading')}</div>
         </main>
       </div>
     );
@@ -162,9 +167,9 @@ export default function AdminProductDetail() {
         <ProfileHeader />
         <main className="admin-product-detail__main">
           <div className="admin-product-detail__error">
-            상품 정보를 불러오지 못했습니다.
+            {t('productAdmin.detail.loadError')}
             <button className="btn btn-primary" onClick={loadData}>
-              다시 시도
+              {t('productAdmin.detail.retry')}
             </button>
           </div>
         </main>

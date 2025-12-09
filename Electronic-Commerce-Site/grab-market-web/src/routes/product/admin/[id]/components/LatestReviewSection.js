@@ -2,17 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink } from 'lucide-react';
 import StarRating from '../../components/StarRating';
+import { useTranslation } from 'react-i18next';
 
 export default function LatestReviewSection({ latestReview, productId, formatDate }) {
+  const { t } = useTranslation();
   return (
     <section className="admin-product-detail__review">
       <div className="section-header">
         <div>
-          <div className="section-title">Latest Review</div>
-          <div className="section-subtitle">최근 1개의 리뷰</div>
+          <div className="section-title">{t('productAdmin.detail.latestReview.title')}</div>
+          <div className="section-subtitle">{t('productAdmin.detail.latestReview.subtitle')}</div>
         </div>
         <Link to={`/products/${productId}#reviews`} className="view-all">
-          View All Reviews
+          {t('productAdmin.detail.latestReview.viewAll')}
           <ExternalLink size={14} />
         </Link>
       </div>
@@ -27,11 +29,11 @@ export default function LatestReviewSection({ latestReview, productId, formatDat
               <StarRating rating={latestReview.rating} />
             </div>
             <div className="review-date">{formatDate(latestReview.date)}</div>
-            <p className="review-comment">{latestReview.comment || 'No comment provided.'}</p>
+            <p className="review-comment">{latestReview.comment || t('productAdmin.detail.latestReview.noComment')}</p>
           </div>
         </div>
       ) : (
-        <div className="review-empty">아직 리뷰가 없습니다.</div>
+        <div className="review-empty">{t('productAdmin.detail.latestReview.noReview')}</div>
       )}
     </section>
   );

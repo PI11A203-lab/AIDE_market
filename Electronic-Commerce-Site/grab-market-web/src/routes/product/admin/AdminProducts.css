@@ -264,6 +264,21 @@
 .actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 액션 버튼 사이즈 축소 */
+.actions .btn {
+  height: 36px;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.2;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 64px;
 }
 
 /* 페이지네이션 */

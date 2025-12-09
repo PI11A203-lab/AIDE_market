@@ -38,7 +38,7 @@ export default function AdminOrders() {
     totalPages: 0,
   });
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const mergeProductOptions = useCallback((list) => {
     const names = list

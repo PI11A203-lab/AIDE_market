@@ -53,16 +53,16 @@ export default function FilterBar({ filters, products = [], onFilterChange, onRe
         </div>
 
         <div className="filter-group">
-          <label className="filter-label">{t('profile.admin.orders.filters.status')}</label>
+          <label className="filter-label">{t('profile.admin.orders.filters.statusLabel')}</label>
           <select
             className="filter-select"
             value={filters.status}
             onChange={(e) => onFilterChange('status', e.target.value)}
           >
             <option value="">{t('profile.admin.orders.filters.statusAll')}</option>
-            <option value="completed">{t('profile.admin.orders.filters.status.completed')}</option>
-            <option value="pending">{t('profile.admin.orders.filters.status.pending')}</option>
-            <option value="cancelled">{t('profile.admin.orders.filters.status.cancelled')}</option>
+            <option value="completed">{t('profile.admin.orders.filters.statusOptions.completed')}</option>
+            <option value="pending">{t('profile.admin.orders.filters.statusOptions.pending')}</option>
+            <option value="cancelled">{t('profile.admin.orders.filters.statusOptions.cancelled')}</option>
           </select>
         </div>
 

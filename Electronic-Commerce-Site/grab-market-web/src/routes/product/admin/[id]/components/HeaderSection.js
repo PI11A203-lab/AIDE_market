@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Edit3, Layers } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function HeaderSection({ product, productMeta }) {
+  const { t } = useTranslation();
   if (!product) return null;
 
   return (
@@ -37,11 +39,11 @@ export default function HeaderSection({ product, productMeta }) {
       <div className="admin-product-detail__actions">
         <Link to={`/profile/products/${product.id}/edit`} className="btn btn-secondary">
           <Edit3 size={16} />
-          Edit
+          {t('productAdmin.detail.header.edit')}
         </Link>
         <Link to={`/products/${product.id}`} className="btn btn-primary" target="_blank" rel="noreferrer">
           <ExternalLink size={16} />
-          View Product Page
+          {t('productAdmin.detail.header.viewPublic')}
         </Link>
       </div>
     </section>

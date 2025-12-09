@@ -2,19 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../../../../config/constants';
 import StarRating from './StarRating';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductsTable({ products, onDelete }) {
+  const { t } = useTranslation();
   return (
     <div className="table-container">
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width: '5%' }}>ID</th>
-            <th style={{ width: '35%' }}>Product</th>
-            <th style={{ width: '15%' }}>Price</th>
-            <th style={{ width: '12%' }}>Sales</th>
-            <th style={{ width: '18%' }}>Rating</th>
-            <th style={{ width: '15%' }}>Actions</th>
+            <th style={{ width: '5%' }}>{t('productAdmin.list.table.id')}</th>
+            <th style={{ width: '35%' }}>{t('productAdmin.list.table.product')}</th>
+            <th style={{ width: '15%' }}>{t('productAdmin.list.table.price')}</th>
+            <th style={{ width: '12%' }}>{t('productAdmin.list.table.sales')}</th>
+            <th style={{ width: '18%' }}>{t('productAdmin.list.table.rating')}</th>
+            <th style={{ width: '15%' }}>{t('productAdmin.list.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -40,7 +42,7 @@ export default function ProductsTable({ products, onDelete }) {
                   <div className="product-info">
                     <div className="product-name">{product.name}</div>
                     <div className="product-category">
-                      {product.category_name || 'AI Developer'}
+                      {product.category_name || t('productAdmin.list.table.categoryFallback')}
                     </div>
                   </div>
                 </div>
@@ -61,25 +63,25 @@ export default function ProductsTable({ products, onDelete }) {
                     to={`/profile/products/${product.id}`}
                     className="btn btn-secondary btn-sm"
                   >
-                    Details
+                    {t('productAdmin.list.table.details')}
                   </Link>
                   <Link
                     to={`/profile/products/${product.id}/edit`}
                     className="btn btn-secondary btn-sm"
                   >
-                    Edit
+                    {t('productAdmin.list.table.edit')}
                   </Link>
                   <Link
                     to={`/products/${product.id}`}
                     className="btn btn-secondary btn-sm"
                   >
-                    Public
+                    {t('productAdmin.list.table.public')}
                   </Link>
                   <button
                     className="btn btn-danger btn-sm"
                     onClick={() => onDelete(product.id, product.name)}
                   >
-                    Delete
+                    {t('productAdmin.list.table.delete')}
                   </button>
                 </div>
               </td>

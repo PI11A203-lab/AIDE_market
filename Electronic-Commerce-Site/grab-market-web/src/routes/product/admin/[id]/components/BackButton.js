@@ -1,14 +1,16 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function BackButton({ onClick }) {
+  const { t } = useTranslation();
   return (
     <button
       className="admin-product-detail__back"
       onClick={onClick}
     >
       <ArrowLeft size={18} />
-      <span>Back to Products</span>
+      <span>{t('productAdmin.detail.back')}</span>
     </button>
   );
 }

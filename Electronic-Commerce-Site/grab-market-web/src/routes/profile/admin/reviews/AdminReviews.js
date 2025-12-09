@@ -127,7 +127,7 @@ export default function AdminReviews() {
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.page, pagination.limit]);
+  }, [filters, pagination.page, pagination.limit, t]);
 
   useEffect(() => {
     loadProducts();

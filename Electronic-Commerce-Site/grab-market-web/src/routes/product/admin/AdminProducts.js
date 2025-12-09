@@ -12,6 +12,7 @@ import {
   EmptyState
 } from './components';
 import './AdminProducts.css';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -29,6 +30,7 @@ export default function AdminProducts() {
     total: 0,
     totalPages: 0
   });
+  const { t } = useTranslation();
 
   // 필터 상태
   const [filters, setFilters] = useState({
@@ -93,12 +95,12 @@ export default function AdminProducts() {
       }));
     } catch (error) {
       console.error('Failed to load products:', error);
-      message.error('상품 목록을 불러오는데 실패했습니다.');
+      message.error(t('productAdmin.list.messages.loadFail'));
       setProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.limit, pagination.page]);
+  }, [filters, pagination.limit, pagination.page, t]);
 
   useEffect(() => {
     loadCategories();
@@ -128,17 +130,17 @@ export default function AdminProducts() {
 
   // 상품 삭제
   const handleDelete = async (productId, productName) => {
-    if (!window.confirm(`${productName}을(를) 삭제하시겠습니까?`)) {
+    if (!window.confirm(t('productAdmin.list.messages.deleteConfirm', { name: productName }))) {
       return;
     }
 
     try {
       await api.admin.deleteProduct(productId);
-      message.success('상품이 삭제되었습니다.');
+      message.success(t('productAdmin.list.messages.deleteSuccess'));
       loadProducts(); // 목록 새로고침
     } catch (error) {
       console.error('Failed to delete product:', error);
-      message.error('상품 삭제에 실패했습니다.');
+      message.error(t('productAdmin.list.messages.deleteFail'));
     }
   };
 
@@ -154,10 +156,10 @@ export default function AdminProducts() {
         <main className="admin-products-main">
         {/* 페이지 헤더 */}
         <div className="page-header">
-          <h1 className="page-title">My Products</h1>
+          <h1 className="page-title">{t('productAdmin.list.title')}</h1>
           <Link to="/profile/products/new" className="btn btn-primary">
             <Plus size={20} />
-            New Product
+            {t('productAdmin.list.new')}
           </Link>
         </div>
 
@@ -175,7 +177,7 @@ export default function AdminProducts() {
         {/* 테이블 */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('productAdmin.list.loading')}</div>
           </div>
         ) : products.length === 0 ? (
           <EmptyState
