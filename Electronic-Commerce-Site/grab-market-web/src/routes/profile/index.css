@@ -235,9 +235,8 @@ margin-left: auto;
 }
 
 .stat-card {
-background: rgba(255, 255, 255, 0.15);
-border: 1px solid rgba(255, 255, 255, 0.3);
-backdrop-filter: blur(10px);
+background: #f2f2f2;
+border: 1px solid #000000;
 border-radius: 16px;
 padding: 24px 20px;
   text-align: center;
@@ -245,29 +244,24 @@ transition: all 0.2s;
 width: 140px;
 }
 
-.stat-card:hover {
-background: rgba(255, 255, 255, 0.25);
-transform: translateY(-2px);
-}
-
 .stat-icon {
 width: 40px;
 height: 40px;
 margin: 0 auto 12px;
-color: white;
+color: #000000;
 }
 
 .stat-number {
 font-size: 36px;
 font-weight: 700;
-color: white;
+color: #000000;
 margin-bottom: 4px;
 line-height: 1;
 }
 
 .stat-label {
 font-size: 13px;
-color: rgba(255, 255, 255, 0.9);
+color: #000000;
 font-weight: 500;
 }
 
@@ -442,7 +436,7 @@ font-weight: 500;
 .reviews-container {
 display: flex;
 flex-direction: column;
-gap: 16px;
+gap: 12px;
 }
 
 .review-card {
@@ -450,8 +444,13 @@ gap: 16px;
 border: 1px solid #E5E7EB;
 border-radius: 12px;
 padding: 24px;
+padding-top: 24px !important;
 position: relative;
 transition: all 0.2s;
+display: flex;
+flex-direction: row;
+gap: 20px;
+align-items: flex-start;
 }
 
 .review-card:hover {
@@ -459,17 +458,24 @@ border-color: #D1D5DB;
 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+.review-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
 .review-header {
   display: flex;
 align-items: flex-start;
-gap: 16px;
-margin-bottom: 16px;
-padding-right: 80px;
+justify-content: space-between;
+gap: 12px;
 }
 
 .review-avatar {
-width: 56px;
-height: 56px;
+width: 56px !important;
+height: 56px !important;
 background: linear-gradient(135deg, #1A1A1A 0%, #4B5563 100%);
 border-radius: 12px;
   display: flex;
@@ -483,15 +489,16 @@ font-weight: 700;
 
 .review-info {
   flex: 1;
+  min-width: 0;
 }
 
 .review-product-name {
-font-size: 18px;
+font-size: 15px;
 font-weight: 700;
 color: #1A1A1A;
 text-decoration: none;
 display: inline-block;
-margin-bottom: 8px;
+margin-bottom: 4px;
 transition: color 0.2s;
 }
 
@@ -506,8 +513,8 @@ gap: 4px;
 }
 
 .review-rating .star {
-width: 16px;
-height: 16px;
+width: 14px;
+height: 14px;
 }
 
 .review-rating .star.filled {
@@ -520,16 +527,15 @@ color: #E5E7EB;
 
 /* 리뷰 수정/삭제 버튼 */
 .review-actions {
-position: absolute;
-top: 24px;
-right: 24px;
+position: static;
 display: flex;
-gap: 8px;
+gap: 6px;
+flex-shrink: 0;
 }
 
 .review-actions .btn-icon {
-width: 36px !important;
-height: 36px !important;
+width: 32px !important;
+height: 32px !important;
 background: transparent !important;
 border: none;
 border-radius: 8px;
@@ -558,8 +564,8 @@ color: #DC2626 !important;
 }
 
 .review-actions .btn-icon svg {
-width: 18px !important;
-height: 18px !important;
+width: 16px !important;
+height: 16px !important;
 }
 
 .btn-icon:disabled {
@@ -568,25 +574,26 @@ cursor: not-allowed;
 }
 
 .review-body {
-padding-left: 72px;
+padding-left: 0;
+margin-top: 0;
 }
 
 .review-title {
-font-size: 16px;
+font-size: 14px;
 font-weight: 700;
 color: #1A1A1A;
-margin-bottom: 8px;
+margin-bottom: 4px;
 }
 
 .review-content {
 color: #4B5563;
-line-height: 1.6;
-margin-bottom: 12px;
-font-size: 15px;
+line-height: 1.5;
+margin-bottom: 8px;
+font-size: 13px;
 }
 
 .review-date {
-font-size: 13px;
+font-size: 12px;
 color: #9CA3AF;
 }
 

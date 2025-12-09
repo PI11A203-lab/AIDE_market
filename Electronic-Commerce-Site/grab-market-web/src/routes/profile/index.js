@@ -265,6 +265,7 @@ export default function UserProfile() {
           currentUser={currentUser}
           followerCount={followerCount}
           followingCount={followingCount}
+          onStatClick={setActiveTab}
           onFollowChange={async () => {
             // 팔로우 변경 시 데이터 새로고침
             if (user.role === 'admin') {

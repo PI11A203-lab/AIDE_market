@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Github, Calendar, Settings } from 'lucide-react';
+import { Github, Settings } from 'lucide-react';
 import { useHistory } from 'react-router-dom';
 import { API_URL } from '../../../config/constants';
 import StatsSection from './StatsSection';
 import FollowButton from './FollowButton';
 import FollowListModal from './FollowListModal';
 
-export default function ProfileHero({ user, currentUser, followerCount, followingCount, onFollowChange }) {
+export default function ProfileHero({ user, currentUser, followerCount, followingCount, onStatClick, onFollowChange }) {
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const history = useHistory();
@@ -66,72 +66,53 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                   <Settings className="w-5 h-5" />
                 </button>
               </div>
-              {user.is_email_public && (
-                <p className="profile-email">{user.email}</p>
-              )}
-              <div className="profile-meta">
+              {/* GitHub + 팔로워/팔로잉을 한 줄에 배치 */}
+              <div className="profile-meta" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '0.5rem' }}>
                 {user.github_url && (
                   <a 
                     href={user.github_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="profile-link"
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: 500 }}
                   >
                     <Github className="w-5 h-5" />
                     {githubUsername ? `@${githubUsername}` : 'GitHub'}
                   </a>
                 )}
-                <div className="profile-link">
-                  <Calendar className="w-5 h-5" />
-                  Joined {user.joinDate}
-                </div>
-              </div>
-              {user.tags && user.tags.length > 0 && (
-                <div className="profile-tags">
-                  {user.tags.map((tag, idx) => (
-                    <span key={idx} className="profile-tag">#{tag}</span>
-                  ))}
-                </div>
-              )}
-              
-              {/* 팔로워/팔로잉 수 및 FollowButton */}
-              <div className="profile-follow-section" style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                {/* admin 권한 계정: 팔로워 수 표시 */}
                 {user.role === 'admin' && (
-                  <button
+                  <span
                     className="profile-follow-count"
                     onClick={() => setShowFollowersModal(true)}
                     style={{
-                      background: 'none',
-                      border: 'none',
                       cursor: 'pointer',
-                      padding: 0,
-                      color: '#374151',
-                      fontSize: '0.875rem',
-                      fontWeight: 500
+                      color: 'rgba(255,255,255,0.9)',
+                      fontSize: '15px',
+                      fontWeight: 500,
+                      display: 'flex',
+                      gap: '6px',
+                      alignItems: 'center'
                     }}
                   >
-                    <strong style={{ color: '#111827' }}>{followerCount || 0}</strong> 팔로워
-                  </button>
+                    <strong style={{ color: '#FFFFFF' }}>{followerCount || 0}</strong> 팔로워
+                  </span>
                 )}
-                
-                {/* user 권한 계정: 팔로잉 수 표시 */}
                 {user.role === 'user' && (
-                  <button
+                  <span
                     className="profile-follow-count"
                     onClick={() => setShowFollowingModal(true)}
                     style={{
-                      background: 'none',
-                      border: 'none',
                       cursor: 'pointer',
-                      padding: 0,
-                      color: '#374151',
-                      fontSize: '0.875rem',
-                      fontWeight: 500
+                      color: 'rgba(255,255,255,0.9)',
+                      fontSize: '15px',
+                      fontWeight: 500,
+                      display: 'flex',
+                      gap: '6px',
+                      alignItems: 'center'
                     }}
                   >
-                    <strong style={{ color: '#111827' }}>{followingCount || 0}</strong> 팔로잉
-                  </button>
+                    <strong style={{ color: '#FFFFFF' }}>{followingCount || 0}</strong> 팔로잉
+                  </span>
                 )}
                 
                 {/* FollowButton: admin 권한이고 본인이 아닌 경우에만 표시 */}
@@ -144,10 +125,21 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                   />
                 )}
               </div>
+
+              {user.is_email_public && (
+                <p className="profile-email">{user.email}</p>
+              )}
+              {user.tags && user.tags.length > 0 && (
+                <div className="profile-tags">
+                  {user.tags.map((tag, idx) => (
+                    <span key={idx} className="profile-tag">#{tag}</span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          <StatsSection stats={user.stats} />
+          <StatsSection stats={user.stats} onStatClick={onStatClick} />
         </div>
       </div>
       
