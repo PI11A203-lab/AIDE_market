@@ -5,6 +5,7 @@ import { api } from '../../../config/api';
 import { message } from 'antd';
 import TeamStatsChart from './TeamStatsChart';
 import SynergyScore from './SynergyScore';
+import { useTranslation } from 'react-i18next';
 
 export default function TeamSidebar({ 
   selectedTeam, 
@@ -17,6 +18,7 @@ export default function TeamSidebar({
   const [isSaving, setIsSaving] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
   const [teamName, setTeamName] = useState('');
+  const { t } = useTranslation();
 
   const handleSaveTeam = async () => {
     if (selectedTeam.length === 0) {
@@ -87,7 +89,7 @@ export default function TeamSidebar({
     <div className="team-sidebar">
       <div className="sidebar-card">
         <h3 className="sidebar-title">
-          <span>AIチーム</span>
+          <span>{t('teamBuilder.teamTitle')}</span>
           <span className="team-count">
             {selectedTeam.length}/{maxTeamSize}
           </span>
@@ -96,8 +98,8 @@ export default function TeamSidebar({
         {selectedTeam.length === 0 ? (
           <div className="empty-team">
             <Users className="empty-icon" />
-            <p>開発者が選択されていません</p>
-            <p className="empty-subtitle">開発者を選択してください</p>
+            <p>{t('teamBuilder.noDevelopers')}</p>
+            <p className="empty-subtitle">{t('teamBuilder.selectDevelopers')}</p>
           </div>
         ) : (
           <>
@@ -142,7 +144,7 @@ export default function TeamSidebar({
             {/* 총 가격 */}
             <div className="team-price-section">
               <div className="price-row">
-                <span className="price-label">チーム合計</span>
+                <span className="price-label">{t('teamBuilder.teamTotal')}</span>
                 <span className="price-value">¥{totalPrice.toLocaleString()}</span>
               </div>
             </div>
@@ -152,7 +154,7 @@ export default function TeamSidebar({
               <div className="team-name-input-section" style={{ marginBottom: '1rem' }}>
                 <input
                   type="text"
-                  placeholder="팀 이름을 입력하세요"
+                  placeholder={t('teamBuilder.namePlaceholder')}
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
                   onKeyPress={(e) => {
@@ -179,7 +181,7 @@ export default function TeamSidebar({
               disabled={isSaving || selectedTeam.length === 0}
             >
               <Save style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
-              {isSaving ? '저장 중...' : '팀 저장하기'}
+              {isSaving ? t('teamBuilder.saving') : t('teamBuilder.save')}
             </button>
           </>
         )}
@@ -191,9 +193,9 @@ export default function TeamSidebar({
           <div className="tip-content">
             <Award className="tip-icon" />
             <div className="tip-text">
-              <p className="tip-title">プロダクトドキュメント</p>
+              <p className="tip-title">{t('teamBuilder.tipTitle')}</p>
               <p className="tip-description">
-              異なる専門分野を持つチームを作り、最大限活用して最高の結果を得てください！
+                {t('teamBuilder.tipDescription')}
               </p>
             </div>
           </div>

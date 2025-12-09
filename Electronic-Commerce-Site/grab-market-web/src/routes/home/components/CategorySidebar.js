@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const CategorySidebar = ({ categories, selectedCategory, onCategoryChange, sortBy, onSortChange }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { t } = useTranslation();
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {
@@ -20,10 +22,10 @@ const CategorySidebar = ({ categories, selectedCategory, onCategoryChange, sortB
 
   // 정렬 옵션
   const sortOptions = [
-    { value: 'download', label: 'Most Downloaded' },
-    { value: 'rating', label: 'Highest Rated' },
-    { value: 'price', label: 'Price: Low to High' },
-    { value: 'priceDesc', label: 'Recently Added' },
+    { value: 'download', label: t('home.sort.download') },
+    { value: 'rating', label: t('home.sort.rating') },
+    { value: 'price', label: t('home.sort.price') },
+    { value: 'priceDesc', label: t('home.sort.priceDesc') },
   ];
 
   const currentSortLabel = sortOptions.find(opt => opt.value === sortBy)?.label || 'Most Downloaded';
@@ -35,11 +37,11 @@ const CategorySidebar = ({ categories, selectedCategory, onCategoryChange, sortB
 
   // 카테고리 필터 탭 (MainPageModern.html 스타일)
   const filterTabs = [
-    { id: 'all', name: 'All Developers' },
-    { id: 'fe', name: 'Frontend' },
-    { id: 'be', name: 'Backend' },
-    { id: 'design', name: 'Design' },
-    { id: 'mg', name: 'AI/ML' },
+    { id: 'all', name: t('home.tabs.all') },
+    { id: 'fe', name: t('home.tabs.fe') },
+    { id: 'be', name: t('home.tabs.be') },
+    { id: 'design', name: t('home.tabs.design') },
+    { id: 'mg', name: t('home.tabs.mg') },
   ];
 
   return (

@@ -7,6 +7,7 @@ import TeamSidebar from './components/TeamSidebar';
 import { API_URL } from '../../config/constants';
 import { api } from '../../config/api';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 export default function TeamBuilder() {
   const [selectedTeam, setSelectedTeam] = useState([]);
@@ -15,6 +16,7 @@ export default function TeamBuilder() {
   const maxTeamSize = 5;
   const history = useHistory();
   const location = useLocation();
+  const { t } = useTranslation();
 
   // URL 파라미터를 업데이트하는 함수
   const updateURLParams = (teamIds) => {
@@ -197,7 +199,7 @@ export default function TeamBuilder() {
         <TeamHeader />
         <main className="team-main">
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('common.loading')}</div>
           </div>
         </main>
       </div>
@@ -210,9 +212,9 @@ export default function TeamBuilder() {
       
       <main className="team-main">
         <div className="team-intro">
-          <h2 className="team-title">あなたの理想のAIチームを構成してみましょう</h2>
+          <h2 className="team-title">{t('teamBuilder.introTitle')}</h2>
           <p className="team-subtitle">
-            最大 {maxTeamSize} 人まで選択して、理想的なAIチームを作成しましょう
+            {t('teamBuilder.introSubtitle', { max: maxTeamSize })}
           </p>
         </div>
 

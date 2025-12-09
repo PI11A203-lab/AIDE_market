@@ -1,7 +1,9 @@
 import React from 'react';
 import { API_URL } from '../../../config/constants';
+import { useTranslation } from 'react-i18next';
 
 export default function DeveloperCard({ developer, isSelected, isFull, onAdd, onRemove }) {
+  const { t } = useTranslation();
   return (
     <div 
       className={`developer-card ${isSelected ? 'developer-card-selected' : ''}`}
@@ -35,15 +37,15 @@ export default function DeveloperCard({ developer, isSelected, isFull, onAdd, on
       <div className="developer-stats-mini">
         <div className="stat-item">
           <div className="stat-value">{developer.stats.technical}</div>
-          <div className="stat-label">Tech</div>
+          <div className="stat-label">{t('developerCard.tech')}</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">{developer.stats.creativity}</div>
-          <div className="stat-label">Creative</div>
+          <div className="stat-label">{t('developerCard.creative')}</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">{developer.stats.reliability}</div>
-          <div className="stat-label">Reliable</div>
+          <div className="stat-label">{t('developerCard.reliable')}</div>
         </div>
       </div>
       
@@ -54,7 +56,7 @@ export default function DeveloperCard({ developer, isSelected, isFull, onAdd, on
             onClick={() => onRemove(developer.id)}
             className="btn-remove"
           >
-            Remove
+            {t('developerCard.remove')}
           </button>
         ) : (
           <button
@@ -62,7 +64,7 @@ export default function DeveloperCard({ developer, isSelected, isFull, onAdd, on
             disabled={isFull}
             className="btn-add"
           >
-            Add
+            {t('developerCard.add')}
           </button>
         )}
       </div>

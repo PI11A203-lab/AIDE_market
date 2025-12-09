@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import DeveloperCard from './DeveloperCard';
+import { useTranslation } from 'react-i18next';
 
 // 카테고리 ID 매핑 (숫자 → 문자열)
 const CATEGORY_ID_TO_NAME = {
@@ -34,6 +35,7 @@ export default function AvailableDevelopers({
   onAddToTeam, 
   onRemoveFromTeam 
 }) {
+  const { t } = useTranslation();
   // 카테고리별로 그룹화
   const developersByCategory = useMemo(() => {
     const grouped = {};
@@ -74,7 +76,7 @@ export default function AvailableDevelopers({
       <div className="section-card">
         <h3 className="section-title">
           <Users className="section-icon" />
-          利用可能なAI開発者
+          {t('teamBuilder.availableTitle')}
         </h3>
         
         <div className="categories-container">
@@ -86,6 +88,7 @@ export default function AvailableDevelopers({
               maxTeamSize={maxTeamSize}
               onAddToTeam={onAddToTeam}
               onRemoveFromTeam={onRemoveFromTeam}
+              t={t}
             />
           ))}
         </div>
@@ -94,7 +97,7 @@ export default function AvailableDevelopers({
   );
 }
 
-function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onRemoveFromTeam }) {
+function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onRemoveFromTeam, t }) {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -154,7 +157,7 @@ function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onR
           <button 
             className="scroll-button scroll-button-left"
             onClick={() => scroll('left')}
-            aria-label="左にスクロール"
+            aria-label={t('teamBuilder.scrollLeft')}
           >
             <ChevronLeft className="scroll-icon" />
           </button>
@@ -186,7 +189,7 @@ function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onR
           <button 
             className="scroll-button scroll-button-right"
             onClick={() => scroll('right')}
-            aria-label="右にスクロール"
+            aria-label={t('teamBuilder.scrollRight')}
           >
             <ChevronRight className="scroll-icon" />
           </button>

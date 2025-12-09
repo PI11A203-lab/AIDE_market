@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Search, ShoppingCart } from 'lucide-react';
+import { Search, ShoppingCart, Globe } from 'lucide-react';
 import { API_URL } from '../../config/constants';
 import LogoutButton from './components/LogoutButton';
 import CategorySidebar from './components/CategorySidebar';
@@ -10,6 +10,7 @@ import RecommendedSection from './components/RecommendedSection';
 import ProductList from './components/ProductList';
 import TopCreators from './components/TopCreators';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 // 카테고리 ID 매핑 (문자열 → 숫자)
 const CATEGORY_MAP = {
@@ -35,6 +36,16 @@ function MainPage() {
   const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { t, i18n } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language || 'en');
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef(null);
+
+  const languageOptions = [
+    { value: 'ko', label: '한국어' },
+    { value: 'ja', label: '日本語' },
+    { value: 'en', label: 'English' },
+  ];
 
   // 카테고리 정의 (동적으로 count 계산)
   const categories = useMemo(() => {
@@ -81,6 +92,17 @@ function MainPage() {
     // storage 이벤트 리스너 추가 (다른 탭에서 로그인/로그아웃 시 동기화)
     window.addEventListener('storage', checkLoginStatus);
     return () => window.removeEventListener('storage', checkLoginStatus);
+  }, []);
+
+  // 언어 드롭다운 외부 클릭 닫기
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // 고정 랭킹 3개 가져오기 (다운로드 높은 순)
@@ -139,6 +161,18 @@ function MainPage() {
     // 메인 페이지로 리다이렉트 (현재 페이지이므로 새로고침)
     window.location.reload();
   };
+
+  const handleLanguageChange = (value) => {
+    setLanguage(value);
+    i18n.changeLanguage(value);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('appLanguage', value);
+    }
+    setLangOpen(false);
+  };
+
+  const currentLangLabel =
+    languageOptions.find((opt) => opt.value === language)?.label || 'Language';
 
   // 검색어가 카테고리 이름과 일치하는지 확인하고 자동 필터링
   useEffect(() => {
@@ -243,14 +277,14 @@ function MainPage() {
       <header className="header">
         <div className="header-inner">
           <Link to="/" className="logo" style={{ color: '#1A1A1A', textDecoration: 'none' }}>
-            <span className="logo-text" style={{ color: '#1A1A1A' }}>AIDE Market</span>
+            <span className="logo-text" style={{ color: '#1A1A1A' }}>{t('header.title')}</span>
           </Link>
           
           <nav className="nav">
-            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Marketplace</button>
-            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Rankings</button>
-            <Link to="/team" className="nav-link">Teams</Link>
-            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Resources</button>
+            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.marketplace')}</button>
+            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.rankings')}</button>
+            <Link to="/team" className="nav-link">{t('home.nav.teams')}</Link>
+            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.resources')}</button>
           </nav>
 
           <div className="header-actions">
@@ -258,7 +292,7 @@ function MainPage() {
               <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', color: '#9CA3AF', pointerEvents: 'none' }} />
               <input
                 type="text"
-                placeholder="Search developers..."
+                placeholder={t('home.searchPlaceholder')}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 style={{
@@ -281,6 +315,31 @@ function MainPage() {
                 }}
               />
             </div>
+            <div className="custom-dropdown" ref={langRef} style={{ minWidth: '160px' }}>
+              <button
+                className={`dropdown-button ${langOpen ? 'active' : ''}`}
+                onClick={() => setLangOpen((v) => !v)}
+              >
+                <span className="dropdown-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Globe width={16} height={16} />
+                  {currentLangLabel}
+                </span>
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <div className={`dropdown-menu ${langOpen ? 'show' : ''}`}>
+                {languageOptions.map((opt) => (
+                  <div
+                    key={opt.value}
+                    className={`dropdown-item ${language === opt.value ? 'active' : ''}`}
+                    onClick={() => handleLanguageChange(opt.value)}
+                  >
+                    {opt.label}
+                  </div>
+                ))}
+              </div>
+            </div>
             <Link to="/purchase" className="icon-btn">
               <ShoppingCart width={20} height={20} />
             </Link>
@@ -292,7 +351,7 @@ function MainPage() {
                 <LogoutButton onLogout={handleLogout} />
               </>
             ) : (
-              <Link to="/login" className="btn-primary">ログイン</Link>
+              <Link to="/login" className="btn-primary">{t('common.login')}</Link>
             )}
           </div>
         </div>
@@ -303,13 +362,13 @@ function MainPage() {
         {/* 히어로 섹션 */}
         <div className="hero-section">
           <div className="hero-content">
-            <h1 className="hero-title">Discover, Create and Hire Top AI Developers</h1>
+            <h1 className="hero-title">{t('home.heroTitle')}</h1>
             <p className="hero-subtitle">
-              Browse through {categories.find(c => c.id === selectedCategory)?.count || allProducts.length}+ verified AI developers ready to bring your vision to life. Start building your dream team today.
+              {t('home.heroSubtitle', { count: categories.find(c => c.id === selectedCategory)?.count || allProducts.length })}
             </p>
             <div className="hero-buttons">
-              <button className="btn-hero-primary">Explore Now</button>
-              <button className="btn-hero-secondary">Learn More</button>
+              <button className="btn-hero-primary">{t('home.heroPrimary')}</button>
+              <button className="btn-hero-secondary">{t('home.heroSecondary')}</button>
             </div>
           </div>
         </div>
@@ -320,10 +379,10 @@ function MainPage() {
             <div className="featured-card ranking-card">
               <div className="featured-header">
                 <div>
-                  <h2 className="featured-title">This Month's Top Ranking</h2>
-                  <p className="featured-subtitle">Best performing AI developers of the month</p>
+                  <h2 className="featured-title">{t('home.rankingTitle')}</h2>
+                  <p className="featured-subtitle">{t('home.rankingSubtitle')}</p>
                 </div>
-                <button type="button" className="see-all-link" style={{ background: 'none', border: 'none', padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>View All</button>
+                <button type="button" className="see-all-link" style={{ background: 'none', border: 'none', padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>{t('home.viewAll')}</button>
               </div>
               <RankingSection topProducts={topRankingProducts} />
             </div>

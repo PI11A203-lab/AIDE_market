@@ -1,8 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function TeamHeader() {
   const history = useHistory();
+  const { t } = useTranslation();
 
   return (
     <header className="profile-header">
@@ -14,7 +16,7 @@ export default function TeamHeader() {
           onClick={() => history.push('/')}
           className="btn-back"
         >
-          ← Back to Home
+          ← {t('common.backHome')}
         </button>
       </div>
     </header>
