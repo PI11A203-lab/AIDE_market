@@ -4,28 +4,30 @@ import { Heart } from 'lucide-react';
 import { API_URL } from '../../../config/constants';
 import { api } from '../../../config/api';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export default function FavoritesTab({ favorites, userId, onRemove }) {
+  const { t } = useTranslation();
   const handleRemove = async (e, favoriteId, productId) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
       await api.favorites.delete(userId, productId);
-      message.success('찜목록에서 제거되었습니다.');
+      message.success(t('profile.favorites.removeSuccess'));
       if (onRemove) {
         onRemove(favoriteId);
       }
     } catch (error) {
       console.error('Failed to remove favorite:', error);
-      message.error('찜목록에서 제거하는데 실패했습니다.');
+      message.error(t('profile.favorites.removeFail'));
     }
   };
 
   if (favorites.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600 text-lg">찜목록이 비어있습니다</p>
+        <p className="text-gray-600 text-lg">{t('profile.favorites.empty')}</p>
       </div>
     );
   }
@@ -73,7 +75,7 @@ export default function FavoritesTab({ favorites, userId, onRemove }) {
                   const favoriteId = fav.id || fav.favorite_id;
                   const productId = fav.product_id;
                   if (!productId) {
-                    message.error('상품 정보를 찾을 수 없습니다.');
+                  message.error(t('profile.favorites.noProduct'));
                     return;
                   }
                   handleRemove(e, favoriteId, productId);

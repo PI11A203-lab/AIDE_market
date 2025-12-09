@@ -4,11 +4,13 @@ import { useHistory } from 'react-router-dom';
 import { API_URL } from '../../../config/constants';
 import { api } from '../../../config/api';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export default function TeamsTab({ teams, onTeamUpdate }) {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const history = useHistory();
+  const { t, i18n } = useTranslation();
 
   // ESC 키로 모달 닫기
   useEffect(() => {
@@ -44,27 +46,27 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
   const handleDeleteTeam = async () => {
     if (!selectedTeam) return;
     
-    if (window.confirm('이 팀을 삭제하시겠습니까?')) {
+    if (window.confirm(t('profile.teams.deleteConfirm'))) {
       try {
         await api.teamCompositions.delete(selectedTeam.id);
-        message.success('팀이 삭제되었습니다.');
+        message.success(t('profile.teams.deleteSuccess'));
         closeModal();
         if (onTeamUpdate) {
           onTeamUpdate();
         }
       } catch (error) {
         console.error('팀 삭제 실패:', error);
-        message.error('팀 삭제에 실패했습니다.');
+        message.error(t('profile.teams.deleteFail'));
       }
     }
   };
 
   const getSynergyMessage = (score) => {
-    if (score >= 95) return 'Exceptional';
-    if (score >= 85) return 'Excellent';
-    if (score >= 75) return 'Great';
-    if (score >= 65) return 'Good';
-    return 'Fair';
+    if (score >= 95) return t('synergy.exceptional');
+    if (score >= 85) return t('synergy.excellent');
+    if (score >= 75) return t('synergy.good');
+    if (score >= 65) return t('synergy.keepBuilding');
+    return t('synergy.keepBuilding');
   };
 
   const getInitials = (name) => {
@@ -80,8 +82,8 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
     return (
       <div className="empty-state">
         <Users className="empty-icon" />
-        <div className="empty-text">아직 생성된 팀이 없습니다</div>
-        <div className="empty-subtext">AI 개발자들로 나만의 팀을 구성해보세요</div>
+        <div className="empty-text">{t('profile.teams.emptyTitle')}</div>
+        <div className="empty-subtext">{t('profile.teams.emptySubtitle')}</div>
       </div>
     );
   }
@@ -92,12 +94,12 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
         {teams.map((team) => {
           const createdDate = team.created_at || team.createdAt;
           const formattedDate = createdDate 
-            ? new Date(createdDate).toLocaleDateString('ko-KR', { 
+            ? new Date(createdDate).toLocaleDateString(i18n.language, { 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
               })
-            : '날짜 없음';
+            : t('profile.teams.noDate');
 
           return (
             <div 
@@ -107,12 +109,12 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
             >
               <div className="team-header">
                 <div>
-                  <div className="team-name">{team.name || '이름 없는 팀'}</div>
+                  <div className="team-name">{team.name || t('common.untitled')}</div>
                   <div className="team-date">{formattedDate}</div>
                 </div>
                 <div className="synergy-badge">
                   <span className="synergy-score">{team.total_synergy_score || 0}</span>
-                  <div className="synergy-label">Synergy</div>
+                  <div className="synergy-label">{t('profile.teams.synergy')}</div>
                 </div>
               </div>
               <div className="team-members">
@@ -135,13 +137,13 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
                         </span>
                       </div>
                       <div>
-                        <div className="member-name">{member.name || 'Unknown'}</div>
-                        <div className="member-category">{member.category || 'その他'}</div>
+                        <div className="member-name">{member.name || t('common.unknown')}</div>
+                        <div className="member-category">{member.category || t('common.other')}</div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>멤버 없음</p>
+                  <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>{t('profile.teams.noMembers')}</p>
                 )}
               </div>
             </div>
@@ -154,7 +156,7 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
         <div className="modal-overlay active" onClick={closeModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className="modal-title">{selectedTeam.name || '이름 없는 팀'}</h3>
+              <h3 className="modal-title">{selectedTeam.name || t('common.untitled')}</h3>
               <button className="btn-close" onClick={closeModal}>
                 <X size={20} />
               </button>
@@ -164,28 +166,28 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
               {/* 팀 정보 */}
               <div className="team-info-grid">
                 <div className="info-item">
-                  <div className="info-label">생성일</div>
+                  <div className="info-label">{t('profile.teams.createdAt')}</div>
                   <div className="info-value">
                     {selectedTeam.created_at || selectedTeam.createdAt
-                      ? new Date(selectedTeam.created_at || selectedTeam.createdAt).toLocaleDateString('ko-KR', { 
+                      ? new Date(selectedTeam.created_at || selectedTeam.createdAt).toLocaleDateString(i18n.language, { 
                           year: 'numeric', 
                           month: 'long', 
                           day: 'numeric' 
                         })
-                      : '날짜 없음'}
+                      : t('profile.teams.noDate')}
                   </div>
                 </div>
                 <div className="info-item">
-                  <div className="info-label">팀원 수</div>
+                  <div className="info-label">{t('profile.teams.memberCount')}</div>
                   <div className="info-value">
-                    {selectedTeam.members?.length || 0}명
+                    {t('profile.teams.membersLabel', { count: selectedTeam.members?.length || 0 })}
                   </div>
                 </div>
               </div>
 
               {/* 시너지 스코어 */}
               <div className="synergy-card">
-                <div className="synergy-card-label">Team Synergy Score</div>
+                <div className="synergy-card-label">{t('profile.teams.synergyScore')}</div>
                 <div className="synergy-card-value">{selectedTeam.total_synergy_score || 0}</div>
                 <div className="synergy-card-message">
                   {getSynergyMessage(selectedTeam.total_synergy_score || 0)}
@@ -193,7 +195,7 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
               </div>
 
               {/* 팀원 목록 */}
-              <h4 className="members-title">Team Members</h4>
+              <h4 className="members-title">{t('profile.teams.membersTitle')}</h4>
               <div className="members-list">
                 {selectedTeam.members && selectedTeam.members.length > 0 ? (
                   selectedTeam.members.map((member, idx) => (
@@ -214,11 +216,11 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
                         </span>
                       </div>
                       <div className="member-card-info">
-                        <div className="member-card-name">{member.name || 'Unknown'}</div>
+                        <div className="member-card-name">{member.name || t('common.unknown')}</div>
                         <div className="member-card-category">
                           {member.category === 'Image' ? 'Image Generation' : 
                            member.category === 'Infrastructure' ? 'Infrastructure' :
-                           member.category || 'その他'}
+                           member.category || t('common.other')}
                         </div>
                         <div className="member-card-stats">
                           <span className="stat">Tech: <strong>95</strong></span>
@@ -236,13 +238,13 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
 
             <div className="modal-footer">
               <button className="btn-danger" onClick={handleDeleteTeam}>
-                Delete Team
+                {t('profile.teams.deleteConfirm')}
               </button>
               <button className="btn-secondary" onClick={closeModal}>
-                Close
+                {t('common.close')}
               </button>
               <button className="btn-primary" onClick={handleEditTeam}>
-                Edit Team
+                {t('profile.teams.edit')}
               </button>
             </div>
           </div>

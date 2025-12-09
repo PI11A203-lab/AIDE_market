@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Mail, Copy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function EmailNotification({ userEmail, onCopyEmail }) {
+  const { t } = useTranslation();
   const [emailCopied, setEmailCopied] = useState(false);
 
   const handleCopy = () => {
@@ -17,9 +19,9 @@ export default function EmailNotification({ userEmail, onCopyEmail }) {
           <Mail className="confirmation-email-icon" />
         </div>
         <div className="confirmation-email-main">
-          <h3 className="confirmation-email-title">📧 Check Your Email!</h3>
+          <h3 className="confirmation-email-title">📧 {t('purchase.confirmation.email.title')}</h3>
           <p className="confirmation-email-description">
-            We've sent activation codes and setup instructions to:
+            {t('purchase.confirmation.email.description')}
           </p>
           <div className="confirmation-email-box">
             <div className="confirmation-email-box-content">
@@ -29,25 +31,19 @@ export default function EmailNotification({ userEmail, onCopyEmail }) {
                 className="confirmation-email-copy-btn"
               >
                 <Copy className="confirmation-email-copy-icon" />
-                {emailCopied ? 'Copied!' : 'Copy'}
+                {emailCopied ? t('purchase.confirmation.email.copied') : t('purchase.confirmation.email.copy')}
               </button>
             </div>
           </div>
           <div className="confirmation-email-steps">
-            <p className="confirmation-email-steps-title">⚡ Next Steps:</p>
+            <p className="confirmation-email-steps-title">{t('purchase.confirmation.email.stepsTitle')}</p>
             <ol className="confirmation-email-steps-list">
-              <li className="confirmation-email-step-item">
-                <span className="confirmation-email-step-number">1.</span>
-                <span>Open the email from AIDE Market</span>
-              </li>
-              <li className="confirmation-email-step-item">
-                <span className="confirmation-email-step-number">2.</span>
-                <span>Copy your activation codes below</span>
-              </li>
-              <li className="confirmation-email-step-item">
-                <span className="confirmation-email-step-number">3.</span>
-                <span>Register the codes in your AIDE Program</span>
-              </li>
+              {t('purchase.confirmation.email.steps', { returnObjects: true }).map((step, idx) => (
+                <li key={idx} className="confirmation-email-step-item">
+                  <span className="confirmation-email-step-number">{idx + 1}.</span>
+                  <span>{step}</span>
+                </li>
+              ))}
             </ol>
           </div>
         </div>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { api } from '../../../config/api';
+import { useTranslation } from 'react-i18next';
 
 export default function PurchasesTab({ orders }) {
   const history = useHistory();
   const [orderItemCounts, setOrderItemCounts] = useState({});
+  const { t } = useTranslation();
 
   // 각 주문의 아이템 개수 가져오기
   useEffect(() => {
@@ -72,7 +74,7 @@ export default function PurchasesTab({ orders }) {
   if (!orders || orders.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600 text-lg">구매한 상품이 없습니다</p>
+        <p className="text-gray-600 text-lg">{t('profile.purchases.empty')}</p>
       </div>
     );
   }
@@ -94,9 +96,13 @@ export default function PurchasesTab({ orders }) {
                     onClick={() => handleOrderClick(order.id)}
                   >
                     <div className="order-card-header">
-                      <span className="order-number">Order: {order.order_number || `ORD-${order.id}`}</span>
+                      <span className="order-number">{t('profile.purchases.orderNumber', { number: order.order_number || `ORD-${order.id}` })}</span>
                       <span className={`order-status ${order.status === 'completed' ? 'completed' : order.status === 'pending' ? 'pending' : ''}`}>
-                        {order.status === 'pending' ? 'Pending' : order.status === 'completed' ? 'Completed' : order.status}
+                        {order.status === 'pending'
+                          ? t('profile.purchases.status.pending')
+                          : order.status === 'completed'
+                          ? t('profile.purchases.status.completed')
+                          : order.status}
                       </span>
                       <svg className="order-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="9 18 15 12 9 6"/>
@@ -104,11 +110,11 @@ export default function PurchasesTab({ orders }) {
                     </div>
                     <div className="order-card-body">
                       <div className="order-summary">
-                        <span className="order-total-label">Total Amount</span>
+                        <span className="order-total-label">{t('profile.purchases.totalAmount')}</span>
                         <span className="order-total-amount">¥{order.total_amount?.toLocaleString() || '0'}</span>
                       </div>
                       <div className="order-meta">
-                        <span className="order-item-count">{itemCount} items</span>
+                        <span className="order-item-count">{t('profile.purchases.items', { count: itemCount })}</span>
                       </div>
                     </div>
                   </div>

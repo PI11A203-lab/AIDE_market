@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../../../../config/constants';
+import { useTranslation } from 'react-i18next';
 
 export default function RecentProducts({ products }) {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -16,7 +18,7 @@ export default function RecentProducts({ products }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1A1A1A', margin: 0 }}>
-          내 상품 최근 5개
+          {t('profile.admin.recentProducts.title')}
         </h2>
         <Link
           to="/profile/products"
@@ -37,12 +39,12 @@ export default function RecentProducts({ products }) {
             e.target.style.background = 'transparent';
           }}
         >
-          모든 상품 보기 →
+          {t('profile.admin.recentProducts.viewAll')}
         </Link>
       </div>
       {products.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-600">등록된 상품이 없습니다</p>
+          <p className="text-gray-600">{t('profile.admin.recentProducts.empty')}</p>
         </div>
       ) : (
         <div className="products-grid">
@@ -66,7 +68,7 @@ export default function RecentProducts({ products }) {
               </div>
               <div className="card-content">
                 <div className="card-category">
-                  {product.category_name || 'AI Developer'}
+                  {product.category_name || t('profile.admin.recentProducts.categoryFallback')}
                 </div>
                 <div className="card-header">
                   <h3 className="card-title">{product.name}</h3>

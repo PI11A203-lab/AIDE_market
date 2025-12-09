@@ -1,12 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const formatDate = (value) => {
+const formatDate = (value, locale) => {
   if (!value) return '-';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return value;
   }
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(locale || 'en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -14,18 +15,19 @@ const formatDate = (value) => {
 };
 
 export default function OrdersTable({ orders, onView }) {
+  const { t, i18n } = useTranslation();
   return (
     <div className="table-container">
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width: '10%' }}>Order ID</th>
-            <th style={{ width: '22%' }}>Product</th>
-            <th style={{ width: '20%' }}>Buyer</th>
-            <th style={{ width: '12%' }}>Amount</th>
-            <th style={{ width: '12%' }}>Status</th>
-            <th style={{ width: '14%' }}>Date</th>
-            <th style={{ width: '10%' }}>Actions</th>
+            <th style={{ width: '10%' }}>{t('profile.admin.orders.table.orderId')}</th>
+            <th style={{ width: '22%' }}>{t('profile.admin.orders.table.product')}</th>
+            <th style={{ width: '20%' }}>{t('profile.admin.orders.table.buyer')}</th>
+            <th style={{ width: '12%' }}>{t('profile.admin.orders.table.amount')}</th>
+            <th style={{ width: '12%' }}>{t('profile.admin.orders.table.status')}</th>
+            <th style={{ width: '14%' }}>{t('profile.admin.orders.table.date')}</th>
+            <th style={{ width: '10%' }}>{t('profile.admin.orders.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -55,11 +57,11 @@ export default function OrdersTable({ orders, onView }) {
               </td>
               <td>
                 <span className={`status-badge ${order.status}`}>
-                  {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
+                  {t(`profile.admin.orders.table.statusText.${order.status}`)}
                 </span>
               </td>
               <td>
-                <span className="date">{formatDate(order.date)}</span>
+                <span className="date">{formatDate(order.date, i18n.language)}</span>
               </td>
               <td>
                 <button
@@ -67,7 +69,7 @@ export default function OrdersTable({ orders, onView }) {
                   className="btn btn-secondary btn-sm"
                   onClick={() => onView(order)}
                 >
-                  View
+                  {t('profile.admin.orders.table.view')}
                 </button>
               </td>
             </tr>

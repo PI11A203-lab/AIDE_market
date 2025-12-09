@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { api } from '../../../../config/api';
 import RatingStars from '../RatingStars';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 export default function ReviewForm({
   itemId,
@@ -17,24 +18,25 @@ export default function ReviewForm({
   onImageRemove,
   onSubmitReview
 }) {
+  const { t } = useTranslation();
   if (hasReview) {
     return (
       <div className="review-completed">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
-        <span>리뷰가 작성되었습니다</span>
+        <span>{t('order.review.completed')}</span>
       </div>
     );
   }
 
   return (
     <div className="review-form">
-      <h4 className="review-title">리뷰 작성</h4>
+      <h4 className="review-title">{t('order.review.title')}</h4>
 
       {/* 별점 */}
       <div className="rating-section">
-        <span className="rating-label">별점:</span>
+        <span className="rating-label">{t('order.review.ratingLabel')}</span>
         <RatingStars
           rating={reviewForm.rating || 0}
           onRatingClick={(rating) => onRatingClick(itemId, rating)}
@@ -44,11 +46,11 @@ export default function ReviewForm({
 
       {/* 리뷰 제목 */}
       <div className="form-group">
-        <label className="form-label">리뷰 제목</label>
+        <label className="form-label">{t('order.review.titleLabel')}</label>
         <input
           type="text"
           className="form-input"
-          placeholder="리뷰 제목을 입력해주세요 (선택사항)"
+          placeholder={t('order.review.titlePlaceholder')}
           value={reviewForm.title || ''}
           onChange={(e) => onTitleChange(itemId, e.target.value)}
           maxLength={200}
@@ -57,10 +59,10 @@ export default function ReviewForm({
 
       {/* 리뷰 내용 */}
       <div className="form-group">
-        <label className="form-label">리뷰 내용</label>
+        <label className="form-label">{t('order.review.contentLabel')}</label>
         <textarea
           className="form-textarea"
-          placeholder="리뷰를 작성해주세요... (선택사항)"
+          placeholder={t('order.review.contentPlaceholder')}
           value={reviewForm.comment || ''}
           onChange={(e) => onCommentChange(itemId, e.target.value)}
         />
@@ -68,7 +70,7 @@ export default function ReviewForm({
 
       {/* 이미지 업로드 */}
       <div className="form-group">
-        <label className="form-label">사진 추가 (선택사항)</label>
+        <label className="form-label">{t('order.review.imagesLabel')}</label>
         <div className="image-upload-area">
           <Upload
             listType="picture-card"
@@ -79,13 +81,13 @@ export default function ReviewForm({
               // 이미지 파일만 허용
               const isImage = file.type.startsWith('image/');
               if (!isImage) {
-                message.error('이미지 파일만 업로드 가능합니다.');
+                message.error(t('order.review.imageOnly'));
                 return Upload.LIST_IGNORE;
               }
               // 파일 크기 제한 (5MB)
               const isLt5M = file.size / 1024 / 1024 < 5;
               if (!isLt5M) {
-                message.error('이미지 크기는 5MB 이하여야 합니다.');
+                message.error(t('order.review.imageSize'));
                 return Upload.LIST_IGNORE;
               }
               return false; // 자동 업로드 방지
@@ -98,7 +100,7 @@ export default function ReviewForm({
                 onSuccess({ ...file, response: response.data }, file);
               } catch (error) {
                 onError(error);
-                message.error('이미지 업로드에 실패했습니다.');
+                message.error(t('order.review.uploadFail'));
               }
             }}
             maxCount={5}
@@ -106,7 +108,7 @@ export default function ReviewForm({
             {(reviewForm.images || []).length < 5 && (
               <div>
                 <PlusOutlined />
-                <div style={{ marginTop: 8 }}>업로드</div>
+                <div style={{ marginTop: 8 }}>{t('order.review.upload')}</div>
               </div>
             )}
           </Upload>
@@ -118,7 +120,7 @@ export default function ReviewForm({
         onClick={() => onSubmitReview(itemId, productId)}
         disabled={reviewForm.submitting}
       >
-        {reviewForm.submitting ? '작성 중...' : '리뷰 작성'}
+        {reviewForm.submitting ? t('order.review.submitting') : t('order.review.submit')}
       </button>
     </div>
   );

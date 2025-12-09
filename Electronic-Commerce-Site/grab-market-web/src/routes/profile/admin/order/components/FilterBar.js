@@ -1,27 +1,28 @@
 import React from 'react';
-
-const dateRanges = [
-  { value: 'all', label: 'All Time' },
-  { value: 'today', label: 'Today' },
-  { value: 'week', label: 'This Week' },
-  { value: 'month', label: 'This Month' },
-  { value: 'quarter', label: 'This Quarter' },
-  { value: 'year', label: 'This Year' },
-];
-
-const sortOptions = [
-  { value: 'recent', label: 'Recent' },
-  { value: 'oldest', label: 'Oldest' },
-  { value: 'amount-high', label: 'Amount (High)' },
-  { value: 'amount-low', label: 'Amount (Low)' },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function FilterBar({ filters, products = [], onFilterChange, onReset }) {
+  const { t } = useTranslation();
+  const dateRanges = [
+    { value: 'all', label: t('profile.admin.orders.filters.dateOptions.all') },
+    { value: 'today', label: t('profile.admin.orders.filters.dateOptions.today') },
+    { value: 'week', label: t('profile.admin.orders.filters.dateOptions.week') },
+    { value: 'month', label: t('profile.admin.orders.filters.dateOptions.month') },
+    { value: 'quarter', label: t('profile.admin.orders.filters.dateOptions.quarter') },
+    { value: 'year', label: t('profile.admin.orders.filters.dateOptions.year') },
+  ];
+
+  const sortOptions = [
+    { value: 'recent', label: t('profile.admin.orders.filters.sortOptions.recent') },
+    { value: 'oldest', label: t('profile.admin.orders.filters.sortOptions.oldest') },
+    { value: 'amount-high', label: t('profile.admin.orders.filters.sortOptions.amountHigh') },
+    { value: 'amount-low', label: t('profile.admin.orders.filters.sortOptions.amountLow') },
+  ];
   return (
     <div className="filter-bar">
       <div className="filter-grid">
         <div className="filter-group">
-          <label className="filter-label">Date Range</label>
+          <label className="filter-label">{t('profile.admin.orders.filters.dateRange')}</label>
           <select
             className="filter-select"
             value={filters.dateRange}
@@ -36,13 +37,13 @@ export default function FilterBar({ filters, products = [], onFilterChange, onRe
         </div>
 
         <div className="filter-group">
-          <label className="filter-label">Product</label>
+          <label className="filter-label">{t('profile.admin.orders.filters.product')}</label>
           <select
             className="filter-select"
             value={filters.product}
             onChange={(e) => onFilterChange('product', e.target.value)}
           >
-            <option value="">All Products</option>
+            <option value="">{t('profile.admin.orders.filters.productAll')}</option>
             {products.map((name) => (
               <option key={name} value={name}>
                 {name}
@@ -52,21 +53,21 @@ export default function FilterBar({ filters, products = [], onFilterChange, onRe
         </div>
 
         <div className="filter-group">
-          <label className="filter-label">Status</label>
+          <label className="filter-label">{t('profile.admin.orders.filters.status')}</label>
           <select
             className="filter-select"
             value={filters.status}
             onChange={(e) => onFilterChange('status', e.target.value)}
           >
-            <option value="">All Status</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="">{t('profile.admin.orders.filters.statusAll')}</option>
+            <option value="completed">{t('profile.admin.orders.filters.status.completed')}</option>
+            <option value="pending">{t('profile.admin.orders.filters.status.pending')}</option>
+            <option value="cancelled">{t('profile.admin.orders.filters.status.cancelled')}</option>
           </select>
         </div>
 
         <div className="filter-group">
-          <label className="filter-label">Sort By</label>
+          <label className="filter-label">{t('profile.admin.orders.filters.sort')}</label>
           <select
             className="filter-select"
             value={filters.sort}
@@ -82,7 +83,7 @@ export default function FilterBar({ filters, products = [], onFilterChange, onRe
 
         <div className="filter-group">
           <button className="btn btn-secondary btn-sm" type="button" onClick={onReset}>
-            Reset
+            {t('profile.admin.orders.filters.reset')}
           </button>
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
   AdminLayout,
 } from './components';
 import '../index.css';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
   useEffect(() => {
     loadAdminData();
   }, []);
@@ -113,7 +115,7 @@ export default function AdminDashboard() {
         <div className="profile-container">
           <main className="profile-main">
             <div className="text-center py-12">
-              <div className="text-xl text-gray-600">Loading...</div>
+              <div className="text-xl text-gray-600">{t('profile.admin.loading')}</div>
             </div>
           </main>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReviewForm from '../ReviewForm';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 export default function OrderItem({
   item,
@@ -12,11 +13,12 @@ export default function OrderItem({
   onImageRemove,
   onSubmitReview
 }) {
+  const { t } = useTranslation();
   if (!item.product) {
     return (
       <div className="order-item">
         <div className="order-item-error">
-          <p>상품 정보를 불러올 수 없습니다</p>
+          <p>{t('order.item.noProduct')}</p>
         </div>
       </div>
     );

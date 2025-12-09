@@ -5,11 +5,13 @@ import { API_URL } from '../../../config/constants';
 import StatsSection from './StatsSection';
 import FollowButton from './FollowButton';
 import FollowListModal from './FollowListModal';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileHero({ user, currentUser, followerCount, followingCount, onStatClick, onFollowChange }) {
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const history = useHistory();
+  const { t } = useTranslation();
 
   const handleSettingsClick = () => {
     history.push('/profile/settings');
@@ -61,7 +63,7 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                 <button 
                   className="profile-settings-btn"
                   onClick={handleSettingsClick}
-                  title="설정"
+                  title={t('profile.hero.settings')}
                 >
                   <Settings className="w-5 h-5" />
                 </button>
@@ -77,7 +79,7 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: 500 }}
                   >
                     <Github className="w-5 h-5" />
-                    {githubUsername ? `@${githubUsername}` : 'GitHub'}
+                    {githubUsername ? `@${githubUsername}` : t('profile.hero.github')}
                   </a>
                 )}
                 {user.role === 'admin' && (
@@ -94,7 +96,7 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                       alignItems: 'center'
                     }}
                   >
-                    <strong style={{ color: '#FFFFFF' }}>{followerCount || 0}</strong> 팔로워
+                    <strong style={{ color: '#FFFFFF' }}>{followerCount || 0}</strong> {t('profile.hero.followers')}
                   </span>
                 )}
                 {user.role === 'user' && (
@@ -111,7 +113,7 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                       alignItems: 'center'
                     }}
                   >
-                    <strong style={{ color: '#FFFFFF' }}>{followingCount || 0}</strong> 팔로잉
+                    <strong style={{ color: '#FFFFFF' }}>{followingCount || 0}</strong> {t('profile.hero.following')}
                   </span>
                 )}
                 

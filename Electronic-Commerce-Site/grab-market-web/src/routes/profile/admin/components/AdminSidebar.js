@@ -2,30 +2,32 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Package, MessageSquare, ShoppingCart } from 'lucide-react';
 import './AdminSidebar.css';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminSidebar({ isOpen = true }) {
   const location = useLocation();
+  const { t } = useTranslation();
 
   const menuItems = [
     {
       path: '/profile',
-      label: 'Dashboard',
+      label: t('profile.admin.sidebar.dashboard'),
       icon: LayoutDashboard,
       exact: true
     },
     {
       path: '/profile/products',
-      label: 'Products',
+      label: t('profile.admin.sidebar.products'),
       icon: Package
     },
     {
       path: '/profile/reviews',
-      label: 'Reviews',
+      label: t('profile.admin.sidebar.reviews'),
       icon: MessageSquare
     },
     {
       path: '/profile/orders',
-      label: 'Orders',
+      label: t('profile.admin.sidebar.orders'),
       icon: ShoppingCart
     }
   ];

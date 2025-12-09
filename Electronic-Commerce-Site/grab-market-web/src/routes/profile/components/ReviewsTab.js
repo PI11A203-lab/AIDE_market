@@ -6,11 +6,13 @@ import axios from 'axios';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import { clearRatingCache, setRatingCache } from '../../../utils/ratingCache';
+import { useTranslation } from 'react-i18next';
 
 export default function ReviewsTab({ reviews, onReviewUpdate }) {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ rating: 0, comment: '' });
   const [deletingId, setDeletingId] = useState(null);
+  const { t } = useTranslation();
 
   // 수정 시작
   const handleEditStart = (review) => {
@@ -30,14 +32,14 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
   // 수정 저장
   const handleEditSave = async (reviewId, productId) => {
     if (!editForm.rating || editForm.rating < 1) {
-      message.warning('별점을 선택해주세요.');
+      message.warning(t('profile.reviews.selectRating'));
       return;
     }
 
     // 로그인한 유저 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('profile.reviews.loginRequired'));
       return;
     }
 
@@ -45,7 +47,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
     try {
       userData = JSON.parse(userFromStorage);
     } catch (e) {
-      message.error('사용자 정보를 불러올 수 없습니다.');
+      message.error(t('profile.reviews.parseError'));
       return;
     }
 
@@ -56,7 +58,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
         review_text: editForm.comment.trim()
       });
 
-      message.success('리뷰가 수정되었습니다.');
+      message.success(t('profile.reviews.updateSuccess'));
       
       // 별점 캐시 삭제 (다음 로드 시 최신 별점으로 갱신)
       if (productId) {
@@ -95,7 +97,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
       setEditForm({ rating: 0, comment: '' });
     } catch (error) {
       console.error('Failed to update review:', error);
-      const errorMessage = error.response?.data?.error || '리뷰 수정에 실패했습니다.';
+      const errorMessage = error.response?.data?.error || t('profile.reviews.updateFail');
       message.error(errorMessage);
     }
   };
@@ -103,18 +105,18 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
   // 삭제
   const handleDelete = async (reviewId, productId) => {
     if (!reviewId) {
-      message.error('리뷰 ID를 찾을 수 없습니다.');
+      message.error(t('profile.reviews.noReviewId'));
       return;
     }
 
-    if (!window.confirm('정말 이 리뷰를 삭제하시겠습니까?')) {
+    if (!window.confirm(t('profile.reviews.deleteConfirm'))) {
       return;
     }
 
     // 로그인한 유저 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('profile.reviews.loginRequired'));
       return;
     }
 
@@ -122,12 +124,12 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
     try {
       userData = JSON.parse(userFromStorage);
     } catch (e) {
-      message.error('사용자 정보를 불러올 수 없습니다.');
+      message.error(t('profile.reviews.parseError'));
       return;
     }
 
     if (!userData || !userData.id) {
-      message.error('사용자 ID를 찾을 수 없습니다.');
+      message.error(t('profile.reviews.noUserId'));
       return;
     }
 
@@ -149,7 +151,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
         throw new Error('삭제 응답이 올바르지 않습니다.');
       }
 
-      message.success('리뷰가 삭제되었습니다.');
+      message.success(t('profile.reviews.deleteSuccess'));
       
       // 별점 캐시 삭제 (다음 로드 시 최신 별점으로 갱신)
       if (productId) {
@@ -196,15 +198,15 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
         userId: userData?.id
       });
       
-      let errorMessage = '리뷰 삭제에 실패했습니다.';
+      let errorMessage = t('profile.reviews.deleteFail');
       if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
       } else if (error.response?.status === 400) {
-        errorMessage = '리뷰를 삭제할 권한이 없습니다.';
+        errorMessage = t('profile.reviews.deleteUnauthorized');
       } else if (error.response?.status === 404) {
-        errorMessage = '리뷰를 찾을 수 없습니다.';
+        errorMessage = t('profile.reviews.deleteNotFound');
       } else if (error.response?.status === 500) {
-        errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+        errorMessage = t('profile.reviews.deleteServerError');
       }
       
       message.error(errorMessage);
@@ -216,7 +218,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
   if (reviews.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600 text-lg">작성한 리뷰가 없습니다</p>
+        <p className="text-gray-600 text-lg">{t('profile.reviews.empty')}</p>
       </div>
     );
   }

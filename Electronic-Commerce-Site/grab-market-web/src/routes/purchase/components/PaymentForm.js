@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { CreditCard, Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function PaymentForm({ onSubmit, isLoading }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     cardNumber: '',
     cardCvc: '',
@@ -17,36 +19,36 @@ export default function PaymentForm({ onSubmit, isLoading }) {
 
     // 카드 번호 검증 (16자리 숫자)
     if (!formData.cardNumber.trim()) {
-      newErrors.cardNumber = '카드 번호를 입력해주세요.';
+      newErrors.cardNumber = t('purchase.payment.errors.cardNumberRequired');
     } else if (!/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, ''))) {
-      newErrors.cardNumber = '올바른 카드 번호 형식이 아닙니다. (16자리 숫자)';
+      newErrors.cardNumber = t('purchase.payment.errors.cardNumberInvalid');
     }
 
     // CVC 검증 (3자리 숫자)
     if (!formData.cardCvc.trim()) {
-      newErrors.cardCvc = 'CVC를 입력해주세요.';
+      newErrors.cardCvc = t('purchase.payment.errors.cvcRequired');
     } else if (!/^\d{3,4}$/.test(formData.cardCvc)) {
-      newErrors.cardCvc = '올바른 CVC 형식이 아닙니다. (3-4자리 숫자)';
+      newErrors.cardCvc = t('purchase.payment.errors.cvcInvalid');
     }
 
     // 만료 월 검증
     if (!formData.expMonth) {
-      newErrors.expMonth = '만료 월을 선택해주세요.';
+      newErrors.expMonth = t('purchase.payment.errors.expMonthRequired');
     } else {
       const month = parseInt(formData.expMonth);
       if (month < 1 || month > 12) {
-        newErrors.expMonth = '올바른 월을 선택해주세요.';
+        newErrors.expMonth = t('purchase.payment.errors.expMonthInvalid');
       }
     }
 
     // 만료 연도 검증
     if (!formData.expYear) {
-      newErrors.expYear = '만료 연도를 선택해주세요.';
+      newErrors.expYear = t('purchase.payment.errors.expYearRequired');
     } else {
       const year = parseInt(formData.expYear);
       const currentYear = new Date().getFullYear();
       if (year < currentYear || year > currentYear + 10) {
-        newErrors.expYear = '올바른 연도를 선택해주세요.';
+        newErrors.expYear = t('purchase.payment.errors.expYearInvalid');
       }
     }
 
@@ -84,13 +86,13 @@ export default function PaymentForm({ onSubmit, isLoading }) {
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 border border-gray-200 mt-8">
       <div className="flex items-center gap-3 mb-6">
         <CreditCard className="w-6 h-6 text-blue-600" />
-        <h3 className="text-xl font-semibold text-gray-800">Payment Information</h3>
+        <h3 className="text-xl font-semibold text-gray-800">{t('purchase.payment.title')}</h3>
       </div>
 
       <div className="flex flex-col gap-5">
         {/* 카드 회사 선택 */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Card Company</label>
+          <label className="text-sm font-medium text-gray-700">{t('purchase.payment.company')}</label>
           <select
             value={formData.cardCompany}
             onChange={(e) => handleChange('cardCompany', e.target.value)}
@@ -113,13 +115,13 @@ export default function PaymentForm({ onSubmit, isLoading }) {
 
         {/* 카드 번호 */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Card Number</label>
+          <label className="text-sm font-medium text-gray-700">{t('purchase.payment.number')}</label>
           <div className="relative">
             <input
               type="text"
               value={formData.cardNumber.replace(/(.{4})/g, '$1 ').trim()}
               onChange={(e) => handleChange('cardNumber', e.target.value.replace(/\s/g, ''))}
-              placeholder="1234 5678 9012 3456"
+              placeholder={t('purchase.payment.placeholders.number')}
               className={`w-full px-4 py-3 pr-12 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                 errors.cardNumber ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -136,7 +138,7 @@ export default function PaymentForm({ onSubmit, isLoading }) {
         {/* 만료일 및 CVC */}
         <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Expiration Month</label>
+            <label className="text-sm font-medium text-gray-700">{t('purchase.payment.expMonth')}</label>
             <select
               value={formData.expMonth}
               onChange={(e) => handleChange('expMonth', e.target.value)}
@@ -158,7 +160,7 @@ export default function PaymentForm({ onSubmit, isLoading }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Expiration Year</label>
+            <label className="text-sm font-medium text-gray-700">{t('purchase.payment.expYear')}</label>
             <select
               value={formData.expYear}
               onChange={(e) => handleChange('expYear', e.target.value)}
@@ -180,12 +182,12 @@ export default function PaymentForm({ onSubmit, isLoading }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">CVC</label>
+            <label className="text-sm font-medium text-gray-700">{t('purchase.payment.cvc')}</label>
             <input
               type="text"
               value={formData.cardCvc}
               onChange={(e) => handleChange('cardCvc', e.target.value)}
-              placeholder="123"
+              placeholder={t('purchase.payment.placeholders.cvc')}
               className={`w-full px-4 py-3 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                 errors.cardCvc ? 'border-red-500' : 'border-gray-300'
               }`}

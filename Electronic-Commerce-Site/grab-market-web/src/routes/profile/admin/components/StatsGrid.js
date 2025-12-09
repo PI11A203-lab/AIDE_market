@@ -1,25 +1,27 @@
 import React from 'react';
 import { Package, DollarSign, Users, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function StatsGrid({ stats }) {
+  const { t } = useTranslation();
   const cards = [
     {
-      label: 'Total Products',
+      label: t('profile.admin.stats.totalProducts'),
       value: stats.totalProducts.toLocaleString(),
       icon: <Package size={24} style={{ color: '#1A1A1A' }} />,
     },
     {
-      label: 'Total Revenue',
+      label: t('profile.admin.stats.totalRevenue'),
       value: `¥${stats.totalRevenue.toLocaleString()}`,
       icon: <DollarSign size={24} style={{ color: '#1A1A1A' }} />,
     },
     {
-      label: 'Followers',
+      label: t('profile.admin.stats.followers'),
       value: stats.followers.toLocaleString(),
       icon: <Users size={24} style={{ color: '#1A1A1A' }} />,
     },
     {
-      label: 'Reviews',
+      label: t('profile.admin.stats.reviews'),
       value: stats.reviews.toLocaleString(),
       icon: <Star size={24} style={{ color: '#1A1A1A' }} />,
     },

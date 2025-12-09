@@ -2,8 +2,10 @@ import React from 'react';
 import OverviewTab from './OverviewTab';
 import ProjectsTab from './ProjectsTab';
 import ReviewsTab from './ReviewsTab';
+import { useTranslation } from 'react-i18next';
 
 export default function TabNavigation({ activeTab, onTabChange, developer }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white border border-gray-200 rounded-xl mb-6 overflow-hidden">
       <div className="flex border-b border-gray-200">
@@ -15,7 +17,7 @@ export default function TabNavigation({ activeTab, onTabChange, developer }) {
               : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
-          Overview
+          {t('product.tabs.overview')}
         </button>
         <button
           onClick={() => onTabChange('projects')}
@@ -25,7 +27,7 @@ export default function TabNavigation({ activeTab, onTabChange, developer }) {
               : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
-          Projects
+          {t('product.tabs.projects')}
         </button>
         <button
           onClick={() => onTabChange('reviews')}
@@ -35,7 +37,7 @@ export default function TabNavigation({ activeTab, onTabChange, developer }) {
               : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
           }`}
         >
-          Reviews ({developer.reviewCount})
+          {t('product.tabs.reviews', { count: developer.reviewCount })}
         </button>
       </div>
       <div className="p-8">

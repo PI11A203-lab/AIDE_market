@@ -11,6 +11,7 @@ import {
 } from './components';
 import { mockReviewsStats, mockReviews, mockProducts } from './mock.data';
 import './AdminReviews.css';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminReviews() {
   const [reviews, setReviews] = useState([]);
@@ -44,6 +45,7 @@ export default function AdminReviews() {
     rating: '',
     sort: 'recent'
   });
+  const { t } = useTranslation();
 
   // 상품 목록 로드
   const loadProducts = useCallback(async () => {
@@ -114,7 +116,7 @@ export default function AdminReviews() {
       }));
     } catch (error) {
       console.error('Failed to load reviews:', error);
-      message.error('리뷰 목록을 불러오는데 실패했습니다.');
+      message.error(t('profile.admin.reviewsPage.empty.descWithFilters'));
       // 실패 시 mock 데이터 사용
       setReviews(mockReviews);
       setPagination(prev => ({
@@ -165,8 +167,8 @@ export default function AdminReviews() {
         <main className="admin-reviews-main">
         {/* 페이지 헤더 */}
         <div className="page-header">
-          <h1 className="page-title">Review Management</h1>
-          <p className="page-subtitle">Manage all reviews for your products</p>
+          <h1 className="page-title">{t('profile.admin.reviewsPage.title')}</h1>
+          <p className="page-subtitle">{t('profile.admin.reviewsPage.subtitle')}</p>
         </div>
 
         {/* 평점 통계 카드 */}
@@ -184,9 +186,9 @@ export default function AdminReviews() {
         <SummaryBar stats={stats} />
 
         {/* 리뷰 목록 */}
-        {loading ? (
+          {loading ? (
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('common.loading')}</div>
           </div>
         ) : (
           <>

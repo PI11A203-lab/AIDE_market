@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function RecentReviews({ reviews }) {
+  const { t, i18n } = useTranslation();
   return (
     <div
       style={{
@@ -13,11 +15,11 @@ export default function RecentReviews({ reviews }) {
       }}
     >
       <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1A1A1A', marginBottom: '24px' }}>
-        최근 리뷰 3개
+        {t('profile.admin.recentReviews.title')}
       </h2>
       {reviews.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-600">리뷰가 없습니다</p>
+          <p className="text-gray-600">{t('profile.admin.recentReviews.empty')}</p>
         </div>
       ) : (
         <div className="reviews-container">
@@ -37,7 +39,7 @@ export default function RecentReviews({ reviews }) {
                       className="review-product-name"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {review.product?.name || review.order_item?.product?.name || review.aiName || 'AI Developer'}
+                      {review.product?.name || review.order_item?.product?.name || review.aiName || t('profile.admin.recentReviews.productFallback')}
                     </Link>
                     <div className="review-rating">
                       {[...Array(5)].map((_, i) => (
@@ -65,7 +67,7 @@ export default function RecentReviews({ reviews }) {
                   )}
                   <span className="review-date">
                     {review.created_at
-                      ? new Date(review.created_at).toLocaleDateString('ko-KR', {
+                      ? new Date(review.created_at).toLocaleDateString(i18n.language, {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',

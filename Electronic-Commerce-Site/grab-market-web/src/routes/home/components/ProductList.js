@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../../../config/constants';
+import { useTranslation } from 'react-i18next';
 
 const ProductList = ({ products }) => {
+  const { t } = useTranslation();
 
   return (
     <div className="products-grid">
@@ -41,7 +43,7 @@ const ProductList = ({ products }) => {
             </div>
             <div className="card-content">
               <div className="card-category">
-                {product.category_name || 'AI Developer'}
+                {product.category_name || t('purchase.productCard.categoryFallback')}
               </div>
               <div className="card-header">
                 <h3 className="card-title">{product.name}</h3>

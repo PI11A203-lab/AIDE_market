@@ -10,6 +10,7 @@ import {
 } from './components';
 import { mockOrders, mockOrderStats, mockProductOptions } from './mock.data';
 import './AdminOrders.css';
+import { useTranslation } from 'react-i18next';
 
 const PAGE_LIMIT = 20;
 const DEFAULT_FILTERS = {
@@ -37,6 +38,7 @@ export default function AdminOrders() {
     totalPages: 0,
   });
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const { t, i18n } = useTranslation();
 
   const mergeProductOptions = useCallback((list) => {
     const names = list
@@ -274,7 +276,7 @@ export default function AdminOrders() {
       <div className="admin-orders-container">
         <main className="admin-orders-main">
         <div className="page-header">
-          <h1 className="page-title">Sales History</h1>
+          <h1 className="page-title">{t('profile.admin.orders.title')}</h1>
           <button
             className="btn btn-secondary"
             type="button"
@@ -285,7 +287,7 @@ export default function AdminOrders() {
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            Export
+            {t('profile.admin.orders.export')}
           </button>
         </div>
 
@@ -300,7 +302,7 @@ export default function AdminOrders() {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('common.loading')}</div>
           </div>
         ) : orders.length === 0 ? (
           <EmptyState hasFilters={hasFilters} />

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Github, Calendar } from 'lucide-react';
 import { API_URL } from '../../../../config/constants';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminHero({ admin }) {
+  const { t } = useTranslation();
   const getGithubUsername = () => {
     if (!admin?.github_url) return null;
     try {
@@ -53,12 +55,12 @@ export default function AdminHero({ admin }) {
                     className="profile-link"
                   >
                     <Github size={20} />
-                    {githubUsername ? `@${githubUsername}` : 'GitHub'}
+                    {githubUsername ? `@${githubUsername}` : t('profile.admin.hero.github')}
                   </a>
                 )}
                 <div className="profile-link">
                   <Calendar size={20} />
-                  <strong style={{ color: '#111827', marginRight: '4px' }}>{admin.follower_count || 0}</strong> 팔로워
+                  <strong style={{ color: '#111827', marginRight: '4px' }}>{admin.follower_count || 0}</strong> {t('profile.admin.hero.followers')}
                 </div>
               </div>
             </div>

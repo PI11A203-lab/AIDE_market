@@ -1,7 +1,9 @@
 import React from 'react';
 import { Download, ExternalLink, Copy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function PurchasedAIItem({ ai, index, onCopyCode }) {
+  const { t } = useTranslation();
   return (
     <div className="confirmation-ai-item">
       <div className="confirmation-ai-item-content">
@@ -25,13 +27,13 @@ export default function PurchasedAIItem({ ai, index, onCopyCode }) {
           </div>
           <div className="confirmation-ai-code-box">
             <div className="confirmation-ai-code-header">
-              <span className="confirmation-ai-code-label">🔑 Activation Code</span>
+              <span className="confirmation-ai-code-label">🔑 {t('purchase.confirmation.aiList.activation')}</span>
               <button
                 onClick={() => onCopyCode(ai.activationCode)}
                 className="confirmation-ai-code-copy-btn"
               >
                 <Copy className="confirmation-ai-code-copy-icon" />
-                Copy
+                {t('purchase.confirmation.aiList.copy')}
               </button>
             </div>
             <code className="confirmation-ai-code">
@@ -41,11 +43,11 @@ export default function PurchasedAIItem({ ai, index, onCopyCode }) {
           <div className="confirmation-ai-actions">
             <button className="confirmation-ai-download-btn">
               <Download className="confirmation-ai-download-icon" />
-              Download Documentation
+              {t('purchase.confirmation.aiList.download')}
             </button>
             <button className="confirmation-ai-guide-btn">
               <ExternalLink className="confirmation-ai-guide-icon" />
-              View Guide
+              {t('purchase.confirmation.aiList.guide')}
             </button>
           </div>
         </div>

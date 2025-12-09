@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Header() {
+  const { t } = useTranslation();
   return (
     <header className="confirmation-header">
       <div className="confirmation-header-container">
@@ -8,7 +10,7 @@ export default function Header() {
           <h1 className="confirmation-header-title">
             <span className="confirmation-header-emoji">🤖</span>
             <span className="confirmation-header-text">
-              AIDE Market
+              {t('purchase.confirmation.headerTitle')}
             </span>
           </h1>
         </div>

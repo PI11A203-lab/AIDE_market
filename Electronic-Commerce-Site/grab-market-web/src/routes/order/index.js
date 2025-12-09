@@ -6,11 +6,13 @@ import OrderHeader from './components/OrderHeader';
 import OrderSummary from './components/OrderSummary';
 import OrderItem from './components/OrderItem';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 export default function OrderDetailPage() {
   const { orderId } = useParams();
   const history = useHistory();
   const { order, orderItems, setOrderItems, loading, reloadOrderData } = useOrderData(orderId);
+  const { t } = useTranslation();
 
   const {
     reviewForms,
@@ -34,7 +36,7 @@ export default function OrderDetailPage() {
     return (
       <div className="order-detail-page">
         <div className="text-center py-12">
-          <div className="text-xl text-gray-600">Loading...</div>
+          <div className="text-xl text-gray-600">{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -44,12 +46,12 @@ export default function OrderDetailPage() {
     return (
       <div className="order-detail-page">
         <div className="text-center py-12">
-          <p className="text-gray-600">주문을 찾을 수 없습니다</p>
+          <p className="text-gray-600">{t('order.notFound')}</p>
           <button
             onClick={() => history.push('/profile')}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            프로필로 돌아가기
+            {t('order.backToProfile')}
           </button>
         </div>
       </div>
@@ -72,7 +74,7 @@ export default function OrderDetailPage() {
 
         {/* 주문 아이템 목록 */}
         <div className="order-items-section">
-          <h2 className="section-title">주문 상품 ({orderItems.length}개)</h2>
+          <h2 className="section-title">{t('order.itemsTitle', { count: orderItems.length })}</h2>
           <div className="order-items-list">
             {orderItems.map((item) => (
               <OrderItem

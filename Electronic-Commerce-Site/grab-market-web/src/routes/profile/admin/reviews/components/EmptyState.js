@@ -1,17 +1,19 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function EmptyState({ hasFilters }) {
+  const { t } = useTranslation();
   return (
     <div className="reviews-container">
       <div className="empty-state">
         <div className="empty-icon">📝</div>
         <div className="empty-title">
-          {hasFilters ? 'No reviews found' : 'No reviews yet'}
+          {hasFilters ? t('profile.admin.reviewsPage.empty.titleWithFilters') : t('profile.admin.reviewsPage.empty.title')}
         </div>
         <div className="empty-description">
           {hasFilters
-            ? 'Try adjusting your filters to see more results.'
-            : 'Reviews will appear here once customers start leaving feedback.'}
+            ? t('profile.admin.reviewsPage.empty.descWithFilters')
+            : t('profile.admin.reviewsPage.empty.desc')}
         </div>
       </div>
     </div>

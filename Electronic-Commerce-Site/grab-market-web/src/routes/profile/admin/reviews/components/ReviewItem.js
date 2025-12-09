@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import StarRating from '../../../../product/admin/components/StarRating';
+import { useTranslation } from 'react-i18next';
 
 export default function ReviewItem({ review }) {
+  const { t, i18n } = useTranslation();
   const getInitials = (username) => {
     if (!username) return 'U';
     const parts = username.split(' ');
@@ -14,7 +16,7 @@ export default function ReviewItem({ review }) {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(i18n.language || 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -30,11 +32,11 @@ export default function ReviewItem({ review }) {
         <div className="review-info">
           <div className="review-top">
             <div>
-              <div className="review-author">{review.user?.username || 'User'}</div>
+              <div className="review-author">{review.user?.username || t('profile.admin.reviewsPage.item.userFallback')}</div>
               <div className="review-meta">
                 <span>{formatDate(review.created_at)}</span>
                 <span>•</span>
-                <span>{review.verified ? 'Verified Purchase' : 'Not Verified'}</span>
+                <span>{review.verified ? t('profile.admin.reviewsPage.item.verified') : t('profile.admin.reviewsPage.item.notVerified')}</span>
               </div>
             </div>
             <div className="review-stars">
@@ -48,7 +50,7 @@ export default function ReviewItem({ review }) {
           <div className="review-footer">
             <div className="review-helpful">
               <span className="helpful-count">
-                {review.helpful_count || 0} people found this helpful
+                {t('profile.admin.reviewsPage.item.helpful', { count: review.helpful_count || 0 })}
               </span>
             </div>
             <div className="review-actions">
@@ -56,7 +58,7 @@ export default function ReviewItem({ review }) {
                 to={`/products/${review.product?.id}`}
                 className="btn btn-secondary btn-sm"
               >
-                View Product
+                {t('profile.admin.reviewsPage.item.viewProduct')}
               </Link>
             </div>
           </div>
