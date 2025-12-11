@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SimpleLineChart } from './LineChart';
 import { SimpleBarChart } from './BarChart';
-import { salesLabels, salesDatasets, couponLabels, couponDatasets } from '../../routes/profile/admin/mock.data';
+import { api } from '../../config/api';
 
 /**
  * 관리자 대시보드 그래프 카드
@@ -9,7 +9,89 @@ import { salesLabels, salesDatasets, couponLabels, couponDatasets } from '../../
  */
 export const DashboardChart = () => {
   const [activeChart, setActiveChart] = useState('sales'); // 'sales' | 'coupons'
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [salesData, setSalesData] = useState({ labels: [], datasets: [] });
+  const [couponData, setCouponData] = useState({ labels: [], datasets: [] });
+
+  useEffect(() => {
+    const loadCharts = async () => {
+      setLoading(true);
+      try {
+        // 매출/판매 차트
+        const salesRes = await api.admin.getSalesChart();
+        const salesRaw = Array.isArray(salesRes.data) ? salesRes.data : [];
+        const salesLabels = salesRaw.map((item) => item.month);
+        const salesCounts = salesRaw.map((item) => Number(item.sales ?? 0));
+        const revenue = salesRaw.map((item) => Number(item.revenue ?? 0));
+
+        setSalesData({
+          labels: salesLabels,
+          datasets: [
+            {
+              label: 'Revenue (¥)',
+              data: revenue,
+              borderColor: 'rgb(16, 185, 129)',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            },
+            {
+              label: 'Sales Count',
+              data: salesCounts,
+              borderColor: 'rgb(59, 130, 246)',
+              borderDash: [5, 5],
+              borderWidth: 2,
+              fill: false,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            },
+          ],
+        });
+
+        // 쿠폰 사용량
+        const couponRes = await api.admin.getCouponUsage();
+        const couponRaw = Array.isArray(couponRes.data) ? couponRes.data : [];
+        const couponLabels = couponRaw.map((item) => item.couponCode || item.code);
+        const couponUsage = couponRaw.map((item) => Number(item.usageCount ?? 0));
+
+        setCouponData({
+          labels: couponLabels,
+          datasets: [
+            {
+              label: 'Usage Count',
+              data: couponUsage,
+              backgroundColor: 'rgba(99, 102, 241, 0.8)',
+              borderColor: 'rgb(99, 102, 241)',
+              borderWidth: 1,
+              borderRadius: 6,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Failed to load dashboard charts:', error);
+        setSalesData({ labels: [], datasets: [] });
+        setCouponData({ labels: [], datasets: [] });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCharts();
+  }, []);
+
+  const salesEmpty = useMemo(
+    () => !salesData.labels.length || !salesData.datasets.some((d) => (d.data || []).some((v) => Number(v) > 0)),
+    [salesData]
+  );
+
+  const couponEmpty = useMemo(
+    () => !couponData.labels.length || !couponData.datasets.some((d) => (d.data || []).some((v) => Number(v) > 0)),
+    [couponData]
+  );
 
   return (
     <div style={{
@@ -77,19 +159,19 @@ export const DashboardChart = () => {
       <div>
         {activeChart === 'sales' ? (
           <SimpleLineChart
-            labels={salesLabels}
-            datasets={salesDatasets}
+            labels={salesData.labels}
+            datasets={salesData.datasets}
             height={300}
             loading={loading}
-            emptyMessage="No sales data available"
+            emptyMessage={salesEmpty ? 'No sales data available' : undefined}
           />
         ) : (
           <SimpleBarChart
-            labels={couponLabels}
-            datasets={couponDatasets}
+            labels={couponData.labels}
+            datasets={couponData.datasets}
             height={300}
             loading={loading}
-            emptyMessage="No coupon data available"
+            emptyMessage={couponEmpty ? 'No coupon data available' : undefined}
           />
         )}
       </div>

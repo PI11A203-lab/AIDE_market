@@ -887,6 +887,16 @@ export const api = {
      * Admin 리뷰 통계 조회
      */
     getReviewsStats: () => apiClient.get('/api/admin/reviews/stats'),
+
+    /**
+     * Admin 월별 매출/판매 차트
+     */
+    getSalesChart: () => apiClient.get('/api/admin/sales-chart'),
+
+    /**
+     * Admin 쿠폰 사용량
+     */
+    getCouponUsage: () => apiClient.get('/api/admin/coupon-usage'),
   },
 };
 

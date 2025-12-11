@@ -67,17 +67,17 @@ export default function AdminReviews() {
       const statsData = response.data;
       setStats({
         ratingDistribution: {
-          5: statsData.rating_5 || 0,
-          4: statsData.rating_4 || 0,
-          3: statsData.rating_3 || 0,
-          2: statsData.rating_2 || 0,
-          1: statsData.rating_1 || 0
+          5: statsData.distribution?.[5] ?? statsData.rating_5 ?? 0,
+          4: statsData.distribution?.[4] ?? statsData.rating_4 ?? 0,
+          3: statsData.distribution?.[3] ?? statsData.rating_3 ?? 0,
+          2: statsData.distribution?.[2] ?? statsData.rating_2 ?? 0,
+          1: statsData.distribution?.[1] ?? statsData.rating_1 ?? 0
         },
-        totalReviews: statsData.total_reviews || 0,
-        averageRating: parseFloat(statsData.average_rating || 0).toFixed(1),
-        thisMonth: statsData.this_month || 0,
-        positive: statsData.positive || 0,
-        needsAttention: statsData.needs_attention || 0
+        totalReviews: statsData.totalReviews ?? statsData.total_reviews ?? 0,
+        averageRating: parseFloat(statsData.avgRating ?? statsData.average_rating ?? 0).toFixed(1),
+        thisMonth: statsData.thisMonth ?? statsData.this_month ?? 0,
+        positive: statsData.positive ?? 0,
+        needsAttention: statsData.needsAttention ?? statsData.needs_attention ?? 0
       });
     } catch (error) {
       console.error('Failed to load stats:', error);

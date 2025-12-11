@@ -324,6 +324,139 @@ router.get('/products/:id', auth, adminAuth, async (req, res) => {
   }
 });
 
+// 상품 통계 (판매수/매출/평점)
+router.get('/products/:id/stats', auth, adminAuth, async (req, res) => {
+  const adminId = req.user.id;
+  const productId = req.params.id;
+
+  try {
+    // 본인 상품인지 확인
+    const productOwner = await selectQuery(
+      'SELECT created_by, rating_average, rating_count FROM products WHERE id = ?',
+      [productId]
+    );
+
+    if (!productOwner.length || productOwner[0].created_by !== adminId) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const totals = await selectQuery(
+      `
+      SELECT 
+        (SELECT COUNT(*) FROM order_items WHERE product_id = ?) as total_sales,
+        (SELECT SUM(oi.unit_price * oi.quantity) FROM order_items oi WHERE oi.product_id = ?) as total_revenue
+      `,
+      [productId, productId]
+    );
+
+    res.json({
+      totalSales: totals[0]?.total_sales || 0,
+      totalRevenue: totals[0]?.total_revenue || 0,
+      avgRating: productOwner[0]?.rating_average || 0,
+      ratingCount: productOwner[0]?.rating_count || 0,
+    });
+  } catch (error) {
+    console.error('Product stats error:', error);
+    res.status(500).json({ error: 'Failed to fetch product stats' });
+  }
+});
+
+// 상품 월별 판매 차트 (최근 12개월)
+router.get('/products/:id/sales-chart', auth, adminAuth, async (req, res) => {
+  const adminId = req.user.id;
+  const productId = req.params.id;
+
+  try {
+    // 본인 상품인지 확인
+    const productOwner = await selectQuery(
+      'SELECT created_by FROM products WHERE id = ?',
+      [productId]
+    );
+
+    if (!productOwner.length || productOwner[0].created_by !== adminId) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const results = await selectQuery(
+      `
+      SELECT 
+        DATE_FORMAT(o.purchased_at, '%Y-%m') as month,
+        SUM(oi.unit_price * oi.quantity) as revenue,
+        COUNT(DISTINCT o.id) as sales
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id
+      WHERE oi.product_id = ?
+        AND o.status = 'completed'
+        AND o.purchased_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+      GROUP BY DATE_FORMAT(o.purchased_at, '%Y-%m')
+      ORDER BY month ASC
+    `,
+      [productId]
+    );
+
+    const monthlyData = [];
+    const now = new Date();
+
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const month = date.toISOString().slice(0, 7);
+      const found = results.find((r) => r.month === month);
+      monthlyData.push({
+        month,
+        revenue: found ? found.revenue : 0,
+        sales: found ? found.sales : 0,
+      });
+    }
+
+    res.json(monthlyData);
+  } catch (error) {
+    console.error('Product sales chart error:', error);
+    res.status(500).json({ error: 'Failed to fetch product sales chart' });
+  }
+});
+
+// 상품 리뷰 (최근 N개)
+router.get('/products/:id/reviews', auth, adminAuth, async (req, res) => {
+  const adminId = req.user.id;
+  const productId = req.params.id;
+  const limit = parseInt(req.query.limit, 10) || 3;
+
+  try {
+    // 본인 상품인지 확인
+    const productOwner = await selectQuery(
+      'SELECT created_by FROM products WHERE id = ?',
+      [productId]
+    );
+
+    if (!productOwner.length || productOwner[0].created_by !== adminId) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const reviews = await selectQuery(
+      `
+      SELECT 
+        r.id,
+        r.rating,
+        r.review_text,
+        r.created_at,
+        r.helpful_count,
+        u.username as author
+      FROM product_reviews r
+      JOIN users u ON r.user_id = u.id
+      WHERE r.product_id = ?
+      ORDER BY r.created_at DESC
+      LIMIT ?
+    `,
+      [productId, limit]
+    );
+
+    res.json({ reviews });
+  } catch (error) {
+    console.error('Product reviews error:', error);
+    res.status(500).json({ error: 'Failed to fetch product reviews' });
+  }
+});
+
 // 상품 삭제
 router.delete('/products/:id', auth, adminAuth, async (req, res) => {
   const adminId = req.user.id;

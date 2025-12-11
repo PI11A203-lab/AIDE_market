@@ -75,10 +75,11 @@ export default function AdminDashboard() {
         const statsResponse = await api.admin.getStats();
         const statsData = statsResponse.data;
         setStats({
-          totalProducts: statsData.total_products || 0,
-          totalRevenue: statsData.total_revenue || 0,
-          followers: statsData.followers || 0,
-          reviews: statsData.reviews || 0
+          // 백엔드 키(totalProducts 등)에 맞춰 매핑
+          totalProducts: statsData.totalProducts ?? statsData.total_products ?? 0,
+          totalRevenue: statsData.totalRevenue ?? statsData.total_revenue ?? 0,
+          followers: statsData.followers ?? 0,
+          reviews: statsData.totalReviews ?? statsData.reviews ?? 0
         });
 
       } catch (error) {

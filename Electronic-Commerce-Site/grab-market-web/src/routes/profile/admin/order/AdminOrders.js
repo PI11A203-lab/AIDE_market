@@ -182,11 +182,12 @@ export default function AdminOrders() {
       const res = await api.admin.getOrderStats();
       const data = res.data || {};
       setStats({
-        totalOrders: data.total_orders ?? data.totalOrders ?? 0,
-        thisMonth: data.this_month ?? data.thisMonth ?? 0,
+        totalOrders: data.totalOrders ?? data.total_orders ?? 0,
+        // 백엔드 thisMonthRevenue를 그대로 노출
+        thisMonth: data.thisMonthRevenue ?? data.this_month ?? 0,
         completed: data.completed ?? data.completed_orders ?? 0,
         pending: data.pending ?? data.pending_orders ?? 0,
-        avgOrderValue: data.avg_order_value ?? data.avgOrderValue ?? 0,
+        avgOrderValue: data.avgOrderValue ?? data.avg_order_value ?? 0,
       });
     } catch (error) {
       console.error('Failed to load order stats, using mock.', error);

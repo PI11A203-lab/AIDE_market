@@ -69,18 +69,19 @@ export default function AdminProductDetail() {
   const normalizeStats = (raw) => {
     if (!raw) return mockProductStats;
     return {
-      totalSales: raw.total_sales ?? raw.totalSales ?? 0,
-      totalRevenue: raw.total_revenue ?? raw.totalRevenue ?? 0,
-      avgRating: Number(raw.avg_rating ?? raw.avgRating ?? 0) || 0,
+      totalSales: raw.totalSales ?? raw.total_sales ?? 0,
+      totalRevenue: raw.totalRevenue ?? raw.total_revenue ?? 0,
+      avgRating: Number(raw.avgRating ?? raw.avg_rating ?? raw.rating_average ?? 0) || 0,
     };
   };
 
   const normalizeChart = (raw) => {
     if (!raw) return mockSalesChart;
     if (raw.labels && raw.datasets) return raw;
-    if (Array.isArray(raw.data)) {
-      const labels = raw.data.map((item) => item.month || item.label);
-      const data = raw.data.map((item) => Number(item.sales ?? item.value ?? 0));
+    const dataArray = raw.data || raw; // 새 엔드포인트는 배열로 반환
+    if (Array.isArray(dataArray)) {
+      const labels = dataArray.map((item) => item.month || item.label);
+      const data = dataArray.map((item) => Number(item.sales ?? item.value ?? 0));
       return {
         labels,
         datasets: [
@@ -136,7 +137,7 @@ export default function AdminProductDetail() {
     } finally {
       setLoading(false);
     }
-  }, [id, t]);
+  }, [id, t, normalizeStats, normalizeProduct]);
 
   useEffect(() => {
     loadData();
