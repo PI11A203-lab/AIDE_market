@@ -244,19 +244,31 @@ export default function ProductPage() {
     loadData();
   }, [id]);
 
-  // 장바구니에 상품 추가하는 함수
-  const addToCart = (productId) => {
+  // 장바구니에 상품 추가하는 함수 (DB API 사용)
+  const addToCart = async (productId) => {
     try {
-      const savedCart = localStorage.getItem('cart');
-      let cartItemIds = savedCart ? JSON.parse(savedCart) : [];
-      
-      // 이미 장바구니에 있는지 확인
-      if (!cartItemIds.includes(productId)) {
-        cartItemIds.push(productId);
-        localStorage.setItem('cart', JSON.stringify(cartItemIds));
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (!userFromStorage) {
+        message.warning('로그인이 필요합니다.');
+        history.push('/login');
+        return;
       }
+
+      const userData = JSON.parse(userFromStorage);
+      const userId = userData.id;
+
+      // API로 장바구니에 추가
+      await api.carts.addItem({
+        user_id: userId,
+        product_id: productId,
+        quantity: 1
+      });
+
+      message.success('カートに追加しました');
     } catch (error) {
       console.error('Failed to add to cart:', error);
+      const errorMessage = error.response?.data?.error || '장바구니 추가에 실패했습니다.';
+      message.error(errorMessage);
     }
   };
 
@@ -273,15 +285,13 @@ export default function ProductPage() {
   };
 
   // "カートに入れる" 버튼 클릭 핸들러
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (isPurchased) {
       message.warning('이미 구매한 상품입니다.');
       return;
     }
     if (developer && developer.id) {
-      addToCart(developer.id);
-      // 성공 메시지 표시 (선택사항)
-      message.success('カートに追加しました');
+      await addToCart(developer.id);
     }
   };
 

@@ -689,6 +689,40 @@ export const api = {
       }),
   },
 
+  // ==================== 장바구니 관련 ====================
+  carts: {
+    /**
+     * 사용자별 장바구니 조회
+     * @param {number} userId - 사용자 ID
+     */
+    getByUser: (userId) => apiClient.get(`/api/carts/users/${userId}`),
+
+    /**
+     * 장바구니에 상품 추가
+     * @param {Object} data - { user_id, product_id, quantity }
+     */
+    addItem: (data) => apiClient.post('/api/carts', data),
+
+    /**
+     * 장바구니에서 상품 제거
+     * @param {number} userId - 사용자 ID
+     * @param {number} productId - 상품 ID
+     */
+    removeItem: (userId, productId) => apiClient.delete(`/api/carts/users/${userId}/products/${productId}`),
+
+    /**
+     * 장바구니 아이템 수량 변경
+     * @param {Object} data - { user_id, product_id, quantity }
+     */
+    updateQuantity: (data) => apiClient.put('/api/carts/quantity', data),
+
+    /**
+     * 장바구니 비우기
+     * @param {number} userId - 사용자 ID
+     */
+    clear: (userId) => apiClient.delete(`/api/carts/users/${userId}`),
+  },
+
   // ==================== 결제방법 관련 ====================
   paymentMethods: {
     /**

@@ -8,6 +8,7 @@ const tagRoutes = require("../features/tag/tagRoutes");
 const rankingRoutes = require("../features/ranking/rankingRoutes");
 const statsRoutes = require("../features/stats/statsRoutes");
 const favoriteRoutes = require("../features/favorite/favoriteRoutes");
+const cartRoutes = require("../features/cart/cartRoutes");
 const reviewRoutes = require("../features/review/reviewRoutes");
 const synergyRoutes = require("../features/synergy/synergyRoutes");
 const teamCompositionRoutes = require("../features/teamcomposition/teamCompositionRoutes");
@@ -38,6 +39,7 @@ module.exports = (app) => {
     app.use("/api/rankings", rankingRoutes);
     app.use("/api/stats", statsRoutes);
     app.use("/api/favorites", favoriteRoutes);
+    app.use("/api/carts", cartRoutes);
     app.use("/api/reviews", reviewRoutes);
     app.use("/api/synergies", synergyRoutes);
     app.use("/api/team-compositions", teamCompositionRoutes);

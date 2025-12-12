@@ -150,6 +150,18 @@ if (fs.existsSync(userFollowModelPath)) {
     }
 }
 
+// 追加のモデル読み込み: CartItem (cartに依存)
+const cartItemModelPath = path.join(modelsDir, 'cart', 'cartItemModel.js');
+if (fs.existsSync(cartItemModelPath)) {
+    try {
+        const cartItemModel = require(cartItemModelPath)(sequelize, Sequelize.DataTypes);
+        db[cartItemModel.name] = cartItemModel;
+        console.log(`✓ モデル ${cartItemModel.name} を読み込みました`);
+    } catch (error) {
+        console.error(`✗ CartItemモデルの読み込みに失敗しました:`, error.message);
+    }
+}
+
 // モデル間の関連付けを定義
 Object.keys(db).forEach(modelName => {
     if (db[modelName] && typeof db[modelName].associate === 'function') {
