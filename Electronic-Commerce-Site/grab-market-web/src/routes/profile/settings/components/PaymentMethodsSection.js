@@ -8,7 +8,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
     payment_method: 'credit_card',
     card_company: 'VISA',
     card_number: '',
-    card_cvc: '',
+    cvc: '',  // ⚠️ card_cvc → cvc로 변경
     exp_month: '',
     exp_year: ''
   });
@@ -24,7 +24,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
 
   const handleAdd = async () => {
     // 유효성 검사
-    if (!formData.card_number || !formData.card_cvc || !formData.exp_month || !formData.exp_year) {
+    if (!formData.card_number || !formData.cvc || !formData.exp_month || !formData.exp_year) {
       message.error('모든 필드를 입력해주세요.');
       return;
     }
@@ -34,7 +34,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
       return;
     }
 
-    if (formData.card_cvc.length !== 3 && formData.card_cvc.length !== 4) {
+    if (formData.cvc.length !== 3 && formData.cvc.length !== 4) {
       message.error('CVC는 3자리 또는 4자리여야 합니다.');
       return;
     }
@@ -66,7 +66,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
           payment_method: 'credit_card',
           card_company: 'VISA',
           card_number: '',
-          card_cvc: '',
+          cvc: '',  // ⚠️ card_cvc → cvc로 변경
           exp_month: '',
           exp_year: ''
         });
@@ -206,8 +206,8 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                 <label className="form-label no-icon">CVC</label>
                 <input
                   type="text"
-                  name="card_cvc"
-                  value={formData.card_cvc}
+                  name="cvc"
+                  value={formData.cvc}
                   onChange={handleChange}
                   className="form-input"
                   placeholder="CVC"

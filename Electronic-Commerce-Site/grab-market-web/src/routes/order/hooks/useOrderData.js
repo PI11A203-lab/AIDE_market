@@ -11,18 +11,37 @@ export function useOrderData(orderId) {
 
   const loadOrderData = useCallback(async () => {
     try {
-      // 주문 정보 가져오기
+      // 주문 정보 가져오기 (orderItems, orderCoupons 포함)
       const orderResponse = await api.orders.getById(orderId);
       const orderData = orderResponse.data.order;
       setOrder(orderData);
 
-      // 주문 아이템 가져오기
-      const itemsResponse = await api.orderItems.getByOrder(orderId);
-      const items = itemsResponse.data?.orderItems || [];
+      // ⚠️ 새로운 API 응답 구조: orderItems가 이미 포함되어 있음
+      const items = orderData.orderItems || [];
 
-      // 각 아이템의 상품 정보 가져오기
+      // 각 아이템의 상품 정보가 이미 포함되어 있지만, 태그 정보가 없을 수 있으므로 확인
       const itemsWithProducts = await Promise.all(
         items.map(async (item) => {
+          // product 정보가 이미 포함되어 있는 경우
+          if (item.product) {
+            // 태그 정보가 없으면 가져오기
+            if (!item.tags && item.product.id) {
+              try {
+                const productResponse = await axios.get(`${API_URL}/api/products/${item.product.id}`);
+                return {
+                  ...item,
+                  product: productResponse.data.product,
+                  tags: productResponse.data.tags || []
+                };
+              } catch (error) {
+                console.error(`Failed to fetch tags for product ${item.product.id}:`, error);
+                return { ...item, tags: [] };
+              }
+            }
+            return { ...item, tags: item.tags || [] };
+          }
+          
+          // product 정보가 없는 경우 (하위 호환성)
           try {
             const productResponse = await axios.get(`${API_URL}/api/products/${item.product_id}`);
             return {
@@ -32,7 +51,7 @@ export function useOrderData(orderId) {
             };
           } catch (error) {
             console.error(`Failed to fetch product ${item.product_id}:`, error);
-            return { ...item, product: null };
+            return { ...item, product: null, tags: [] };
           }
         })
       );

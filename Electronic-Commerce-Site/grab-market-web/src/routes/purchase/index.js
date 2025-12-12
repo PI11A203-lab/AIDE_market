@@ -305,15 +305,11 @@ export default function PurchasePage() {
     try {
       const user = JSON.parse(userFromStorage);
       
-      // 주문 생성
+      // 주문 생성 (새로운 API 구조: payment_id 사용)
       const orderData = {
         user_id: user.id,
         total_amount: Math.round(total), // 정수로 반올림
-        payment_method: paymentMethod.payment_method || 'credit_card',
-        card_company: paymentMethod.card_company,
-        card_id: paymentMethod.id, // 결제방법 ID 저장
-        exp_month: paymentMethod.exp_month ? parseInt(paymentMethod.exp_month) : null,
-        exp_year: paymentMethod.exp_year ? parseInt(paymentMethod.exp_year) : null,
+        payment_id: paymentMethod.id, // ⚠️ 결제수단 ID 사용
         status: 'pending',
       };
       

@@ -50,15 +50,17 @@ function App() {
           {/* 보호된 라우트 - 로그인 필요 */}
           <ProtectedRoute exact={true} path="/upload" component={UploadPage} />
           <ProtectedRoute exact={true} path="/profile" component={UserProfile} />
-          <ProtectedRoute exact={true} path="/profile/products/:id" component={AdminProductDetail} />
           <ProtectedRoute exact={true} path="/profile/settings" component={ProfileSettings} />
-          <ProtectedRoute exact={true} path="/profile/products" component={AdminProducts} />
-          <ProtectedRoute exact={true} path="/profile/reviews" component={AdminReviews} />
-          <ProtectedRoute exact={true} path="/profile/orders" component={AdminOrders} />
           <ProtectedRoute exact={true} path="/team" component={TeamBuilder} />
           <ProtectedRoute exact={true} path="/purchase" component={PurchasePage} />
           <ProtectedRoute exact={true} path="/confirmation" component={PurchaseConfirmation} />
           <ProtectedRoute exact={true} path="/order/:orderId" component={OrderDetailPage} />
+          
+          {/* Admin 전용 라우트 - 로그인 + admin 권한 필요 */}
+          <ProtectedRoute exact={true} path="/profile/products/:id" component={AdminProductDetail} requireAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/products" component={AdminProducts} requireAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/reviews" component={AdminReviews} requireAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/orders" component={AdminOrders} requireAdmin={true} />
           <Route exact={true} path="/auth/callback">
             <AuthCallback />
           </Route>
