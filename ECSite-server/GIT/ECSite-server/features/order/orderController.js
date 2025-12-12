@@ -61,6 +61,7 @@ exports.getOrderByOrderNumber = async (req, res) => {
 
 // 주문 생성
 exports.createOrder = async (req, res) => {
+    let createdOrderId = null;
     try {
         const { user_id, total_amount, payment_id, status } = req.body;
         
@@ -76,10 +77,24 @@ exports.createOrder = async (req, res) => {
             payment_id,
             status
         });
+        
+        createdOrderId = order.id;
+        
         res.status(201).json({ order });
     } catch (err) {
         console.error('주문 생성 에러:', err);
         console.error('에러 스택:', err.stack);
+        
+        // 주문이 생성되었지만 에러가 발생한 경우 상태를 'pending'으로 변경
+        if (createdOrderId) {
+            try {
+                await orderService.updateOrder(createdOrderId, { status: 'pending' });
+                console.log(`주문 ${createdOrderId}의 상태를 'pending'으로 변경했습니다.`);
+            } catch (updateErr) {
+                console.error('주문 상태 업데이트 실패:', updateErr);
+            }
+        }
+        
         if (err.message.includes('필수') || err.message.includes('찾을 수 없습니다') || err.message.includes('이어야 합니다') || err.message.includes('사용자의 것이 아닙니다')) {
             return res.status(400).json({ error: err.message });
         }

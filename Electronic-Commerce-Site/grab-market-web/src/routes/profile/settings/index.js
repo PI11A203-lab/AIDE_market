@@ -13,39 +13,52 @@ export default function ProfileSettings() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadUserData();
-    loadPaymentMethods();
+    let isMounted = true;
+
+    const loadData = async () => {
+      try {
+        const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+        if (userFromStorage) {
+          const userData = JSON.parse(userFromStorage);
+          
+          // 사용자 정보 로드
+          try {
+            const userResponse = await api.users.getById(userData.id);
+            if (isMounted) {
+              setUser(userResponse.data.user);
+            }
+          } catch (error) {
+            console.error('사용자 정보 로드 실패:', error);
+          }
+          
+          // 결제방법 로드
+          try {
+            const paymentResponse = await api.paymentMethods.getByUser(userData.id);
+            if (isMounted) {
+              setPaymentMethods(paymentResponse.data.paymentMethods || []);
+            }
+          } catch (error) {
+            console.error('결제방법 로드 실패:', error);
+            if (isMounted) {
+              setPaymentMethods([]);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-  const loadUserData = async () => {
-    try {
-      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
-      if (userFromStorage) {
-        const userData = JSON.parse(userFromStorage);
-        const response = await api.users.getById(userData.id);
-        setUser(response.data.user);
-      }
-    } catch (error) {
-      console.error('사용자 정보 로드 실패:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadPaymentMethods = async () => {
-    try {
-      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
-      if (userFromStorage) {
-        const userData = JSON.parse(userFromStorage);
-        const response = await api.paymentMethods.getByUser(userData.id);
-        setPaymentMethods(response.data.paymentMethods || []);
-      }
-    } catch (error) {
-      console.error('결제방법 로드 실패:', error);
-      // 에러 발생 시 빈 배열로 설정
-      setPaymentMethods([]);
-    }
-  };
 
   const handleUserUpdate = async (updatedData) => {
     try {

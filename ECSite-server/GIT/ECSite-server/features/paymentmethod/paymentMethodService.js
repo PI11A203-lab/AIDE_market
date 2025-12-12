@@ -1,4 +1,5 @@
 const models = require("../../db/initializer");
+const { Op } = require('sequelize');
 const crypto = require('crypto');
 
 // 암호화 키 (실제 프로덕션에서는 환경변수로 관리해야 함)
@@ -127,76 +128,88 @@ exports.createPaymentMethod = async ({ user_id, payment_method, card_company, ca
         throw new Error('사용자를 찾을 수 없습니다');
     }
     
-    // 기본 결제수단으로 설정하는 경우, 다른 결제수단들의 is_default를 false로 변경
-    if (is_default) {
-        await models.PaymentMethod.update(
-            { is_default: false },
-            { where: { user_id } }
-        );
-    }
+    // 트랜잭션으로 일관성 보장
+    const transaction = await models.sequelize.transaction();
     
-    let cardId = null;
-    
-    // 카드 정보가 제공된 경우 credit_cards 테이블에 저장
-    if (card_number || cvc || card_company || card_holder || exp_month || exp_year) {
-        if (!card_number || !cvc) {
-            throw new Error('카드 번호와 CVC는 필수입니다');
+    try {
+        // 기본 결제수단으로 설정하는 경우, 다른 결제수단들의 is_default를 false로 변경
+        if (is_default) {
+            await models.PaymentMethod.update(
+                { is_default: false },
+                { where: { user_id }, transaction }
+            );
         }
         
-        // 카드 정보 암호화
-        const cardNumberEncrypted = encrypt(card_number);
-        const cvcEncrypted = encrypt(cvc);
+        let cardId = null;
         
-        if (!cardNumberEncrypted || !cvcEncrypted) {
-            throw new Error('카드 정보 암호화에 실패했습니다');
-        }
-        
-        // credit_cards 테이블에 저장
-        const creditCard = await models.CreditCard.create({
-            user_id,
-            card_company: card_company || null,
-            card_holder: card_holder || null,
-            card_number_encrypted: cardNumberEncrypted,
-            cvc_encrypted: cvcEncrypted,
-            exp_month: exp_month ? parseInt(exp_month) : null,
-            exp_year: exp_year ? parseInt(exp_year) : null
-        });
-        
-        cardId = creditCard.card_id;
-    }
-    
-    // payment_methods 테이블에 저장
-    const paymentMethod = await models.PaymentMethod.create({
-        user_id,
-        payment_method: payment_method || 'credit_card',
-        is_default: is_default || false,
-        card_id: cardId
-    });
-    
-    // 반환 데이터 구성
-    const data = paymentMethod.toJSON();
-    
-    // 카드 정보가 있는 경우 포함
-    if (cardId) {
-        const creditCard = await models.CreditCard.findByPk(cardId);
-        if (creditCard) {
-            const cardData = creditCard.toJSON();
-            // 카드 번호 마스킹 처리
-            if (cardData.card_number_encrypted) {
-                const decrypted = decrypt(cardData.card_number_encrypted);
-                if (decrypted) {
-                    const last4 = decrypted.slice(-4);
-                    data.card_number = `****-****-****-${last4}`;
-                }
+        // 카드 정보가 제공된 경우 credit_cards 테이블에 저장
+        if (card_number || cvc || card_company || card_holder || exp_month || exp_year) {
+            if (!card_number || !cvc) {
+                throw new Error('카드 번호와 CVC는 필수입니다');
             }
-            data.card_company = cardData.card_company;
-            data.card_holder = cardData.card_holder;
-            data.exp_month = cardData.exp_month;
-            data.exp_year = cardData.exp_year;
+            
+            // 카드 정보 암호화
+            const cardNumberEncrypted = encrypt(card_number);
+            const cvcEncrypted = encrypt(cvc);
+            
+            if (!cardNumberEncrypted || !cvcEncrypted) {
+                throw new Error('카드 정보 암호화에 실패했습니다');
+            }
+            
+            // credit_cards 테이블에 저장
+            const creditCard = await models.CreditCard.create({
+                user_id,
+                card_company: card_company || null,
+                card_holder: card_holder || '',  // NULL 대신 빈 문자열 사용
+                card_number_encrypted: cardNumberEncrypted,
+                cvc_encrypted: cvcEncrypted,
+                exp_month: exp_month ? parseInt(exp_month) : null,
+                exp_year: exp_year ? parseInt(exp_year) : null
+            }, { transaction });
+            
+            cardId = creditCard.card_id;
         }
+        
+        // payment_methods 테이블에 저장
+        const paymentMethod = await models.PaymentMethod.create({
+            user_id,
+            payment_method: payment_method || 'credit_card',
+            is_default: is_default || false,
+            card_id: cardId
+        }, { transaction });
+        
+        // 트랜잭션 커밋
+        await transaction.commit();
+        
+        // 반환 데이터 구성
+        const data = paymentMethod.toJSON();
+        
+        // 카드 정보가 있는 경우 포함
+        if (cardId) {
+            const creditCard = await models.CreditCard.findByPk(cardId);
+            if (creditCard) {
+                const cardData = creditCard.toJSON();
+                // 카드 번호 마스킹 처리
+                if (cardData.card_number_encrypted) {
+                    const decrypted = decrypt(cardData.card_number_encrypted);
+                    if (decrypted) {
+                        const last4 = decrypted.slice(-4);
+                        data.card_number = `****-****-****-${last4}`;
+                    }
+                }
+                data.card_company = cardData.card_company;
+                data.card_holder = cardData.card_holder;
+                data.exp_month = cardData.exp_month;
+                data.exp_year = cardData.exp_year;
+            }
+        }
+        
+        return data;
+    } catch (error) {
+        // 에러 발생 시 롤백
+        await transaction.rollback();
+        throw error;
     }
-    
-    return data;
 };
 
 // 결제수단 업데이트
@@ -210,7 +223,7 @@ exports.updatePaymentMethod = async (id, { card_company, card_holder, card_numbe
     if (is_default) {
         await models.PaymentMethod.update(
             { is_default: false },
-            { where: { user_id: paymentMethod.user_id, id: { [models.Sequelize.Op.ne]: id } } }
+            { where: { user_id: paymentMethod.user_id, id: { [Op.ne]: id } } }
         );
     }
     
@@ -237,7 +250,7 @@ exports.updatePaymentMethod = async (id, { card_company, card_holder, card_numbe
             const creditCard = await models.CreditCard.create({
                 user_id: paymentMethod.user_id,
                 card_company: card_company || null,
-                card_holder: card_holder || null,
+                card_holder: card_holder || '',  // NULL 대신 빈 문자열 사용
                 card_number_encrypted: cardNumberEncrypted,
                 cvc_encrypted: cvcEncrypted,
                 exp_month: exp_month ? parseInt(exp_month) : null,
@@ -313,7 +326,7 @@ exports.deletePaymentMethod = async (id) => {
         const otherPaymentMethod = await models.PaymentMethod.findOne({
             where: {
                 card_id: paymentMethod.card_id,
-                id: { [models.Sequelize.Op.ne]: id }
+                id: { [Op.ne]: id }
             }
         });
         

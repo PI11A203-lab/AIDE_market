@@ -39,7 +39,9 @@ const modelLoadOrder = [
     'coupon',      // Coupon - 依存なし
     'creditcard',  // CreditCard - user_idに依存 (usersテーブル)
     'paymentmethod', // PaymentMethod - user_id, card_idに依存 (users, credit_cardsテーブル)
+    'cart',        // Cart - user_idに依存 (usersテーブル)
     'order',       // Order - user_id, payment_idに依存 (users, payment_methodsテーブル)
+    'cartitem',    // CartItem - Cart, Productに依存
     'orderitem',   // OrderItem - Order, Product에依存
     'ordercoupon', // OrderCoupon - Order, User, Coupon에依存
 ];
@@ -150,9 +152,11 @@ if (fs.existsSync(userFollowModelPath)) {
     }
 }
 
-// 追加のモデル読み込み: CartItem (cartに依存)
+// Cart와 CartItem 모델을 명시적으로 로드 (findModelFile이 camelCase를 제대로 찾지 못할 수 있음)
+// associate 호출 전에 반드시 로드되어야 함
+// CartItem을 먼저 로드 (Cart.associate에서 필요)
 const cartItemModelPath = path.join(modelsDir, 'cart', 'cartItemModel.js');
-if (fs.existsSync(cartItemModelPath)) {
+if (fs.existsSync(cartItemModelPath) && !db.CartItem) {
     try {
         const cartItemModel = require(cartItemModelPath)(sequelize, Sequelize.DataTypes);
         db[cartItemModel.name] = cartItemModel;
@@ -160,6 +164,22 @@ if (fs.existsSync(cartItemModelPath)) {
     } catch (error) {
         console.error(`✗ CartItemモデルの読み込みに失敗しました:`, error.message);
     }
+}
+
+const cartModelPath = path.join(modelsDir, 'cart', 'cartModel.js');
+if (fs.existsSync(cartModelPath) && !db.Cart) {
+    try {
+        const cartModel = require(cartModelPath)(sequelize, Sequelize.DataTypes);
+        db[cartModel.name] = cartModel;
+        console.log(`✓ モデル ${cartModel.name} を読み込みました`);
+    } catch (error) {
+        console.error(`✗ Cartモデルの読み込みに失敗しました:`, error.message);
+    }
+}
+
+// CartItem이 로드되었는지 확인 (Cart.associate에서 필요)
+if (!db.CartItem) {
+    console.warn('⚠ CartItem 모델이 로드되지 않았습니다. Cart.associate에서 에러가 발생할 수 있습니다.');
 }
 
 // モデル間の関連付けを定義
@@ -399,19 +419,31 @@ async function syncDatabase(options = {}) {
             console.log('✓ PaymentMethod テーブルを同期しました');
         }
         
-        // 12. Order（users, payment_methodsに依存）
+        // 12. Cart（usersに依存）
+        if (db.Cart) {
+            await db.Cart.sync({ force, alter });
+            console.log('✓ Cart テーブルを同期しました');
+        }
+        
+        // 12-1. CartItem（Cart, Productに依存）
+        if (db.CartItem) {
+            await db.CartItem.sync({ force, alter });
+            console.log('✓ CartItem テーブルを同期しました');
+        }
+        
+        // 13. Order（users, payment_methodsに依存）
         if (db.Order) {
             await db.Order.sync({ force, alter });
             console.log('✓ Order テーブルを同期しました');
         }
         
-        // 12-1. OrderItem（Order, Productに依存）
+        // 13-1. OrderItem（Order, Productに依存）
         if (db.OrderItem) {
             await db.OrderItem.sync({ force, alter });
             console.log('✓ OrderItem テーブルを同期しました');
         }
         
-        // 13. OrderCoupon（Order, User, Couponに依存）
+        // 13-2. OrderCoupon（Order, User, Couponに依存）
         if (db.OrderCoupon) {
             await db.OrderCoupon.sync({ force, alter });
             console.log('✓ OrderCoupon テーブルを同期しました');

@@ -26,6 +26,7 @@ export const BaseBarChart = ({
   stacked = false
 }) => {
   // labels와 datasets를 recharts 형식으로 변환
+  // 세로 바 차트의 경우 역순으로 표시 (맨 위가 최신 데이터)
   const chartData = labels.map((label, index) => {
     const dataPoint = { name: label };
     datasets.forEach((dataset, datasetIndex) => {
@@ -35,6 +36,9 @@ export const BaseBarChart = ({
     });
     return dataPoint;
   });
+  
+  // 세로 바 차트의 경우 역순으로 정렬 (맨 위가 최신 데이터)
+  const sortedChartData = horizontal ? [...chartData].reverse() : chartData;
 
   return (
     <div style={{ height: `${height}px` }}>
@@ -50,19 +54,40 @@ export const BaseBarChart = ({
       )}
       <ResponsiveContainer width="100%" height="100%">
         <RechartsBarChart 
-          data={chartData}
+          data={sortedChartData}
           layout={horizontal ? "vertical" : "horizontal"}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
           {horizontal ? (
             <>
-              <XAxis type="number" stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} />
-              <YAxis type="category" dataKey="name" stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} />
+              <XAxis 
+                type="number" 
+                stroke="#6B7280" 
+                tick={{ fill: '#6B7280', fontSize: 12 }}
+                allowDecimals={false}
+              />
+              <YAxis 
+                type="category" 
+                dataKey="name" 
+                stroke="#6B7280" 
+                tick={{ fill: '#6B7280', fontSize: 12 }}
+                width={100}
+                interval={0}
+              />
             </>
           ) : (
             <>
-              <XAxis dataKey="name" stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} />
-              <YAxis stroke="#6B7280" tick={{ fill: '#6B7280', fontSize: 12 }} />
+              <XAxis 
+                dataKey="name" 
+                stroke="#6B7280" 
+                tick={{ fill: '#6B7280', fontSize: 12 }}
+              />
+              <YAxis 
+                stroke="#6B7280" 
+                tick={{ fill: '#6B7280', fontSize: 12 }}
+                allowDecimals={false}
+              />
             </>
           )}
           <Tooltip 
@@ -89,6 +114,7 @@ export const BaseBarChart = ({
                 strokeWidth={borderWidth}
                 name={dataset.label}
                 stackId={stacked ? "stack" : undefined}
+                barSize={horizontal ? 25 : undefined}
               />
             );
           })}

@@ -74,7 +74,20 @@ exports.createOrderItem = async (req, res) => {
         });
         res.status(201).json({ orderItem });
     } catch (err) {
-        console.error(err);
+        console.error('주문 아이템 생성 에러:', err);
+        
+        // 주문 아이템 생성 실패 시 주문 상태를 'pending'으로 변경
+        const { order_id } = req.body;
+        if (order_id) {
+            try {
+                const orderService = require('../order/orderService');
+                await orderService.updateOrder(order_id, { status: 'pending' });
+                console.log(`주문 ${order_id}의 상태를 'pending'으로 변경했습니다.`);
+            } catch (updateErr) {
+                console.error('주문 상태 업데이트 실패:', updateErr);
+            }
+        }
+        
         if (err.message.includes('필수') || err.message.includes('찾을 수 없습니다') || err.message.includes('이어야 합니다')) {
             return res.status(400).json({ error: err.message });
         }

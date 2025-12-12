@@ -283,7 +283,8 @@ exports.createOrder = async ({ user_id, total_amount, payment_id, status }) => {
     
     // status 유효성 검사
     const validStatuses = ['pending', 'completed', 'cancelled', 'refunded'];
-    let finalStatus = status || 'pending';
+    // 기본값을 'completed'로 변경 (결제 완료로 바로 처리)
+    let finalStatus = status || 'completed';
     if (!validStatuses.includes(finalStatus)) {
         throw new Error('status는 pending, completed, cancelled, refunded 중 하나여야 합니다');
     }

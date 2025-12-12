@@ -31,6 +31,16 @@ exports.createPaymentMethod = async (req, res) => {
     try {
         const { user_id, payment_method, card_company, card_holder, card_number, cvc, exp_month, exp_year, is_default } = req.body;
         
+        console.log('결제수단 등록 요청:', {
+            user_id,
+            payment_method,
+            card_company,
+            has_card_number: !!card_number,
+            has_cvc: !!cvc,
+            exp_month,
+            exp_year
+        });
+        
         if (!user_id) {
             return res.status(400).json({ error: "user_id는 필수입니다" });
         }
@@ -49,11 +59,12 @@ exports.createPaymentMethod = async (req, res) => {
         
         res.status(201).json({ paymentMethod });
     } catch (err) {
-        console.error(err);
+        console.error('결제수단 등록 에러:', err);
+        console.error('에러 스택:', err.stack);
         if (err.message.includes('필수') || err.message.includes('찾을 수 없습니다') || err.message.includes('암호화')) {
             return res.status(400).json({ error: err.message });
         }
-        res.status(500).json({ error: "결제수단 등록 실패" });
+        res.status(500).json({ error: "결제수단 등록 실패: " + (err.message || '알 수 없는 오류') });
     }
 };
 

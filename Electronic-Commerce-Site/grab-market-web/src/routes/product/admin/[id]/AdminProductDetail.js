@@ -112,21 +112,49 @@ export default function AdminProductDetail() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [detailRes, statsRes, chartRes, reviewRes] = await Promise.all([
-        api.admin.getProductDetail(id),
-        api.admin.getProductStats(id),
-        api.admin.getProductSalesChart(id),
-        api.admin.getProductReviews(id, { limit: 1 }),
+      // 각 API를 개별적으로 호출하여 하나가 실패해도 나머지는 로드되도록 함
+      const results = await Promise.allSettled([
+        api.admin.getProductDetail(id).catch(err => ({ error: err, data: null })),
+        api.admin.getProductStats(id).catch(err => ({ error: err, data: null })),
+        api.admin.getProductSalesChart(id).catch(err => ({ error: err, data: null })),
+        api.admin.getProductReviews(id, { limit: 1 }).catch(err => ({ error: err, data: null })),
       ]);
 
-      const nextProduct = normalizeProduct(detailRes.data?.product || detailRes.data);
-      setProduct(nextProduct || mockProductDetail);
+      // 상품 상세 정보
+      if (results[0].status === 'fulfilled' && !results[0].value.error) {
+        const detailRes = results[0].value;
+        const nextProduct = normalizeProduct(detailRes.data?.product || detailRes.data);
+        setProduct(nextProduct || mockProductDetail);
+      } else {
+        console.warn('Failed to load product detail:', results[0].status === 'rejected' ? results[0].reason : results[0].value?.error);
+        setProduct((prev) => prev || mockProductDetail);
+      }
 
-      setStats(normalizeStats(statsRes.data));
-      setChart(normalizeChart(chartRes.data));
+      // 통계
+      if (results[1].status === 'fulfilled' && !results[1].value.error) {
+        setStats(normalizeStats(results[1].value.data));
+      } else {
+        console.warn('Failed to load product stats:', results[1].status === 'rejected' ? results[1].reason : results[1].value?.error);
+        setStats((prev) => prev || mockProductStats);
+      }
 
-      const reviews = reviewRes.data?.reviews || reviewRes.data || [];
-      setLatestReview(normalizeReview(reviews[0]));
+      // 차트
+      if (results[2].status === 'fulfilled' && !results[2].value.error) {
+        setChart(normalizeChart(results[2].value.data));
+      } else {
+        console.warn('Failed to load sales chart:', results[2].status === 'rejected' ? results[2].reason : results[2].value?.error);
+        setChart((prev) => prev || mockSalesChart);
+      }
+
+      // 리뷰
+      if (results[3].status === 'fulfilled' && !results[3].value.error) {
+        const reviewRes = results[3].value;
+        const reviews = reviewRes.data?.reviews || reviewRes.data || [];
+        setLatestReview(normalizeReview(reviews[0]));
+      } else {
+        console.warn('Failed to load reviews:', results[3].status === 'rejected' ? results[3].reason : results[3].value?.error);
+        setLatestReview((prev) => prev || mockReview);
+      }
     } catch (error) {
       console.error('Failed to load admin product detail:', error);
       message.warning(t('productAdmin.list.messages.loadFail'));
@@ -137,7 +165,7 @@ export default function AdminProductDetail() {
     } finally {
       setLoading(false);
     }
-  }, [id, t, normalizeStats, normalizeProduct]);
+  }, [id, t]);
 
   useEffect(() => {
     loadData();

@@ -38,6 +38,18 @@ router.get('/stats', auth, adminAuth, async (req, res) => {
       [adminId]
     );
 
+    // 2-1. 총 판매 수 (완료된 주문만)
+    const salesResult = await selectQuery(
+      `
+      SELECT COUNT(*) as total_sales
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id
+      JOIN products p ON oi.product_id = p.id
+      WHERE p.created_by = ? AND o.status = 'completed'
+    `,
+      [adminId]
+    );
+
     // 3. 팔로워 수
     const followerResult = await selectQuery(
       'SELECT follower_count FROM users WHERE id = ?',
@@ -56,9 +68,15 @@ router.get('/stats', auth, adminAuth, async (req, res) => {
     );
 
     res.json({
-      totalProducts: productsResult[0]?.total || 0,
-      totalRevenue: revenueResult[0]?.total_revenue || 0,
+      total_products: productsResult[0]?.total || 0,
+      total_sales: salesResult[0]?.total_sales || 0,
+      total_revenue: revenueResult[0]?.total_revenue || 0,
       followers: followerResult[0]?.follower_count || 0,
+      total_reviews: reviewResult[0]?.total_reviews || 0,
+      // 하위 호환성을 위한 필드명
+      totalProducts: productsResult[0]?.total || 0,
+      totalSales: salesResult[0]?.total_sales || 0,
+      totalRevenue: revenueResult[0]?.total_revenue || 0,
       totalReviews: reviewResult[0]?.total_reviews || 0,
     });
   } catch (error) {
@@ -67,7 +85,7 @@ router.get('/stats', auth, adminAuth, async (req, res) => {
   }
 });
 
-// 월별 매출 추이 그래프 (최근 12개월)
+// 월별 매출 추이 그래프 (2025년 4월부터 2026년 3월까지)
 router.get('/sales-chart', auth, adminAuth, async (req, res) => {
   const adminId = req.user.id;
 
@@ -83,26 +101,40 @@ router.get('/sales-chart', auth, adminAuth, async (req, res) => {
       JOIN products p ON oi.product_id = p.id
       WHERE p.created_by = ?
         AND o.status = 'completed'
-        AND o.purchased_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+        AND o.purchased_at >= '2025-04-01 00:00:00'
+        AND o.purchased_at < '2026-04-01 00:00:00'
       GROUP BY DATE_FORMAT(o.purchased_at, '%Y-%m')
       ORDER BY month ASC
     `,
       [adminId]
     );
 
-    // 12개월 전체 데이터 생성 (빈 달은 0으로)
+    // 2025년 4월부터 2026년 3월까지 전체 데이터 생성 (빈 달은 0으로)
     const monthlyData = [];
-    const now = new Date();
+    const startYear = 2025;
+    const startMonth = 4; // 4월부터 시작
+    const endYear = 2026;
+    const endMonth = 3; // 3월까지
 
-    for (let i = 11; i >= 0; i--) {
-      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const month = date.toISOString().slice(0, 7);
-
-      const found = results.find((r) => r.month === month);
+    // 2025년 4월부터 12월까지
+    for (let month = startMonth; month <= 12; month++) {
+      const monthStr = `${startYear}-${String(month).padStart(2, '0')}`;
+      const found = results.find((r) => r.month === monthStr);
       monthlyData.push({
-        month,
-        revenue: found ? found.revenue : 0,
-        sales: found ? found.sales : 0,
+        month: monthStr,
+        revenue: found ? parseFloat(found.revenue) || 0 : 0,
+        sales: found ? parseInt(found.sales) || 0 : 0,
+      });
+    }
+
+    // 2026년 1월부터 3월까지
+    for (let month = 1; month <= endMonth; month++) {
+      const monthStr = `${endYear}-${String(month).padStart(2, '0')}`;
+      const found = results.find((r) => r.month === monthStr);
+      monthlyData.push({
+        month: monthStr,
+        revenue: found ? parseFloat(found.revenue) || 0 : 0,
+        sales: found ? parseInt(found.sales) || 0 : 0,
       });
     }
 
@@ -113,7 +145,7 @@ router.get('/sales-chart', auth, adminAuth, async (req, res) => {
   }
 });
 
-// 쿠폰 사용량 그래프 (최근 6개월, 상위 10개)
+// 쿠폰 사용량 그래프 (2025년 4월부터 2026년 3월까지, 월별)
 router.get('/coupon-usage', auth, adminAuth, async (req, res) => {
   const adminId = req.user.id;
 
@@ -121,27 +153,59 @@ router.get('/coupon-usage', auth, adminAuth, async (req, res) => {
     const results = await selectQuery(
       `
       SELECT 
-        c.code as couponCode,
+        DATE_FORMAT(oc.created_at, '%Y-%m') as month,
         COUNT(*) as usageCount,
         SUM(oc.applied_value) as discountAmount
       FROM order_coupons oc
-      JOIN coupons c ON oc.coupon_id = c.id
+      JOIN coupons c ON oc.coupon_id = c.coupon_id
       JOIN orders o ON oc.order_id = o.id
       JOIN order_items oi ON o.id = oi.order_id
       JOIN products p ON oi.product_id = p.id
       WHERE p.created_by = ?
-        AND oc.created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-      GROUP BY c.id, c.code
-      ORDER BY usageCount DESC
-      LIMIT 10
+        AND o.status = 'completed'
+        AND oc.created_at >= '2025-04-01 00:00:00'
+        AND oc.created_at < '2026-04-01 00:00:00'
+      GROUP BY DATE_FORMAT(oc.created_at, '%Y-%m')
+      ORDER BY month ASC
     `,
       [adminId]
     );
 
-    res.json(results);
+    // 2025년 4월부터 2026년 3월까지 전체 데이터 생성 (빈 달은 0으로)
+    const monthlyData = [];
+    const startYear = 2025;
+    const startMonth = 4; // 4월부터 시작
+    const endYear = 2026;
+    const endMonth = 3; // 3월까지
+
+    // 2025년 4월부터 12월까지
+    for (let month = startMonth; month <= 12; month++) {
+      const monthStr = `${startYear}-${String(month).padStart(2, '0')}`;
+      const found = results.find((r) => r.month === monthStr);
+      monthlyData.push({
+        month: monthStr,
+        usageCount: found ? parseInt(found.usageCount) || 0 : 0,
+        discountAmount: found ? parseFloat(found.discountAmount) || 0 : 0,
+      });
+    }
+
+    // 2026년 1월부터 3월까지
+    for (let month = 1; month <= endMonth; month++) {
+      const monthStr = `${endYear}-${String(month).padStart(2, '0')}`;
+      const found = results.find((r) => r.month === monthStr);
+      monthlyData.push({
+        month: monthStr,
+        usageCount: found ? parseInt(found.usageCount) || 0 : 0,
+        discountAmount: found ? parseFloat(found.discountAmount) || 0 : 0,
+      });
+    }
+
+    res.json(monthlyData);
   } catch (error) {
     console.error('Coupon usage error:', error);
-    res.status(500).json({ error: 'Failed to fetch coupon usage' });
+    console.error('Error stack:', error.stack);
+    // 에러 발생 시에도 빈 배열 반환 (프론트엔드에서 처리)
+    res.json([]);
   }
 });
 
@@ -161,7 +225,9 @@ router.get('/recent-products', auth, adminAuth, async (req, res) => {
         c.name as category,
         p.rating_average,
         p.rating_count,
-        (SELECT COUNT(*) FROM order_items WHERE product_id = p.id) as sales
+        (SELECT COUNT(*) FROM order_items oi 
+         JOIN orders o ON oi.order_id = o.id 
+         WHERE oi.product_id = p.id AND o.status = 'completed') as sales
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       WHERE p.created_by = ?
@@ -266,7 +332,9 @@ router.get('/products', auth, adminAuth, async (req, res) => {
         c.name as category,
         p.rating_average,
         p.rating_count,
-        (SELECT COUNT(*) FROM order_items WHERE product_id = p.id) as sales
+        (SELECT COUNT(*) FROM order_items oi 
+         JOIN orders o ON oi.order_id = o.id 
+         WHERE oi.product_id = p.id AND o.status = 'completed') as sales
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       WHERE ${whereClause}
@@ -303,8 +371,13 @@ router.get('/products/:id', auth, adminAuth, async (req, res) => {
         p.*,
         c.name as category_name,
         sc.name as sub_category_name,
-        (SELECT COUNT(*) FROM order_items WHERE product_id = p.id) as total_sales,
-        (SELECT SUM(oi.unit_price * oi.quantity) FROM order_items oi WHERE oi.product_id = p.id) as total_revenue
+        (SELECT COUNT(*) FROM order_items oi 
+         JOIN orders o ON oi.order_id = o.id 
+         WHERE oi.product_id = p.id AND o.status = 'completed') as total_sales,
+        (SELECT SUM(oi.unit_price * oi.quantity) 
+         FROM order_items oi 
+         JOIN orders o ON oi.order_id = o.id 
+         WHERE oi.product_id = p.id AND o.status = 'completed') as total_revenue
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN sub_categories sc ON p.sub_category_id = sc.id
@@ -343,8 +416,13 @@ router.get('/products/:id/stats', auth, adminAuth, async (req, res) => {
     const totals = await selectQuery(
       `
       SELECT 
-        (SELECT COUNT(*) FROM order_items WHERE product_id = ?) as total_sales,
-        (SELECT SUM(oi.unit_price * oi.quantity) FROM order_items oi WHERE oi.product_id = ?) as total_revenue
+        (SELECT COUNT(*) FROM order_items oi 
+         JOIN orders o ON oi.order_id = o.id 
+         WHERE oi.product_id = ? AND o.status = 'completed') as total_sales,
+        (SELECT SUM(oi.unit_price * oi.quantity) 
+         FROM order_items oi 
+         JOIN orders o ON oi.order_id = o.id 
+         WHERE oi.product_id = ? AND o.status = 'completed') as total_revenue
       `,
       [productId, productId]
     );
@@ -361,7 +439,7 @@ router.get('/products/:id/stats', auth, adminAuth, async (req, res) => {
   }
 });
 
-// 상품 월별 판매 차트 (최근 12개월)
+// 상품 월별 판매 차트 (2025년 4월부터 2026년 3월까지)
 router.get('/products/:id/sales-chart', auth, adminAuth, async (req, res) => {
   const adminId = req.user.id;
   const productId = req.params.id;
@@ -387,24 +465,40 @@ router.get('/products/:id/sales-chart', auth, adminAuth, async (req, res) => {
       JOIN order_items oi ON o.id = oi.order_id
       WHERE oi.product_id = ?
         AND o.status = 'completed'
-        AND o.purchased_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+        AND o.purchased_at >= '2025-04-01 00:00:00'
+        AND o.purchased_at < '2026-04-01 00:00:00'
       GROUP BY DATE_FORMAT(o.purchased_at, '%Y-%m')
       ORDER BY month ASC
     `,
       [productId]
     );
 
+    // 2025년 4월부터 2026년 3월까지 전체 데이터 생성 (빈 달은 0으로)
     const monthlyData = [];
-    const now = new Date();
+    const startYear = 2025;
+    const startMonth = 4; // 4월부터 시작
+    const endYear = 2026;
+    const endMonth = 3; // 3월까지
 
-    for (let i = 11; i >= 0; i--) {
-      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const month = date.toISOString().slice(0, 7);
-      const found = results.find((r) => r.month === month);
+    // 2025년 4월부터 12월까지
+    for (let month = startMonth; month <= 12; month++) {
+      const monthStr = `${startYear}-${String(month).padStart(2, '0')}`;
+      const found = results.find((r) => r.month === monthStr);
       monthlyData.push({
-        month,
-        revenue: found ? found.revenue : 0,
-        sales: found ? found.sales : 0,
+        month: monthStr,
+        revenue: found ? parseFloat(found.revenue) || 0 : 0,
+        sales: found ? parseInt(found.sales) || 0 : 0,
+      });
+    }
+
+    // 2026년 1월부터 3월까지
+    for (let month = 1; month <= endMonth; month++) {
+      const monthStr = `${endYear}-${String(month).padStart(2, '0')}`;
+      const found = results.find((r) => r.month === monthStr);
+      monthlyData.push({
+        month: monthStr,
+        revenue: found ? parseFloat(found.revenue) || 0 : 0,
+        sales: found ? parseInt(found.sales) || 0 : 0,
       });
     }
 

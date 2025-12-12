@@ -145,6 +145,14 @@ exports.createOrderItem = async ({ order_id, product_id, quantity, unit_price, h
         has_review: has_review !== undefined ? Boolean(has_review) : false
     });
     
+    // 주문이 'completed' 상태인 경우 상품을 soldout으로 처리
+    if (order.status === 'completed') {
+        await models.Product.update(
+            { soldout: true },
+            { where: { id: parseInt(product_id) } }
+        );
+    }
+    
     return orderItem.toJSON();
 };
 

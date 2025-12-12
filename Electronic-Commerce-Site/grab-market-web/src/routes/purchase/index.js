@@ -365,7 +365,7 @@ export default function PurchasePage() {
         user_id: user.id,
         total_amount: Math.round(total), // 정수로 반올림
         payment_id: paymentMethod.id, // ⚠️ 결제수단 ID 사용
-        status: 'pending',
+        status: 'completed', // 결제 완료로 바로 처리
       };
       
       console.log('주문 데이터:', orderData);
