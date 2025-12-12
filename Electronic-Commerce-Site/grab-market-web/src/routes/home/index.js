@@ -363,9 +363,18 @@ function MainPage() {
         <div className="hero-section">
           <div className="hero-content">
             <h1 className="hero-title">{t('home.heroTitle')}</h1>
-            <p className="hero-subtitle">
-              {t('home.heroSubtitle', { count: categories.find(c => c.id === selectedCategory)?.count || allProducts.length })}
-            </p>
+            <div className="hero-subtitle">
+              {(() => {
+                const subtitleText = t('home.heroSubtitle', { count: categories.find(c => c.id === selectedCategory)?.count || allProducts.length });
+                const lines = subtitleText.split('\n');
+                return (
+                  <>
+                    <p>{lines[0]}</p>
+                    {lines[1] && <p>{lines[1]}</p>}
+                  </>
+                );
+              })()}
+            </div>
             <div className="hero-buttons">
               <button className="btn-hero-primary">{t('home.heroPrimary')}</button>
               <button className="btn-hero-secondary">{t('home.heroSecondary')}</button>
