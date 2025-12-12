@@ -37,10 +37,11 @@ const modelLoadOrder = [
     'teammember',  // TeamMember - TeamComposition, Product, Categoryに依存
     'usermailsetting', // UserMailSetting - user_idに依存 (usersテーブル)
     'coupon',      // Coupon - 依存なし
-    'order',       // Order - user_idに依存 (usersテーブル)
+    'creditcard',  // CreditCard - user_idに依存 (usersテーブル)
+    'paymentmethod', // PaymentMethod - user_id, card_idに依存 (users, credit_cardsテーブル)
+    'order',       // Order - user_id, payment_idに依存 (users, payment_methodsテーブル)
     'orderitem',   // OrderItem - Order, Product에依存
     'ordercoupon', // OrderCoupon - Order, User, Coupon에依存
-    'paymentmethod', // PaymentMethod - user_idに依存 (usersテーブル)
 ];
 
 // モデルファイルを検索する関数
@@ -374,28 +375,34 @@ async function syncDatabase(options = {}) {
             console.log('✓ UserMailSetting テーブルを同期しました');
         }
         
-        // 10. Order（usersに依存）
+        // 10. CreditCard（usersに依存）
+        if (db.CreditCard) {
+            await db.CreditCard.sync({ force, alter });
+            console.log('✓ CreditCard テーブルを同期しました');
+        }
+        
+        // 11. PaymentMethod（users, credit_cardsに依存）
+        if (db.PaymentMethod) {
+            await db.PaymentMethod.sync({ force, alter });
+            console.log('✓ PaymentMethod テーブルを同期しました');
+        }
+        
+        // 12. Order（users, payment_methodsに依存）
         if (db.Order) {
             await db.Order.sync({ force, alter });
             console.log('✓ Order テーブルを同期しました');
         }
         
-        // 10-1. OrderItem（Order, Productに依存）
+        // 12-1. OrderItem（Order, Productに依存）
         if (db.OrderItem) {
             await db.OrderItem.sync({ force, alter });
             console.log('✓ OrderItem テーブルを同期しました');
         }
         
-        // 11. OrderCoupon（Order, User, Couponに依存）
+        // 13. OrderCoupon（Order, User, Couponに依存）
         if (db.OrderCoupon) {
             await db.OrderCoupon.sync({ force, alter });
             console.log('✓ OrderCoupon テーブルを同期しました');
-        }
-        
-        // 12. PaymentMethod（usersに依存）
-        if (db.PaymentMethod) {
-            await db.PaymentMethod.sync({ force, alter });
-            console.log('✓ PaymentMethod テーブルを同期しました');
         }
         
         // 外部キーチェックを再有効化

@@ -42,6 +42,14 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: 'updated_at'
     });
     
+    // 모델 간 관계 정의
+    UserMailSetting.associate = function(models) {
+        UserMailSetting.belongsTo(models.User, {
+            foreignKey: 'user_id',
+            as: 'user'
+        });
+    };
+    
     return UserMailSetting;
 };
 

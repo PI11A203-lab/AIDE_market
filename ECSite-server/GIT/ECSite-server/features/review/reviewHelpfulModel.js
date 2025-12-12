@@ -29,4 +29,18 @@ module.exports = (sequelize, DataTypes) => {
             }
         ]
     });
+    
+    // 모델 간 관계 정의
+    ReviewHelpful.associate = function(models) {
+        ReviewHelpful.belongsTo(models.ProductReview, {
+            foreignKey: 'review_id',
+            as: 'review'
+        });
+        ReviewHelpful.belongsTo(models.User, {
+            foreignKey: 'user_id',
+            as: 'user'
+        });
+    };
+    
+    return ReviewHelpful;
 };

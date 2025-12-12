@@ -33,5 +33,23 @@ module.exports = (sequelize, DataTypes) => {
             }
         ]
     });
+    
+    // 모델 간 관계 정의
+    ProductFavorite.associate = function(models) {
+        ProductFavorite.belongsTo(models.User, {
+            foreignKey: 'user_id',
+            as: 'user'
+        });
+        ProductFavorite.belongsTo(models.Product, {
+            foreignKey: 'product_id',
+            as: 'product'
+        });
+        ProductFavorite.belongsTo(models.Category, {
+            foreignKey: 'category_id',
+            as: 'category'
+        });
+    };
+    
+    return ProductFavorite;
 };
 

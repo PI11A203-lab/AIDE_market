@@ -26,41 +26,13 @@ module.exports = (sequelize, DataTypes) => {
                 min: 0
             }
         },
-        payment_method: {
-            type: DataTypes.STRING(50),
-            allowNull: true,
-        },
-        card_company: {
-            type: DataTypes.ENUM('VISA', 'Master', 'JCB', 'AMEX', 'Diners', 'etc'),
-            allowNull: true,
-        },
-        card_number_encrypted: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
-        },
-        card_cvc_encrypted: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
-        },
-        exp_month: {
-            type: DataTypes.TINYINT,
-            allowNull: true,
-            validate: {
-                min: 1,
-                max: 12
-            }
-        },
-        exp_year: {
-            type: DataTypes.SMALLINT,
-            allowNull: true,
-            validate: {
-                min: 2000,
-                max: 9999
-            }
-        },
-        card_id: {
+        payment_id: {
             type: DataTypes.INTEGER,
             allowNull: true,
+            references: {
+                model: 'payment_methods',
+                key: 'id'
+            }
         },
     }, {
         tableName: 'orders',
@@ -74,6 +46,18 @@ module.exports = (sequelize, DataTypes) => {
         Order.belongsTo(models.User, {
             foreignKey: 'user_id',
             as: 'user'
+        });
+        Order.belongsTo(models.PaymentMethod, {
+            foreignKey: 'payment_id',
+            as: 'paymentMethod'
+        });
+        Order.hasMany(models.OrderItem, {
+            foreignKey: 'order_id',
+            as: 'orderItems'
+        });
+        Order.hasMany(models.OrderCoupon, {
+            foreignKey: 'order_id',
+            as: 'orderCoupons'
         });
     };
     

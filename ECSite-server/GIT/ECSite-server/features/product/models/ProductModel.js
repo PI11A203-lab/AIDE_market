@@ -89,6 +89,42 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'sub_category_id',
             as: 'subcategory'
         });
+        
+        // Product - ProductFavorite: 一対多
+        Product.hasMany(models.ProductFavorite, {
+            foreignKey: 'product_id',
+            as: 'favorites'
+        });
+        
+        // Product - ProductReview: 一対多
+        Product.hasMany(models.ProductReview, {
+            foreignKey: 'product_id',
+            as: 'reviews'
+        });
+        
+        // Product - Stats: 一対一
+        Product.hasOne(models.Stats, {
+            foreignKey: 'product_id',
+            as: 'stats'
+        });
+        
+        // Product - Synergy: 一対多 (product_id)
+        Product.hasMany(models.Synergy, {
+            foreignKey: 'product_id',
+            as: 'synergies'
+        });
+        
+        // Product - OrderItem: 一対多
+        Product.hasMany(models.OrderItem, {
+            foreignKey: 'product_id',
+            as: 'orderItems'
+        });
+        
+        // Product - TeamMember: 一対多
+        Product.hasMany(models.TeamMember, {
+            foreignKey: 'product_id',
+            as: 'teamMembers'
+        });
     };
 
     return Product;

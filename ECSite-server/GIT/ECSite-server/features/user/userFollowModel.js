@@ -35,5 +35,19 @@ module.exports = (sequelize, DataTypes) => {
             }
         ]
     });
+    
+    // 모델 간 관계 정의
+    UserFollow.associate = function(models) {
+        UserFollow.belongsTo(models.User, {
+            foreignKey: 'follower_id',
+            as: 'follower'
+        });
+        UserFollow.belongsTo(models.User, {
+            foreignKey: 'following_id',
+            as: 'following'
+        });
+    };
+    
+    return UserFollow;
 };
 

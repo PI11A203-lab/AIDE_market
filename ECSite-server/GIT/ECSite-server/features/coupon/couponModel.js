@@ -52,6 +52,14 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: false
     });
     
+    // 모델 간 관계 정의
+    Coupon.associate = function(models) {
+        Coupon.hasMany(models.OrderCoupon, {
+            foreignKey: 'coupon_id',
+            as: 'orderCoupons'
+        });
+    };
+    
     return Coupon;
 };
 

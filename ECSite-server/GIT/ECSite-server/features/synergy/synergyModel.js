@@ -42,5 +42,19 @@ module.exports = (sequelize, DataTypes) => {
             }
         ]
     });
+    
+    // 모델 간 관계 정의
+    Synergy.associate = function(models) {
+        Synergy.belongsTo(models.Product, {
+            foreignKey: 'product_id',
+            as: 'product'
+        });
+        Synergy.belongsTo(models.Product, {
+            foreignKey: 'related_product_id',
+            as: 'relatedProduct'
+        });
+    };
+    
+    return Synergy;
 };
 

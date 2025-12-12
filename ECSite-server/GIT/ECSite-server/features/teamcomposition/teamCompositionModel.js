@@ -23,7 +23,14 @@ module.exports = (sequelize, DataTypes) => {
     
     // 모델 간 관계 정의
     TeamComposition.associate = function(models) {
-        // TeamComposition과 TeamMember 관계는 teamMembers 모델에서 정의
+        TeamComposition.belongsTo(models.User, {
+            foreignKey: 'user_id',
+            as: 'user'
+        });
+        TeamComposition.hasMany(models.TeamMember, {
+            foreignKey: 'team_id',
+            as: 'teamMembers'
+        });
     };
     
     return TeamComposition;

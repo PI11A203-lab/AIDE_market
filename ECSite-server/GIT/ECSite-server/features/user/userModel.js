@@ -119,6 +119,42 @@ module.exports = (sequelize, DataTypes) => {
         return user;
     };
     
+    // 모델 간 관계 정의
+    User.associate = function(models) {
+        User.hasMany(models.Order, {
+            foreignKey: 'user_id',
+            as: 'orders'
+        });
+        User.hasMany(models.PaymentMethod, {
+            foreignKey: 'user_id',
+            as: 'paymentMethods'
+        });
+        User.hasMany(models.CreditCard, {
+            foreignKey: 'user_id',
+            as: 'creditCards'
+        });
+        User.hasMany(models.ProductFavorite, {
+            foreignKey: 'user_id',
+            as: 'favorites'
+        });
+        User.hasMany(models.ProductReview, {
+            foreignKey: 'user_id',
+            as: 'reviews'
+        });
+        User.hasMany(models.TeamComposition, {
+            foreignKey: 'user_id',
+            as: 'teamCompositions'
+        });
+        User.hasMany(models.UserMailSetting, {
+            foreignKey: 'user_id',
+            as: 'mailSetting'
+        });
+        User.hasMany(models.OrderCoupon, {
+            foreignKey: 'user_id',
+            as: 'orderCoupons'
+        });
+    };
+    
     return User;
 };
 

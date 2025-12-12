@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'users',
+                model: 'Users',
                 key: 'id'
             }
         },
@@ -14,38 +14,18 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 'credit_card'
         },
-        card_company: {
-            type: DataTypes.ENUM('VISA', 'Master', 'JCB', 'AMEX', 'Diners', 'etc'),
-            allowNull: true,
-        },
-        card_number_encrypted: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
-        },
-        card_cvc_encrypted: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
-        },
-        exp_month: {
-            type: DataTypes.TINYINT,
-            allowNull: true,
-            validate: {
-                min: 1,
-                max: 12
-            }
-        },
-        exp_year: {
-            type: DataTypes.SMALLINT,
-            allowNull: true,
-            validate: {
-                min: 2000,
-                max: 9999
-            }
-        },
         is_default: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
+        },
+        card_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'credit_cards',
+                key: 'card_id'
+            }
         }
     }, {
         tableName: 'payment_methods',
@@ -59,6 +39,14 @@ module.exports = (sequelize, DataTypes) => {
         PaymentMethod.belongsTo(models.User, {
             foreignKey: 'user_id',
             as: 'user'
+        });
+        PaymentMethod.belongsTo(models.CreditCard, {
+            foreignKey: 'card_id',
+            as: 'creditCard'
+        });
+        PaymentMethod.hasMany(models.Order, {
+            foreignKey: 'payment_id',
+            as: 'orders'
         });
     };
     

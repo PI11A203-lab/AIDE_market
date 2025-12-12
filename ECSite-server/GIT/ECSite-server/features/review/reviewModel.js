@@ -46,5 +46,27 @@ module.exports = (sequelize, DataTypes) => {
         createdAt: 'created_at',
         updatedAt: 'updated_at'
     });
+    
+    // 모델 간 관계 정의
+    ProductReview.associate = function(models) {
+        ProductReview.belongsTo(models.User, {
+            foreignKey: 'user_id',
+            as: 'user'
+        });
+        ProductReview.belongsTo(models.Product, {
+            foreignKey: 'product_id',
+            as: 'product'
+        });
+        ProductReview.belongsTo(models.OrderItem, {
+            foreignKey: 'order_item_id',
+            as: 'orderItem'
+        });
+        ProductReview.hasMany(models.ReviewHelpful, {
+            foreignKey: 'review_id',
+            as: 'helpfuls'
+        });
+    };
+    
+    return ProductReview;
 };
 

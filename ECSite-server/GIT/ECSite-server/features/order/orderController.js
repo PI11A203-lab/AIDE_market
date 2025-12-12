@@ -62,9 +62,9 @@ exports.getOrderByOrderNumber = async (req, res) => {
 // 주문 생성
 exports.createOrder = async (req, res) => {
     try {
-        const { user_id, total_amount, payment_method, card_company, card_number, card_cvc, exp_month, exp_year, card_id, status } = req.body;
+        const { user_id, total_amount, payment_id, status } = req.body;
         
-        console.log('주문 생성 요청:', { user_id, total_amount, payment_method, card_company, card_id, status });
+        console.log('주문 생성 요청:', { user_id, total_amount, payment_id, status });
         
         if (!user_id || total_amount === undefined || total_amount === null) {
             return res.status(400).json({ error: "user_id와 total_amount는 필수입니다" });
@@ -73,20 +73,14 @@ exports.createOrder = async (req, res) => {
         const order = await orderService.createOrder({
             user_id,
             total_amount,
-            payment_method,
-            card_company,
-            card_number,
-            card_cvc,
-            exp_month,
-            exp_year,
-            card_id,
+            payment_id,
             status
         });
         res.status(201).json({ order });
     } catch (err) {
         console.error('주문 생성 에러:', err);
         console.error('에러 스택:', err.stack);
-        if (err.message.includes('필수') || err.message.includes('찾을 수 없습니다') || err.message.includes('이어야 합니다')) {
+        if (err.message.includes('필수') || err.message.includes('찾을 수 없습니다') || err.message.includes('이어야 합니다') || err.message.includes('사용자의 것이 아닙니다')) {
             return res.status(400).json({ error: err.message });
         }
         res.status(500).json({ error: err.message || "주문 생성 실패: " + err.toString() });
@@ -96,20 +90,16 @@ exports.createOrder = async (req, res) => {
 // 주문 업데이트
 exports.updateOrder = async (req, res) => {
     try {
-        const { status, payment_method, card_company, exp_month, exp_year, card_id } = req.body;
+        const { status, payment_id } = req.body;
         
         const order = await orderService.updateOrder(req.params.id, {
             status,
-            payment_method,
-            card_company,
-            exp_month,
-            exp_year,
-            card_id
+            payment_id
         });
         res.json({ order });
     } catch (err) {
         console.error(err);
-        if (err.message.includes('찾을 수 없습니다') || err.message.includes('이어야 합니다')) {
+        if (err.message.includes('찾을 수 없습니다') || err.message.includes('이어야 합니다') || err.message.includes('사용자의 것이 아닙니다')) {
             return res.status(400).json({ error: err.message });
         }
         res.status(500).json({ error: "주문 업데이트 실패" });
@@ -129,4 +119,3 @@ exports.deleteOrder = async (req, res) => {
         res.status(500).json({ error: "주문 삭제 실패" });
     }
 };
-
