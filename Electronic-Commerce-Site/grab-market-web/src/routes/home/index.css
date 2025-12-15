@@ -304,7 +304,7 @@
   width: 48px;
   height: 48px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(253, 253, 253, 1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -396,7 +396,7 @@
   width: 64px;
   height: 64px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(253, 253, 253, 1);
   display: flex;
   align-items: center;
   justify-content: center;

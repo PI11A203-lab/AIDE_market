@@ -214,7 +214,7 @@ export default function ProductPage() {
             { stat: 'Reliability', value: 99 },
             { stat: 'Innovation', value: 94 }
           ],
-          projects: [],
+          projects: product.projects || [],
           reviews: mappedReviews
         });
         setLoading(false);
