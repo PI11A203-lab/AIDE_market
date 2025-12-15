@@ -94,7 +94,7 @@ export default function VuelinWidget({ projects = [] }) {
               훅으로 로직을 분리합니다.
             </p>
             <div className="bg-[#111827] text-[11px] text-gray-100 rounded-lg p-3 font-mono overflow-x-auto">
-              <div className="text-gray-400 mb-1">// useTodos.ts (요약)</div>
+              <div className="text-gray-400 mb-1">useTodos.ts (요약)</div>
               <span className="text-purple-300">import</span> {'{'} ref, computed {'}'}{' '}
               <span className="text-purple-300">from</span> <span className="text-emerald-300">'vue'</span>
               {'\n'}
