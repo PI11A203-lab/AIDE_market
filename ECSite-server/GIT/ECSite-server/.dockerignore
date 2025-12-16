@@ -7,5 +7,6 @@ npm-debug.log
 README.md
 .DS_Store
 *.log
-uploads/*
-!uploads/.gitkeep
+# uploads 폴더는 Docker 이미지에 포함해야 함 (이미지 파일 서빙을 위해)
+# uploads/*
+# !uploads/.gitkeep

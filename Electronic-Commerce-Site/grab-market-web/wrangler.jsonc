@@ -1,7 +1,7 @@
 {
-  "name": "aide-market-web",
-  "compatibility_date": "2025-12-15",
-  "assets": {
-    "directory": "./build"
+    "name": "aide-market-web",
+    "compatibility_date": "2025-12-15",
+    "assets": {
+      "directory": "./build"
+    }
   }
-}

@@ -2,14 +2,15 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const userService = require('../user/userService');
 
-// Passport 구글 OAuth 전략 설정
-passport.use(
-    new GoogleStrategy(
-        {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8081/auth/google/callback'
-        },
+// Passport 구글 OAuth 전략 설정 (환경변수가 있을 때만)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(
+        new GoogleStrategy(
+            {
+                clientID: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8081/auth/google/callback'
+            },
         async (accessToken, refreshToken, profile, done) => {
             try {
                 console.log('구글 로그인 프로필 정보:', {
@@ -59,7 +60,10 @@ passport.use(
             }
         }
     )
-);
+    );
+} else {
+    console.log('⚠️ Google OAuth 설정이 없습니다. GOOGLE_CLIENT_ID와 GOOGLE_CLIENT_SECRET을 설정하세요.');
+}
 
 // 사용자 정보를 세션에 저장 (직렬화)
 passport.serializeUser((user, done) => {
