@@ -77,6 +77,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             comment: '팔로워 수'
         },
+        developer_type: {
+            type: DataTypes.STRING(50),
+            allowNull: true,
+            comment: '개발자 타입: frontend, backend, fullstack, mobile, devops, data, security, infrastructure, server, management, other'
+        },
     }, {
         tableName: 'users',
         timestamps: true,

@@ -1,0 +1,504 @@
+.creators-page {
+  min-height: 100vh;
+  background: #F9FAFB;
+}
+
+.creators-main {
+  padding-top: 80px;
+  min-height: calc(100vh - 80px);
+}
+
+.creators-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.creators-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 12px;
+}
+
+.creators-subtitle {
+  font-size: 16px;
+  color: #6B7280;
+  margin-bottom: 40px;
+}
+
+.creators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.creator-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.creator-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.creator-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.creator-rank-badge {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 12px;
+  z-index: 1;
+}
+
+.creator-avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 32px;
+  margin-top: 8px;
+}
+
+.creator-card-body {
+  text-align: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.creator-card-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 4px;
+}
+
+.creator-card-username {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin-bottom: 12px;
+}
+
+.creator-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.creator-tag {
+  font-size: 12px;
+  color: #6366F1;
+  background: #EEF2FF;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.creator-card-stats {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.creator-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.creator-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.creator-stat-label {
+  font-size: 12px;
+  color: #9CA3AF;
+}
+
+.creator-card-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.follow-btn-card {
+  flex: 1;
+  padding: 10px 16px;
+  background: #EEF2FF;
+  color: #6366F1;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.follow-btn-card:hover {
+  background: #E0E7FF;
+}
+
+.follow-btn-card.following {
+  background: #6366F1;
+  color: white;
+}
+
+.follow-btn-card.following:hover {
+  background: #4F46E5;
+}
+
+.view-profile-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: white;
+  color: #1A1A1A;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.view-profile-btn:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .creators-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .creators-title {
+    font-size: 28px;
+  }
+
+  .creator-card {
+    padding: 20px;
+  }
+}
+
+/* Creator Detail Page Styles */
+.creator-detail-page {
+  min-height: 100vh;
+  background: #F9FAFB;
+}
+
+.creator-detail-main {
+  padding-top: 80px;
+  min-height: calc(100vh - 80px);
+}
+
+.creator-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.creator-hero {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.creator-hero-content {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.creator-avatar-section {
+  flex-shrink: 0;
+}
+
+.creator-avatar-hero {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 40px;
+}
+
+.creator-info-section {
+  flex: 1;
+}
+
+.creator-detail-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 8px;
+}
+
+.creator-detail-username {
+  font-size: 18px;
+  color: #6B7280;
+  margin-bottom: 20px;
+}
+
+.creator-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.creator-github-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1A1A1A;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.creator-github-link:hover {
+  color: #6366F1;
+}
+
+.creator-follower-count {
+  font-size: 16px;
+  color: #1A1A1A;
+  font-weight: 500;
+}
+
+.creator-follower-count strong {
+  color: #6366F1;
+  font-weight: 700;
+}
+
+.creator-follow-btn {
+  padding: 10px 24px;
+  background: #EEF2FF;
+  color: #6366F1;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.creator-follow-btn:hover {
+  background: #E0E7FF;
+}
+
+.creator-follow-btn.following {
+  background: #6366F1;
+  color: white;
+}
+
+.creator-follow-btn.following:hover {
+  background: #4F46E5;
+}
+
+.creator-email {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 16px;
+}
+
+.creator-tags-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.creator-tag-item {
+  font-size: 14px;
+  color: #6366F1;
+  background: #EEF2FF;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.creator-join-date {
+  font-size: 14px;
+  color: #9CA3AF;
+}
+
+.creator-products-section {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.creator-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 24px;
+}
+
+.creator-empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: #6B7280;
+}
+
+.creator-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.creator-product-card {
+  background: #F9FAFB;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.creator-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.creator-product-image {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  background: white;
+  overflow: hidden;
+}
+
+.creator-product-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.creator-product-info {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.creator-product-category {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-bottom: 8px;
+}
+
+.creator-product-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.creator-product-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 12px;
+}
+
+.creator-product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.creator-product-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.creator-product-downloads {
+  font-size: 12px;
+  color: #9CA3AF;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .creator-hero {
+    padding: 24px;
+  }
+
+  .creator-hero-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .creator-info-section {
+    text-align: center;
+  }
+
+  .creator-meta-row {
+    justify-content: center;
+  }
+
+  .creator-products-section {
+    padding: 24px;
+  }
+
+  .creator-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .creator-detail-name {
+    font-size: 24px;
+  }
+}
+

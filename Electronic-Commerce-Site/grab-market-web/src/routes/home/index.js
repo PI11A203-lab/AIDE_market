@@ -193,13 +193,18 @@ function MainPage() {
     setCurrentPage(1);
   }, [selectedCategory]);
 
+  // 정렬 변경 시 페이지를 1로 리셋
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortBy]);
+
   // 상품 로드 (카테고리 필터 + 정렬 적용)
   useEffect(() => {
     setLoading(true);
     
     // API 파라미터 구성
     const params = {
-      sort: sortBy
+      sort: sortBy || 'download' // 기본값 명시
     };
 
     // "すべて" 카테고리일 때만 페이지네이션 적용 (12개씩)

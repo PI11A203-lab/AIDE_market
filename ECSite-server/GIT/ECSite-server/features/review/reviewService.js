@@ -12,7 +12,7 @@ exports.findReviewsByProductId = async (productId, page = 1, limit = 20, current
         attributes: ['id', 'user_id', 'product_id', 'order_item_id', 'rating', 'title', 'review_text', 'review_images', 'created_at', 'updated_at']
     });
     
-    // helpful_count와 현재 사용자의 helpful 여부 포함
+    // helpful_count와 현재 사용자의 helpful 여부 포함 + 사용자 정보 포함
     const reviewsWithUsers = await Promise.all(
         rows.map(async (review) => {
             const reviewJson = review.toJSON();
@@ -23,6 +23,14 @@ exports.findReviewsByProductId = async (productId, page = 1, limit = 20, current
                 } catch (e) {
                     reviewJson.review_images = [];
                 }
+            }
+            
+            // 사용자 정보 가져오기
+            const user = await models.User.findByPk(review.user_id, {
+                attributes: ['id', 'username', 'email', 'developer_type', 'profile_image']
+            });
+            if (user) {
+                reviewJson.user = user.toJSON();
             }
             
             // helpful_count 계산
@@ -317,6 +325,14 @@ exports.findReviewById = async (id, currentUserId = null) => {
         } catch (e) {
             reviewJson.review_images = [];
         }
+    }
+    
+    // 사용자 정보 가져오기
+    const user = await models.User.findByPk(review.user_id, {
+        attributes: ['id', 'username', 'email', 'developer_type', 'profile_image']
+    });
+    if (user) {
+        reviewJson.user = user.toJSON();
     }
     
     const product = await models.Product.findByPk(review.product_id, {

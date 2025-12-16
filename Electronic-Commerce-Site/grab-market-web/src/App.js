@@ -14,12 +14,15 @@ import AdminProducts from "./routes/product/admin/AdminProducts";
 import AdminProductDetail from "./routes/product/admin/[id]/AdminProductDetail";
 import AdminReviews from "./routes/profile/admin/reviews/AdminReviews";
 import AdminOrders from "./routes/profile/admin/order/AdminOrders";
+import AdminProductUpload from "./routes/profile/admin/upload";
 import TeamBuilder from "./routes/team";
 import PurchasePage from "./routes/purchase";
 import PurchaseConfirmation from "./routes/confirmation";
 import OrderDetailPage from "./routes/order";
 import AuthCallback from "./auth/callback";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CreatorsPage from "./routes/creators";
+import CreatorDetailPage from "./routes/creators/[id]";
 
 function App() {
   return (
@@ -47,6 +50,12 @@ function App() {
           <Route exact={true} path="/reset-password">
             <ResetPasswordPage />
           </Route>
+          <Route exact={true} path="/creators">
+            <CreatorsPage />
+          </Route>
+          <Route exact={true} path="/creators/:id">
+            <CreatorDetailPage />
+          </Route>
           {/* 보호된 라우트 - 로그인 필요 */}
           <ProtectedRoute exact={true} path="/upload" component={UploadPage} />
           <ProtectedRoute exact={true} path="/profile" component={UserProfile} />
@@ -57,6 +66,7 @@ function App() {
           <ProtectedRoute exact={true} path="/order/:orderId" component={OrderDetailPage} />
           
           {/* Admin 전용 라우트 - 로그인 + admin 권한 필요 */}
+          <ProtectedRoute exact={true} path="/profile/upload" component={AdminProductUpload} requireAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/products/:id" component={AdminProductDetail} requireAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/products" component={AdminProducts} requireAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/reviews" component={AdminReviews} requireAdmin={true} />

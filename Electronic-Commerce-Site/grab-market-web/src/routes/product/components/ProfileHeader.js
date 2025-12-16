@@ -3,7 +3,7 @@ import { Heart, Share2 } from 'lucide-react';
 import { API_URL } from '../../../config/constants';
 import { getFilledStars } from '../../../utils/ratingCache';
 
-export default function ProfileHeader({ developer, isLiked, onLikeToggle }) {
+export default function ProfileHeader({ developer, isLiked, onLikeToggle, onShare }) {
   // 별점을 숫자로 변환
   const rating = parseFloat(developer.rating) || 0;
   const filledStars = getFilledStars(rating);
@@ -51,7 +51,11 @@ export default function ProfileHeader({ developer, isLiked, onLikeToggle }) {
               >
                 <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
               </button>
-              <button className="w-11 h-11 border border-gray-200 rounded-lg flex items-center justify-center bg-white hover:border-gray-900 hover:bg-gray-50 transition-all">
+              <button 
+                onClick={onShare}
+                className="w-11 h-11 border border-gray-200 rounded-lg flex items-center justify-center bg-white hover:border-gray-900 hover:bg-gray-50 transition-all"
+                title="공유"
+              >
                 <Share2 className="w-5 h-5" />
               </button>
             </div>

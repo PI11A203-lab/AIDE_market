@@ -18,10 +18,10 @@ exports.findAllProducts = async (options = {}) => {
     // フィルタ条件
     const where = {};
     if (category) {
-        where.category_id = category;
+        where.category_id = parseInt(category);
     }
     if (subcategory) {
-        where.sub_category_id = subcategory;
+        where.sub_category_id = parseInt(subcategory);
     }
     if (search) {
         where[Op.or] = [
@@ -81,6 +81,9 @@ exports.findAllProducts = async (options = {}) => {
             return `p.createdAt DESC`;
         }).join(', ');
     }
+    
+    // 디버깅: 정렬 파라미터 확인
+    console.log('정렬 파라미터:', { sort, order, orderClause });
 
     // is_purchased 필드 추가를 위한 서브쿼리
     const isPurchasedSubquery = user_id 

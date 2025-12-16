@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { User, Mail, Lock, Save, Github, Hash, X, Eye, EyeOff } from 'lucide-react';
 import { message } from 'antd';
 
@@ -9,6 +9,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
     email: user.email || '',
     is_email_public: user.is_email_public || false,
     github_url: user.github_url || '',
+    developer_type: user.developer_type || '',
     tags: Array.isArray(user.tags) ? user.tags.map(t => typeof t === 'object' ? t.name : t) : [],
     currentPassword: '',
     newPassword: '',
@@ -16,15 +17,25 @@ export default function PersonalInfoSection({ user, onUpdate }) {
   });
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const isMountedRef = useRef(true);
+
+  // 컴포넌트 언마운트 시 플래그 설정
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // user가 변경될 때 formData 업데이트
   useEffect(() => {
-    if (user) {
+    if (user && isMountedRef.current) {
       setFormData({
         username: user.username || '',
         email: user.email || '',
         is_email_public: user.is_email_public || false,
         github_url: user.github_url || '',
+        developer_type: user.developer_type || '',
         tags: Array.isArray(user.tags) ? user.tags.map(t => typeof t === 'object' ? t.name : t) : [],
         currentPassword: '',
         newPassword: '',
@@ -80,13 +91,21 @@ export default function PersonalInfoSection({ user, onUpdate }) {
 
     setSaving(true);
     try {
+      // developer_type 처리: 빈 문자열이면 null로 변환
+      const developerType = formData.developer_type && formData.developer_type.trim() !== '' 
+        ? formData.developer_type.trim() 
+        : null;
+      
       const updateData = {
         username: formData.username,
         email: formData.email,
         is_email_public: formData.is_email_public,
         github_url: formData.github_url || null,
+        developer_type: developerType,
         tags: formData.tags
       };
+      
+      console.log('업데이트할 데이터:', updateData); // 디버깅용
 
       // 비밀번호 변경이 있는 경우
       if (formData.newPassword) {
@@ -99,6 +118,11 @@ export default function PersonalInfoSection({ user, onUpdate }) {
       }
 
       const result = await onUpdate(updateData);
+      
+      // 컴포넌트가 마운트되어 있는지 확인
+      if (!isMountedRef.current) {
+        return;
+      }
       
       if (result.success) {
         message.success('개인정보가 성공적으로 업데이트되었습니다.');
@@ -113,9 +137,13 @@ export default function PersonalInfoSection({ user, onUpdate }) {
         message.error(result.error || '업데이트에 실패했습니다.');
       }
     } catch (error) {
-      message.error('업데이트 중 오류가 발생했습니다.');
+      if (isMountedRef.current) {
+        message.error('업데이트 중 오류가 발생했습니다.');
+      }
     } finally {
-      setSaving(false);
+      if (isMountedRef.current) {
+        setSaving(false);
+      }
     }
   };
 
@@ -125,6 +153,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
       email: user.email || '',
       is_email_public: user.is_email_public || false,
       github_url: user.github_url || '',
+      developer_type: user.developer_type || '',
       tags: Array.isArray(user.tags) ? user.tags.map(t => typeof t === 'object' ? t.name : t) : [],
       currentPassword: '',
       newPassword: '',
@@ -262,6 +291,50 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 >
                   {user.github_url}
                 </a>
+              ) : '-'}
+            </div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label className="form-label no-icon">개발자 타입</label>
+          {isEditing ? (
+            <select
+              name="developer_type"
+              value={formData.developer_type}
+              onChange={handleChange}
+              className="form-input"
+            >
+              <option value="">선택 안함</option>
+              <option value="frontend">프론트엔드 개발자</option>
+              <option value="backend">백엔드 개발자</option>
+              <option value="fullstack">풀스택 개발자</option>
+              <option value="mobile">모바일 개발자</option>
+              <option value="devops">DevOps 엔지니어</option>
+              <option value="data">데이터 엔지니어/과학자</option>
+              <option value="security">세큐리티 개발자</option>
+              <option value="infrastructure">인프라 엔지니어</option>
+              <option value="server">서버 개발자</option>
+              <option value="management">매니저먼트</option>
+              <option value="other">기타</option>
+            </select>
+          ) : (
+            <div className="form-value">
+              {user.developer_type ? (
+                <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-md text-sm font-semibold">
+                  {user.developer_type === 'frontend' && '프론트엔드 개발자'}
+                  {user.developer_type === 'backend' && '백엔드 개발자'}
+                  {user.developer_type === 'fullstack' && '풀스택 개발자'}
+                  {user.developer_type === 'mobile' && '모바일 개발자'}
+                  {user.developer_type === 'devops' && 'DevOps 엔지니어'}
+                  {user.developer_type === 'data' && '데이터 엔지니어/과학자'}
+                  {user.developer_type === 'security' && '세큐리티 개발자'}
+                  {user.developer_type === 'infrastructure' && '인프라 엔지니어'}
+                  {user.developer_type === 'server' && '서버 개발자'}
+                  {user.developer_type === 'management' && '매니저먼트'}
+                  {user.developer_type === 'other' && '기타'}
+                  {!['frontend', 'backend', 'fullstack', 'mobile', 'devops', 'data', 'security', 'infrastructure', 'server', 'management', 'other'].includes(user.developer_type) && user.developer_type}
+                </span>
               ) : '-'}
             </div>
           )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import FollowButton from '../../profile/components/FollowButton';
@@ -113,17 +114,22 @@ const TopCreators = () => {
     <div className="sidebar-card">
       <div className="sidebar-title">
         <span>Top Creators</span>
-        <button 
-          type="button"
+        <Link 
+          to="/creators"
           className="see-all"
-          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit' }}
+          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'none' }}
         >
           See All
-        </button>
+        </Link>
       </div>
       <div className="creator-list">
         {creators.map((creator) => (
-          <div key={creator.id} className="creator-item">
+          <Link 
+            key={creator.id} 
+            to={`/creators/${creator.id}`}
+            className="creator-item"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
             <div className="rank-number">{creator.rank}</div>
             <div className="creator-avatar">
               {creator.profile_image ? (
@@ -167,7 +173,7 @@ const TopCreators = () => {
                 Follow
               </button>
             ) : null}
-          </div>
+          </Link>
         ))}
       </div>
     </div>

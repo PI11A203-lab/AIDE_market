@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, MessageSquare, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, Package, MessageSquare, ShoppingCart, Upload } from 'lucide-react';
 import './AdminSidebar.css';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +14,11 @@ export default function AdminSidebar({ isOpen = true }) {
       label: t('profile.admin.sidebar.dashboard'),
       icon: LayoutDashboard,
       exact: true
+    },
+    {
+      path: '/profile/upload',
+      label: t('profile.admin.sidebar.upload') || '상품 업로드',
+      icon: Upload
     },
     {
       path: '/profile/products',

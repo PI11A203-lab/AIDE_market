@@ -21,7 +21,10 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
   const [isLiked, setIsLiked] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [developerTypeFilter, setDeveloperTypeFilter] = useState('');
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const slideContainerRef = useRef(null);
+  const filterDropdownRef = useRef(null);
   
   // reviews prop이 변경되면 상태 업데이트
   useEffect(() => {
@@ -90,23 +93,54 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     }
   };
 
-  // 리뷰 이미지 수집 (리뷰 ID와 함께 저장)
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(e.target)) {
+        setFilterDropdownOpen(false);
+      }
+    };
+
+    if (filterDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [filterDropdownOpen]);
+
+  // 개발자 타입별 필터링된 리뷰
+  const filteredReviews = useMemo(() => {
+    if (!developerTypeFilter) {
+      return reviewsState;
+    }
+    
+    const filtered = reviewsState.filter(review => {
+      // developer_type이 정확히 일치하는지 확인
+      return review.developer_type === developerTypeFilter;
+    });
+    
+    return filtered;
+  }, [reviewsState, developerTypeFilter]);
+
+  // 리뷰 이미지 수집 (리뷰 ID와 함께 저장) - 필터링된 리뷰 기준
   const reviewImages = useMemo(() => {
     const images = [];
-    reviewsState.forEach(review => {
+    filteredReviews.forEach(review => {
       if (review.review_images && Array.isArray(review.review_images) && review.review_images.length > 0) {
         review.review_images.forEach((imageUrl, index) => {
           images.push({
             url: imageUrl.startsWith('http') ? imageUrl : `${API_URL}/${imageUrl}`,
             reviewId: review.id,
-            reviewIndex: reviewsState.indexOf(review),
+            reviewIndex: filteredReviews.indexOf(review),
             imageIndex: index
           });
         });
       }
     });
     return images;
-  }, [reviewsState]);
+  }, [filteredReviews]);
 
   // 스크롤 가능 여부 확인
   useEffect(() => {
@@ -128,7 +162,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     }
   }, [reviewImages.length]);
 
-  // 별점 분포 계산
+  // 별점 분포 계산 (전체 리뷰 기준 - 필터와 무관)
   const calculateRatingDistribution = () => {
     const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     const total = reviewsState.length;
@@ -154,6 +188,24 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
   };
 
   const ratingStats = calculateRatingDistribution();
+
+  // 개발자 타입 라벨 변환 함수
+  const getDeveloperTypeLabel = (type) => {
+    const labels = {
+      'frontend': '프론트엔드 개발자',
+      'backend': '백엔드 개발자',
+      'fullstack': '풀스택 개발자',
+      'mobile': '모바일 개발자',
+      'devops': 'DevOps 엔지니어',
+      'data': '데이터 엔지니어/과학자',
+      'security': '세큐리티 개발자',
+      'infrastructure': '인프라 엔지니어',
+      'server': '서버 개발자',
+      'management': '매니저먼트',
+      'other': '기타'
+    };
+    return labels[type] || type;
+  };
 
   // 슬라이드 이동
   const handleSlide = (direction) => {
@@ -382,7 +434,148 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
 
   return (
     <div className="flex flex-col gap-8">
-      {/* 별점 분포 차트 */}
+      {/* 개발자 타입 필터 - 메인페이지와 동일한 디자인 */}
+      {reviewsState.length > 0 && (
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+              개발자 타입 필터:
+            </label>
+            <div className="custom-dropdown" ref={filterDropdownRef} style={{ minWidth: '200px' }}>
+              <button
+                className={`dropdown-button ${filterDropdownOpen ? 'active' : ''}`}
+                onClick={() => setFilterDropdownOpen((v) => !v)}
+              >
+                <span className="dropdown-label">
+                  {developerTypeFilter 
+                    ? getDeveloperTypeLabel(developerTypeFilter)
+                    : '전체'}
+                </span>
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <div className={`dropdown-menu ${filterDropdownOpen ? 'show' : ''}`}>
+                <div
+                  className={`dropdown-item ${!developerTypeFilter ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  전체
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'frontend' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('frontend');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  프론트엔드 개발자
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'backend' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('backend');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  백엔드 개발자
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'fullstack' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('fullstack');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  풀스택 개발자
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'mobile' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('mobile');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  모바일 개발자
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'devops' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('devops');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  DevOps 엔지니어
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'data' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('data');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  데이터 엔지니어/과학자
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'security' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('security');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  세큐리티 개발자
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'infrastructure' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('infrastructure');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  인프라 엔지니어
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'server' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('server');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  서버 개발자
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'management' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('management');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  매니저먼트
+                </div>
+                <div
+                  className={`dropdown-item ${developerTypeFilter === 'other' ? 'active' : ''}`}
+                  onClick={() => {
+                    setDeveloperTypeFilter('other');
+                    setFilterDropdownOpen(false);
+                  }}
+                >
+                  기타
+                </div>
+              </div>
+            </div>
+            {developerTypeFilter && (
+              <span className="text-sm text-gray-600">
+                ({filteredReviews.length}개의 리뷰)
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 별점 분포 차트 - 필터와 무관하게 항상 표시 */}
       {reviewsState.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">レビュー評価分布</h3>
@@ -484,7 +677,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
             )}
           </div>
           {/* 구분선 */}
-          {reviewsState.length > 0 && (
+          {filteredReviews.length > 0 && (
             <div className="border-t border-gray-200 mt-6"></div>
           )}
         </div>
@@ -507,7 +700,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
         {selectedReviewId ? (
           // 선택된 리뷰 상세 정보 표시
           (() => {
-            const selectedReview = reviewsState.find(r => r.id === selectedReviewId);
+            const selectedReview = filteredReviews.find(r => r.id === selectedReviewId);
             const reviewImagesList = reviewImages.filter(img => img.reviewId === selectedReviewId);
             const currentImage = reviewImagesList[currentImageIndex] || reviewImagesList[0];
             const hasMultipleImages = reviewImagesList.length > 1;
@@ -731,7 +924,16 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
         )}
       </Modal>
       
-      {reviewsState.map((review) => {
+      {filteredReviews.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">
+            {developerTypeFilter 
+              ? `${getDeveloperTypeLabel(developerTypeFilter)}의 리뷰가 없습니다.`
+              : '리뷰가 없습니다.'}
+          </p>
+        </div>
+      ) : (
+        filteredReviews.map((review) => {
         const isEditing = editingId === review.id;
         const isDeleting = deletingId === review.id;
         const isCurrentUserReview = review.isCurrentUser || false;
@@ -750,7 +952,14 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <div className="font-bold text-base text-gray-900 mb-0.5">{review.author}</div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <div className="font-bold text-base text-gray-900">{review.author}</div>
+                      {review.developer_type && (
+                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-semibold">
+                          {getDeveloperTypeLabel(review.developer_type)}
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[13px] text-gray-400">{review.date}</div>
                   </div>
                   {/* 본인 리뷰만 수정/삭제 버튼 표시 */}
@@ -995,7 +1204,8 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
             </div>
           </div>
         );
-      })}
+        })
+      )}
     </div>
   );
 }

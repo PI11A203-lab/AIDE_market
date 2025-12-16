@@ -158,7 +158,7 @@ exports.createGoogleUser = async ({ username, email, profile_image, google_id })
 };
 
 // 사용자 업데이트
-exports.updateUser = async (id, { username, email, password, role, profile_image, is_email_public, bio, github_url, google_id, auth_provider }) => {
+exports.updateUser = async (id, { username, email, password, role, profile_image, is_email_public, bio, github_url, developer_type, google_id, auth_provider }) => {
     const user = await models.User.findByPk(id);
     if (!user) {
         throw new Error('사용자를 찾을 수 없습니다');
@@ -223,6 +223,22 @@ exports.updateUser = async (id, { username, email, password, role, profile_image
         updateData.github_url = github_url || null;
     }
     
+    if (developer_type !== undefined) {
+        // developer_type 유효성 검사 (선택사항)
+        const validTypes = ['frontend', 'backend', 'fullstack', 'mobile', 'devops', 'data', 'security', 'infrastructure', 'server', 'management', 'other'];
+        // 빈 문자열이나 공백만 있는 경우 null로 변환
+        const trimmedType = developer_type && typeof developer_type === 'string' ? developer_type.trim() : developer_type;
+        if (trimmedType && trimmedType !== '' && !validTypes.includes(trimmedType)) {
+            console.warn(`유효하지 않은 developer_type: ${trimmedType}`);
+        }
+        updateData.developer_type = (trimmedType && trimmedType !== '') ? trimmedType : null;
+        console.log('developer_type 업데이트:', {
+            original: developer_type,
+            trimmed: trimmedType,
+            final: updateData.developer_type
+        });
+    }
+    
     if (google_id !== undefined) {
         updateData.google_id = google_id || null;
     }
@@ -234,7 +250,39 @@ exports.updateUser = async (id, { username, email, password, role, profile_image
         updateData.auth_provider = auth_provider;
     }
     
-    await user.update(updateData);
+    console.log('업데이트할 데이터:', updateData);
+    console.log('User 모델 필드:', Object.keys(user.rawAttributes));
+    
+    // Sequelize가 필드를 인식하는지 확인하고 명시적으로 업데이트
+    if (Object.keys(updateData).length > 0) {
+        // developer_type이 updateData에 있는지 확인
+        if ('developer_type' in updateData) {
+            console.log('developer_type 업데이트 시도:', updateData.developer_type);
+        }
+        
+        await user.update(updateData, {
+            fields: Object.keys(updateData) // 명시적으로 필드 지정
+        });
+        
+        // 업데이트 후 최신 데이터 다시 로드
+        await user.reload();
+        
+        // DB에서 직접 확인
+        const dbUser = await models.sequelize.query(
+            'SELECT developer_type FROM users WHERE id = :userId',
+            {
+                replacements: { userId: id },
+                type: models.sequelize.QueryTypes.SELECT
+            }
+        );
+        console.log('DB에서 직접 조회한 developer_type:', dbUser[0]?.developer_type);
+    }
+    
+    console.log('업데이트 완료, 저장된 사용자 정보:', {
+        id: user.id,
+        developer_type: user.developer_type,
+        username: user.username
+    });
     
     // 비밀번호 제외하고 반환
     return user.toSafeJSON();

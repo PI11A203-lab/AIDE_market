@@ -71,7 +71,13 @@ exports.createUser = async (req, res) => {
 // 사용자 업데이트
 exports.updateUser = async (req, res) => {
     try {
-        const { username, email, password, role, profile_image, is_email_public, bio, github_url, tags } = req.body;
+        const { username, email, password, role, profile_image, is_email_public, bio, github_url, developer_type, tags } = req.body;
+        
+        console.log('사용자 업데이트 요청:', {
+            userId: req.params.id,
+            developer_type: developer_type,
+            body: req.body
+        });
         
         const user = await userService.updateUser(req.params.id, {
             username,
@@ -81,7 +87,8 @@ exports.updateUser = async (req, res) => {
             profile_image,
             is_email_public,
             bio,
-            github_url
+            github_url,
+            developer_type
         });
         
         // 태그 업데이트 (태그가 제공된 경우)

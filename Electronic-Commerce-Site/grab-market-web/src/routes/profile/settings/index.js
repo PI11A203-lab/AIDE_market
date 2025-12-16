@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { api } from '../../../config/api';
 import ProfileHeader from '../components/ProfileHeader';
@@ -11,9 +11,10 @@ export default function ProfileSettings() {
   const [user, setUser] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
-    let isMounted = true;
+    isMountedRef.current = true;
 
     const loadData = async () => {
       try {
@@ -24,7 +25,7 @@ export default function ProfileSettings() {
           // 사용자 정보 로드
           try {
             const userResponse = await api.users.getById(userData.id);
-            if (isMounted) {
+            if (isMountedRef.current) {
               setUser(userResponse.data.user);
             }
           } catch (error) {
@@ -34,12 +35,12 @@ export default function ProfileSettings() {
           // 결제방법 로드
           try {
             const paymentResponse = await api.paymentMethods.getByUser(userData.id);
-            if (isMounted) {
+            if (isMountedRef.current) {
               setPaymentMethods(paymentResponse.data.paymentMethods || []);
             }
           } catch (error) {
             console.error('결제방법 로드 실패:', error);
-            if (isMounted) {
+            if (isMountedRef.current) {
               setPaymentMethods([]);
             }
           }
@@ -47,7 +48,7 @@ export default function ProfileSettings() {
       } catch (error) {
         console.error('데이터 로드 실패:', error);
       } finally {
-        if (isMounted) {
+        if (isMountedRef.current) {
           setLoading(false);
         }
       }
@@ -56,14 +57,23 @@ export default function ProfileSettings() {
     loadData();
 
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
     };
   }, []);
 
   const handleUserUpdate = async (updatedData) => {
     try {
+      console.log('API 업데이트 요청:', { userId: user.id, data: updatedData });
       const response = await api.users.update(user.id, updatedData);
       const updatedUser = response.data.user;
+      console.log('API 업데이트 응답:', updatedUser);
+      console.log('developer_type 확인:', updatedUser.developer_type);
+      
+      // 컴포넌트가 마운트되어 있는지 확인
+      if (!isMountedRef.current) {
+        return { success: false, error: '컴포넌트가 언마운트되었습니다.' };
+      }
+      
       setUser(updatedUser);
       
       // localStorage/sessionStorage 업데이트
@@ -76,6 +86,7 @@ export default function ProfileSettings() {
           // 태그는 배열 형태로 저장
           tags: updatedUser.tags || []
         };
+        console.log('로컬 스토리지 업데이트:', mergedUser);
         const storage = localStorage.getItem('user') ? localStorage : sessionStorage;
         storage.setItem('user', JSON.stringify(mergedUser));
       }
@@ -83,6 +94,7 @@ export default function ProfileSettings() {
       return { success: true };
     } catch (error) {
       console.error('사용자 정보 업데이트 실패:', error);
+      console.error('에러 상세:', error.response?.data);
       return { 
         success: false, 
         error: error.response?.data?.error || '업데이트에 실패했습니다.' 

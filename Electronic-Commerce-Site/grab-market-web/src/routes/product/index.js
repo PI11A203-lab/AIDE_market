@@ -7,6 +7,7 @@ import ProfileHeader from './components/ProfileHeader';
 import TabNavigation from './components/TabNavigation';
 import PriceSidebar from './components/PriceSidebar';
 import TrustBadges from './components/TrustBadges';
+import ShareModal from './components/ShareModal';
 import { API_URL } from '../../config/constants';
 import { api } from '../../config/api';
 import { getRatingCache, setRatingCache } from '../../utils/ratingCache';
@@ -22,6 +23,7 @@ export default function ProductPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isPurchased, setIsPurchased] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // 사용자 정보 및 찜목록 상태 확인
   useEffect(() => {
@@ -115,6 +117,11 @@ export default function ProductPage() {
             user_id: currentUser?.id || null
           });
           const reviewsData = reviewsResponse.data?.reviews || [];
+          console.log('리뷰 API 응답 샘플:', reviewsData[0] ? {
+            id: reviewsData[0].id,
+            user: reviewsData[0].user,
+            developer_type: reviewsData[0].user?.developer_type
+          } : '리뷰 없음');
           mappedReviews = reviewsData.map((review) => {
             // 리뷰 작성자가 현재 로그인한 유저인지 확인
             const isCurrentUser = currentUser && (
@@ -155,6 +162,7 @@ export default function ProductPage() {
               helpful: review.helpful_count || 0,
               is_helpful: review.is_helpful || false,
               isCurrentUser: isCurrentUser, // 본인 리뷰 여부
+              developer_type: review.user?.developer_type || null, // 개발자 타입
             };
           });
           setReviews(mappedReviews);
@@ -214,7 +222,7 @@ export default function ProductPage() {
             { stat: 'Reliability', value: 99 },
             { stat: 'Innovation', value: 94 }
           ],
-          projects: product.projects || [],
+          projects: [],
           reviews: mappedReviews
         });
         setLoading(false);
@@ -371,7 +379,8 @@ export default function ProductPage() {
             <ProfileHeader 
               developer={developer} 
               isLiked={isLiked} 
-              onLikeToggle={handleLikeToggle} 
+              onLikeToggle={handleLikeToggle}
+              onShare={() => setShowShareModal(true)}
             />
             <TabNavigation 
               activeTab={activeTab} 
@@ -435,6 +444,7 @@ export default function ProductPage() {
                         helpful: review.helpful_count || 0,
                         is_helpful: review.is_helpful || false,
                         isCurrentUser: isCurrentUser,
+                        developer_type: review.user?.developer_type || null, // 개발자 타입
                       };
                     });
                     setReviews(updatedReviews);
@@ -486,6 +496,16 @@ export default function ProductPage() {
           </div>
         </div>
       </main>
+
+      {/* 공유 모달 */}
+      {developer && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          productName={developer.name}
+          productUrl={window.location.href}
+        />
+      )}
     </div>
   );
 }
