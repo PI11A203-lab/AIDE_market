@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CreditCard, Plus, Trash2, Save, X } from 'lucide-react';
 import { message } from 'antd';
 
 export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete }) {
+  const { t } = useTranslation();
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     payment_method: 'credit_card',
@@ -25,30 +27,30 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
   const handleAdd = async () => {
     // 유효성 검사
     if (!formData.card_number || !formData.cvc || !formData.exp_month || !formData.exp_year) {
-      message.error('모든 필드를 입력해주세요.');
+      message.error(t('profile.settings.paymentMethods.allFieldsRequired'));
       return;
     }
 
     if (formData.card_number.length < 13 || formData.card_number.length > 19) {
-      message.error('카드 번호는 13~19자리여야 합니다.');
+      message.error(t('profile.settings.paymentMethods.cardNumberInvalid'));
       return;
     }
 
     if (formData.cvc.length !== 3 && formData.cvc.length !== 4) {
-      message.error('CVC는 3자리 또는 4자리여야 합니다.');
+      message.error(t('profile.settings.paymentMethods.cvcInvalid'));
       return;
     }
 
     const month = parseInt(formData.exp_month);
     const year = parseInt(formData.exp_year);
     if (month < 1 || month > 12) {
-      message.error('만료 월은 1~12 사이여야 합니다.');
+      message.error(t('profile.settings.paymentMethods.expMonthInvalid'));
       return;
     }
 
     const currentYear = new Date().getFullYear();
     if (year < currentYear || year > currentYear + 20) {
-      message.error('만료 연도가 유효하지 않습니다.');
+      message.error(t('profile.settings.paymentMethods.expYearInvalid'));
       return;
     }
 
@@ -61,7 +63,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
       });
 
       if (result.success) {
-        message.success('결제방법이 추가되었습니다.');
+        message.success(t('profile.settings.paymentMethods.addSuccess'));
         setFormData({
           payment_method: 'credit_card',
           card_company: 'VISA',
@@ -72,29 +74,29 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
         });
         setShowAddForm(false);
       } else {
-        message.error(result.error || '결제방법 추가에 실패했습니다.');
+        message.error(result.error || t('profile.settings.paymentMethods.addFail'));
       }
     } catch (error) {
-      message.error('결제방법 추가 중 오류가 발생했습니다.');
+      message.error(t('profile.settings.paymentMethods.addError'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('이 결제방법을 삭제하시겠습니까?')) {
+    if (!window.confirm(t('profile.settings.paymentMethods.deleteConfirm'))) {
       return;
     }
 
     try {
       const result = await onDelete(id);
       if (result.success) {
-        message.success('결제방법이 삭제되었습니다.');
+        message.success(t('profile.settings.paymentMethods.deleteSuccess'));
       } else {
-        message.error(result.error || '결제방법 삭제에 실패했습니다.');
+        message.error(result.error || t('profile.settings.paymentMethods.deleteFail'));
       }
     } catch (error) {
-      message.error('결제방법 삭제 중 오류가 발생했습니다.');
+      message.error(t('profile.settings.paymentMethods.deleteError'));
     }
   };
 
@@ -113,7 +115,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
       <div className="settings-section-header">
         <div className="settings-section-title">
           <CreditCard className="w-6 h-6" />
-          <h2>결제방법</h2>
+          <h2>{t('profile.settings.paymentMethods.title')}</h2>
         </div>
         {!showAddForm && (
           <button 
@@ -121,7 +123,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
             onClick={() => setShowAddForm(true)}
           >
             <Plus className="w-4 h-4" />
-            추가
+            {t('profile.settings.paymentMethods.add')}
           </button>
         )}
       </div>
@@ -130,20 +132,20 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
         {showAddForm && (
           <div className="payment-form">
             <div className="form-group">
-              <label className="form-label no-icon">결제 방법</label>
+              <label className="form-label no-icon">{t('profile.settings.paymentMethods.paymentMethod')}</label>
               <select
                 name="payment_method"
                 value={formData.payment_method}
                 onChange={handleChange}
                 className="form-select"
               >
-                <option value="credit_card">신용카드</option>
-                <option value="debit_card">체크카드</option>
+                <option value="credit_card">{t('profile.settings.paymentMethods.creditCard')}</option>
+                <option value="debit_card">{t('profile.settings.paymentMethods.debitCard')}</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label className="form-label no-icon">카드사</label>
+              <label className="form-label no-icon">{t('profile.settings.paymentMethods.cardCompany')}</label>
               <select
                 name="card_company"
                 value={formData.card_company}
@@ -155,26 +157,26 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                 <option value="JCB">JCB</option>
                 <option value="AMEX">AMEX</option>
                 <option value="Diners">Diners</option>
-                <option value="etc">기타</option>
+                <option value="etc">{t('profile.settings.personalInfo.developerTypes.other')}</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label className="form-label no-icon">카드 번호</label>
+              <label className="form-label no-icon">{t('profile.settings.paymentMethods.cardNumber')}</label>
               <input
                 type="text"
                 name="card_number"
                 value={formData.card_number}
                 onChange={handleChange}
                 className="form-input"
-                placeholder="카드 번호를 입력하세요"
+                placeholder={t('profile.settings.paymentMethods.cardNumberPlaceholder')}
                 maxLength="19"
               />
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label no-icon">만료 월</label>
+                <label className="form-label no-icon">{t('profile.settings.paymentMethods.expMonth')}</label>
                 <input
                   type="number"
                   name="exp_month"
@@ -189,7 +191,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
               </div>
 
               <div className="form-group">
-                <label className="form-label no-icon">만료 연도</label>
+                <label className="form-label no-icon">{t('profile.settings.paymentMethods.expYear')}</label>
                 <input
                   type="number"
                   name="exp_year"
@@ -203,14 +205,14 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
               </div>
 
               <div className="form-group">
-                <label className="form-label no-icon">CVC</label>
+                <label className="form-label no-icon">{t('profile.settings.paymentMethods.cvc')}</label>
                 <input
                   type="text"
                   name="cvc"
                   value={formData.cvc}
                   onChange={handleChange}
                   className="form-input"
-                  placeholder="CVC"
+                  placeholder={t('profile.settings.paymentMethods.cvc')}
                   maxLength="4"
                 />
               </div>
@@ -233,7 +235,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                 disabled={saving}
               >
                 <X className="w-4 h-4" />
-                취소
+                {t('profile.settings.paymentMethods.cancel')}
               </button>
               <button 
                 className="btn-save"
@@ -241,7 +243,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                 disabled={saving}
               >
                 <Save className="w-4 h-4" />
-                저장
+                {t('profile.settings.paymentMethods.save')}
               </button>
             </div>
           </div>
@@ -251,7 +253,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
           {paymentMethods.length === 0 ? (
             <div className="empty-state">
               <CreditCard className="w-12 h-12" />
-              <p className="empty-state-text">등록된 결제방법이 없습니다.</p>
+              <p className="empty-state-text">{t('profile.settings.paymentMethods.empty')}</p>
             </div>
           ) : (
             paymentMethods.map((method) => (
@@ -264,14 +266,14 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                       {method.card_number || maskCardNumber(method.card_number_encrypted)}
                     </div>
                     <div className="payment-method-expiry">
-                      만료일: {String(method.exp_month).padStart(2, '0')}/{method.exp_year}
+                      {t('profile.settings.paymentMethods.expiryDate')}: {String(method.exp_month).padStart(2, '0')}/{method.exp_year}
                     </div>
                   </div>
                 </div>
                 <button
                   className="btn-delete-payment"
                   onClick={() => handleDelete(method.id)}
-                  title="삭제"
+                  title={t('profile.settings.paymentMethods.delete')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

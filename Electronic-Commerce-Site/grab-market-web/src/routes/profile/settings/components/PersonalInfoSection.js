@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User, Mail, Lock, Save, Github, Hash, X, Eye, EyeOff } from 'lucide-react';
 import { message } from 'antd';
 
 export default function PersonalInfoSection({ user, onUpdate }) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     username: user.username || '',
@@ -80,12 +82,12 @@ export default function PersonalInfoSection({ user, onUpdate }) {
   const handleSave = async () => {
     // 유효성 검사
     if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-      message.error('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+      message.error(t('profile.settings.personalInfo.passwordMismatch'));
       return;
     }
 
     if (formData.newPassword && formData.newPassword.length < 6) {
-      message.error('비밀번호는 최소 6자 이상이어야 합니다.');
+      message.error(t('profile.settings.personalInfo.passwordMinLength'));
       return;
     }
 
@@ -110,7 +112,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
       // 비밀번호 변경이 있는 경우
       if (formData.newPassword) {
         if (!formData.currentPassword) {
-          message.error('현재 비밀번호를 입력해주세요.');
+          message.error(t('profile.settings.personalInfo.passwordRequired'));
           setSaving(false);
           return;
         }
@@ -125,7 +127,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
       }
       
       if (result.success) {
-        message.success('개인정보가 성공적으로 업데이트되었습니다.');
+        message.success(t('profile.settings.personalInfo.updateSuccess'));
         setIsEditing(false);
         setFormData(prev => ({
           ...prev,
@@ -134,11 +136,11 @@ export default function PersonalInfoSection({ user, onUpdate }) {
           confirmPassword: ''
         }));
       } else {
-        message.error(result.error || '업데이트에 실패했습니다.');
+        message.error(result.error || t('profile.settings.personalInfo.updateFail'));
       }
     } catch (error) {
       if (isMountedRef.current) {
-        message.error('업데이트 중 오류가 발생했습니다.');
+        message.error(t('profile.settings.personalInfo.updateError'));
       }
     } finally {
       if (isMountedRef.current) {
@@ -175,21 +177,21 @@ export default function PersonalInfoSection({ user, onUpdate }) {
       <div className="settings-section-header">
         <div className="settings-section-title">
           <User className="w-6 h-6" />
-          <h2>개인정보</h2>
+          <h2>{t('profile.settings.personalInfo.title')}</h2>
         </div>
         {!isEditing && (
           <button 
             className="btn-edit"
             onClick={() => setIsEditing(true)}
           >
-            수정
+            {t('profile.settings.personalInfo.edit')}
           </button>
         )}
       </div>
 
       <div className="settings-section-content">
         <div className="form-group">
-          <label className="form-label no-icon">사용자명</label>
+          <label className="form-label no-icon">{t('profile.settings.personalInfo.username')}</label>
           {isEditing ? (
             <input
               type="text"
@@ -197,7 +199,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
               value={formData.username}
               onChange={handleChange}
               className="form-input"
-              placeholder="사용자명을 입력하세요"
+              placeholder={t('profile.settings.personalInfo.usernamePlaceholder')}
             />
           ) : (
             <div className="form-value">{user.username || '-'}</div>
@@ -207,7 +209,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
         <div className="form-group">
           <label className="form-label">
             <Mail className="w-4 h-4" />
-            이메일
+            {t('profile.settings.personalInfo.email')}
           </label>
           {isEditing ? (
             <div>
@@ -217,7 +219,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 value={formData.email}
                 onChange={handleChange}
                 className="form-input"
-                placeholder="이메일을 입력하세요"
+                placeholder={t('profile.settings.personalInfo.emailPlaceholder')}
               />
               <div className="email-visibility">
                 <button
@@ -228,19 +230,19 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                   {formData.is_email_public ? (
                     <>
                       <Eye className="w-3 h-3" />
-                      <span>공개</span>
+                      <span>{t('profile.settings.personalInfo.emailPublic')}</span>
                     </>
                   ) : (
                     <>
                       <EyeOff className="w-3 h-3" />
-                      <span>비공개</span>
+                      <span>{t('profile.settings.personalInfo.emailPrivate')}</span>
                     </>
                   )}
                 </button>
                 <span className="visibility-text">
                   {formData.is_email_public 
-                    ? '프로필 페이지에 이메일이 표시됩니다' 
-                    : '프로필 페이지에 이메일이 표시되지 않습니다'}
+                    ? t('profile.settings.personalInfo.emailPublicDesc')
+                    : t('profile.settings.personalInfo.emailPrivateDesc')}
                 </span>
               </div>
             </div>
@@ -252,12 +254,12 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                   {user.is_email_public ? (
                     <>
                       <Eye className="w-3 h-3" />
-                      <span>공개</span>
+                      <span>{t('profile.settings.personalInfo.emailPublic')}</span>
                     </>
                   ) : (
                     <>
                       <EyeOff className="w-3 h-3" />
-                      <span>비공개</span>
+                      <span>{t('profile.settings.personalInfo.emailPrivate')}</span>
                     </>
                   )}
                 </span>
@@ -269,7 +271,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
         <div className="form-group">
           <label className="form-label">
             <Github className="w-4 h-4" />
-            GitHub URL
+            {t('profile.settings.personalInfo.githubUrl')}
           </label>
           {isEditing ? (
             <input
@@ -278,7 +280,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
               value={formData.github_url}
               onChange={handleChange}
               className="form-input"
-              placeholder="https://github.com/username"
+              placeholder={t('profile.settings.personalInfo.githubUrlPlaceholder')}
             />
           ) : (
             <div className="form-value">
@@ -297,7 +299,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
         </div>
 
         <div className="form-group">
-          <label className="form-label no-icon">개발자 타입</label>
+          <label className="form-label no-icon">{t('profile.settings.personalInfo.developerType')}</label>
           {isEditing ? (
             <select
               name="developer_type"
@@ -305,34 +307,34 @@ export default function PersonalInfoSection({ user, onUpdate }) {
               onChange={handleChange}
               className="form-input"
             >
-              <option value="">선택 안함</option>
-              <option value="frontend">프론트엔드 개발자</option>
-              <option value="backend">백엔드 개발자</option>
-              <option value="fullstack">풀스택 개발자</option>
-              <option value="mobile">모바일 개발자</option>
-              <option value="devops">DevOps 엔지니어</option>
-              <option value="data">데이터 엔지니어/과학자</option>
-              <option value="security">세큐리티 개발자</option>
-              <option value="infrastructure">인프라 엔지니어</option>
-              <option value="server">서버 개발자</option>
-              <option value="management">매니저먼트</option>
-              <option value="other">기타</option>
+              <option value="">{t('profile.settings.personalInfo.developerTypeNone')}</option>
+              <option value="frontend">{t('profile.settings.personalInfo.developerTypes.frontend')}</option>
+              <option value="backend">{t('profile.settings.personalInfo.developerTypes.backend')}</option>
+              <option value="fullstack">{t('profile.settings.personalInfo.developerTypes.fullstack')}</option>
+              <option value="mobile">{t('profile.settings.personalInfo.developerTypes.mobile')}</option>
+              <option value="devops">{t('profile.settings.personalInfo.developerTypes.devops')}</option>
+              <option value="data">{t('profile.settings.personalInfo.developerTypes.data')}</option>
+              <option value="security">{t('profile.settings.personalInfo.developerTypes.security')}</option>
+              <option value="infrastructure">{t('profile.settings.personalInfo.developerTypes.infrastructure')}</option>
+              <option value="server">{t('profile.settings.personalInfo.developerTypes.server')}</option>
+              <option value="management">{t('profile.settings.personalInfo.developerTypes.management')}</option>
+              <option value="other">{t('profile.settings.personalInfo.developerTypes.other')}</option>
             </select>
           ) : (
             <div className="form-value">
               {user.developer_type ? (
                 <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-md text-sm font-semibold">
-                  {user.developer_type === 'frontend' && '프론트엔드 개발자'}
-                  {user.developer_type === 'backend' && '백엔드 개발자'}
-                  {user.developer_type === 'fullstack' && '풀스택 개발자'}
-                  {user.developer_type === 'mobile' && '모바일 개발자'}
-                  {user.developer_type === 'devops' && 'DevOps 엔지니어'}
-                  {user.developer_type === 'data' && '데이터 엔지니어/과학자'}
-                  {user.developer_type === 'security' && '세큐리티 개발자'}
-                  {user.developer_type === 'infrastructure' && '인프라 엔지니어'}
-                  {user.developer_type === 'server' && '서버 개발자'}
-                  {user.developer_type === 'management' && '매니저먼트'}
-                  {user.developer_type === 'other' && '기타'}
+                  {user.developer_type === 'frontend' && t('profile.settings.personalInfo.developerTypes.frontend')}
+                  {user.developer_type === 'backend' && t('profile.settings.personalInfo.developerTypes.backend')}
+                  {user.developer_type === 'fullstack' && t('profile.settings.personalInfo.developerTypes.fullstack')}
+                  {user.developer_type === 'mobile' && t('profile.settings.personalInfo.developerTypes.mobile')}
+                  {user.developer_type === 'devops' && t('profile.settings.personalInfo.developerTypes.devops')}
+                  {user.developer_type === 'data' && t('profile.settings.personalInfo.developerTypes.data')}
+                  {user.developer_type === 'security' && t('profile.settings.personalInfo.developerTypes.security')}
+                  {user.developer_type === 'infrastructure' && t('profile.settings.personalInfo.developerTypes.infrastructure')}
+                  {user.developer_type === 'server' && t('profile.settings.personalInfo.developerTypes.server')}
+                  {user.developer_type === 'management' && t('profile.settings.personalInfo.developerTypes.management')}
+                  {user.developer_type === 'other' && t('profile.settings.personalInfo.developerTypes.other')}
                   {!['frontend', 'backend', 'fullstack', 'mobile', 'devops', 'data', 'security', 'infrastructure', 'server', 'management', 'other'].includes(user.developer_type) && user.developer_type}
                 </span>
               ) : '-'}
@@ -343,7 +345,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
         <div className="form-group">
           <label className="form-label">
             <Hash className="w-4 h-4" />
-            해시태그
+            {t('profile.settings.personalInfo.tags')}
           </label>
           {isEditing ? (
             <div>
@@ -354,14 +356,14 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={handleTagInputKeyPress}
                   className="form-input"
-                  placeholder="해시태그를 입력하고 Enter를 누르세요"
+                  placeholder={t('profile.settings.personalInfo.tagsPlaceholder')}
                 />
                 <button
                   type="button"
                   onClick={handleAddTag}
                   className="btn-add"
                 >
-                  추가
+                  {t('profile.settings.personalInfo.addTag')}
                 </button>
               </div>
               {formData.tags.length > 0 && (
@@ -404,7 +406,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
             <div className="form-group">
               <label className="form-label">
                 <Lock className="w-4 h-4" />
-                현재 비밀번호 (비밀번호 변경 시 필수)
+                {t('profile.settings.personalInfo.currentPassword')}
               </label>
               <input
                 type="password"
@@ -412,14 +414,14 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 value={formData.currentPassword}
                 onChange={handleChange}
                 className="form-input"
-                placeholder="현재 비밀번호를 입력하세요"
+                placeholder={t('profile.settings.personalInfo.currentPasswordPlaceholder')}
               />
             </div>
 
             <div className="form-group">
               <label className="form-label">
                 <Lock className="w-4 h-4" />
-                새 비밀번호
+                {t('profile.settings.personalInfo.newPassword')}
               </label>
               <input
                 type="password"
@@ -427,7 +429,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 value={formData.newPassword}
                 onChange={handleChange}
                 className="form-input"
-                placeholder="새 비밀번호를 입력하세요 (선택사항)"
+                placeholder={t('profile.settings.personalInfo.newPasswordPlaceholder')}
               />
             </div>
 
@@ -435,7 +437,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
               <div className="form-group">
                 <label className="form-label">
                   <Lock className="w-4 h-4" />
-                  새 비밀번호 확인
+                  {t('profile.settings.personalInfo.confirmPassword')}
                 </label>
                 <input
                   type="password"
@@ -443,7 +445,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className="form-input"
-                  placeholder="새 비밀번호를 다시 입력하세요"
+                  placeholder={t('profile.settings.personalInfo.confirmPasswordPlaceholder')}
                 />
               </div>
             )}
@@ -454,7 +456,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 onClick={handleCancel}
                 disabled={saving}
               >
-                취소
+                {t('profile.settings.personalInfo.cancel')}
               </button>
               <button 
                 className="btn-save"
@@ -462,7 +464,7 @@ export default function PersonalInfoSection({ user, onUpdate }) {
                 disabled={saving}
               >
                 <Save className="w-4 h-4" />
-                저장
+                {t('profile.settings.personalInfo.save')}
               </button>
             </div>
           </>

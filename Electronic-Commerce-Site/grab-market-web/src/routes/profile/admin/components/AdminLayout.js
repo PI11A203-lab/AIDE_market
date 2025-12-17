@@ -4,17 +4,11 @@ import AdminSidebar from './AdminSidebar';
 import './AdminLayout.css';
 
 export default function AdminLayout({ children }) {
-  // 모바일에서는 기본적으로 닫힘, 데스크톱에서는 열림
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    return window.innerWidth > 768;
-  });
+  // 기본적으로 닫힌 상태로 시작 (사용자가 클릭하기 전까지)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      // 데스크톱으로 전환 시 사이드바 자동 열기
-      if (window.innerWidth > 768 && !sidebarOpen) {
-        setSidebarOpen(true);
-      }
       // 모바일로 전환 시 사이드바 닫기
       if (window.innerWidth <= 768 && sidebarOpen) {
         setSidebarOpen(false);

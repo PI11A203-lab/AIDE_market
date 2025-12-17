@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import ResetPasswordHeader from './components/ResetPasswordHeader';
 import ResetPasswordForm from './components/ResetPasswordForm';
@@ -8,10 +9,19 @@ import { api } from '../../../config/api';
 import './index.css';
 
 export default function ResetPasswordPage() {
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState('');
   const history = useHistory();
   const location = useLocation();
+
+  // localStorage에서 언어 설정 불러오기
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+  }, [i18n]);
 
   useEffect(() => {
     // URL 파라미터에서 토큰 가져오기
@@ -21,24 +31,24 @@ export default function ResetPasswordPage() {
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
     } else {
-      message.error('유효하지 않은 재설정 토큰입니다.');
+      message.error(t('auth.resetPassword.invalidToken'));
       history.push('/forgot-password');
     }
-  }, [location, history]);
+  }, [location, history, t]);
 
   const handleSubmit = async ({ newPassword, confirmPassword }) => {
     if (!token) {
-      message.error('토큰이 없습니다.');
+      message.error(t('auth.resetPassword.noToken'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      message.error('비밀번호가 일치하지 않습니다.');
+      message.error(t('auth.resetPassword.passwordMismatch'));
       return;
     }
 
     if (newPassword.length < 8) {
-      message.error('비밀번호는 최소 8자 이상이어야 합니다.');
+      message.error(t('auth.resetPassword.passwordMinLength'));
       return;
     }
 
@@ -48,14 +58,14 @@ export default function ResetPasswordPage() {
       const response = await api.users.resetPassword(token, newPassword);
       
       if (response.data?.success) {
-        message.success('비밀번호가 성공적으로 변경되었습니다.');
+        message.success(t('auth.resetPassword.success'));
         setTimeout(() => {
           history.push('/login');
         }, 1500);
       }
     } catch (error) {
       console.error('Reset password error:', error);
-      const errorMessage = error.response?.data?.error || error.message || '비밀번호 재설정 중 오류가 발생했습니다.';
+      const errorMessage = error.response?.data?.error || error.message || t('auth.resetPassword.resetError');
       message.error(errorMessage);
       
       // 토큰이 만료되었거나 유효하지 않은 경우
@@ -78,9 +88,9 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-[440px]">
         <ResetPasswordHeader />
         <div className="bg-white border border-[#E5E7EB] rounded-xl p-8 sm:p-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-6 text-center">Reset Password</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-6 text-center">{t('auth.resetPassword.title')}</h2>
           <p className="text-sm text-[#6B7280] mb-6 text-center">
-            새 비밀번호를 입력해주세요.
+            {t('auth.resetPassword.subtitle')}
           </p>
           <ResetPasswordForm onSubmit={handleSubmit} isLoading={isLoading} />
           <ResetPasswordFooter />

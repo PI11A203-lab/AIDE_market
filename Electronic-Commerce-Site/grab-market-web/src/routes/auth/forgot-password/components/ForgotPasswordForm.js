@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordForm({ onSubmit, isLoading }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e) => {
@@ -13,7 +15,7 @@ export default function ForgotPasswordForm({ onSubmit, isLoading }) {
       {/* 이메일 */}
       <div className="mb-6">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Email Address
+          {t('auth.forgotPassword.emailLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -30,7 +32,7 @@ export default function ForgotPasswordForm({ onSubmit, isLoading }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
+            placeholder={t('auth.forgotPassword.emailPlaceholder')}
             className="w-full pl-[44px] pr-[14px] py-3 border border-[#E5E7EB] rounded-lg text-[15px] bg-white focus:outline-none focus:border-[#1A1A1A] focus:shadow-[0_0_0_3px_rgba(26,26,26,0.05)] transition-all"
             required
             disabled={isLoading}
@@ -44,7 +46,7 @@ export default function ForgotPasswordForm({ onSubmit, isLoading }) {
         disabled={isLoading}
         className="w-full py-3.5 bg-[#000000] text-white rounded-lg text-base font-semibold hover:bg-[#1A1A1A] transition-all disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed mb-6"
       >
-        {isLoading ? '전송 중...' : '재설정 링크 전송'}
+        {isLoading ? t('auth.forgotPassword.submitting') : t('auth.forgotPassword.submitButton')}
       </button>
     </form>
   );

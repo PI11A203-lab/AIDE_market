@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../config/api';
 import ProfileHeader from '../components/ProfileHeader';
 import PersonalInfoSection from './components/PersonalInfoSection';
@@ -7,6 +8,7 @@ import PaymentMethodsSection from './components/PaymentMethodsSection';
 import './index.css';
 
 export default function ProfileSettings() {
+  const { t } = useTranslation();
   const history = useHistory();
   const [user, setUser] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -141,7 +143,7 @@ export default function ProfileSettings() {
         <ProfileHeader />
         <main className="profile-main">
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('profile.settings.loading')}</div>
           </div>
         </main>
       </div>
@@ -153,7 +155,7 @@ export default function ProfileSettings() {
       <ProfileHeader />
       <main className="profile-settings-main">
         <div className="settings-header">
-          <h1 className="settings-title">설정</h1>
+          <h1 className="settings-title">{t('profile.settings.title')}</h1>
           <button 
             className="btn-back-to-profile"
             onClick={() => history.push('/profile')}
@@ -161,7 +163,7 @@ export default function ProfileSettings() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
-            프로필로 돌아가기
+            {t('profile.settings.backToProfile')}
           </button>
         </div>
 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginForm({ onSubmit, isLoading }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +19,7 @@ export default function LoginForm({ onSubmit, isLoading }) {
       {/* 이메일 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Email Address
+          {t('auth.login.emailLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -34,7 +36,7 @@ export default function LoginForm({ onSubmit, isLoading }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
+            placeholder={t('auth.login.emailPlaceholder')}
             className="w-full pl-[44px] pr-[14px] py-3 border border-[#E5E7EB] rounded-lg text-[15px] bg-white focus:outline-none focus:border-[#1A1A1A] focus:shadow-[0_0_0_3px_rgba(26,26,26,0.05)] transition-all"
             required
             disabled={isLoading}
@@ -45,7 +47,7 @@ export default function LoginForm({ onSubmit, isLoading }) {
       {/* 비밀번호 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Password
+          {t('auth.login.passwordLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -62,7 +64,7 @@ export default function LoginForm({ onSubmit, isLoading }) {
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder={t('auth.login.passwordPlaceholder')}
             className="w-full pl-[44px] pr-[44px] py-3 border border-[#E5E7EB] rounded-lg text-[15px] bg-white focus:outline-none focus:border-[#1A1A1A] focus:shadow-[0_0_0_3px_rgba(26,26,26,0.05)] transition-all"
             required
             disabled={isLoading}
@@ -107,10 +109,10 @@ export default function LoginForm({ onSubmit, isLoading }) {
             className="w-[18px] h-[18px] border border-[#D1D5DB] rounded checked:bg-[#1A1A1A] checked:border-[#1A1A1A] cursor-pointer"
             disabled={isLoading}
           />
-          <span className="text-sm text-[#6B7280]">Remember me</span>
+          <span className="text-sm text-[#6B7280]">{t('auth.login.rememberMe')}</span>
         </label>
         <Link to="/forgot-password" className="text-sm text-[#1A1A1A] font-medium hover:underline">
-          Forgot password?
+          {t('auth.login.forgotPassword')}
         </Link>
       </div>
 
@@ -120,7 +122,7 @@ export default function LoginForm({ onSubmit, isLoading }) {
         disabled={isLoading}
         className="w-full py-3.5 bg-[#000000] text-white rounded-lg text-base font-semibold hover:bg-[#1A1A1A] transition-all disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed"
       >
-        {isLoading ? 'Signing in...' : 'Sign In'}
+        {isLoading ? t('auth.login.signingIn') : t('auth.login.signInButton')}
       </button>
     </form>
   );

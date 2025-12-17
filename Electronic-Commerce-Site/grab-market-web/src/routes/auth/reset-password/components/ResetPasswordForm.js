@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ResetPasswordForm({ onSubmit, isLoading }) {
+  const { t } = useTranslation();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -13,15 +15,15 @@ export default function ResetPasswordForm({ onSubmit, isLoading }) {
     const newErrors = {};
     
     if (!newPassword) {
-      newErrors.newPassword = '비밀번호를 입력해주세요.';
+      newErrors.newPassword = t('auth.resetPassword.passwordRequired');
     } else if (newPassword.length < 8) {
-      newErrors.newPassword = '비밀번호는 최소 8자 이상이어야 합니다.';
+      newErrors.newPassword = t('auth.resetPassword.passwordMinLength');
     }
     
     if (!confirmPassword) {
-      newErrors.confirmPassword = '비밀번호 확인을 입력해주세요.';
+      newErrors.confirmPassword = t('auth.resetPassword.confirmPasswordRequired');
     } else if (newPassword !== confirmPassword) {
-      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
+      newErrors.confirmPassword = t('auth.resetPassword.passwordMismatch');
     }
     
     setErrors(newErrors);
@@ -49,7 +51,7 @@ export default function ResetPasswordForm({ onSubmit, isLoading }) {
       {/* 새 비밀번호 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          New Password
+          {t('auth.resetPassword.newPasswordLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -111,7 +113,7 @@ export default function ResetPasswordForm({ onSubmit, isLoading }) {
       {/* 비밀번호 확인 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Confirm Password
+          {t('auth.resetPassword.confirmPasswordLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -176,7 +178,7 @@ export default function ResetPasswordForm({ onSubmit, isLoading }) {
         disabled={isLoading}
         className="w-full py-3.5 bg-[#000000] text-white rounded-lg text-base font-semibold hover:bg-[#1A1A1A] transition-all disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed mb-6"
       >
-        {isLoading ? '비밀번호 변경 중...' : '비밀번호 변경'}
+        {isLoading ? t('auth.resetPassword.submitting') : t('auth.resetPassword.submitButton')}
       </button>
     </form>
   );

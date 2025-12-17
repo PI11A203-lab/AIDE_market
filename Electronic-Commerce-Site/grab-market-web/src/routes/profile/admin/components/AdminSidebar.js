@@ -17,7 +17,7 @@ export default function AdminSidebar({ isOpen = true }) {
     },
     {
       path: '/profile/upload',
-      label: t('profile.admin.sidebar.upload') || '상품 업로드',
+      label: t('profile.admin.sidebar.upload'),
       icon: Upload
     },
     {

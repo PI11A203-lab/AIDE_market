@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import LoginHeader from './components/LoginHeader';
 import LoginForm from './components/LoginForm';
@@ -8,9 +9,18 @@ import { api } from '../../../config/api';
 import './index.css';
 
 export default function LoginPage() {
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
   const location = useLocation();
+
+  // localStorage에서 언어 설정 불러오기
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+  }, [i18n]);
 
   const handleLogin = async ({ email, password, rememberMe }) => {
     setIsLoading(true);
@@ -32,17 +42,17 @@ export default function LoginPage() {
           profile_image: response.data.user.profile_image,
         }));
 
-        message.success('로그인에 성공했습니다.');
+        message.success(t('auth.login.success'));
         
         // 원래 접근하려던 페이지로 리다이렉트 (없으면 홈으로)
         const from = location.state?.from?.pathname || '/';
         history.push(from);
       } else {
-        message.error('로그인에 실패했습니다.');
+        message.error(t('auth.login.fail'));
       }
     } catch (error) {
       console.error('Login error:', error);
-      const errorMessage = error.response?.data?.error || error.message || '로그인 중 오류가 발생했습니다.';
+      const errorMessage = error.response?.data?.error || error.message || t('auth.login.error');
       message.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -54,21 +64,21 @@ export default function LoginPage() {
       <div className="w-full max-w-[440px]">
         <LoginHeader />
         <div className="bg-white border border-[#E5E7EB] rounded-xl p-8 sm:p-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-6 text-center">Sign In</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-6 text-center">{t('auth.login.title')}</h2>
           <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
           <LoginFooter />
         </div>
         
         {/* 푸터 */}
         <div className="text-center mt-8 text-[13px] text-[#9CA3AF]">
-          <p>By signing in, you agree to our</p>
+          <p>{t('auth.login.agreeText')}</p>
           <div className="flex items-center justify-center gap-4 mt-2">
             <Link to="/terms" className="text-[#6B7280] hover:text-[#1A1A1A]">
-              Terms of Service
+              {t('auth.login.terms')}
             </Link>
             <span className="text-[#D1D5DB]">•</span>
             <Link to="/privacy" className="text-[#6B7280] hover:text-[#1A1A1A]">
-              Privacy Policy
+              {t('auth.login.privacy')}
             </Link>
           </div>
         </div>

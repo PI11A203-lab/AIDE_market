@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Form,
   Input,
@@ -13,6 +13,7 @@ import {
   Space,
 } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config/constants';
 import { api } from '../../../../config/api';
 import { useHistory } from 'react-router-dom';
@@ -22,6 +23,7 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 export default function ProductUpload({ onSuccess }) {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const history = useHistory();
   const [imageUrl, setImageUrl] = useState(null);
@@ -31,11 +33,7 @@ export default function ProductUpload({ onSuccess }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   // 카테고리 목록 로드
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const response = await api.categories.getList();
       const categoriesList = response.data?.categories || [];
@@ -44,9 +42,13 @@ export default function ProductUpload({ onSuccess }) {
       setCategories(mainCategories);
     } catch (error) {
       console.error('Failed to load categories:', error);
-      message.error('카테고리 목록을 불러오는데 실패했습니다.');
+      message.error(t('productAdmin.upload.categoryLoadFail'));
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
 
   // 서브카테고리 로드
   const loadSubCategories = async (categoryId) => {
@@ -80,17 +82,17 @@ export default function ProductUpload({ onSuccess }) {
       const response = info.file.response;
       const uploadedImageUrl = response.imageUrl;
       setImageUrl(uploadedImageUrl);
-      message.success('이미지 업로드 완료');
+      message.success(t('productAdmin.upload.imageUploadSuccess'));
     }
     if (info.file.status === 'error') {
-      message.error('이미지 업로드 실패');
+      message.error(t('productAdmin.upload.imageUploadFail'));
     }
   };
 
   // 폼 제출 핸들러
   const onFinish = async (values) => {
     if (!imageUrl) {
-      message.error('상품 이미지를 업로드해주세요.');
+      message.error(t('productAdmin.upload.imageRequired'));
       return;
     }
 
@@ -112,7 +114,7 @@ export default function ProductUpload({ onSuccess }) {
       const createdProduct = productResponse.data?.product || productResponse.data?.result;
       
       if (!createdProduct || !createdProduct.id) {
-        throw new Error('상품 생성 후 ID를 받지 못했습니다.');
+        throw new Error(t('productAdmin.upload.productIdError'));
       }
 
       const productId = createdProduct.id;
@@ -138,12 +140,12 @@ export default function ProductUpload({ onSuccess }) {
         try {
           await api.stats.upsertByProduct(productId, statsData);
         } catch (statsError) {
-          console.error('Stats 생성 실패 (상품은 생성됨):', statsError);
+          console.error(t('productAdmin.upload.statsCreateFail'), statsError);
           // Stats 생성 실패해도 상품은 생성되었으므로 계속 진행
         }
       }
 
-      message.success('상품이 성공적으로 등록되었습니다!');
+      message.success(t('productAdmin.upload.success'));
       
       // 성공 콜백 호출
       if (onSuccess) {
@@ -154,7 +156,7 @@ export default function ProductUpload({ onSuccess }) {
       history.push(`/products/${productId}`);
     } catch (error) {
       console.error('상품 업로드 실패:', error);
-      const errorMessage = error.response?.data?.error || error.message || '상품 업로드에 실패했습니다.';
+      const errorMessage = error.response?.data?.error || error.message || t('productAdmin.upload.fail');
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -181,10 +183,10 @@ export default function ProductUpload({ onSuccess }) {
         }}
       >
         <div className="upload-section">
-          <h3 className="section-title">상품 이미지</h3>
+          <h3 className="section-title">{t('productAdmin.upload.imageSection')}</h3>
           <Form.Item
             name="upload"
-            rules={[{ required: true, message: '상품 이미지를 업로드해주세요.' }]}
+            rules={[{ required: true, message: t('productAdmin.upload.imageRequired') }]}
           >
             <Upload
               name="image"
@@ -205,7 +207,7 @@ export default function ProductUpload({ onSuccess }) {
               ) : (
                 <div className="upload-placeholder">
                   <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>이미지 업로드</div>
+                  <div style={{ marginTop: 8 }}>{t('productAdmin.upload.imageUpload')}</div>
                 </div>
               )}
             </Upload>
@@ -215,50 +217,50 @@ export default function ProductUpload({ onSuccess }) {
         <Divider />
 
         <div className="form-section">
-          <h3 className="section-title">기본 정보</h3>
+          <h3 className="section-title">{t('productAdmin.upload.basicInfo')}</h3>
           
           <Form.Item
-            label="상품명"
+            label={t('productAdmin.upload.productName')}
             name="name"
-            rules={[{ required: true, message: '상품명을 입력해주세요.' }]}
+            rules={[{ required: true, message: t('productAdmin.upload.productNameRequired') }]}
           >
-            <Input size="large" placeholder="상품명을 입력하세요" />
+            <Input size="large" placeholder={t('productAdmin.upload.productNamePlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="판매자명"
+            label={t('productAdmin.upload.sellerName')}
             name="seller"
-            rules={[{ required: true, message: '판매자명을 입력해주세요.' }]}
+            rules={[{ required: true, message: t('productAdmin.upload.sellerNameRequired') }]}
           >
-            <Input size="large" placeholder="판매자명을 입력하세요" />
+            <Input size="large" placeholder={t('productAdmin.upload.sellerNamePlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="가격"
+            label={t('productAdmin.upload.price')}
             name="price"
             rules={[
-              { required: true, message: '가격을 입력해주세요.' },
-              { type: 'number', min: 0, message: '가격은 0 이상이어야 합니다.' },
+              { required: true, message: t('productAdmin.upload.priceRequired') },
+              { type: 'number', min: 0, message: t('productAdmin.upload.priceMin') },
             ]}
           >
             <InputNumber
               size="large"
               style={{ width: '100%' }}
-              placeholder="가격을 입력하세요"
+              placeholder={t('productAdmin.upload.pricePlaceholder')}
               formatter={(value) => `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               parser={(value) => value.replace(/¥\s?|(,*)/g, '')}
             />
           </Form.Item>
 
           <Form.Item
-            label="상품 설명"
+            label={t('productAdmin.upload.description')}
             name="description"
-            rules={[{ required: true, message: '상품 설명을 입력해주세요.' }]}
+            rules={[{ required: true, message: t('productAdmin.upload.descriptionRequired') }]}
           >
             <TextArea
               size="large"
               rows={4}
-              placeholder="상품에 대한 자세한 설명을 입력하세요"
+              placeholder={t('productAdmin.upload.descriptionPlaceholder')}
               showCount
               maxLength={500}
             />
@@ -268,15 +270,15 @@ export default function ProductUpload({ onSuccess }) {
         <Divider />
 
         <div className="form-section">
-          <h3 className="section-title">카테고리</h3>
+          <h3 className="section-title">{t('productAdmin.upload.category')}</h3>
           
           <Form.Item
-            label="메인 카테고리"
+            label={t('productAdmin.upload.mainCategory')}
             name="category_id"
           >
             <Select
               size="large"
-              placeholder="카테고리를 선택하세요"
+              placeholder={t('productAdmin.upload.mainCategoryPlaceholder')}
               onChange={handleCategoryChange}
               allowClear
             >
@@ -290,12 +292,12 @@ export default function ProductUpload({ onSuccess }) {
 
           {selectedCategory && subCategories.length > 0 && (
             <Form.Item
-              label="서브 카테고리"
+              label={t('productAdmin.upload.subCategory')}
               name="sub_category_id"
             >
               <Select
                 size="large"
-                placeholder="서브 카테고리를 선택하세요"
+                placeholder={t('productAdmin.upload.subCategoryPlaceholder')}
                 allowClear
               >
                 {subCategories.map((subCategory) => (
@@ -308,12 +310,12 @@ export default function ProductUpload({ onSuccess }) {
           )}
 
           <Form.Item
-            label="기술 스택"
+            label={t('productAdmin.upload.techStack')}
             name="tech_stack"
           >
             <Input
               size="large"
-              placeholder="예: React, Node.js, Python"
+              placeholder={t('productAdmin.upload.techStackPlaceholder')}
             />
           </Form.Item>
         </div>
@@ -321,12 +323,12 @@ export default function ProductUpload({ onSuccess }) {
         <Divider />
 
         <div className="form-section">
-          <h3 className="section-title">AI 통계 (선택사항)</h3>
+          <h3 className="section-title">{t('productAdmin.upload.statsSection')}</h3>
           <p className="section-description">
-            각 항목의 수치를 0-100 사이로 설정할 수 있습니다.
+            {t('productAdmin.upload.statsDescription')}
           </p>
 
-          <Form.Item label="협업 능력 (Teamwork)" name={['stats', 'teamwork']}>
+          <Form.Item label={t('productAdmin.upload.teamwork')} name={['stats', 'teamwork']}>
             <Slider
               min={0}
               max={100}
@@ -338,7 +340,7 @@ export default function ProductUpload({ onSuccess }) {
             />
           </Form.Item>
 
-          <Form.Item label="안정성 (Stability)" name={['stats', 'stability']}>
+          <Form.Item label={t('productAdmin.upload.stability')} name={['stats', 'stability']}>
             <Slider
               min={0}
               max={100}
@@ -350,7 +352,7 @@ export default function ProductUpload({ onSuccess }) {
             />
           </Form.Item>
 
-          <Form.Item label="속도 (Speed)" name={['stats', 'speed']}>
+          <Form.Item label={t('productAdmin.upload.speed')} name={['stats', 'speed']}>
             <Slider
               min={0}
               max={100}
@@ -362,7 +364,7 @@ export default function ProductUpload({ onSuccess }) {
             />
           </Form.Item>
 
-          <Form.Item label="창의성 (Creativity)" name={['stats', 'creativity']}>
+          <Form.Item label={t('productAdmin.upload.creativity')} name={['stats', 'creativity']}>
             <Slider
               min={0}
               max={100}
@@ -374,7 +376,7 @@ export default function ProductUpload({ onSuccess }) {
             />
           </Form.Item>
 
-          <Form.Item label="생산성 (Productivity)" name={['stats', 'productivity']}>
+          <Form.Item label={t('productAdmin.upload.productivity')} name={['stats', 'productivity']}>
             <Slider
               min={0}
               max={100}
@@ -386,7 +388,7 @@ export default function ProductUpload({ onSuccess }) {
             />
           </Form.Item>
 
-          <Form.Item label="유지보수성 (Maintainability)" name={['stats', 'maintainability']}>
+          <Form.Item label={t('productAdmin.upload.maintainability')} name={['stats', 'maintainability']}>
             <Slider
               min={0}
               max={100}
@@ -411,7 +413,7 @@ export default function ProductUpload({ onSuccess }) {
               loading={loading}
               icon={<UploadOutlined />}
             >
-              상품 등록
+              {t('productAdmin.upload.submit')}
             </Button>
             <Button
               size="large"
@@ -422,7 +424,7 @@ export default function ProductUpload({ onSuccess }) {
                 setSubCategories([]);
               }}
             >
-              초기화
+              {t('productAdmin.upload.reset')}
             </Button>
           </Space>
         </Form.Item>

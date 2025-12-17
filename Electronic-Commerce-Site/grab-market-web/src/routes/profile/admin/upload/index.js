@@ -1,16 +1,15 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AdminLayout } from '../components';
 import { ProductUpload } from '../components';
-import { api } from '../../../../config/api';
 import { message } from 'antd';
 
 export default function AdminProductUploadPage() {
-  const history = useHistory();
+  const { t } = useTranslation();
 
   // 상품 업로드 성공 핸들러
   const handleUploadSuccess = async (productId) => {
-    message.success('상품이 성공적으로 등록되었습니다!');
+    message.success(t('productAdmin.upload.success'));
     // 상품 상세 페이지로 이동 (history.push는 ProductUpload 컴포넌트에서 처리)
   };
 
@@ -31,10 +30,10 @@ export default function AdminProductUploadPage() {
           >
             <div style={{ marginBottom: '32px' }}>
               <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#1A1A1A', margin: 0 }}>
-                상품 업로드
+                {t('profile.admin.upload.title')}
               </h1>
               <p style={{ fontSize: '16px', color: '#666', marginTop: '8px' }}>
-                새로운 상품을 등록하고 마켓플레이스에 추가하세요.
+                {t('profile.admin.upload.subtitle')}
               </p>
             </div>
             <ProductUpload onSuccess={handleUploadSuccess} />
