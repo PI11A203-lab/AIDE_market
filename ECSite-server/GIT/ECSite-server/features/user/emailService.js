@@ -84,38 +84,37 @@ const createTransporter = () => {
 };
 
 /**
- * 비밀번호 재설정 인증 코드 이메일 전송
- * @param {string} email - 수신자 이메일
+ * 비밀번호 재설정 인증 코드 이메일 템플릿 생성 (다국어 지원)
  * @param {string} code - 6자리 인증 코드
+ * @param {string} language - 언어 코드 ('ko', 'en', 'ja')
+ * @returns {object} 이메일 템플릿 (subject, html, text)
  */
-exports.sendPasswordResetCode = async (email, code) => {
-    // 이메일 내용
-    const mailOptions = {
-        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
-        to: email,
-        subject: 'AIDE Market - 비밀번호 재설정 인증 코드',
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #1A1A1A;">비밀번호 재설정 인증 코드</h2>
-                <p>안녕하세요,</p>
-                <p>비밀번호 재설정을 요청하셨습니다. 아래 인증 코드를 입력하여 비밀번호를 재설정하세요.</p>
-                <div style="background-color: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
-                    <p style="color: #6B7280; font-size: 14px; margin: 0 0 10px 0;">인증 코드</p>
-                    <p style="color: #1A1A1A; font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">
-                        ${code}
+const getPasswordResetEmailTemplate = (code, language = 'ko') => {
+    const templates = {
+        ko: {
+            subject: 'AIDE Market - 비밀번호 재설정 인증 코드',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #1A1A1A;">비밀번호 재설정 인증 코드</h2>
+                    <p>안녕하세요,</p>
+                    <p>비밀번호 재설정을 요청하셨습니다. 아래 인증 코드를 입력하여 비밀번호를 재설정하세요.</p>
+                    <div style="background-color: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+                        <p style="color: #6B7280; font-size: 14px; margin: 0 0 10px 0;">인증 코드</p>
+                        <p style="color: #1A1A1A; font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">
+                            ${code}
+                        </p>
+                    </div>
+                    <p style="color: #6B7280; font-size: 14px; margin-top: 30px;">
+                        이 코드는 <strong>10분 동안만</strong> 유효합니다.<br>
+                        만약 비밀번호 재설정을 요청하지 않으셨다면, 이 이메일을 무시하셔도 됩니다.
+                    </p>
+                    <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 30px 0;">
+                    <p style="color: #9CA3AF; font-size: 12px;">
+                        © AIDE Market - AI Developer Marketplace
                     </p>
                 </div>
-                <p style="color: #6B7280; font-size: 14px; margin-top: 30px;">
-                    이 코드는 <strong>10분 동안만</strong> 유효합니다.<br>
-                    만약 비밀번호 재설정을 요청하지 않으셨다면, 이 이메일을 무시하셔도 됩니다.
-                </p>
-                <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 30px 0;">
-                <p style="color: #9CA3AF; font-size: 12px;">
-                    © AIDE Market - AI Developer Marketplace
-                </p>
-            </div>
-        `,
-        text: `
+            `,
+            text: `
 비밀번호 재설정 인증 코드
 
 안녕하세요,
@@ -128,17 +127,121 @@ exports.sendPasswordResetCode = async (email, code) => {
 만약 비밀번호 재설정을 요청하지 않으셨다면, 이 이메일을 무시하셔도 됩니다.
 
 © AIDE Market - AI Developer Marketplace
-        `.trim(),
+            `.trim()
+        },
+        en: {
+            subject: 'AIDE Market - Password Reset Verification Code',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #1A1A1A;">Password Reset Verification Code</h2>
+                    <p>Hello,</p>
+                    <p>You have requested to reset your password. Please enter the verification code below to reset your password.</p>
+                    <div style="background-color: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+                        <p style="color: #6B7280; font-size: 14px; margin: 0 0 10px 0;">Verification Code</p>
+                        <p style="color: #1A1A1A; font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">
+                            ${code}
+                        </p>
+                    </div>
+                    <p style="color: #6B7280; font-size: 14px; margin-top: 30px;">
+                        This code is valid for <strong>10 minutes only</strong>.<br>
+                        If you did not request a password reset, you can safely ignore this email.
+                    </p>
+                    <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 30px 0;">
+                    <p style="color: #9CA3AF; font-size: 12px;">
+                        © AIDE Market - AI Developer Marketplace
+                    </p>
+                </div>
+            `,
+            text: `
+Password Reset Verification Code
+
+Hello,
+
+You have requested to reset your password. Please enter the verification code below to reset your password.
+
+Verification Code: ${code}
+
+This code is valid for 10 minutes only.
+If you did not request a password reset, you can safely ignore this email.
+
+© AIDE Market - AI Developer Marketplace
+            `.trim()
+        },
+        ja: {
+            subject: 'AIDE Market - パスワードリセット認証コード',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #1A1A1A;">パスワードリセット認証コード</h2>
+                    <p>こんにちは、</p>
+                    <p>パスワードリセットをリクエストされました。以下の認証コードを入力してパスワードをリセットしてください。</p>
+                    <div style="background-color: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+                        <p style="color: #6B7280; font-size: 14px; margin: 0 0 10px 0;">認証コード</p>
+                        <p style="color: #1A1A1A; font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">
+                            ${code}
+                        </p>
+                    </div>
+                    <p style="color: #6B7280; font-size: 14px; margin-top: 30px;">
+                        このコードは<strong>10分間のみ</strong>有効です。<br>
+                        パスワードリセットをリクエストしていない場合は、このメールを無視していただいても結構です。
+                    </p>
+                    <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 30px 0;">
+                    <p style="color: #9CA3AF; font-size: 12px;">
+                        © AIDE Market - AI Developer Marketplace
+                    </p>
+                </div>
+            `,
+            text: `
+パスワードリセット認証コード
+
+こんにちは、
+
+パスワードリセットをリクエストされました。以下の認証コードを入力してパスワードをリセットしてください。
+
+認証コード: ${code}
+
+このコードは10分間のみ有効です。
+パスワードリセットをリクエストしていない場合は、このメールを無視していただいても結構です。
+
+© AIDE Market - AI Developer Marketplace
+            `.trim()
+        }
+    };
+
+    // 지원하는 언어가 아니면 한국어로 폴백
+    const lang = ['ko', 'en', 'ja'].includes(language) ? language : 'ko';
+    return templates[lang];
+};
+
+/**
+ * 비밀번호 재설정 인증 코드 이메일 전송
+ * @param {string} email - 수신자 이메일
+ * @param {string} code - 6자리 인증 코드
+ * @param {string} language - 사용자 언어 설정 ('ko', 'en', 'ja'), 기본값: 'ko'
+ */
+exports.sendPasswordResetCode = async (email, code, language = 'ko') => {
+    // 언어별 이메일 템플릿 가져오기
+    const template = getPasswordResetEmailTemplate(code, language);
+    
+    // 이메일 내용
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
     };
 
     const transporter = createTransporter();
 
     // 이메일 전송기가 없으면 (개발 환경)
     if (!transporter) {
+        const langLabels = { ko: '한국어', en: 'English', ja: '日本語' };
+        const langLabel = langLabels[language] || '한국어';
         console.log('\n========================================');
-        console.log('📧 비밀번호 재설정 인증 코드 (개발 환경)');
+        console.log(`📧 비밀번호 재설정 인증 코드 (개발 환경) - ${langLabel}`);
         console.log('========================================');
         console.log('수신자:', email);
+        console.log('언어:', language, `(${langLabel})`);
         console.log('제목:', mailOptions.subject);
         console.log('인증 코드:', code);
         console.log('========================================\n');
@@ -163,10 +266,14 @@ exports.sendPasswordResetCode = async (email, code) => {
         console.error('이메일 전송 실패:', error);
         
         // 이메일 전송 실패 시에도 개발 환경처럼 처리
+        const langLabels = { ko: '한국어', en: 'English', ja: '日本語' };
+        const langLabel = langLabels[language] || '한국어';
         console.log('\n========================================');
-        console.log('📧 비밀번호 재설정 인증 코드 (전송 실패 - 개발 모드)');
+        console.log(`📧 비밀번호 재설정 인증 코드 (전송 실패 - 개발 모드) - ${langLabel}`);
         console.log('========================================');
         console.log('수신자:', email);
+        console.log('언어:', language, `(${langLabel})`);
+        console.log('제목:', mailOptions.subject);
         console.log('인증 코드:', code);
         console.log('========================================\n');
         

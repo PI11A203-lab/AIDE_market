@@ -401,10 +401,14 @@ exports.requestPasswordReset = async (email) => {
         }
     }, 10 * 60 * 1000);
     
+    // 사용자 언어 설정 가져오기 (사용자 모델에 language 필드가 있다면, 없으면 기본값 'ko' 사용)
+    // TODO: 사용자 모델에 language 필드를 추가하면 user.language를 사용하도록 수정
+    const userLanguage = user.language || 'ko';
+    
     // 이메일 전송 시도
     const emailService = require('./emailService');
     try {
-        const emailResult = await emailService.sendPasswordResetCode(user.email, code);
+        const emailResult = await emailService.sendPasswordResetCode(user.email, code, userLanguage);
         
         // 이메일이 성공적으로 전송된 경우 (코드 반환 안 함)
         if (emailResult.sent) {

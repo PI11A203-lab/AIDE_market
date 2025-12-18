@@ -116,7 +116,7 @@ export default function PurchaseConfirmation() {
     };
 
     loadOrderData();
-  }, []);
+  }, [i18n.language]);
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
