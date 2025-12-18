@@ -13,13 +13,15 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
 
-  // localStorage에서 언어 설정 불러오기
+  // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
   useEffect(() => {
     const savedLanguage = localStorage.getItem('appLanguage');
     if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      // 저장된 언어로 강제 변경 (이미 같은 언어여도 확실하게 반영)
       i18n.changeLanguage(savedLanguage);
     }
-  }, [i18n]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async ({ email }) => {
     setIsLoading(true);

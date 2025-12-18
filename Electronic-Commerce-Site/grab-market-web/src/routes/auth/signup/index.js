@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import SignupHeader from './components/SignupHeader';
 import SignupForm from './components/SignupForm';
@@ -8,8 +9,19 @@ import { api } from '../../../config/api';
 import './index.css';
 
 export default function SignupPage() {
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
+
+  // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      // 저장된 언어로 강제 변경 (이미 같은 언어여도 확실하게 반영)
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSignup = async (formData) => {
     setIsLoading(true);
@@ -37,14 +49,14 @@ export default function SignupPage() {
           nickname: user.username,
         }));
 
-        message.success('회원가입에 성공했습니다.');
+        message.success(t('auth.signup.success'));
         history.push('/');
       } else {
-        message.error('회원가입에 실패했습니다. 다시 시도해주세요.');
+        message.error(t('auth.signup.fail'));
       }
     } catch (error) {
       console.error('Signup error:', error);
-      const errorMessage = error.response?.data?.error || error.message || '회원가입 중 오류가 발생했습니다.';
+      const errorMessage = error.response?.data?.error || error.message || t('auth.signup.error');
       message.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -56,22 +68,22 @@ export default function SignupPage() {
       <div className="w-full max-w-[440px]">
         <SignupHeader />
         <div className="bg-white border border-[#E5E7EB] rounded-xl p-8 sm:p-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-2 text-center">Create Your Account</h2>
-          <p className="text-sm text-[#6B7280] text-center mb-8">Join thousands of developers building amazing AI solutions</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-2 text-center">{t('auth.signup.title')}</h2>
+          <p className="text-sm text-[#6B7280] text-center mb-8">{t('auth.signup.subtitle')}</p>
           <SignupForm onSubmit={handleSignup} isLoading={isLoading} />
           <SignupFooter />
         </div>
         
         {/* 푸터 */}
         <div className="text-center mt-8 text-[13px] text-[#9CA3AF]">
-          <p>By signing up, you agree to our</p>
+          <p>{t('auth.signup.agreeText')}</p>
           <div className="flex items-center justify-center gap-4 mt-2">
             <Link to="/terms" className="text-[#6B7280] hover:text-[#1A1A1A]">
-              Terms of Service
+              {t('auth.signup.terms')}
             </Link>
             <span className="text-[#D1D5DB]">•</span>
             <Link to="/privacy" className="text-[#6B7280] hover:text-[#1A1A1A]">
-              Privacy Policy
+              {t('auth.signup.privacy')}
             </Link>
           </div>
         </div>

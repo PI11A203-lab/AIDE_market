@@ -173,6 +173,7 @@ export default function PurchasePage() {
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSubscription, setIsSubscription] = useState(true); // 정기결제 동의 여부
 
   // localStorage에서 쿠폰 정보 복원
   useEffect(() => {
@@ -309,6 +310,12 @@ export default function PurchasePage() {
   const total = subtotal - discount + tax;
 
   const handleCheckout = async () => {
+    // 정기결제 동의 확인
+    if (!isSubscription) {
+      message.warning('정기결제에 동의해주세요.');
+      return;
+    }
+
     // 사용자 정보 확인
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
@@ -406,6 +413,13 @@ export default function PurchasePage() {
         });
       }
 
+      // 다음 결제일 계산 (한 달 후 말일)
+      const getNextPaymentDate = () => {
+        const now = new Date();
+        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        return nextMonth;
+      };
+
       // 주문 정보를 sessionStorage에 저장 (confirmation 페이지에서 사용)
       const orderInfo = {
         orderId: orderId,
@@ -416,7 +430,9 @@ export default function PurchasePage() {
           price: item.price
         })),
         total: total,
-        orderDate: new Date().toISOString()
+        orderDate: new Date().toISOString(),
+        isSubscription: isSubscription,
+        nextPaymentDate: isSubscription ? getNextPaymentDate().toISOString() : null
       };
       sessionStorage.setItem('lastOrder', JSON.stringify(orderInfo));
 
@@ -567,6 +583,7 @@ export default function PurchasePage() {
                   appliedCoupon={appliedCoupon}
                   onCheckout={handleCheckout}
                   isProcessing={isProcessing}
+                  onSubscriptionChange={setIsSubscription}
                 />
 
                 {/* 쿠폰 */}

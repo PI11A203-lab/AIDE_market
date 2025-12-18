@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import Header from './components/Header';
 import SuccessMessage from './components/SuccessMessage';
 import EmailNotification from './components/EmailNotification';
@@ -11,6 +12,7 @@ import { API_URL } from '../../config/constants';
 import './index.css';
 
 export default function PurchaseConfirmation() {
+  const { i18n } = useTranslation();
   const [purchasedAIs, setPurchasedAIs] = useState([]);
   const [orderDetails, setOrderDetails] = useState(null);
   const [userEmail, setUserEmail] = useState('');
@@ -67,10 +69,29 @@ export default function PurchaseConfirmation() {
             minute: '2-digit'
           });
           
+          // 다음 결제일 포맷팅 (언어에 맞게)
+          let nextPaymentDateFormatted = null;
+          if (lastOrder.isSubscription && lastOrder.nextPaymentDate) {
+            const nextPaymentDate = new Date(lastOrder.nextPaymentDate);
+            const localeMap = {
+              'ko': 'ko-KR',
+              'en': 'en-US',
+              'ja': 'ja-JP'
+            };
+            const dateLocale = localeMap[i18n.language] || 'en-US';
+            nextPaymentDateFormatted = nextPaymentDate.toLocaleDateString(dateLocale, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+          }
+
           setOrderDetails({
             orderNumber: lastOrder.orderNumber || 'AIDE-2025-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
             orderDate: formattedDate,
-            total: lastOrder.total || items.reduce((sum, ai) => sum + ai.price, 0)
+            total: lastOrder.total || items.reduce((sum, ai) => sum + ai.price, 0),
+            isSubscription: lastOrder.isSubscription || false,
+            nextPaymentDate: nextPaymentDateFormatted
           });
           
           // sessionStorage에서 주문 정보 삭제 (한 번만 표시)
@@ -118,7 +139,11 @@ export default function PurchaseConfirmation() {
     <div className="confirmation-page">
       <Header />
       <main className="confirmation-main">
-        <SuccessMessage orderNumber={orderDetails.orderNumber} />
+        <SuccessMessage 
+          orderNumber={orderDetails.orderNumber}
+          isSubscription={orderDetails.isSubscription}
+          nextPaymentDate={orderDetails.nextPaymentDate}
+        />
         <EmailNotification userEmail={userEmail} onCopyEmail={copyToClipboard} />
         <PurchasedAIList purchasedAIs={purchasedAIs} onCopyCode={copyToClipboard} />
         <OrderSummary orderDetails={orderDetails} purchasedAIs={purchasedAIs} />

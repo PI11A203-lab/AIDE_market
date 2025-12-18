@@ -321,23 +321,56 @@ exports.deletePaymentMethod = async (id) => {
         throw new Error('결제수단을 찾을 수 없습니다');
     }
     
-    // 카드 정보도 함께 삭제 (다른 결제수단에서 사용하지 않는 경우)
-    if (paymentMethod.card_id) {
-        const otherPaymentMethod = await models.PaymentMethod.findOne({
-            where: {
-                card_id: paymentMethod.card_id,
-                id: { [Op.ne]: id }
-            }
-        });
-        
-        // 다른 결제수단에서 사용하지 않으면 카드 정보 삭제
-        if (!otherPaymentMethod) {
-            await models.CreditCard.destroy({
-                where: { card_id: paymentMethod.card_id }
-            });
-        }
+    // 사용자의 결제수단 개수 확인 (최소 하나는 유지해야 함)
+    const userPaymentMethodsCount = await models.PaymentMethod.count({
+        where: { user_id: paymentMethod.user_id }
+    });
+    
+    if (userPaymentMethodsCount <= 1) {
+        throw new Error('최소 하나의 결제수단은 등록되어 있어야 합니다. 새로운 결제수단을 먼저 추가해주세요.');
     }
     
-    await paymentMethod.destroy();
-    return true;
+    // 트랜잭션으로 일관성 보장
+    const transaction = await models.sequelize.transaction();
+    
+    try {
+        // 주문에서 payment_id를 NULL로 설정 (주문 기록은 보존, 정기결제는 등록된 카드로 처리)
+        await models.Order.update(
+            { payment_id: null },
+            { where: { payment_id: id }, transaction }
+        );
+        
+        // card_id를 임시로 저장 (payment_methods 삭제 후 사용)
+        const cardIdToDelete = paymentMethod.card_id;
+        
+        // 먼저 결제수단 삭제 (외래 키 제약 조건 때문에 먼저 삭제해야 함)
+        await paymentMethod.destroy({ transaction });
+        
+        // 카드 정보도 함께 삭제 (다른 결제수단에서 사용하지 않는 경우)
+        if (cardIdToDelete) {
+            const otherPaymentMethod = await models.PaymentMethod.findOne({
+                where: {
+                    card_id: cardIdToDelete
+                },
+                transaction
+            });
+            
+            // 다른 결제수단에서 사용하지 않으면 카드 정보 삭제
+            if (!otherPaymentMethod) {
+                await models.CreditCard.destroy({
+                    where: { card_id: cardIdToDelete },
+                    transaction
+                });
+            }
+        }
+        
+        // 트랜잭션 커밋
+        await transaction.commit();
+        return true;
+    } catch (error) {
+        // 에러 발생 시 롤백
+        await transaction.rollback();
+        console.error('결제수단 삭제 중 오류 발생:', error);
+        throw error;
+    }
 };

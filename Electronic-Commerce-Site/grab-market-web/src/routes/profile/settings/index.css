@@ -371,8 +371,21 @@
   align-items: center;
 }
 
-.btn-delete-payment:hover {
+.btn-delete-payment:hover:not(:disabled) {
   background: #FEE2E2;
+}
+
+.btn-delete-payment:disabled,
+.btn-delete-payment.disabled {
+  background: #F3F4F6;
+  color: #9CA3AF;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-delete-payment:disabled:hover,
+.btn-delete-payment.disabled:hover {
+  background: #F3F4F6;
 }
 
 /* 빈 상태 */

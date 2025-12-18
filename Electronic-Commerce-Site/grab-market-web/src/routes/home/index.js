@@ -385,6 +385,17 @@ function MainPage() {
               <button className="btn-hero-secondary">{t('home.heroSecondary')}</button>
             </div>
           </div>
+          <div className="hero-character">
+            <img 
+              src="/images/character.png" 
+              alt="Character" 
+              className="hero-character-image"
+              onError={(e) => {
+                // 이미지가 없을 경우 기본 이미지로 대체하거나 숨김
+                e.target.style.display = 'none';
+              }}
+            />
+          </div>
         </div>
 
         {/* 이번달 랭킹 AI */}

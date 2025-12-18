@@ -99,10 +99,14 @@ exports.deletePaymentMethod = async (req, res) => {
         await paymentMethodService.deletePaymentMethod(req.params.id);
         res.json({ result: true });
     } catch (err) {
-        console.error(err);
+        console.error('결제수단 삭제 에러:', err);
+        console.error('에러 스택:', err.stack);
         if (err.message.includes('찾을 수 없습니다')) {
             return res.status(404).json({ error: err.message });
         }
-        res.status(500).json({ error: "결제수단 삭제 실패" });
+        if (err.message.includes('최소 하나의 결제수단')) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.status(500).json({ error: err.message || "결제수단 삭제 실패" });
     }
 };

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function VerifyCodeForm({ onSubmit, isLoading, devCode }) {
+  const { t } = useTranslation();
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef([]);
 
@@ -78,7 +80,7 @@ export default function VerifyCodeForm({ onSubmit, isLoading, devCode }) {
     <form onSubmit={handleSubmit}>
       <div className="mb-6">
         <label className="block text-sm font-semibold text-[#374151] mb-2 text-center">
-          인증 코드
+          {t('auth.verifyCode.codeLabel')}
         </label>
         <div className="flex justify-center gap-2">
           {code.map((digit, index) => (
@@ -99,7 +101,7 @@ export default function VerifyCodeForm({ onSubmit, isLoading, devCode }) {
           ))}
         </div>
         <p className="text-xs text-[#9CA3AF] mt-3 text-center">
-          이메일로 전송된 6자리 숫자를 입력하세요
+          {t('auth.verifyCode.codeHint')}
         </p>
       </div>
 
@@ -108,7 +110,7 @@ export default function VerifyCodeForm({ onSubmit, isLoading, devCode }) {
         disabled={isLoading || code.join('').length !== 6}
         className="w-full py-3.5 bg-[#000000] text-white rounded-lg text-base font-semibold hover:bg-[#1A1A1A] transition-all disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed mb-6"
       >
-        {isLoading ? '확인 중...' : '확인'}
+        {isLoading ? t('auth.verifyCode.verifying') : t('auth.verifyCode.verify')}
       </button>
     </form>
   );

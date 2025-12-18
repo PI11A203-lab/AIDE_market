@@ -84,6 +84,18 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
   };
 
   const handleDelete = async (id) => {
+    // 최소 하나의 결제 수단은 유지해야 함
+    if (paymentMethods.length <= 1) {
+      message.warning(t('profile.settings.paymentMethods.cannotDeleteLast'), 5);
+      // 안내 메시지 후 추가 폼 표시
+      if (!showAddForm) {
+        setTimeout(() => {
+          setShowAddForm(true);
+        }, 500);
+      }
+      return;
+    }
+
     if (!window.confirm(t('profile.settings.paymentMethods.deleteConfirm'))) {
       return;
     }
@@ -227,7 +239,7 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                     payment_method: 'credit_card',
                     card_company: 'VISA',
                     card_number: '',
-                    card_cvc: '',
+                    cvc: '',
                     exp_month: '',
                     exp_year: ''
                   });
@@ -266,14 +278,17 @@ export default function PaymentMethodsSection({ paymentMethods, onAdd, onDelete 
                       {method.card_number || maskCardNumber(method.card_number_encrypted)}
                     </div>
                     <div className="payment-method-expiry">
-                      {t('profile.settings.paymentMethods.expiryDate')}: {String(method.exp_month).padStart(2, '0')}/{method.exp_year}
+                      {t('profile.settings.paymentMethods.expiryDate')}: {method.exp_month ? String(method.exp_month).padStart(2, '0') : '--'}/{method.exp_year || '----'}
                     </div>
                   </div>
                 </div>
                 <button
-                  className="btn-delete-payment"
+                  className={`btn-delete-payment ${paymentMethods.length <= 1 ? 'disabled' : ''}`}
                   onClick={() => handleDelete(method.id)}
-                  title={t('profile.settings.paymentMethods.delete')}
+                  title={paymentMethods.length <= 1 
+                    ? t('profile.settings.paymentMethods.cannotDeleteLastTooltip')
+                    : t('profile.settings.paymentMethods.delete')}
+                  disabled={paymentMethods.length <= 1}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

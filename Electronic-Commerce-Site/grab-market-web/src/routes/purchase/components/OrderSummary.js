@@ -1,5 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Calendar, CheckCircle2 } from 'lucide-react';
+
+// 다음 결제일 계산 (한 달 후 말일)
+const getNextPaymentDate = () => {
+  const now = new Date();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // 다음 달 말일
+  return nextMonth;
+};
+
+const formatNextPaymentDate = (date, locale) => {
+  const localeMap = {
+    'ko': 'ko-KR',
+    'en': 'en-US',
+    'ja': 'ja-JP'
+  };
+  const dateLocale = localeMap[locale] || 'en-US';
+  
+  return date.toLocaleDateString(dateLocale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
 
 export default function OrderSummary({ 
   cartItems, 
@@ -9,9 +32,12 @@ export default function OrderSummary({
   total, 
   appliedCoupon,
   onCheckout,
-  isProcessing
+  isProcessing,
+  onSubscriptionChange
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [isSubscription, setIsSubscription] = useState(true); // 기본값: 정기결제 동의
+  const nextPaymentDate = getNextPaymentDate();
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4">
       <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('purchase.summary.title')}</h3>
@@ -34,6 +60,46 @@ export default function OrderSummary({
           <span>{t('purchase.summary.total')}</span>
           <span>¥{Math.round(total).toLocaleString()}</span>
         </div>
+      </div>
+
+      {/* 정기결제 동의 섹션 */}
+      <div className="mt-6 pt-6 border-t border-gray-200">
+        <label className="flex items-start gap-3 cursor-pointer group">
+          <input
+            type="checkbox"
+            checked={isSubscription}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setIsSubscription(checked);
+              if (onSubscriptionChange) {
+                onSubscriptionChange(checked);
+              }
+            }}
+            className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+            disabled={isProcessing}
+          />
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <CheckCircle2 className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-semibold text-gray-900">
+                {t('purchase.summary.subscription.agree')}
+              </span>
+            </div>
+            <p className="text-xs text-gray-600 mb-2">
+              {t('purchase.summary.subscription.description')}
+            </p>
+            {isSubscription && (
+              <div className="flex items-center gap-2 mt-2 p-2 bg-blue-50 rounded-lg">
+                <Calendar className="w-4 h-4 text-blue-600" />
+                <span className="text-xs text-blue-700 font-medium">
+                  {t('purchase.summary.subscription.nextPayment', { 
+                    date: formatNextPaymentDate(nextPaymentDate, i18n.language)
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+        </label>
       </div>
       <button
         onClick={onCheckout}

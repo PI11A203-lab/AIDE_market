@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function SignupForm({ onSubmit, isLoading }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -17,32 +19,32 @@ export default function SignupForm({ onSubmit, isLoading }) {
 
     // 사용자명 검증
     if (!formData.username.trim()) {
-      newErrors.username = '사용자명을 입력해주세요.';
+      newErrors.username = t('auth.signup.errors.usernameRequired');
     } else if (formData.username.length < 3) {
-      newErrors.username = '사용자명은 최소 3자 이상이어야 합니다.';
+      newErrors.username = t('auth.signup.errors.usernameMinLength');
     } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username = '사용자명은 영문, 숫자, 언더스코어만 사용할 수 있습니다.';
+      newErrors.username = t('auth.signup.errors.usernameInvalid');
     }
 
     // 이메일 검증
     if (!formData.email.trim()) {
-      newErrors.email = '이메일을 입력해주세요.';
+      newErrors.email = t('auth.signup.errors.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = '올바른 이메일 형식이 아닙니다.';
+      newErrors.email = t('auth.signup.errors.emailInvalid');
     }
 
     // 비밀번호 검증
     if (!formData.password) {
-      newErrors.password = '비밀번호를 입력해주세요.';
+      newErrors.password = t('auth.signup.errors.passwordRequired');
     } else if (formData.password.length < 8) {
-      newErrors.password = '비밀번호는 최소 8자 이상이어야 합니다.';
+      newErrors.password = t('auth.signup.errors.passwordMinLength');
     }
 
     // 비밀번호 확인 검증
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = '비밀번호 확인을 입력해주세요.';
+      newErrors.confirmPassword = t('auth.signup.errors.confirmPasswordRequired');
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
+      newErrors.confirmPassword = t('auth.signup.errors.passwordMismatch');
     }
 
     setErrors(newErrors);
@@ -70,7 +72,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
       {/* 사용자명 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Username
+          {t('auth.signup.usernameLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -87,7 +89,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
             type="text"
             value={formData.username}
             onChange={(e) => handleChange('username', e.target.value)}
-            placeholder="username"
+            placeholder={t('auth.signup.usernamePlaceholder')}
             className={`w-full pl-[44px] pr-[14px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
               errors.username 
                 ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
@@ -105,7 +107,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
       {/* 이메일 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Email Address
+          {t('auth.signup.emailLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -122,7 +124,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
             type="email"
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
-            placeholder="your@email.com"
+            placeholder={t('auth.signup.emailPlaceholder')}
             className={`w-full pl-[44px] pr-[14px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
               errors.email 
                 ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
@@ -140,7 +142,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
       {/* 비밀번호 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Password
+          {t('auth.signup.passwordLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -157,7 +159,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
             type={showPassword ? 'text' : 'password'}
             value={formData.password}
             onChange={(e) => handleChange('password', e.target.value)}
-            placeholder="••••••••"
+            placeholder={t('auth.signup.passwordPlaceholder')}
             className={`w-full pl-[44px] pr-[44px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
               errors.password 
                 ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
@@ -202,7 +204,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
       {/* 비밀번호 확인 */}
       <div className="mb-5">
         <label className="block text-sm font-semibold text-[#374151] mb-2">
-          Confirm Password
+          {t('auth.signup.confirmPasswordLabel')}
         </label>
         <div className="relative">
           <svg 
@@ -219,7 +221,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
             type={showConfirmPassword ? 'text' : 'password'}
             value={formData.confirmPassword}
             onChange={(e) => handleChange('confirmPassword', e.target.value)}
-            placeholder="••••••••"
+            placeholder={t('auth.signup.passwordPlaceholder')}
             className={`w-full pl-[44px] pr-[44px] py-3 border rounded-lg text-[15px] bg-white focus:outline-none transition-all ${
               errors.confirmPassword 
                 ? 'border-[#DC2626] focus:border-[#DC2626] focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)]' 
@@ -271,7 +273,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
             className="w-[18px] h-[18px] border border-[#D1D5DB] rounded checked:bg-[#1A1A1A] checked:border-[#1A1A1A] cursor-pointer"
             disabled={isLoading}
           />
-          <span className="text-sm text-[#6B7280]">Remember me</span>
+          <span className="text-sm text-[#6B7280]">{t('auth.signup.rememberMe')}</span>
         </label>
       </div>
 
@@ -281,7 +283,7 @@ export default function SignupForm({ onSubmit, isLoading }) {
         disabled={isLoading}
         className="w-full py-3.5 bg-[#000000] text-white rounded-lg text-base font-semibold hover:bg-[#1A1A1A] transition-all disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed mb-6"
       >
-        {isLoading ? 'Creating Account...' : 'Create Account'}
+        {isLoading ? t('auth.signup.creating') : t('auth.signup.createButton')}
       </button>
     </form>
   );

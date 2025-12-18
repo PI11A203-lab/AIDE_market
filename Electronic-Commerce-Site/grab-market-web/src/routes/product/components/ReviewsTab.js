@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Edit2, Trash2, X, Check, ChevronLeft, ChevronRight, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { message, Image, Modal, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import { clearRatingCache } from '../../../utils/ratingCache';
 
 export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpfulUpdate }) {
+  const { t } = useTranslation();
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ rating: 0, comment: '', images: [] });
   const [uploadingImages, setUploadingImages] = useState([]);
@@ -191,20 +193,8 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
 
   // 개발자 타입 라벨 변환 함수
   const getDeveloperTypeLabel = (type) => {
-    const labels = {
-      'frontend': '프론트엔드 개발자',
-      'backend': '백엔드 개발자',
-      'fullstack': '풀스택 개발자',
-      'mobile': '모바일 개발자',
-      'devops': 'DevOps 엔지니어',
-      'data': '데이터 엔지니어/과학자',
-      'security': '세큐리티 개발자',
-      'infrastructure': '인프라 엔지니어',
-      'server': '서버 개발자',
-      'management': '매니저먼트',
-      'other': '기타'
-    };
-    return labels[type] || type;
+    if (!type) return '';
+    return t(`profile.settings.personalInfo.developerTypes.${type}`, { defaultValue: type });
   };
 
   // 슬라이드 이동
@@ -439,7 +429,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center gap-4">
             <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-              개발자 타입 필터:
+              {t('product.reviews.filter.label')}
             </label>
             <div className="custom-dropdown" ref={filterDropdownRef} style={{ minWidth: '200px' }}>
               <button
@@ -449,7 +439,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                 <span className="dropdown-label">
                   {developerTypeFilter 
                     ? getDeveloperTypeLabel(developerTypeFilter)
-                    : '전체'}
+                    : t('product.reviews.filter.all')}
                 </span>
                 <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -463,7 +453,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  전체
+                  {t('product.reviews.filter.all')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'frontend' ? 'active' : ''}`}
@@ -472,7 +462,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  프론트엔드 개발자
+                  {getDeveloperTypeLabel('frontend')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'backend' ? 'active' : ''}`}
@@ -481,7 +471,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  백엔드 개발자
+                  {getDeveloperTypeLabel('backend')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'fullstack' ? 'active' : ''}`}
@@ -490,7 +480,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  풀스택 개발자
+                  {getDeveloperTypeLabel('fullstack')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'mobile' ? 'active' : ''}`}
@@ -499,7 +489,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  모바일 개발자
+                  {getDeveloperTypeLabel('mobile')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'devops' ? 'active' : ''}`}
@@ -508,7 +498,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  DevOps 엔지니어
+                  {getDeveloperTypeLabel('devops')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'data' ? 'active' : ''}`}
@@ -517,7 +507,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  데이터 엔지니어/과학자
+                  {getDeveloperTypeLabel('data')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'security' ? 'active' : ''}`}
@@ -526,7 +516,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  세큐리티 개발자
+                  {getDeveloperTypeLabel('security')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'infrastructure' ? 'active' : ''}`}
@@ -535,7 +525,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  인프라 엔지니어
+                  {getDeveloperTypeLabel('infrastructure')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'server' ? 'active' : ''}`}
@@ -544,7 +534,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  서버 개발자
+                  {getDeveloperTypeLabel('server')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'management' ? 'active' : ''}`}
@@ -553,7 +543,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  매니저먼트
+                  {getDeveloperTypeLabel('management')}
                 </div>
                 <div
                   className={`dropdown-item ${developerTypeFilter === 'other' ? 'active' : ''}`}
@@ -562,13 +552,13 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     setFilterDropdownOpen(false);
                   }}
                 >
-                  기타
+                  {getDeveloperTypeLabel('other')}
                 </div>
               </div>
             </div>
             {developerTypeFilter && (
               <span className="text-sm text-gray-600">
-                ({filteredReviews.length}개의 리뷰)
+                ({filteredReviews.length}{t('product.reviews.filter.count')})
               </span>
             )}
           </div>
@@ -928,8 +918,8 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
             {developerTypeFilter 
-              ? `${getDeveloperTypeLabel(developerTypeFilter)}의 리뷰가 없습니다.`
-              : '리뷰가 없습니다.'}
+              ? t('product.reviews.filter.emptyFiltered', { type: getDeveloperTypeLabel(developerTypeFilter) })
+              : t('product.reviews.filter.empty')}
           </p>
         </div>
       ) : (
