@@ -125,6 +125,18 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'product_id',
             as: 'teamMembers'
         });
+        
+        // Product - SubscriptionItem: 一対多
+        Product.hasMany(models.SubscriptionItem, {
+            foreignKey: 'product_id',
+            as: 'subscriptionItems'
+        });
+        
+        // Product - ProductActivation: 一対多
+        Product.hasMany(models.ProductActivation, {
+            foreignKey: 'product_id',
+            as: 'activations'
+        });
     };
 
     return Product;

@@ -281,3 +281,346 @@ exports.sendPasswordResetCode = async (email, code, language = 'ko') => {
     }
 };
 
+/**
+ * 정기결제 관련 이메일 전송 함수들
+ */
+const subscriptionEmailTemplates = require('../subscription/emailTemplates');
+
+/**
+ * 결제 5일 전 안내 이메일 전송
+ */
+exports.sendPaymentReminderEmail = async (subscription, nextPaymentDate, baseUrl) => {
+    const user = subscription.user;
+    const language = subscription.user_language || user?.preferred_language || 'ko';
+    
+    // 상품 목록 HTML 생성
+    const productList = subscription.items && subscription.items.length > 0
+        ? subscription.items.map(item => {
+            const product = item.product || {};
+            return `<p style="margin: 5px 0; color: #4B5563;">- ${product.name || '상품'} (¥${(item.unit_price || 0).toLocaleString()}) × ${item.quantity || 1}</p>`;
+        }).join('')
+        : '<p style="color: #4B5563;">상품 정보 없음</p>';
+
+    // 카드 정보
+    const card = subscription.creditCard || {};
+    const cardCompany = card.card_company || '카드';
+    const last4 = '1234'; // 실제로는 카드 번호의 마지막 4자리
+
+    // 가격 계산
+    const priceCalculationService = require('../order/priceCalculationService');
+    const amount = await priceCalculationService.calculateSubscriptionPrice(
+        subscription.items,
+        user,
+        subscription.coupon
+    );
+
+    // 링크 생성
+    const reminderToken = subscription.reminder_token;
+    const reminderLink = `${baseUrl}/subscription/reminder/${reminderToken}`;
+    const changeCardLink = `${baseUrl}/profile/settings`;
+    const couponLink = `${baseUrl}/subscription/manage`;
+    const manageLink = `${baseUrl}/subscription/manage`;
+
+    const template = subscriptionEmailTemplates.paymentReminderTemplate(language, {
+        userName: user?.username || '고객',
+        nextPaymentDate,
+        amount,
+        cardCompany,
+        last4,
+        productList,
+        changeCardLink,
+        couponLink,
+        manageLink,
+        reminderLink
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user?.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('\n========================================');
+        console.log('📧 결제 안내 이메일 (개발 환경)');
+        console.log('========================================');
+        console.log('수신자:', user?.email);
+        console.log('제목:', mailOptions.subject);
+        console.log('========================================\n');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('결제 안내 이메일 전송 성공:', info.messageId);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('결제 안내 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+
+/**
+ * 결제 성공 이메일 전송
+ */
+exports.sendPaymentSuccessEmail = async (subscription, order, baseUrl) => {
+    const user = subscription.user || {};
+    const language = subscription.user_language || user?.preferred_language || 'ko';
+
+    const template = subscriptionEmailTemplates.paymentSuccessTemplate(language, {
+        userName: user.username || '고객',
+        orderNumber: order.order_number || order.id,
+        amount: order.total_amount || 0,
+        paymentDate: new Date().toISOString().split('T')[0],
+        nextPaymentDate: subscription.next_payment_date
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('\n========================================');
+        console.log('📧 결제 성공 이메일 (개발 환경)');
+        console.log('========================================');
+        console.log('수신자:', user.email);
+        console.log('제목:', mailOptions.subject);
+        console.log('========================================\n');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('결제 성공 이메일 전송 성공:', info.messageId);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('결제 성공 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+
+/**
+ * 결제 실패 이메일 전송
+ */
+exports.sendPaymentFailedEmail = async (subscription, reason, baseUrl) => {
+    const user = subscription.user || {};
+    const language = subscription.user_language || user?.preferred_language || 'ko';
+
+    const template = subscriptionEmailTemplates.paymentFailedTemplate(language, {
+        userName: user.username || '고객',
+        paymentDate: new Date().toISOString().split('T')[0],
+        failureReason: reason || '결제 처리 실패',
+        gracePeriodEndDate: subscription.grace_period_end_date || '',
+        retryPaymentLink: `${baseUrl}/subscription/payment-failed`
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('\n========================================');
+        console.log('📧 결제 실패 이메일 (개발 환경)');
+        console.log('========================================');
+        console.log('수신자:', user.email);
+        console.log('제목:', mailOptions.subject);
+        console.log('========================================\n');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('결제 실패 이메일 전송 성공:', info.messageId);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('결제 실패 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+
+/**
+ * 구독 생성 완료 이메일 전송
+ */
+exports.sendSubscriptionCreatedEmail = async (subscription, baseUrl) => {
+    const user = subscription.user || {};
+    const language = subscription.user_language || user?.preferred_language || 'ko';
+
+    const priceCalculationService = require('../order/priceCalculationService');
+    const amount = await priceCalculationService.calculateSubscriptionPrice(
+        subscription.items,
+        user,
+        subscription.coupon
+    );
+
+    const template = subscriptionEmailTemplates.subscriptionCreatedTemplate(language, {
+        userName: user.username || '고객',
+        nextPaymentDate: subscription.next_payment_date,
+        amount
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('\n========================================');
+        console.log('📧 구독 생성 이메일 (개발 환경)');
+        console.log('========================================');
+        console.log('수신자:', user.email);
+        console.log('제목:', mailOptions.subject);
+        console.log('========================================\n');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('구독 생성 이메일 전송 성공:', info.messageId);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('구독 생성 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+
+/**
+ * 구독 취소 이메일 전송
+ */
+exports.sendSubscriptionCancelledEmail = async (subscription, baseUrl) => {
+    const user = subscription.user || {};
+    const language = subscription.user_language || user?.preferred_language || 'ko';
+
+    const template = subscriptionEmailTemplates.subscriptionCancelledTemplate(language, {
+        userName: user.username || '고객'
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('\n========================================');
+        console.log('📧 구독 취소 이메일 (개발 환경)');
+        console.log('========================================');
+        console.log('수신자:', user.email);
+        console.log('제목:', mailOptions.subject);
+        console.log('========================================\n');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('구독 취소 이메일 전송 성공:', info.messageId);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('구독 취소 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+
+/**
+ * 학생 인증 완료 이메일 전송
+ */
+exports.sendStudentVerifiedEmail = async (user, baseUrl) => {
+    const language = user.preferred_language || 'ko';
+    
+    // 간단한 템플릿 (필요시 확장 가능)
+    const templates = {
+        ko: {
+            subject: '[AIDE Market] 학생 인증 완료',
+            html: `<div><h2>안녕하세요 ${user.username}님,</h2><p>학생 인증이 완료되었습니다. 이제 50% 할인 혜택을 받으실 수 있습니다.</p></div>`
+        },
+        en: {
+            subject: '[AIDE Market] Student Verification Completed',
+            html: `<div><h2>Hello ${user.username},</h2><p>Your student verification has been completed. You can now enjoy 50% discount benefits.</p></div>`
+        },
+        ja: {
+            subject: '[AIDE Market] 学生認証完了',
+            html: `<div><h2>${user.username}様</h2><p>学生認証が完了しました。これで50%割引の特典を受けることができます。</p></div>`
+        }
+    };
+
+    const template = templates[language] || templates.ko;
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('📧 학생 인증 완료 이메일 (개발 환경)');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('학생 인증 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+
+/**
+ * 학생 인증 만료 이메일 전송
+ */
+exports.sendStudentExpiredEmail = async (user, baseUrl) => {
+    const language = user.preferred_language || 'ko';
+    
+    const templates = {
+        ko: {
+            subject: '[AIDE Market] 학생 인증 만료 안내',
+            html: `<div><h2>안녕하세요 ${user.username}님,</h2><p>학생 인증이 만료되었습니다. 학생 할인 혜택을 계속 받으시려면 재인증이 필요합니다.</p></div>`
+        },
+        en: {
+            subject: '[AIDE Market] Student Verification Expired',
+            html: `<div><h2>Hello ${user.username},</h2><p>Your student verification has expired. Re-verification is required to continue receiving student discount benefits.</p></div>`
+        },
+        ja: {
+            subject: '[AIDE Market] 学生認証の有効期限切れ',
+            html: `<div><h2>${user.username}様</h2><p>学生認証の有効期限が切れました。学生割引の特典を継続して受けるには、再認証が必要です。</p></div>`
+        }
+    };
+
+    const template = templates[language] || templates.ko;
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('📧 학생 인증 만료 이메일 (개발 환경)');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('학생 만료 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+

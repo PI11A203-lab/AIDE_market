@@ -20,6 +20,9 @@ const orderRoutes = require("../features/order/orderRoutes");
 const orderItemRoutes = require("../features/orderitem/orderItemRoutes");
 const orderCouponRoutes = require("../features/ordercoupon/orderCouponRoutes");
 const paymentMethodRoutes = require("../features/paymentmethod/paymentMethodRoutes");
+const subscriptionRoutes = require("../features/subscription/subscriptionRoutes");
+const productActivationRoutes = require("../features/productactivation/productActivationRoutes");
+const studentAccountRoutes = require("../features/user/studentAccountRoutes");
 const authRoutes = require("../features/auth/authRoutes");
 const adminRoutes = require("../routes/admin");
 
@@ -50,6 +53,9 @@ module.exports = (app) => {
     app.use("/api/order-items", orderItemRoutes);
     app.use("/api/order-coupons", orderCouponRoutes);
     app.use("/api/payment-methods", paymentMethodRoutes);
+    app.use("/api/subscriptions", subscriptionRoutes);
+    app.use("/api/product-activations", productActivationRoutes);
+    app.use("/api/users", studentAccountRoutes); // 학생 계정 관련은 /api/users 하위에
     app.use("/api/admin", adminRoutes);
     
     // 인증 라우트 (구글 OAuth)

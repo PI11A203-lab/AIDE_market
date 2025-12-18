@@ -34,6 +34,36 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id'
             }
         },
+        subscription_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'Subscriptions',
+                key: 'subscription_id'
+            },
+            comment: '구독 ID'
+        },
+        is_recurring: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+            comment: '정기결제 여부'
+        },
+        is_first_payment: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+            comment: '최초 결제 여부'
+        },
+        parent_order_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'Orders',
+                key: 'id'
+            },
+            comment: '최초 주문 ID'
+        }
     }, {
         tableName: 'orders',
         timestamps: true,
@@ -58,6 +88,19 @@ module.exports = (sequelize, DataTypes) => {
         Order.hasMany(models.OrderCoupon, {
             foreignKey: 'order_id',
             as: 'orderCoupons'
+        });
+        Order.belongsTo(models.Subscription, {
+            foreignKey: 'subscription_id',
+            as: 'subscription'
+        });
+        // 자기 참조: parent_order_id
+        Order.belongsTo(models.Order, {
+            foreignKey: 'parent_order_id',
+            as: 'parentOrder'
+        });
+        Order.hasMany(models.Order, {
+            foreignKey: 'parent_order_id',
+            as: 'recurringOrders'
         });
     };
     

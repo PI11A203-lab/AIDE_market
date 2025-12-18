@@ -161,6 +161,11 @@ app.post("/image", upload.single("image"), (req, res) => {
   });
 });
 
+// 스케줄러 가져오기
+const subscriptionScheduler = require('./jobs/subscriptionScheduler');
+const notificationScheduler = require('./jobs/notificationScheduler');
+const studentExpirationScheduler = require('./jobs/studentExpirationScheduler');
+
 // 여기를 수정! 0.0.0.0 추가
 app.listen(port, "0.0.0.0", () => {
   console.log(`サーバーが稼働しています。Port: ${port}`);
@@ -169,6 +174,11 @@ app.listen(port, "0.0.0.0", () => {
     models.sync({ alter: false })
       .then(() => {
         console.log("DB連結成功");
+        // DB 연결 성공 후 스케줄러 시작
+        subscriptionScheduler.start();
+        notificationScheduler.start();
+        studentExpirationScheduler.start();
+        console.log("✅ 스케줄러가 시작되었습니다.");
       })
       .catch((err) => {
         console.error(err);
@@ -181,6 +191,11 @@ app.listen(port, "0.0.0.0", () => {
       .sync()
       .then(() => {
         console.log("DB連結成功");
+        // DB 연결 성공 후 스케줄러 시작
+        subscriptionScheduler.start();
+        notificationScheduler.start();
+        studentExpirationScheduler.start();
+        console.log("✅ 스케줄러가 시작되었습니다.");
       })
       .catch((err) => {
         console.error(err);

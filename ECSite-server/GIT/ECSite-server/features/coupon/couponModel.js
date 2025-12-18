@@ -58,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'coupon_id',
             as: 'orderCoupons'
         });
+        Coupon.hasMany(models.Subscription, {
+            foreignKey: 'coupon_id',
+            as: 'subscriptions'
+        });
     };
     
     return Coupon;

@@ -63,6 +63,10 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'card_id',
             as: 'paymentMethods'
         });
+        CreditCard.hasMany(models.Subscription, {
+            foreignKey: 'card_id',
+            as: 'subscriptions'
+        });
     };
     
     return CreditCard;

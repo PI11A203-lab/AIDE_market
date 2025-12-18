@@ -44,6 +44,11 @@ const modelLoadOrder = [
     'cartitem',    // CartItem - Cart, Productに依存
     'orderitem',   // OrderItem - Order, Product에依存
     'ordercoupon', // OrderCoupon - Order, User, Coupon에依存
+    'subscription', // Subscription - user_id, order_id, card_idに依存 (users, orders, credit_cardsテーブル)
+    'subscriptionitem', // SubscriptionItem - subscription_id, product_idに依存
+    'subscriptionpayment', // SubscriptionPayment - subscription_id, order_idに依存
+    'subscriptionnotification', // SubscriptionNotification - subscription_idに依存
+    'productactivation', // ProductActivation - user_id, product_id, order_id, subscription_idに依存
 ];
 
 // モデルファイルを検索する関数
@@ -447,6 +452,36 @@ async function syncDatabase(options = {}) {
         if (db.OrderCoupon) {
             await db.OrderCoupon.sync({ force, alter });
             console.log('✓ OrderCoupon テーブルを同期しました');
+        }
+        
+        // 14. Subscription（users, orders, credit_cardsに依存）
+        if (db.Subscription) {
+            await db.Subscription.sync({ force, alter });
+            console.log('✓ Subscription テーブルを同期しました');
+        }
+        
+        // 14-1. SubscriptionItem（Subscription, Productに依存）
+        if (db.SubscriptionItem) {
+            await db.SubscriptionItem.sync({ force, alter });
+            console.log('✓ SubscriptionItem テーブルを同期しました');
+        }
+        
+        // 14-2. SubscriptionPayment（Subscription, Orderに依存）
+        if (db.SubscriptionPayment) {
+            await db.SubscriptionPayment.sync({ force, alter });
+            console.log('✓ SubscriptionPayment テーブルを同期しました');
+        }
+        
+        // 14-3. SubscriptionNotification（Subscriptionに依存）
+        if (db.SubscriptionNotification) {
+            await db.SubscriptionNotification.sync({ force, alter });
+            console.log('✓ SubscriptionNotification テーブルを同期しました');
+        }
+        
+        // 14-4. ProductActivation（User, Product, Order, Subscriptionに依存）
+        if (db.ProductActivation) {
+            await db.ProductActivation.sync({ force, alter });
+            console.log('✓ ProductActivation テーブルを同期しました');
         }
         
         // 外部キーチェックを再有効化

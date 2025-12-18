@@ -121,6 +121,16 @@ async function startServer() {
         app.listen(PORT, "0.0.0.0", () => {
             console.log(`サーバーがポート ${PORT} で稼働中`);
             console.log(`環境: ${process.env.NODE_ENV || 'development'}`);
+            
+            // 스케줄러 시작
+            const subscriptionScheduler = require('../jobs/subscriptionScheduler');
+            const notificationScheduler = require('../jobs/notificationScheduler');
+            const studentExpirationScheduler = require('../jobs/studentExpirationScheduler');
+            
+            subscriptionScheduler.start();
+            notificationScheduler.start();
+            studentExpirationScheduler.start();
+            console.log("✅ 스케줄러가 시작되었습니다.");
         });
     } catch (err) {
         console.error("サーバー起動に失敗しました:", err);

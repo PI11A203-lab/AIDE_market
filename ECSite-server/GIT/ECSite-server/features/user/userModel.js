@@ -82,6 +82,33 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             comment: '개발자 타입: frontend, backend, fullstack, mobile, devops, data, security, infrastructure, server, management, other'
         },
+        preferred_language: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            defaultValue: 'ko',
+            comment: '사용자 언어 (ko/en/ja)'
+        },
+        account_type: {
+            type: DataTypes.ENUM('general', 'student', 'corporate'),
+            allowNull: false,
+            defaultValue: 'general',
+            comment: '계정 유형'
+        },
+        student_verified_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            comment: '학생 인증 완료 시각'
+        },
+        student_expires_at: {
+            type: DataTypes.DATEONLY,
+            allowNull: true,
+            comment: '학생 인증 만료일'
+        },
+        student_verification_document: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            comment: '학생증 파일 경로'
+        }
     }, {
         tableName: 'users',
         timestamps: true,
@@ -161,6 +188,14 @@ module.exports = (sequelize, DataTypes) => {
         User.hasMany(models.Cart, {
             foreignKey: 'user_id',
             as: 'carts'
+        });
+        User.hasMany(models.Subscription, {
+            foreignKey: 'user_id',
+            as: 'subscriptions'
+        });
+        User.hasMany(models.ProductActivation, {
+            foreignKey: 'user_id',
+            as: 'activations'
         });
     };
     
