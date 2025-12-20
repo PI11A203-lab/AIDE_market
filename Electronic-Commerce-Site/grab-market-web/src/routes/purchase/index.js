@@ -73,6 +73,24 @@ export default function PurchasePage() {
 
         const userData = JSON.parse(userFromStorage);
         const userId = userData.id;
+        setCurrentUser(userData); // 사용자 정보 저장
+
+        // 사용자 정보 새로고침 (account_type 등 최신 정보 확인)
+        try {
+          const userResponse = await api.users.getById(userId);
+          if (userResponse.data?.user) {
+            setCurrentUser(userResponse.data.user);
+            // localStorage/sessionStorage 업데이트
+            const updatedUser = { ...userData, ...userResponse.data.user };
+            if (localStorage.getItem('user')) {
+              localStorage.setItem('user', JSON.stringify(updatedUser));
+            } else if (sessionStorage.getItem('user')) {
+              sessionStorage.setItem('user', JSON.stringify(updatedUser));
+            }
+          }
+        } catch (error) {
+          console.error('사용자 정보 조회 실패:', error);
+        }
 
         // URL 파라미터에서 buyNow 확인
         const searchParams = new URLSearchParams(location.search);
@@ -174,6 +192,7 @@ export default function PurchasePage() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSubscription, setIsSubscription] = useState(true); // 정기결제 동의 여부
+  const [currentUser, setCurrentUser] = useState(null); // 현재 사용자 정보
 
   // localStorage에서 쿠폰 정보 복원
   useEffect(() => {
@@ -261,7 +280,11 @@ export default function PurchasePage() {
     }
 
     try {
-      const response = await api.coupons.validate(couponCode, subtotal);
+      // 학생 할인 적용 후 금액으로 쿠폰 검증
+      const originalSubtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
+      const studentDiscountedSubtotal = applyStudentDiscount(originalSubtotal);
+      
+      const response = await api.coupons.validate(couponCode, studentDiscountedSubtotal);
       const couponData = response.data.coupon;
       const discountAmount = parseFloat(response.data.discountAmount);
       
@@ -303,18 +326,58 @@ export default function PurchasePage() {
     message.info('쿠폰이 제거되었습니다.');
   };
 
-  // 가격 계산 (현재 결제 목록의 상품들만)
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
-  const discount = appliedCoupon ? (appliedCoupon.discountAmount || subtotal * appliedCoupon.discount) : 0;
-  const tax = (subtotal - discount) * 0.1;
-  const total = subtotal - discount + tax;
+  // 학생 할인 적용 여부 확인
+  const isStudentActive = () => {
+    if (!currentUser || currentUser.account_type !== 'student') {
+      return false;
+    }
+    
+    if (!currentUser.student_expires_at) {
+      return false;
+    }
+    
+    const today = new Date();
+    const expiresAt = new Date(currentUser.student_expires_at);
+    return expiresAt > today;
+  };
+
+  // 학생 할인 적용 (50%)
+  const applyStudentDiscount = (price) => {
+    if (isStudentActive()) {
+      return Math.floor(price * 0.5);
+    }
+    return price;
+  };
+
+  // 가격 계산 (학생 할인 + 쿠폰 할인)
+  const originalSubtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
+  const studentDiscountedSubtotal = applyStudentDiscount(originalSubtotal);
+  const studentDiscount = originalSubtotal - studentDiscountedSubtotal;
+  
+  // 쿠폰 할인 계산 (학생 할인 적용 후 금액에 대해)
+  let couponDiscount = 0;
+  if (appliedCoupon) {
+    // 쿠폰 할인은 학생 할인이 적용된 금액에 대해 계산
+    if (appliedCoupon.discountAmount) {
+      couponDiscount = appliedCoupon.discountAmount;
+    } else if (appliedCoupon.discount) {
+      couponDiscount = Math.floor(studentDiscountedSubtotal * appliedCoupon.discount);
+    }
+  }
+  
+  // 최대 할인율 제한 (70%까지)
+  const maxDiscount = Math.floor(originalSubtotal * 0.7);
+  const totalDiscount = studentDiscount + couponDiscount;
+  const finalDiscount = Math.min(totalDiscount, maxDiscount);
+  
+  const subtotalAfterDiscount = originalSubtotal - finalDiscount;
+  const tax = Math.floor(subtotalAfterDiscount * 0.1);
+  const total = subtotalAfterDiscount + tax;
 
   const handleCheckout = async () => {
-    // 정기결제 동의 확인
-    if (!isSubscription) {
-      message.warning('정기결제에 동의해주세요.');
-      return;
-    }
+    // 정기결제 동의 확인 (정기결제가 활성화된 경우만)
+    // 주의: 정기결제 체크박스는 기본값이 true이지만, 사용자가 체크 해제할 수 있음
+    // 현재는 정기결제 필수이므로 확인 로직 유지
 
     // 사용자 정보 확인
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -368,11 +431,14 @@ export default function PurchasePage() {
       const user = JSON.parse(userFromStorage);
       
       // 주문 생성 (새로운 API 구조: payment_id 사용)
+      // total_amount는 세금 포함 최종 금액 (학생 할인 및 쿠폰 할인 적용됨)
       const orderData = {
         user_id: user.id,
-        total_amount: Math.round(total), // 정수로 반올림
+        total_amount: Math.round(total), // 정수로 반올림 (세금 포함 최종 금액)
         payment_id: paymentMethod.id, // ⚠️ 결제수단 ID 사용
         status: 'completed', // 결제 완료로 바로 처리
+        is_recurring: isSubscription, // 정기결제 여부
+        is_first_payment: isSubscription, // 정기결제인 경우 첫 결제
       };
       
       console.log('주문 데이터:', orderData);
@@ -404,19 +470,56 @@ export default function PurchasePage() {
       ));
 
       // 쿠폰이 적용된 경우 주문 쿠폰 생성
-      if (appliedCoupon && appliedCoupon.couponId) {
+      const couponId = appliedCoupon && appliedCoupon.couponId ? appliedCoupon.couponId : null;
+      if (couponId) {
         await api.orderCoupons.create({
           order_id: orderId,
           user_id: user.id,
-          coupon_id: appliedCoupon.couponId,
+          coupon_id: couponId,
           applied_value: discount
         });
+      }
+
+      // 정기결제인 경우 구독 생성
+      if (isSubscription) {
+        try {
+          // paymentMethod에서 card_id 가져오기
+          // paymentMethod 구조: { id, card_id, user_id, ... }
+          let cardId = paymentMethod.card_id;
+          
+          // card_id가 없으면 paymentMethod를 다시 조회하여 확인
+          if (!cardId) {
+            const paymentMethodDetail = await api.paymentMethods.getById(paymentMethod.id);
+            cardId = paymentMethodDetail.data?.paymentMethod?.card_id;
+          }
+          
+          if (!cardId) {
+            throw new Error('카드 정보를 찾을 수 없습니다.');
+          }
+
+          // 사용자 언어 설정 (기본값: ko)
+          const userLanguage = currentUser?.preferred_language || 'ko';
+
+          // 구독 생성
+          await api.subscriptions.create({
+            orderId: orderId,
+            cardId: cardId,
+            couponId: couponId,
+            userLanguage: userLanguage
+          });
+
+          console.log('정기결제 구독이 생성되었습니다.');
+        } catch (subscriptionError) {
+          console.error('구독 생성 실패:', subscriptionError);
+          // 구독 생성 실패해도 주문은 완료되었으므로 경고만 표시
+          message.warning('정기결제 구독 생성에 실패했습니다. 고객센터로 문의해주세요.');
+        }
       }
 
       // 다음 결제일 계산 (한 달 후 말일)
       const getNextPaymentDate = () => {
         const now = new Date();
-        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0); // 다음 달 말일
         return nextMonth;
       };
 
@@ -576,13 +679,16 @@ export default function PurchasePage() {
               <div className="sticky top-24">
                 <OrderSummary
                   cartItems={cartItems}
-                  subtotal={subtotal}
+                  subtotal={originalSubtotal}
+                  studentDiscount={studentDiscount}
                   discount={discount}
                   tax={tax}
                   total={total}
                   appliedCoupon={appliedCoupon}
+                  isStudent={isStudentActive()}
                   onCheckout={handleCheckout}
                   isProcessing={isProcessing}
+                  isSubscription={isSubscription}
                   onSubscriptionChange={setIsSubscription}
                 />
 

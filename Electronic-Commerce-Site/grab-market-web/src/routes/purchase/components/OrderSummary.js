@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, CheckCircle2 } from 'lucide-react';
 
@@ -27,29 +27,55 @@ const formatNextPaymentDate = (date, locale) => {
 export default function OrderSummary({ 
   cartItems, 
   subtotal, 
+  studentDiscount = 0,
   discount, 
   tax, 
   total, 
   appliedCoupon,
+  isStudent = false,
   onCheckout,
   isProcessing,
+  isSubscription: initialIsSubscription = true,
   onSubscriptionChange
 }) {
   const { t, i18n } = useTranslation();
-  const [isSubscription, setIsSubscription] = useState(true); // 기본값: 정기결제 동의
+  const [isSubscription, setIsSubscription] = useState(initialIsSubscription); // 기본값: 정기결제 동의
   const nextPaymentDate = getNextPaymentDate();
+
+  // isSubscription prop이 변경되면 상태 업데이트
+  useEffect(() => {
+    setIsSubscription(initialIsSubscription);
+  }, [initialIsSubscription]);
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4">
       <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('purchase.summary.title')}</h3>
       <div className="flex flex-col">
+        {/* 원가 표시 */}
         <div className="flex justify-between py-3 text-[15px] text-gray-600">
           <span>{t('purchase.summary.subtotal', { count: cartItems.length })}</span>
-          <span>¥{subtotal.toLocaleString()}</span>
+          <span className={studentDiscount > 0 ? 'line-through text-gray-400' : ''}>
+            ¥{subtotal.toLocaleString()}
+          </span>
         </div>
-        {appliedCoupon && (
+        
+        {/* 학생 할인 표시 */}
+        {isStudent && studentDiscount > 0 && (
+          <div className="flex justify-between py-3 text-[15px] text-blue-700">
+            <span className="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span>학생 할인 (50%)</span>
+            </span>
+            <span>-¥{studentDiscount.toLocaleString()}</span>
+          </div>
+        )}
+        
+        {/* 쿠폰 할인 표시 */}
+        {appliedCoupon && discount > studentDiscount && (
           <div className="flex justify-between py-3 text-[15px] text-green-700">
             <span>{t('purchase.summary.discount', { label: appliedCoupon.label })}</span>
-            <span>-¥{discount.toLocaleString()}</span>
+            <span>-¥{Math.round(discount - studentDiscount).toLocaleString()}</span>
           </div>
         )}
         <div className="flex justify-between py-3 text-[15px] text-gray-600">
@@ -58,7 +84,9 @@ export default function OrderSummary({
         </div>
         <div className="flex justify-between pt-4 mt-4 border-t border-gray-200 text-xl font-bold text-gray-900">
           <span>{t('purchase.summary.total')}</span>
-          <span>¥{Math.round(total).toLocaleString()}</span>
+          <span className={isStudent && studentDiscount > 0 ? 'text-blue-700' : ''}>
+            ¥{Math.round(total).toLocaleString()}
+          </span>
         </div>
       </div>
 

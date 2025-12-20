@@ -850,6 +850,103 @@ export const api = {
     login: (data) => apiClient.post('/auth/login', data),
   },
 
+  // ==================== 정기결제 관련 (Subscriptions) ====================
+  subscriptions: {
+    /**
+     * 구독 생성
+     * @param {Object} data - { orderId, cardId, couponId, userLanguage }
+     */
+    create: (data) => apiClient.post('/api/subscriptions', data),
+
+    /**
+     * 사용자별 구독 목록 조회
+     * @param {number} userId - 사용자 ID
+     */
+    getByUser: (userId) => apiClient.get(`/api/subscriptions/users/${userId}`),
+
+    /**
+     * ID로 구독 조회
+     * @param {number} id - 구독 ID
+     */
+    getById: (id) => apiClient.get(`/api/subscriptions/${id}`),
+
+    /**
+     * 토큰으로 구독 정보 조회 (이메일 링크용)
+     * @param {string} token - 리마인더 토큰
+     */
+    getByReminderToken: (token) => apiClient.get(`/api/subscriptions/reminder/${token}`),
+
+    /**
+     * 결제 수단 변경
+     * @param {number} id - 구독 ID
+     * @param {Object} data - { cardId }
+     */
+    updatePaymentMethod: (id, data) => apiClient.put(`/api/subscriptions/${id}/payment-method`, data),
+
+    /**
+     * 쿠폰 변경
+     * @param {number} id - 구독 ID
+     * @param {Object} data - { couponId }
+     */
+    updateCoupon: (id, data) => apiClient.put(`/api/subscriptions/${id}/coupon`, data),
+
+    /**
+     * 언어 설정 변경
+     * @param {number} id - 구독 ID
+     * @param {Object} data - { language }
+     */
+    updateLanguage: (id, data) => apiClient.put(`/api/subscriptions/${id}/language`, data),
+
+    /**
+     * 구독 취소
+     * @param {number} id - 구독 ID
+     */
+    cancel: (id) => apiClient.post(`/api/subscriptions/${id}/cancel`),
+  },
+
+  // ==================== 활성화 코드 관련 (Product Activations) ====================
+  productActivations: {
+    /**
+     * 사용자별 활성화 코드 목록 조회
+     * @param {number} userId - 사용자 ID
+     * @param {Object} params - { includeSuspended }
+     */
+    getByUser: (userId, params = {}) => apiClient.get(`/api/product-activations/users/${userId}`, { params }),
+
+    /**
+     * 활성화 코드 재활성화
+     * @param {number} id - 활성화 코드 ID
+     */
+    reactivate: (id) => apiClient.post(`/api/product-activations/${id}/reactivate`),
+
+    /**
+     * 활성화 코드 검증
+     * @param {string} code - 활성화 코드
+     */
+    verify: (code) => apiClient.get(`/api/product-activations/verify/${code}`),
+  },
+
+  // ==================== 학생 계정 관련 ====================
+  studentAccount: {
+    /**
+     * 학생 인증 신청 (문서 업로드)
+     * @param {number} userId - 사용자 ID
+     * @param {FormData} formData - multipart/form-data (document 파일 포함)
+     */
+    verify: (userId, formData) =>
+      apiClient.post(`/api/users/${userId}/student-verification`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }),
+
+    /**
+     * 학생 인증 상태 조회
+     * @param {number} userId - 사용자 ID
+     */
+    getStatus: (userId) => apiClient.get(`/api/users/${userId}/student-status`),
+  },
+
   // ==================== Admin 관련 ====================
   admin: {
     /**

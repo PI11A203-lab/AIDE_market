@@ -63,9 +63,9 @@ exports.getOrderByOrderNumber = async (req, res) => {
 exports.createOrder = async (req, res) => {
     let createdOrderId = null;
     try {
-        const { user_id, total_amount, payment_id, status } = req.body;
+        const { user_id, total_amount, payment_id, status, is_recurring, is_first_payment, subscription_id, parent_order_id } = req.body;
         
-        console.log('주문 생성 요청:', { user_id, total_amount, payment_id, status });
+        console.log('주문 생성 요청:', { user_id, total_amount, payment_id, status, is_recurring, is_first_payment, subscription_id, parent_order_id });
         
         if (!user_id || total_amount === undefined || total_amount === null) {
             return res.status(400).json({ error: "user_id와 total_amount는 필수입니다" });
@@ -75,7 +75,11 @@ exports.createOrder = async (req, res) => {
             user_id,
             total_amount,
             payment_id,
-            status
+            status,
+            is_recurring,
+            is_first_payment,
+            subscription_id,
+            parent_order_id
         });
         
         createdOrderId = order.id;

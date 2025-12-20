@@ -239,7 +239,7 @@ exports.findOrdersByUserId = async (userId, page = 1, limit = 20) => {
 };
 
 // 주문 생성
-exports.createOrder = async ({ user_id, total_amount, payment_id, status }) => {
+exports.createOrder = async ({ user_id, total_amount, payment_id, status, is_recurring = false, is_first_payment = false, subscription_id = null, parent_order_id = null }) => {
     if (!user_id || total_amount === undefined || total_amount === null) {
         throw new Error('user_id와 total_amount는 필수입니다');
     }
@@ -302,7 +302,11 @@ exports.createOrder = async ({ user_id, total_amount, payment_id, status }) => {
             order_number: orderNumber,
             total_amount: totalAmountInt,
             payment_id: payment_id ? parseInt(payment_id) : null,
-            status: finalStatus
+            status: finalStatus,
+            is_recurring: is_recurring || false,
+            is_first_payment: is_first_payment || false,
+            subscription_id: subscription_id ? parseInt(subscription_id) : null,
+            parent_order_id: parent_order_id ? parseInt(parent_order_id) : null
         });
     } catch (err) {
         console.error('주문 데이터베이스 생성 에러:', err);
@@ -311,7 +315,11 @@ exports.createOrder = async ({ user_id, total_amount, payment_id, status }) => {
             order_number: orderNumber,
             total_amount: totalAmountInt,
             payment_id: payment_id ? parseInt(payment_id) : null,
-            status: finalStatus
+            status: finalStatus,
+            is_recurring,
+            is_first_payment,
+            subscription_id,
+            parent_order_id
         });
         
         // Sequelize 에러 처리

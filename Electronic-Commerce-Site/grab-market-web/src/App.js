@@ -23,6 +23,10 @@ import AuthCallback from "./auth/callback";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CreatorsPage from "./routes/creators";
 import CreatorDetailPage from "./routes/creators/[id]";
+import SubscriptionReminder from "./routes/subscription/reminder/[token]";
+import SubscriptionManage from "./routes/subscription/manage";
+import PaymentFailed from "./routes/subscription/payment-failed";
+import StudentVerification from "./routes/profile/student-verification";
 
 function App() {
   return (
@@ -60,10 +64,14 @@ function App() {
           <ProtectedRoute exact={true} path="/upload" component={UploadPage} />
           <ProtectedRoute exact={true} path="/profile" component={UserProfile} />
           <ProtectedRoute exact={true} path="/profile/settings" component={ProfileSettings} />
+          <ProtectedRoute exact={true} path="/profile/student-verification" component={StudentVerification} />
           <ProtectedRoute exact={true} path="/team" component={TeamBuilder} />
           <ProtectedRoute exact={true} path="/purchase" component={PurchasePage} />
           <ProtectedRoute exact={true} path="/confirmation" component={PurchaseConfirmation} />
           <ProtectedRoute exact={true} path="/order/:orderId" component={OrderDetailPage} />
+          <ProtectedRoute exact={true} path="/subscription/reminder/:token" component={SubscriptionReminder} />
+          <ProtectedRoute exact={true} path="/subscription/manage" component={SubscriptionManage} />
+          <ProtectedRoute exact={true} path="/subscription/payment-failed" component={PaymentFailed} />
           
           {/* Admin 전용 라우트 - 로그인 + admin 권한 필요 */}
           <ProtectedRoute exact={true} path="/profile/upload" component={AdminProductUpload} requireAdmin={true} />

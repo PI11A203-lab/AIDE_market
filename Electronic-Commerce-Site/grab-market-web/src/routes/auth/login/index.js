@@ -46,8 +46,9 @@ export default function LoginPage() {
 
         message.success(t('auth.login.success'));
         
-        // 원래 접근하려던 페이지로 리다이렉트 (없으면 홈으로)
-        const from = location.state?.from?.pathname || '/';
+        // 리다이렉트 처리: URL 파라미터 > state > 홈
+        const redirectParam = new URLSearchParams(location.search).get('redirect');
+        const from = redirectParam || location.state?.from?.pathname || '/';
         history.push(from);
       } else {
         message.error(t('auth.login.fail'));
