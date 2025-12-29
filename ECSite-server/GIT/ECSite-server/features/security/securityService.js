@@ -1,6 +1,7 @@
 const models = require('../../db/initializer');
 const { Op } = require('sequelize');
 const { Sequelize } = require('sequelize');
+const sequelize = models.sequelize;
 
 /**
  * 보안 이벤트 목록 조회
@@ -212,28 +213,202 @@ exports.unblockIPManual = async (ipAddress) => {
   return await ipManagementService.unblockIP(ipAddress);
 };
 
-// 보안 설정 저장소 (실제로는 DB 테이블 또는 설정 파일에 저장해야 함)
-let securitySettings = {
-  auto_block_enabled: true,
-  bot_detection_threshold: 70,
-  max_login_attempts: 5,
-  block_duration_hours: 24
+// autoBlockService와 통합
+const autoBlockService = require('../../services/autoBlockService');
+
+/**
+ * 일별 보안 이벤트 추이 (최근 N일)
+ */
+exports.getEventTrendData = async (days = 7) => {
+  try {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
+
+    const events = await models.SecurityEvent.findAll({
+      where: {
+        created_at: {
+          [Op.gte]: startDate
+        }
+      },
+      attributes: [
+        [sequelize.fn('DATE', sequelize.col('created_at')), 'date'],
+        'event_type',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: [
+        sequelize.fn('DATE', sequelize.col('created_at')),
+        'event_type'
+      ],
+      order: [
+        [sequelize.fn('DATE', sequelize.col('created_at')), 'ASC']
+      ],
+      raw: true
+    });
+
+    // 데이터 포맷팅 (그래프용)
+    const trendData = {};
+    events.forEach(event => {
+      const date = event.date ? new Date(event.date).toISOString().split('T')[0] : null;
+      if (!date) return;
+
+      const type = event.event_type;
+      const count = parseInt(event.count) || 0;
+
+      if (!trendData[date]) {
+        trendData[date] = {
+          date,
+          login_failed: 0,
+          bot_detected: 0,
+          api_abuse: 0,
+          scraping: 0,
+          suspicious_activity: 0,
+          ip_blocked: 0
+        };
+      }
+
+      if (trendData[date].hasOwnProperty(type)) {
+        trendData[date][type] = count;
+      }
+    });
+
+    return Object.values(trendData);
+  } catch (error) {
+    console.error('이벤트 추이 데이터 조회 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 이벤트 유형별 분포 (파이 차트용)
+ */
+exports.getEventDistribution = async (days = 7) => {
+  try {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
+
+    const distribution = await models.SecurityEvent.findAll({
+      where: {
+        created_at: {
+          [Op.gte]: startDate
+        }
+      },
+      attributes: [
+        'event_type',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: ['event_type'],
+      raw: true
+    });
+
+    return distribution.map(item => ({
+      name: item.event_type,
+      value: parseInt(item.count) || 0
+    }));
+  } catch (error) {
+    console.error('이벤트 분포 데이터 조회 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 시간대별 이벤트 분포 (히트맵용)
+ */
+exports.getHourlyDistribution = async (days = 7) => {
+  try {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
+
+    const hourly = await models.SecurityEvent.findAll({
+      where: {
+        created_at: {
+          [Op.gte]: startDate
+        }
+      },
+      attributes: [
+        [sequelize.fn('HOUR', sequelize.col('created_at')), 'hour'],
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: [sequelize.fn('HOUR', sequelize.col('created_at'))],
+      order: [[sequelize.fn('HOUR', sequelize.col('created_at')), 'ASC']],
+      raw: true
+    });
+
+    // 0-23시 전체 데이터 생성 (빈 시간대는 0으로)
+    const result = Array.from({ length: 24 }, (_, i) => ({
+      hour: i,
+      count: 0
+    }));
+
+    hourly.forEach(item => {
+      const hour = parseInt(item.hour);
+      if (hour >= 0 && hour < 24) {
+        result[hour].count = parseInt(item.count) || 0;
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error('시간대별 이벤트 분포 조회 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * TOP 공격 IP 리스트
+ */
+exports.getTopAttackIPs = async (days = 7, limit = 10) => {
+  try {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
+
+    const topIPs = await models.SecurityEvent.findAll({
+      where: {
+        created_at: {
+          [Op.gte]: startDate
+        },
+        severity: {
+          [Op.in]: ['high', 'critical']
+        }
+      },
+      attributes: [
+        'ip_address',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'event_count'],
+        [sequelize.fn('MAX', sequelize.col('severity')), 'max_severity']
+      ],
+      group: ['ip_address'],
+      order: [[sequelize.literal('event_count'), 'DESC']],
+      limit: parseInt(limit),
+      raw: true
+    });
+
+    return topIPs.map(item => ({
+      ip: item.ip_address,
+      eventCount: parseInt(item.event_count) || 0,
+      maxSeverity: item.max_severity || 'medium'
+    }));
+  } catch (error) {
+    console.error('TOP 공격 IP 조회 실패:', error);
+    throw error;
+  }
 };
 
 /**
  * 보안 설정 조회
  */
 exports.getSecuritySettings = async () => {
-  // TODO: 실제로는 DB나 설정 파일에서 읽어와야 함
-  return securitySettings;
+  // autoBlockService에서 설정 가져오기
+  return await autoBlockService.getSecuritySettings();
 };
 
 /**
  * 보안 설정 업데이트
  */
-exports.updateSecuritySettings = async (newSettings) => {
-  // TODO: 실제로는 DB나 설정 파일에 저장해야 함
-  securitySettings = { ...securitySettings, ...newSettings };
-  return securitySettings;
+exports.updateSecuritySettings = async (newSettings, userId = null) => {
+  // autoBlockService에서 설정 업데이트
+  return await autoBlockService.updateSecuritySettings(newSettings, userId);
 };
 

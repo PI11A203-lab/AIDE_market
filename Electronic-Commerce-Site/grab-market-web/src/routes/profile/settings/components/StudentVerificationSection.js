@@ -6,36 +6,73 @@ export default function StudentVerificationSection({ studentStatus }) {
   const history = useHistory();
 
   const getStatusInfo = () => {
-    if (!studentStatus || studentStatus.account_type !== 'student' || !studentStatus.student_verified_at) {
-      return {
-        status: 'pending',
-        icon: <Clock className="w-5 h-5" style={{ color: '#f59e0b' }} />,
-        text: '인증 대기 중',
-        description: '학생 인증을 신청하면 모든 상품에 50% 할인을 받을 수 있습니다.',
-        color: 'yellow'
-      };
-    }
+    // 상태 계산 로직 - student-verification/index.js와 동일
+    const getStatus = () => {
+      // student_verified_at이 null이 아니면 승인됨 (또는 만료됨)
+      if (studentStatus?.student_verified_at) {
+        if (studentStatus.student_expires_at) {
+          const today = new Date();
+          const expiresAt = new Date(studentStatus.student_expires_at);
+          return expiresAt > today ? 'verified' : 'expired';
+        }
+        return 'verified';
+      }
+      
+      // student_verified_at이 null이고 student_verification_document가 있으면 대기 중
+      if (studentStatus?.student_verification_document) {
+        return 'pending';
+      }
+      
+      // 그 외에는 미신청
+      return 'not_applied';
+    };
 
-    const today = new Date();
-    const expiresAt = studentStatus.student_expires_at ? new Date(studentStatus.student_expires_at) : null;
+    const status = getStatus();
 
-    if (expiresAt && expiresAt > today) {
-      const daysUntilExpiry = Math.ceil((expiresAt - today) / (1000 * 60 * 60 * 24));
+    // 상태별 정보 반환
+    if (status === 'verified') {
+      const today = new Date();
+      const expiresAt = studentStatus.student_expires_at ? new Date(studentStatus.student_expires_at) : null;
+      const daysUntilExpiry = expiresAt ? Math.ceil((expiresAt - today) / (1000 * 60 * 60 * 24)) : null;
+      
       return {
         status: 'verified',
         icon: <CheckCircle className="w-5 h-5" style={{ color: '#10b981' }} />,
         text: '인증 완료',
-        description: `학생 할인(50%)이 적용 중입니다. 만료까지 ${daysUntilExpiry}일 남았습니다.`,
+        description: daysUntilExpiry !== null 
+          ? `학생 할인(50%)이 적용 중입니다. 만료까지 ${daysUntilExpiry}일 남았습니다.`
+          : '학생 할인(50%)이 적용 중입니다.',
         color: 'green'
       };
     }
 
+    if (status === 'pending') {
+      return {
+        status: 'pending',
+        icon: <Clock className="w-5 h-5" style={{ color: '#f59e0b' }} />,
+        text: '인증 대기 중',
+        description: '학생증이 업로드되었습니다. 관리자 검토 후 승인됩니다.',
+        color: 'yellow'
+      };
+    }
+
+    if (status === 'expired') {
+      return {
+        status: 'expired',
+        icon: <XCircle className="w-5 h-5" style={{ color: '#ef4444' }} />,
+        text: '인증 만료',
+        description: '학생 인증이 만료되었습니다. 갱신해주세요.',
+        color: 'red'
+      };
+    }
+
+    // not_applied
     return {
-      status: 'expired',
-      icon: <XCircle className="w-5 h-5" style={{ color: '#ef4444' }} />,
-      text: '인증 만료',
-      description: '학생 인증이 만료되었습니다. 갱신해주세요.',
-      color: 'red'
+      status: 'not_applied',
+      icon: <Clock className="w-5 h-5" style={{ color: '#6b7280' }} />,
+      text: '미인증',
+      description: '학생 인증을 신청하면 모든 상품에 50% 할인을 받을 수 있습니다.',
+      color: 'gray'
     };
   };
 
@@ -77,7 +114,7 @@ export default function StudentVerificationSection({ studentStatus }) {
           <p className="student-status-description">{statusInfo.description}</p>
 
           {/* 인증 정보 */}
-          {studentStatus?.student_verified_at && (
+          {statusInfo.status === 'verified' && studentStatus?.student_verified_at && (
             <div className="student-status-details">
               <div className="student-status-detail-item">
                 <span className="detail-label">인증 완료일:</span>
@@ -89,6 +126,26 @@ export default function StudentVerificationSection({ studentStatus }) {
                   <span className="detail-value">{formatDate(studentStatus.student_expires_at)}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* 대기 중 상태 정보 */}
+          {statusInfo.status === 'pending' && (
+            <div className="student-status-details">
+              <div className="student-status-detail-item">
+                <span className="detail-label">상태:</span>
+                <span className="detail-value">관리자 검토 대기 중</span>
+              </div>
+            </div>
+          )}
+
+          {/* 만료 상태 정보 */}
+          {statusInfo.status === 'expired' && studentStatus?.student_expires_at && (
+            <div className="student-status-details">
+              <div className="student-status-detail-item">
+                <span className="detail-label">만료일:</span>
+                <span className="detail-value">{formatDate(studentStatus.student_expires_at)}</span>
+              </div>
             </div>
           )}
         </div>

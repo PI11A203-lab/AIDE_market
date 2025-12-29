@@ -53,6 +53,7 @@ const modelLoadOrder = [
     'ipmanagement', // IpManagement - blocked_byに依存 (usersテーブル)
     'securityevent', // SecurityEvent - user_idに依存 (usersテーブル)
     'botdetection', // BotDetection - blocked_byに依存 (usersテーブル)
+    'securitysetting', // SecuritySetting - updated_byに依存 (usersテーブル)
 ];
 
 // モデルファイルを検索する関数
@@ -155,6 +156,12 @@ modelLoadOrder.forEach((feature) => {
     if (!modelPath && (feature.startsWith('ip') || feature.startsWith('security') || feature.startsWith('bot'))) {
         const securityPath = path.join(modelsDir, 'security');
         modelPath = findModelFile(securityPath, feature);
+    }
+    
+    // SecuritySetting 모델은 security/models 디렉토리에서 찾기
+    if (!modelPath && feature === 'securitysetting') {
+        const securityModelsPath = path.join(modelsDir, 'security', 'models');
+        modelPath = findModelFile(securityModelsPath, 'SecuritySetting');
     }
     
     if (modelPath) {

@@ -7,8 +7,9 @@ const { requireSuperAdmin } = require("../../middleware/adminAuth");
 // 학생 인증 신청 (문서 업로드) - 일반 사용자용
 router.post("/:userId/student-verification", studentAccountController.upload, studentAccountController.verifyStudent);
 
-// 학생 인증 승인 (관리자용 또는 테스트용)
-router.post("/:userId/student-verification/approve", studentAccountController.approveStudent);
+// 학생 인증 승인 (super_admin 전용) - 보안을 위해 requireSuperAdmin 추가
+// 주의: 프론트엔드는 /api/admin/users/:userId/student-verification/approve를 사용해야 함
+router.post("/:userId/student-verification/approve", requireSuperAdmin, studentAccountController.approveStudent);
 
 // 학생 인증 상태 조회
 router.get("/:userId/student-status", studentAccountController.getStudentStatus);

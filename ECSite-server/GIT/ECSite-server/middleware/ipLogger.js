@@ -1,4 +1,5 @@
 const db = require('../db/initializer');
+const geolocationService = require('../services/geolocationService');
 
 /**
  * IP 접속 로그 기록 미들웨어
@@ -22,12 +23,22 @@ exports.logIpAccess = async (req, res, next) => {
           return;
         }
 
+        // 위치 정보 조회 (캐시 사용, 비동기로 실행하여 요청 속도에 영향 없음)
+        let location = { country: null, city: null };
+        try {
+          location = await geolocationService.getLocation(ipAddress);
+        } catch (geoError) {
+          console.warn(`위치 정보 조회 실패 (${ipAddress}):`, geoError.message);
+        }
+
         await db.IpAccessLog.create({
           ip_address: ipAddress,
           user_id: req.user?.id || null,
           request_path: req.path,
           request_method: req.method,
-          user_agent: req.headers['user-agent'] || null
+          user_agent: req.headers['user-agent'] || null,
+          country: location.country,
+          city: location.city
         });
       } catch (error) {
         // 로깅 실패해도 무시 (비즈니스 로직에 영향 없음)

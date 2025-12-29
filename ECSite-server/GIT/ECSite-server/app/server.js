@@ -68,6 +68,38 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 const ipLogger = require('../middleware/ipLogger');
 app.use(ipLogger.logIpAccess);
 
+// 보안 미들웨어 활성화 여부 (환경 변수로 제어 가능, 기본값: 비활성화)
+const ENABLE_SECURITY_MIDDLEWARE = process.env.ENABLE_SECURITY_MIDDLEWARE === 'true';
+
+if (ENABLE_SECURITY_MIDDLEWARE) {
+  // IP 차단 미들웨어 (라우트 전에 적용)
+  const ipBlockMiddleware = require('../middleware/ipBlockMiddleware');
+  app.use(ipBlockMiddleware.checkIPBlock);
+
+  // Rate Limiting 미들웨어
+  const rateLimiter = require('../middleware/rateLimiter');
+  app.use(rateLimiter.globalRateLimiter); // 글로벌 Rate Limiter (1분에 1000개)
+  app.use('/api', rateLimiter.apiRateLimiter); // API Rate Limiter (1분에 100개)
+  app.use('/auth', rateLimiter.authRateLimiter); // 인증 Rate Limiter (1분에 10개)
+
+  // 봇 탐지 미들웨어
+  const botDetector = require('../middleware/botDetector');
+  app.use(botDetector.botCheckMiddleware);
+
+  // 스크래핑 탐지 미들웨어
+  const scrapingDetector = require('../middleware/scrapingDetector');
+  app.use(scrapingDetector.detectScraping);
+
+  // 404 에러 추적 미들웨어
+  const notFoundTracker = require('../middleware/notFoundTracker');
+  app.use(notFoundTracker.trackNotFound);
+  
+  console.log('🔒 보안 미들웨어 활성화됨 (ENABLE_SECURITY_MIDDLEWARE=true)');
+} else {
+  console.log('⚠️  보안 미들웨어 비활성화됨 (IP 차단, Rate Limiting, 봇 탐지, 스크래핑 탐지)');
+  console.log('   활성화하려면 환경 변수 설정: ENABLE_SECURITY_MIDDLEWARE=true');
+}
+
 // Multer設定
 const upload = multer({
     storage: multer.diskStorage({
@@ -82,6 +114,14 @@ const upload = multer({
 
 // 全ルート登録
 registerRoutes(app);
+
+// 404 핸들러 (라우트 등록 후)
+const { notFoundHandler } = require('../middleware/errorHandler');
+app.use(notFoundHandler);
+
+// 글로벌 에러 핸들러 (모든 미들웨어 후)
+const { errorHandler } = require('../middleware/errorHandler');
+app.use(errorHandler);
 
 // データベース接続のリトライ関数
 async function connectDatabase(maxRetries = 10, retryDelay = 5000) {
@@ -134,6 +174,15 @@ async function startServer() {
             subscriptionScheduler.start();
             notificationScheduler.start();
             studentExpirationScheduler.start();
+            
+            // 자동 차단 해제 스케줄러 시작
+            const { startAutoUnblockScheduler } = require('../jobs/autoUnblockScheduler');
+            startAutoUnblockScheduler();
+            
+            // 로그 아카이빙 스케줄러 시작
+            const { startLogArchiveScheduler } = require('../jobs/logArchiveScheduler');
+            startLogArchiveScheduler();
+            
             console.log("✅ 스케줄러가 시작되었습니다.");
         });
     } catch (err) {

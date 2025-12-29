@@ -1,16 +1,63 @@
 const db = require('../db/initializer');
+const jwt = require('jsonwebtoken');
+
+/**
+ * JWT 토큰에서 사용자 정보 가져오기
+ */
+const getUserFromToken = async (req) => {
+  // 이미 req.user가 설정되어 있는 경우
+  if (req.user) {
+    return req.user;
+  }
+
+  // Authorization 헤더에서 JWT 토큰 확인
+  const authHeader = req.headers.authorization || '';
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.substring(7).trim();
+  
+  if (!token || token === 'null' || token === 'undefined' || token.length === 0) {
+    return null;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'jwt-secret');
+    
+    if (!decoded || !decoded.id) {
+      return null;
+    }
+
+    const user = await db.User.findByPk(decoded.id);
+    if (!user) {
+      return null;
+    }
+
+    return user.toJSON ? user.toJSON() : user;
+  } catch (error) {
+    console.error('JWT 토큰 검증 실패:', error.message);
+    return null;
+  }
+};
 
 /**
  * admin 또는 super_admin 권한 체크 미들웨어
  */
 const adminAuth = async (req, res, next) => {
   try {
-    // req.user가 없는 경우 헤더에서 user-id 가져오기 (임시)
-    let user = req.user;
+    // JWT 토큰에서 사용자 정보 가져오기
+    let user = await getUserFromToken(req);
+    
+    // 헤더에서 user-id 가져오기 (임시, JWT가 없을 경우)
     if (!user) {
       const userId = req.headers['user-id'];
       if (userId) {
         user = await db.User.findByPk(userId);
+        if (user) {
+          user = user.toJSON ? user.toJSON() : user;
+        }
       }
     }
 
@@ -37,12 +84,17 @@ const adminAuth = async (req, res, next) => {
  */
 const requireSuperAdmin = async (req, res, next) => {
   try {
-    // req.user가 없는 경우 헤더에서 user-id 가져오기 (임시)
-    let user = req.user;
+    // JWT 토큰에서 사용자 정보 가져오기
+    let user = await getUserFromToken(req);
+    
+    // 헤더에서 user-id 가져오기 (임시, JWT가 없을 경우)
     if (!user) {
       const userId = req.headers['user-id'];
       if (userId) {
         user = await db.User.findByPk(userId);
+        if (user) {
+          user = user.toJSON ? user.toJSON() : user;
+        }
       }
     }
 

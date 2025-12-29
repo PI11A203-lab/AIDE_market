@@ -30,5 +30,11 @@ router.post('/management/whitelist', ipManagementController.whitelistIP);
 // IP 관리 목록
 router.get('/management', ipManagementController.getIPManagement);
 
+// 통계 API
+router.get('/access/trend', ipManagementController.getAccessTrendData);
+router.get('/access/countries', ipManagementController.getCountryDistribution);
+router.get('/access/hourly', ipManagementController.getHourlyAccessDistribution);
+router.get('/access/top-ips', ipManagementController.getTopAccessIPs);
+
 module.exports = router;
 

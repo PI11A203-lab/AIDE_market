@@ -36,5 +36,15 @@ router.get('/settings', securityController.getSecuritySettings);
 // 보안 설정 업데이트
 router.put('/settings', securityController.updateSecuritySettings);
 
+// 통계 API
+router.get('/events/trend', securityController.getEventTrendData);
+router.get('/events/distribution', securityController.getEventDistribution);
+router.get('/events/hourly', securityController.getHourlyDistribution);
+router.get('/events/top-ips', securityController.getTopAttackIPs);
+
+// 메모리 관리 API
+router.get('/memory/stats', securityController.getMemoryStats);
+router.post('/memory/cleanup', securityController.forceMemoryCleanup);
+
 module.exports = router;
 

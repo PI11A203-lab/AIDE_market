@@ -1,10 +1,24 @@
 const jwt = require('jsonwebtoken');
 const userService = require('../user/userService');
+const loginAttemptTracker = require('../../middleware/loginAttemptTracker');
+
+/**
+ * IP 주소 추출 헬퍼 함수
+ */
+const getClientIP = (req) => {
+  return req.headers['cf-connecting-ip'] 
+    || req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+    || req.ip 
+    || req.connection?.remoteAddress
+    || req.socket?.remoteAddress
+    || 'unknown';
+};
 
 // 일반 로그인 (이메일/비밀번호)
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        const ipAddress = getClientIP(req);
 
         if (!email || !password) {
             return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
@@ -13,21 +27,25 @@ exports.login = async (req, res) => {
         // 이메일로 사용자 찾기 (비밀번호 포함)
         const user = await userService.findUserByEmail(email);
         
-        if (!user) {
-            return res.status(401).json({ error: '이메일 또는 비밀번호가 올바르지 않습니다.' });
+        // 사용자 없음 또는 비밀번호 불일치
+        const isInvalidCredentials = !user || 
+            user.auth_provider === 'google' || 
+            !(await user.validatePassword(password));
+
+        if (isInvalidCredentials) {
+            // 로그인 실패 기록
+            const attemptCount = await loginAttemptTracker.recordLoginFailure(ipAddress);
+            const remainingAttempts = 5 - attemptCount;
+
+            return res.status(401).json({ 
+                success: false,
+                error: 'メールアドレスまたはパスワードが正しくありません',
+                remainingAttempts: remainingAttempts > 0 ? remainingAttempts : 0
+            });
         }
 
-        // 구글 로그인 사용자인 경우
-        if (user.auth_provider === 'google') {
-            return res.status(401).json({ error: '이 계정은 구글 로그인을 사용해주세요.' });
-        }
-
-        // 비밀번호 검증
-        const isValidPassword = await user.validatePassword(password);
-        
-        if (!isValidPassword) {
-            return res.status(401).json({ error: '이메일 또는 비밀번호가 올바르지 않습니다.' });
-        }
+        // 로그인 성공 - 시도 횟수 리셋
+        loginAttemptTracker.resetLoginAttempts(ipAddress);
 
         // JWT 토큰 생성
         const token = jwt.sign(

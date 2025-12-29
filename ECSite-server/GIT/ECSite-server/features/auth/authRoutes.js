@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const authController = require('./authController');
+const loginAttemptTracker = require('../../middleware/loginAttemptTracker');
 
 // 일반 로그인 (이메일/비밀번호)
 // POST /auth/login
-router.post('/login', authController.login);
+router.post('/login', loginAttemptTracker.checkLoginAttempts, authController.login);
 
 // 구글 로그인 시작
 // GET /auth/google

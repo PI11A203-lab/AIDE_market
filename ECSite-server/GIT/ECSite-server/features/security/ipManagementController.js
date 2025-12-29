@@ -209,3 +209,59 @@ exports.getIPManagement = async (req, res) => {
   }
 };
 
+/**
+ * 접속 추이 데이터
+ */
+exports.getAccessTrendData = async (req, res) => {
+  try {
+    const { days = 7 } = req.query;
+    const data = await ipManagementService.getAccessTrendData(parseInt(days));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('접속 추이 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * 국가별 접속 분포
+ */
+exports.getCountryDistribution = async (req, res) => {
+  try {
+    const { days = 7 } = req.query;
+    const data = await ipManagementService.getCountryDistribution(parseInt(days));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('국가별 분포 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * 시간대별 접속 분포
+ */
+exports.getHourlyAccessDistribution = async (req, res) => {
+  try {
+    const { days = 7 } = req.query;
+    const data = await ipManagementService.getHourlyAccessDistribution(parseInt(days));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('시간대별 접속 분포 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * TOP 접속 IP 리스트
+ */
+exports.getTopAccessIPs = async (req, res) => {
+  try {
+    const { days = 7, limit = 10 } = req.query;
+    const data = await ipManagementService.getTopAccessIPs(parseInt(days), parseInt(limit));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('TOP 접속 IP 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+

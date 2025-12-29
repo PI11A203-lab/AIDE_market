@@ -13,8 +13,8 @@ export default function StudentVerification() {
   const [studentStatus, setStudentStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [approving, setApproving] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const loadStudentStatus = async () => {
@@ -28,6 +28,7 @@ export default function StudentVerification() {
 
         const userData = JSON.parse(userFromStorage);
         setCurrentUserId(userData.id);
+        setCurrentUser(userData);
 
         const response = await api.studentAccount.getStatus(userData.id);
         setStudentStatus(response.data);
@@ -49,9 +50,12 @@ export default function StudentVerification() {
       formData.append('document', file);
 
       await api.studentAccount.verify(currentUserId, formData);
-      message.success('학생 인증이 신청되었습니다. 검토 후 처리됩니다.');
+      message.success({
+        content: '✅ 학생 인증이 신청되었습니다. 관리자 검토 목록에 추가되었습니다.',
+        duration: 5
+      });
       
-      // 상태 새로고침
+      // 상태 새로고침 (업로드 후 즉시 대기 중 상태로 변경됨)
       const statusResponse = await api.studentAccount.getStatus(currentUserId);
       setStudentStatus(statusResponse.data);
     } catch (error) {
@@ -63,26 +67,7 @@ export default function StudentVerification() {
     }
   };
 
-  // 테스트용 승인 처리 (더미 데이터)
-  const handleApprove = async () => {
-    if (!currentUserId) return;
-    
-    setApproving(true);
-    try {
-      await api.studentAccount.approve(currentUserId);
-      message.success('학생 인증이 승인되었습니다!');
-      
-      // 상태 새로고침
-      const statusResponse = await api.studentAccount.getStatus(currentUserId);
-      setStudentStatus(statusResponse.data);
-    } catch (error) {
-      console.error('학생 인증 승인 실패:', error);
-      const errorMessage = error.response?.data?.error || '학생 인증 승인에 실패했습니다.';
-      message.error(errorMessage);
-    } finally {
-      setApproving(false);
-    }
-  };
+  // 테스트용 승인 처리 제거 - super_admin은 /profile/super-admin/student-verifications에서 승인해야 함
 
   if (loading) {
     return (
@@ -92,19 +77,32 @@ export default function StudentVerification() {
     );
   }
 
-  const status = studentStatus?.account_type === 'student' && studentStatus?.student_verified_at
-    ? (() => {
-        if (!studentStatus.student_expires_at) return 'verified';
+  // 상태 계산 로직 개선
+  const getStatus = () => {
+    // student_verified_at이 null이 아니면 승인됨 (또는 만료됨)
+    if (studentStatus?.student_verified_at) {
+      if (studentStatus.student_expires_at) {
         const today = new Date();
         const expiresAt = new Date(studentStatus.student_expires_at);
         return expiresAt > today ? 'verified' : 'expired';
-      })()
-    : 'pending';
+      }
+      return 'verified';
+    }
+    
+    // student_verified_at이 null이고 student_verification_document가 있으면 대기 중
+    if (studentStatus?.student_verification_document) {
+      return 'pending';
+    }
+    
+    // 그 외에는 미신청
+    return 'not_applied';
+  };
 
-  const shouldShowUpload = status === 'pending' || status === 'expired';
+  const status = getStatus();
+  const isPending = status === 'pending';
   
-  // 대기 중이고 문서가 업로드된 경우 (테스트용 승인 버튼 표시)
-  const isPendingWithDocument = status === 'pending' && studentStatus?.student_verification_document;
+  // super_admin 여부 확인
+  const isSuperAdmin = currentUser?.role === 'super_admin';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -131,31 +129,43 @@ export default function StudentVerification() {
           <StudentStatusCard studentStatus={studentStatus} />
         </div>
 
-        {/* 학생증 업로드 섹션 */}
-        {shouldShowUpload && (
-          <div className="mb-6">
-            <StudentDocumentUpload
-              onUpload={handleUpload}
-              uploading={uploading}
-              currentDocument={studentStatus?.student_verification_document}
-            />
-          </div>
-        )}
+        {/* 학생증 업로드 섹션 - 상태에 관계없이 항상 표시 (대기 중일 때는 안내 메시지만 표시) */}
+        <div className="mb-6">
+          <StudentDocumentUpload
+            onUpload={handleUpload}
+            uploading={uploading}
+            currentDocument={studentStatus?.student_verification_document}
+            disabled={isPending || status === 'verified'}
+          />
+        </div>
 
-        {/* 테스트용 승인 버튼 (대기 중이고 문서가 업로드된 경우) */}
-        {isPendingWithDocument && (
-          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-yellow-900 mb-2">테스트용 승인</h3>
-            <p className="text-sm text-yellow-800 mb-4">
-              학생증이 업로드되었습니다. 테스트를 위해 인증을 승인할 수 있습니다.
-            </p>
-            <button
-              onClick={handleApprove}
-              disabled={approving}
-              className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {approving ? '승인 중...' : '인증 승인하기 (테스트용)'}
-            </button>
+        {/* 대기 중 상태 표시 (명확하게) */}
+        {isPending && (
+          <div className="mb-6 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-6">
+            <div className="flex items-start gap-3">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-yellow-900 mb-2 flex items-center gap-2">
+                  <span className="text-2xl">⏳</span>
+                  인증 대기 중
+                </h3>
+                <p className="text-sm text-yellow-800 mb-2">
+                  학생증이 성공적으로 업로드되었습니다. 관리자 검토 후 승인됩니다.
+                </p>
+                <p className="text-xs text-yellow-700">
+                  승인 완료까지 보통 1-2영업일이 소요됩니다.
+                </p>
+              </div>
+            </div>
+            {isSuperAdmin && (
+              <div className="mt-4 pt-4 border-t border-yellow-300">
+                <button
+                  onClick={() => history.push('/profile/super-admin/student-verifications')}
+                  className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition font-semibold"
+                >
+                  관리자 페이지에서 승인하기
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -169,7 +179,7 @@ export default function StudentVerification() {
             <li>• 학생 인증 시 모든 상품에 50% 할인이 자동으로 적용됩니다.</li>
             <li>• 학생 할인은 쿠폰 할인과 중복 적용 가능하며, 최대 70%까지 할인됩니다.</li>
             <li>• 학생 인증은 1년간 유효합니다. 만료 전에 갱신해주세요.</li>
-            <li>• 업로드된 문서는 검토 후 승인됩니다. (테스트 환경에서는 자동 승인)</li>
+            <li>• 업로드된 문서는 관리자 검토 후 승인됩니다.</li>
             <li>• 인증이 거부된 경우 고객센터로 문의해주세요.</li>
           </ul>
         </div>

@@ -3,20 +3,6 @@ import { CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { formatDate, calculateDaysUntil } from '../../../subscription/utils/formatters';
 
 export default function StudentStatusCard({ studentStatus }) {
-  const isStudentActive = () => {
-    if (!studentStatus || studentStatus.account_type !== 'student') {
-      return false;
-    }
-    
-    if (!studentStatus.student_expires_at) {
-      return false;
-    }
-    
-    const today = new Date();
-    const expiresAt = new Date(studentStatus.student_expires_at);
-    return expiresAt > today;
-  };
-
   const daysUntilExpiry = () => {
     if (!studentStatus?.student_expires_at) return null;
     return calculateDaysUntil(studentStatus.student_expires_at);
@@ -47,9 +33,28 @@ export default function StudentStatusCard({ studentStatus }) {
     }
   };
 
-  const status = studentStatus?.account_type === 'student' && studentStatus?.student_verified_at
-    ? (isStudentActive() ? 'verified' : 'expired')
-    : 'pending';
+  // 상태 계산 로직 개선 - index.js와 동일한 로직 사용
+  const getStatus = () => {
+    // student_verified_at이 null이 아니면 승인됨 (또는 만료됨)
+    if (studentStatus?.student_verified_at) {
+      if (studentStatus.student_expires_at) {
+        const today = new Date();
+        const expiresAt = new Date(studentStatus.student_expires_at);
+        return expiresAt > today ? 'verified' : 'expired';
+      }
+      return 'verified';
+    }
+    
+    // student_verified_at이 null이고 student_verification_document가 있으면 대기 중
+    if (studentStatus?.student_verification_document) {
+      return 'pending';
+    }
+    
+    // 그 외에는 미신청
+    return 'not_applied';
+  };
+
+  const status = getStatus();
 
   const days = daysUntilExpiry();
 
@@ -97,9 +102,25 @@ export default function StudentStatusCard({ studentStatus }) {
         </div>
       )}
 
-      {status === 'pending' && !studentStatus?.student_verified_at && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
+      {status === 'pending' && (
+        <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">⏳</span>
+            <div>
+              <p className="text-yellow-900 font-semibold mb-1">
+                관리자 검토 대기 중입니다
+              </p>
+              <p className="text-sm text-yellow-800">
+                학생증이 업로드되었습니다. 관리자 승인을 기다리고 있습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {status === 'not_applied' && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <p className="text-gray-800">
             학생 인증을 신청하려면 학생증 또는 재학증명서를 업로드해주세요.
           </p>
         </div>

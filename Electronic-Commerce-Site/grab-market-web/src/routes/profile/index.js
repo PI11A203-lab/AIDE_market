@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import ProfileHeader from './components/ProfileHeader';
 import ProfileHero from './components/ProfileHero';
 import TabNavigation from './components/TabNavigation';
@@ -12,6 +13,7 @@ import { API_URL } from '../../config/constants';
 import './index.css';
 
 export default function UserProfile() {
+  const history = useHistory();
   const [activeTab, setActiveTab] = useState('purchases');
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -202,6 +204,20 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
+    // super-admin 권한 체크 및 리다이렉트
+    const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (userFromStorage) {
+      try {
+        const userData = JSON.parse(userFromStorage);
+        if (userData.role === 'super_admin') {
+          history.replace('/profile/super-admin');
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to parse user data:', e);
+      }
+    }
+
     loadUserData();
 
     // 페이지 포커스 시 데이터 새로고침 (리뷰 작성 후 돌아올 때)
@@ -235,7 +251,7 @@ export default function UserProfile() {
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [history]);
 
   if (loading || !user) {
     return (
@@ -250,6 +266,7 @@ export default function UserProfile() {
     );
   }
 
+  // Super-admin인 경우 이미 리다이렉트됨 (useEffect에서 처리)
   // Admin인 경우 AdminDashboard 렌더링
   if (user.role === 'admin') {
     return <AdminDashboard />;

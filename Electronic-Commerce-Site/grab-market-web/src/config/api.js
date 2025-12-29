@@ -1060,6 +1060,30 @@ export const api = {
        * @param {Object} params - { page, limit, blocked, whitelisted, search }
        */
       getManagement: (params = {}) => apiClient.get('/api/admin/ip/management', { params }),
+      
+      /**
+       * IP 접속 추이 데이터
+       * @param {Object} params - { days }
+       */
+      getAccessTrendData: (params = {}) => apiClient.get('/api/admin/ip/access/trend', { params }),
+      
+      /**
+       * 국가별 접속 분포
+       * @param {Object} params - { days }
+       */
+      getCountryDistribution: (params = {}) => apiClient.get('/api/admin/ip/access/countries', { params }),
+      
+      /**
+       * 시간대별 접속 분포
+       * @param {Object} params - { days }
+       */
+      getHourlyAccessDistribution: (params = {}) => apiClient.get('/api/admin/ip/access/hourly', { params }),
+      
+      /**
+       * TOP 접속 IP 리스트
+       * @param {Object} params - { days, limit }
+       */
+      getTopAccessIPs: (params = {}) => apiClient.get('/api/admin/ip/access/top-ips', { params }),
     },
     
     // 보안 관리
@@ -1123,6 +1147,30 @@ export const api = {
        * @param {Object} settings - 설정 객체
        */
       updateSettings: (settings) => apiClient.put('/api/admin/security/settings', settings),
+      
+      /**
+       * 보안 이벤트 추이 데이터
+       * @param {Object} params - { days }
+       */
+      getEventTrendData: (params = {}) => apiClient.get('/api/admin/security/events/trend', { params }),
+      
+      /**
+       * 이벤트 유형별 분포
+       * @param {Object} params - { days }
+       */
+      getEventDistribution: (params = {}) => apiClient.get('/api/admin/security/events/distribution', { params }),
+      
+      /**
+       * 시간대별 이벤트 분포
+       * @param {Object} params - { days }
+       */
+      getHourlyDistribution: (params = {}) => apiClient.get('/api/admin/security/events/hourly', { params }),
+      
+      /**
+       * TOP 공격 IP 리스트
+       * @param {Object} params - { days, limit }
+       */
+      getTopAttackIPs: (params = {}) => apiClient.get('/api/admin/security/events/top-ips', { params }),
     },
   },
 

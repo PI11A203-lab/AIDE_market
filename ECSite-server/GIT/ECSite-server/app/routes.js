@@ -60,11 +60,13 @@ module.exports = (app) => {
     app.use("/api/subscriptions", subscriptionRoutes);
     app.use("/api/product-activations", productActivationRoutes);
     app.use("/api/users", studentAccountRoutes); // 학생 계정 관련은 /api/users 하위에 (일반 사용자용)
-    app.use("/api/admin", adminRoutes);
-    app.use("/api/admin", studentVerificationAdminRoutes); // 학생 인증 관리 (super_admin) - /api/admin/users/:userId/...
-    app.use("/api/admin/products", productAdminRoutes); // 상품 승인 관리 (super_admin)
+    
+    // Super Admin 라우트는 더 구체적인 경로를 먼저 등록 (라우트 매칭 순서 문제 해결)
+    app.use("/api/admin/products", productAdminRoutes); // 상품 승인 관리 (super_admin) - 먼저 등록!
     app.use("/api/admin/ip", ipManagementRoutes); // IP 관리 (super_admin)
     app.use("/api/admin/security", securityRoutes); // 보안 관리 (super_admin)
+    app.use("/api/admin", studentVerificationAdminRoutes); // 학생 인증 관리 (super_admin) - /api/admin/student-verifications/pending
+    app.use("/api/admin", adminRoutes); // 일반 admin 라우트는 마지막에 등록
     
     // 인증 라우트 (구글 OAuth)
     app.use("/auth", authRoutes);

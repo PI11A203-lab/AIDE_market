@@ -246,3 +246,98 @@ exports.updateSecuritySettings = async (req, res) => {
   }
 };
 
+/**
+ * 보안 이벤트 추이 데이터
+ */
+exports.getEventTrendData = async (req, res) => {
+  try {
+    const { days = 7 } = req.query;
+    const data = await securityService.getEventTrendData(parseInt(days));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('이벤트 추이 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * 이벤트 유형별 분포
+ */
+exports.getEventDistribution = async (req, res) => {
+  try {
+    const { days = 7 } = req.query;
+    const data = await securityService.getEventDistribution(parseInt(days));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('이벤트 분포 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * 시간대별 이벤트 분포
+ */
+exports.getHourlyDistribution = async (req, res) => {
+  try {
+    const { days = 7 } = req.query;
+    const data = await securityService.getHourlyDistribution(parseInt(days));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('시간대별 분포 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * TOP 공격 IP 리스트
+ */
+exports.getTopAttackIPs = async (req, res) => {
+  try {
+    const { days = 7, limit = 10 } = req.query;
+    const data = await securityService.getTopAttackIPs(parseInt(days), parseInt(limit));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('TOP 공격 IP 조회 실패:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * 메모리 통계 조회
+ */
+exports.getMemoryStats = async (req, res) => {
+  try {
+    const memoryManager = require('../../services/memoryManager');
+    
+    const stats = {
+      memoryUsage: memoryManager.getMemoryUsage(),
+      storeSizes: memoryManager.getAllStoreSizes(),
+      timestamp: new Date()
+    };
+    
+    res.json({ success: true, data: stats });
+  } catch (error) {
+    console.error('メモリ統計取得失敗:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+/**
+ * 강제 메모리 정리
+ */
+exports.forceMemoryCleanup = async (req, res) => {
+  try {
+    const memoryManager = require('../../services/memoryManager');
+    const cleaned = memoryManager.forceCleanup();
+    
+    res.json({ 
+      success: true, 
+      message: `${cleaned}個のエントリをクリアしました`,
+      cleaned 
+    });
+  } catch (error) {
+    console.error('メモリクリーンアップ失敗:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+

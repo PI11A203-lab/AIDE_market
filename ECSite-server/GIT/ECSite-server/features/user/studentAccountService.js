@@ -1,4 +1,5 @@
 const models = require("../../db/initializer");
+const { Op } = require("sequelize");
 
 /**
  * 학생 인증 신청 (대기 상태로 저장)
@@ -75,7 +76,7 @@ exports.expireStudentAccounts = async (transaction = null) => {
         where: {
             account_type: 'student',
             student_expires_at: {
-                [models.sequelize.Op.lt]: today
+                [Op.lt]: today
             }
         },
         transaction
@@ -166,7 +167,6 @@ exports.getStudentStatus = async (userId) => {
  */
 exports.getPendingStudentVerifications = async (page = 1, limit = 20, filters = {}) => {
     const offset = (page - 1) * limit;
-    const { Op } = models.sequelize;
     
     const where = {
         account_type: 'student',

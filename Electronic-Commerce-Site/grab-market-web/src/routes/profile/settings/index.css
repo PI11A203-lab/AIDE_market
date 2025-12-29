@@ -463,6 +463,11 @@
   border-color: #fca5a5;
 }
 
+.student-status-card.student-status-gray {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+}
+
 .student-status-header {
   display: flex;
   align-items: center;
