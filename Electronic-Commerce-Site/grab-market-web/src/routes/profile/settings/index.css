@@ -440,3 +440,96 @@
   }
 }
 
+/* 학생 인증 섹션 스타일 */
+.student-status-card {
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 2px solid;
+}
+
+.student-status-card.student-status-green {
+  background-color: #f0fdf4;
+  border-color: #86efac;
+}
+
+.student-status-card.student-status-yellow {
+  background-color: #fffbeb;
+  border-color: #fde047;
+}
+
+.student-status-card.student-status-red {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.student-status-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.student-status-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.student-status-description {
+  color: #6b7280;
+  margin-bottom: 16px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.student-status-details {
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.student-status-detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.student-status-detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.student-status-detail-item .detail-label {
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.student-status-detail-item .detail-value {
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.student-verification-info {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.student-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.student-info-list li {
+  color: #4b5563;
+  margin-bottom: 8px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.student-info-list li:last-child {
+  margin-bottom: 0;
+}
+

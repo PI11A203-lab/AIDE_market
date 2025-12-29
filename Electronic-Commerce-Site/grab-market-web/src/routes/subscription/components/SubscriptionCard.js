@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal, message } from 'antd';
 import { Calendar, CreditCard, Package, Trash2 } from 'lucide-react';
-import { api } from '../../../../config/api';
+import { api } from '../../../config/api';
 import SubscriptionStatusBadge from './SubscriptionStatusBadge';
 import { formatDate, formatCurrency } from '../utils/formatters';
 

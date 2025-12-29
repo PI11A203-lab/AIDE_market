@@ -290,7 +290,7 @@ export default function PurchasePage() {
       
       const couponInfo = {
         code: couponData.code,
-        discount: discountAmount / subtotal,
+        discount: discountAmount / studentDiscountedSubtotal,
         discountAmount: discountAmount,
         label: couponData.discount_type === 'rate' 
           ? `${couponData.discount_value}% OFF`
@@ -369,6 +369,7 @@ export default function PurchasePage() {
   const maxDiscount = Math.floor(originalSubtotal * 0.7);
   const totalDiscount = studentDiscount + couponDiscount;
   const finalDiscount = Math.min(totalDiscount, maxDiscount);
+  const discount = finalDiscount;
   
   const subtotalAfterDiscount = originalSubtotal - finalDiscount;
   const tax = Math.floor(subtotalAfterDiscount * 0.1);

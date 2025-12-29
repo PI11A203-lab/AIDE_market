@@ -25,6 +25,10 @@ const productActivationRoutes = require("../features/productactivation/productAc
 const studentAccountRoutes = require("../features/user/studentAccountRoutes");
 const authRoutes = require("../features/auth/authRoutes");
 const adminRoutes = require("../routes/admin");
+const productAdminRoutes = require("../features/product/productAdminRoutes");
+const ipManagementRoutes = require("../features/security/ipManagementRoutes");
+const securityRoutes = require("../features/security/securityRoutes");
+const studentVerificationAdminRoutes = require("../features/admin/studentVerificationAdminRoutes");
 
 module.exports = (app) => {
     // 기존 라우트 (하위 호환성)
@@ -55,8 +59,12 @@ module.exports = (app) => {
     app.use("/api/payment-methods", paymentMethodRoutes);
     app.use("/api/subscriptions", subscriptionRoutes);
     app.use("/api/product-activations", productActivationRoutes);
-    app.use("/api/users", studentAccountRoutes); // 학생 계정 관련은 /api/users 하위에
+    app.use("/api/users", studentAccountRoutes); // 학생 계정 관련은 /api/users 하위에 (일반 사용자용)
     app.use("/api/admin", adminRoutes);
+    app.use("/api/admin", studentVerificationAdminRoutes); // 학생 인증 관리 (super_admin) - /api/admin/users/:userId/...
+    app.use("/api/admin/products", productAdminRoutes); // 상품 승인 관리 (super_admin)
+    app.use("/api/admin/ip", ipManagementRoutes); // IP 관리 (super_admin)
+    app.use("/api/admin/security", securityRoutes); // 보안 관리 (super_admin)
     
     // 인증 라우트 (구글 OAuth)
     app.use("/auth", authRoutes);

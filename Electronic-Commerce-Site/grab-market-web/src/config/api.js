@@ -941,10 +941,189 @@ export const api = {
       }),
 
     /**
+     * 학생 인증 승인 (관리자용 또는 테스트용)
+     * @param {number} userId - 사용자 ID
+     */
+    approve: (userId) => apiClient.post(`/api/users/${userId}/student-verification/approve`),
+
+    /**
      * 학생 인증 상태 조회
      * @param {number} userId - 사용자 ID
      */
     getStatus: (userId) => apiClient.get(`/api/users/${userId}/student-status`),
+  },
+
+  // ==================== Super Admin 관련 ====================
+  superAdmin: {
+    // 상품 승인 관리
+    products: {
+      /**
+       * 대기 중인 상품 목록 조회
+       * @param {Object} params - { page, limit, category, search }
+       */
+      getPending: (params = {}) => apiClient.get('/api/admin/products/pending', { params }),
+      
+      /**
+       * 상품 승인
+       * @param {number} productId - 상품 ID
+       */
+      approve: (productId) => apiClient.post(`/api/admin/products/${productId}/approve`),
+      
+      /**
+       * 상품 거부
+       * @param {number} productId - 상품 ID
+       * @param {string} reason - 거부 사유
+       */
+      reject: (productId, reason) => apiClient.post(`/api/admin/products/${productId}/reject`, { reason }),
+      
+      /**
+       * 상품 상세 정보 (승인 대기용)
+       * @param {number} productId - 상품 ID
+       */
+      getPendingDetail: (productId) => apiClient.get(`/api/admin/products/${productId}/pending-details`),
+    },
+    
+    // 학생 인증 관리
+    studentVerifications: {
+      /**
+       * 대기 중인 학생 인증 목록 조회
+       * @param {Object} params - { page, limit, search }
+       */
+      getPending: (params = {}) => apiClient.get('/api/admin/student-verifications/pending', { params }),
+      
+      /**
+       * 학생 인증 승인
+       * @param {number} userId - 사용자 ID
+       */
+      approve: (userId) => apiClient.post(`/api/admin/users/${userId}/student-verification/approve`),
+      
+      /**
+       * 학생 인증 거부
+       * @param {number} userId - 사용자 ID
+       * @param {string} reason - 거부 사유
+       */
+      reject: (userId, reason) => apiClient.post(`/api/admin/users/${userId}/student-verification/reject`, { reason }),
+      
+      /**
+       * 인증 문서 조회
+       * @param {number} userId - 사용자 ID
+       */
+      getDocument: (userId) => apiClient.get(`/api/admin/users/${userId}/verification-document`),
+    },
+    
+    // IP 관리
+    ip: {
+      /**
+       * IP 접속 로그 목록
+       * @param {Object} params - { page, limit, ip, country, dateFrom, dateTo, blocked }
+       */
+      getLogs: (params = {}) => apiClient.get('/api/admin/ip/logs', { params }),
+      
+      /**
+       * 접속 통계
+       * @param {Object} params - { period, dateFrom, dateTo }
+       */
+      getStats: (params = {}) => apiClient.get('/api/admin/ip/logs/stats', { params }),
+      
+      /**
+       * 국가별 통계
+       * @param {Object} params - { dateFrom, dateTo }
+       */
+      getCountryStats: (params = {}) => apiClient.get('/api/admin/ip/logs/stats/countries', { params }),
+      
+      /**
+       * 시간대별 통계
+       * @param {Object} params - { dateFrom, dateTo }
+       */
+      getHourlyStats: (params = {}) => apiClient.get('/api/admin/ip/logs/stats/hourly', { params }),
+      
+      /**
+       * IP 차단
+       * @param {Object} data - { ip_address, reason, memo }
+       */
+      block: (data) => apiClient.post('/api/admin/ip/management/block', data),
+      
+      /**
+       * IP 차단 해제
+       * @param {Object} data - { ip_address }
+       */
+      unblock: (data) => apiClient.post('/api/admin/ip/management/unblock', data),
+      
+      /**
+       * IP 화이트리스트 추가
+       * @param {Object} data - { ip_address, memo }
+       */
+      whitelist: (data) => apiClient.post('/api/admin/ip/management/whitelist', data),
+      
+      /**
+       * IP 관리 목록
+       * @param {Object} params - { page, limit, blocked, whitelisted, search }
+       */
+      getManagement: (params = {}) => apiClient.get('/api/admin/ip/management', { params }),
+    },
+    
+    // 보안 관리
+    security: {
+      /**
+       * 보안 이벤트 목록
+       * @param {Object} params - { page, limit, type, severity, dateFrom, dateTo, ip }
+       */
+      getEvents: (params = {}) => apiClient.get('/api/admin/security/events', { params }),
+      
+      /**
+       * 보안 이벤트 통계
+       * @param {Object} params - { period, dateFrom, dateTo }
+       */
+      getEventStats: (params = {}) => apiClient.get('/api/admin/security/events/stats', { params }),
+      
+      /**
+       * 이벤트 유형별 통계
+       * @param {Object} params - { dateFrom, dateTo }
+       */
+      getEventStatsByType: (params = {}) => apiClient.get('/api/admin/security/events/stats/by-type', { params }),
+      
+      /**
+       * 봇 탐지 목록
+       * @param {Object} params - { page, limit, blocked, dateFrom, dateTo }
+       */
+      getBots: (params = {}) => apiClient.get('/api/admin/security/bots', { params }),
+      
+      /**
+       * 봇 차단
+       * @param {number} id - 봇 탐지 ID
+       * @param {string} reason - 차단 사유
+       */
+      blockBot: (id, reason) => apiClient.post(`/api/admin/security/bots/${id}/block`, { reason }),
+      
+      /**
+       * 봇 차단 해제
+       * @param {number} id - 봇 탐지 ID
+       */
+      unblockBot: (id) => apiClient.post(`/api/admin/security/bots/${id}/unblock`),
+      
+      /**
+       * IP 수동 차단
+       * @param {Object} data - { ip_address, reason, duration_hours }
+       */
+      blockIP: (data) => apiClient.post('/api/admin/security/block-ip', data),
+      
+      /**
+       * IP 수동 차단 해제
+       * @param {Object} data - { ip_address }
+       */
+      unblockIP: (data) => apiClient.post('/api/admin/security/unblock-ip', data),
+      
+      /**
+       * 보안 설정 조회
+       */
+      getSettings: () => apiClient.get('/api/admin/security/settings'),
+      
+      /**
+       * 보안 설정 업데이트
+       * @param {Object} settings - 설정 객체
+       */
+      updateSettings: (settings) => apiClient.put('/api/admin/security/settings', settings),
+    },
   },
 
   // ==================== Admin 관련 ====================

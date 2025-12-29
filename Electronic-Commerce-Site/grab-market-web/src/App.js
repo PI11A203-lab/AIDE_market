@@ -27,6 +27,11 @@ import SubscriptionReminder from "./routes/subscription/reminder/[token]";
 import SubscriptionManage from "./routes/subscription/manage";
 import PaymentFailed from "./routes/subscription/payment-failed";
 import StudentVerification from "./routes/profile/student-verification";
+import SuperAdminDashboard from "./routes/profile/super-admin/SuperAdminDashboard";
+import SuperAdminProducts from "./routes/profile/super-admin/Products";
+import SuperAdminStudentVerifications from "./routes/profile/super-admin/StudentVerifications";
+import SuperAdminIPManagement from "./routes/profile/super-admin/IPManagement";
+import SuperAdminSecurity from "./routes/profile/super-admin/Security";
 
 function App() {
   return (
@@ -79,6 +84,14 @@ function App() {
           <ProtectedRoute exact={true} path="/profile/products" component={AdminProducts} requireAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/reviews" component={AdminReviews} requireAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/orders" component={AdminOrders} requireAdmin={true} />
+          
+          {/* Super Admin 전용 라우트 */}
+          <ProtectedRoute exact={true} path="/profile/super-admin" component={SuperAdminDashboard} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/products" component={SuperAdminProducts} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/student-verifications" component={SuperAdminStudentVerifications} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/ip-management" component={SuperAdminIPManagement} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/security" component={SuperAdminSecurity} requireSuperAdmin={true} />
+          
           <Route exact={true} path="/auth/callback">
             <AuthCallback />
           </Route>

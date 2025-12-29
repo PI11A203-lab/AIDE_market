@@ -66,6 +66,35 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(100),
             allowNull: true,
         },
+        approval_status: {
+            type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+            allowNull: true,
+            defaultValue: 'approved',
+        },
+        approval_requested_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        approved_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        rejected_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        rejection_reason: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        approved_by: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
     });
 
     // アソシエーション（関連付け）を定義
@@ -136,6 +165,12 @@ module.exports = (sequelize, DataTypes) => {
         Product.hasMany(models.ProductActivation, {
             foreignKey: 'product_id',
             as: 'activations'
+        });
+        
+        // Product - User (승인자): 多対一
+        Product.belongsTo(models.User, {
+            foreignKey: 'approved_by',
+            as: 'approver'
         });
     };
 

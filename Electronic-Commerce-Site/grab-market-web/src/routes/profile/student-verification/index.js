@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { api } from '../../../config/api';
-import { AlertCircle } from 'lucide-react';
-import ProfileHeader from '../../components/ProfileHeader';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
+import ProfileHeader from '../components/ProfileHeader';
 import StudentStatusCard from './components/StudentStatusCard';
 import StudentDocumentUpload from './components/StudentDocumentUpload';
 import './index.css';
@@ -13,6 +13,7 @@ export default function StudentVerification() {
   const [studentStatus, setStudentStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [approving, setApproving] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
@@ -62,6 +63,27 @@ export default function StudentVerification() {
     }
   };
 
+  // 테스트용 승인 처리 (더미 데이터)
+  const handleApprove = async () => {
+    if (!currentUserId) return;
+    
+    setApproving(true);
+    try {
+      await api.studentAccount.approve(currentUserId);
+      message.success('학생 인증이 승인되었습니다!');
+      
+      // 상태 새로고침
+      const statusResponse = await api.studentAccount.getStatus(currentUserId);
+      setStudentStatus(statusResponse.data);
+    } catch (error) {
+      console.error('학생 인증 승인 실패:', error);
+      const errorMessage = error.response?.data?.error || '학생 인증 승인에 실패했습니다.';
+      message.error(errorMessage);
+    } finally {
+      setApproving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -80,6 +102,9 @@ export default function StudentVerification() {
     : 'pending';
 
   const shouldShowUpload = status === 'pending' || status === 'expired';
+  
+  // 대기 중이고 문서가 업로드된 경우 (테스트용 승인 버튼 표시)
+  const isPendingWithDocument = status === 'pending' && studentStatus?.student_verification_document;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -88,6 +113,13 @@ export default function StudentVerification() {
       <div className="max-w-4xl mx-auto px-5 md:px-12 py-10">
         {/* 헤더 */}
         <div className="mb-8">
+          <button
+            onClick={() => history.push('/profile/settings')}
+            className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-base">프로필 설정으로 돌아가기</span>
+          </button>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">학생 인증</h1>
           <p className="text-base text-gray-600">
             학생 계정으로 인증하면 모든 상품에 50% 할인을 받을 수 있습니다
@@ -107,6 +139,23 @@ export default function StudentVerification() {
               uploading={uploading}
               currentDocument={studentStatus?.student_verification_document}
             />
+          </div>
+        )}
+
+        {/* 테스트용 승인 버튼 (대기 중이고 문서가 업로드된 경우) */}
+        {isPendingWithDocument && (
+          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+            <h3 className="text-lg font-bold text-yellow-900 mb-2">테스트용 승인</h3>
+            <p className="text-sm text-yellow-800 mb-4">
+              학생증이 업로드되었습니다. 테스트를 위해 인증을 승인할 수 있습니다.
+            </p>
+            <button
+              onClick={handleApprove}
+              disabled={approving}
+              className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {approving ? '승인 중...' : '인증 승인하기 (테스트용)'}
+            </button>
           </div>
         )}
 

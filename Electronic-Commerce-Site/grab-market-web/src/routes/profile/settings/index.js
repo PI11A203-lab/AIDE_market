@@ -5,6 +5,7 @@ import { api } from '../../../config/api';
 import ProfileHeader from '../components/ProfileHeader';
 import PersonalInfoSection from './components/PersonalInfoSection';
 import PaymentMethodsSection from './components/PaymentMethodsSection';
+import StudentVerificationSection from './components/StudentVerificationSection';
 import './index.css';
 
 export default function ProfileSettings() {
@@ -12,8 +13,24 @@ export default function ProfileSettings() {
   const history = useHistory();
   const [user, setUser] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [studentStatus, setStudentStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const isMountedRef = useRef(true);
+
+  // 학생 인증 상태 로드 함수
+  const loadStudentStatus = async (userId) => {
+    try {
+      const studentResponse = await api.studentAccount.getStatus(userId);
+      if (isMountedRef.current) {
+        setStudentStatus(studentResponse.data);
+      }
+    } catch (error) {
+      console.error('학생 인증 상태 로드 실패:', error);
+      if (isMountedRef.current) {
+        setStudentStatus(null);
+      }
+    }
+  };
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -46,6 +63,9 @@ export default function ProfileSettings() {
               setPaymentMethods([]);
             }
           }
+
+          // 학생 인증 상태 로드
+          await loadStudentStatus(userData.id);
         }
       } catch (error) {
         console.error('데이터 로드 실패:', error);
@@ -58,8 +78,38 @@ export default function ProfileSettings() {
 
     loadData();
 
+    // 페이지 포커스 시 학생 인증 상태 자동 갱신
+    const handleFocus = () => {
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (userFromStorage) {
+        try {
+          const userData = JSON.parse(userFromStorage);
+          loadStudentStatus(userData.id);
+        } catch (e) {
+          console.error('Failed to parse user data:', e);
+        }
+      }
+    };
+
+    // 주기적으로 학생 인증 상태 확인 (30초마다)
+    const intervalId = setInterval(() => {
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (userFromStorage) {
+        try {
+          const userData = JSON.parse(userFromStorage);
+          loadStudentStatus(userData.id);
+        } catch (e) {
+          console.error('Failed to parse user data:', e);
+        }
+      }
+    }, 30000); // 30초마다 확인
+
+    window.addEventListener('focus', handleFocus);
+
     return () => {
       isMountedRef.current = false;
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(intervalId);
     };
   }, []);
 
@@ -178,6 +228,8 @@ export default function ProfileSettings() {
             onAdd={handlePaymentMethodAdd}
             onDelete={handlePaymentMethodDelete}
           />
+
+          <StudentVerificationSection studentStatus={studentStatus} />
         </div>
       </main>
     </div>

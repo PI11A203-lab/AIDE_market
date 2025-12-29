@@ -64,6 +64,10 @@ app.use(passport.session());
 // uploadsフォルダを静的公開
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
+// IP 로깅 미들웨어 (모든 요청에 적용)
+const ipLogger = require('../middleware/ipLogger');
+app.use(ipLogger.logIpAccess);
+
 // Multer設定
 const upload = multer({
     storage: multer.diskStorage({

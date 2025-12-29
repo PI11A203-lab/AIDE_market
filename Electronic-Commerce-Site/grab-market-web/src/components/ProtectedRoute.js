@@ -8,7 +8,7 @@ import { Route, Redirect } from 'react-router-dom';
  * @param {boolean} requireAdmin - admin 권한이 필요한지 여부 (기본값: false)
  * @param {Object} rest - 기타 Route props
  */
-const ProtectedRoute = ({ component: Component, requireAdmin = false, ...rest }) => {
+const ProtectedRoute = ({ component: Component, requireAdmin = false, requireSuperAdmin = false, ...rest }) => {
   // 토큰 확인 (localStorage 또는 sessionStorage)
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   const isAuthenticated = !!token;
@@ -27,7 +27,8 @@ const ProtectedRoute = ({ component: Component, requireAdmin = false, ...rest })
   };
 
   const user = getUser();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isSuperAdmin = user?.role === 'super_admin';
 
   return (
     <Route
@@ -45,7 +46,19 @@ const ProtectedRoute = ({ component: Component, requireAdmin = false, ...rest })
           );
         }
 
-        // admin 권한이 필요한데 admin이 아닌 경우
+        // super_admin 권한이 필요한데 super_admin이 아닌 경우
+        if (requireSuperAdmin && !isSuperAdmin) {
+          return (
+            <Redirect
+              to={{
+                pathname: '/profile',
+                state: { from: props.location, error: '사이트 관리자 권한이 필요합니다.' },
+              }}
+            />
+          );
+        }
+
+        // admin 권한이 필요한데 admin도 super_admin도 아닌 경우
         if (requireAdmin && !isAdmin) {
           return (
             <Redirect

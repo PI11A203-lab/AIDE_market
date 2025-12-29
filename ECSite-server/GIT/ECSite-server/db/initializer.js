@@ -49,6 +49,10 @@ const modelLoadOrder = [
     'subscriptionpayment', // SubscriptionPayment - subscription_id, order_idに依存
     'subscriptionnotification', // SubscriptionNotification - subscription_idに依存
     'productactivation', // ProductActivation - user_id, product_id, order_id, subscription_idに依存
+    'ipaccesslog', // IpAccessLog - user_idに依存 (usersテーブル)
+    'ipmanagement', // IpManagement - blocked_byに依存 (usersテーブル)
+    'securityevent', // SecurityEvent - user_idに依存 (usersテーブル)
+    'botdetection', // BotDetection - blocked_byに依存 (usersテーブル)
 ];
 
 // モデルファイルを検索する関数
@@ -85,6 +89,27 @@ function findModelFile(featureDir, featureName) {
 
         // modelsサブディレクトリ内のファイルからmodelを含むファイルを検索
         const modelsFiles = fs.readdirSync(modelsSubDir);
+        
+        // まず、featureNameと一致するファイルを探す (大文字小文字を無視、カメルケース対応)
+        // 例: 'subscription' -> 'Subscription.js', 'subscriptionitem' -> 'SubscriptionItem.js'
+        const normalizeName = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const normalizedFeatureName = normalizeName(featureName);
+        
+        const exactMatch = modelsFiles.find(f => {
+            if (!f.endsWith('.js') || f.includes('Controller') || f.includes('Service') || f.includes('Routes')) {
+                return false;
+            }
+            const nameWithoutExt = f.replace('.js', '');
+            const normalizedFileName = normalizeName(nameWithoutExt);
+            // 알파벳과 숫자만 비교 (대소문자, 언더스코어, 공백 무시)
+            return normalizedFileName === normalizedFeatureName;
+        });
+        
+        if (exactMatch) {
+            return path.join(modelsSubDir, exactMatch);
+        }
+        
+        // modelを含むファイルを検索 (フォールバック)
         const modelFile = modelsFiles.find(f =>
             f.toLowerCase().includes('model') &&
             f.endsWith('.js') &&
@@ -117,8 +142,20 @@ function findModelFile(featureDir, featureName) {
 // モデルを順序通りに読み込み
 const modelsDir = path.join(__dirname, '../features');
 modelLoadOrder.forEach((feature) => {
-    const featurePath = path.join(modelsDir, feature);
-    const modelPath = findModelFile(featurePath, feature);
+    let featurePath = path.join(modelsDir, feature);
+    let modelPath = findModelFile(featurePath, feature);
+    
+    // subscription関連のモデルはsubscriptionディレクトリから探す
+    if (!modelPath && (feature.startsWith('subscription') && feature !== 'subscription')) {
+        const subscriptionPath = path.join(modelsDir, 'subscription');
+        modelPath = findModelFile(subscriptionPath, feature);
+    }
+    
+    // security関連のモデルはsecurityディレクトリから探す
+    if (!modelPath && (feature.startsWith('ip') || feature.startsWith('security') || feature.startsWith('bot'))) {
+        const securityPath = path.join(modelsDir, 'security');
+        modelPath = findModelFile(securityPath, feature);
+    }
     
     if (modelPath) {
         try {
