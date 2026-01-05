@@ -775,8 +775,8 @@ const resources = {
         },
       },
       productAdmin: {
-          list: {
-            title: '내 상품',
+        list: {
+          title: '내 상품',
             new: '새 상품',
             loading: '로딩 중...',
             filters: {
@@ -911,6 +911,21 @@ const resources = {
             statsCreateFail: 'Stats 생성 실패 (상품은 생성됨)',
           },
         },
+      },
+      creators: {
+        title: 'Top Creators',
+        subtitle: 'AI 마켓플레이스의 인기 크리에이터들을 만나보세요',
+        empty: '표시할 크리에이터가 없습니다.',
+        notFound: '크리에이터를 찾을 수 없습니다.',
+        follow: '팔로우',
+        following: '팔로잉',
+        viewProfile: '프로필 보기',
+        joinDate: '가입일:',
+        productsTitle: '판매 중인 AI',
+        noProducts: '아직 판매 중인 AI가 없습니다.',
+        downloads: '다운로드',
+        followers: '팔로워',
+        followError: '팔로우 처리 중 오류가 발생했습니다.',
       },
     },
   en: {
@@ -1742,7 +1757,66 @@ const resources = {
               noComment: 'No comment provided.',
             },
           },
+          upload: {
+            title: 'Product Registration',
+            imageSection: 'Product Image',
+            imageUpload: 'Upload Image',
+            imageRequired: 'Please upload a product image.',
+            imageUploadSuccess: 'Image upload complete',
+            imageUploadFail: 'Image upload failed',
+            basicInfo: 'Basic Information',
+            productName: 'Product Name',
+            productNamePlaceholder: 'Enter product name',
+            productNameRequired: 'Please enter product name.',
+            sellerName: 'Seller Name',
+            sellerNamePlaceholder: 'Enter seller name',
+            sellerNameRequired: 'Please enter seller name.',
+            price: 'Price',
+            pricePlaceholder: 'Enter price',
+            priceRequired: 'Please enter price.',
+            priceMin: 'Price must be 0 or greater.',
+            description: 'Product Description',
+            descriptionPlaceholder: 'Enter detailed product description',
+            descriptionRequired: 'Please enter product description.',
+            category: 'Category',
+            mainCategory: 'Main Category',
+            mainCategoryPlaceholder: 'Select category',
+            subCategory: 'Sub Category',
+            subCategoryPlaceholder: 'Select sub category',
+            techStack: 'Tech Stack',
+            techStackPlaceholder: 'e.g., React, Node.js, Python',
+            statsSection: 'AI Statistics (Optional)',
+            statsDescription: 'You can set values for each item between 0-100.',
+            teamwork: 'Teamwork',
+            stability: 'Stability',
+            speed: 'Speed',
+            creativity: 'Creativity',
+            productivity: 'Productivity',
+            maintainability: 'Maintainability',
+            submit: 'Register Product',
+            reset: 'Reset',
+            success: 'Product registered successfully!',
+            fail: 'Failed to upload product.',
+            categoryLoadFail: 'Failed to load category list.',
+            productIdError: 'Failed to receive product ID after creation.',
+            statsCreateFail: 'Failed to create Stats (product was created)',
+          },
         },
+      },
+      creators: {
+        title: 'Top Creators',
+        subtitle: 'Meet the popular creators of the AI marketplace',
+        empty: 'No creators to display.',
+        notFound: 'Creator not found.',
+        follow: 'Follow',
+        following: 'Following',
+        viewProfile: 'View Profile',
+        joinDate: 'Joined:',
+        productsTitle: 'AI Products for Sale',
+        noProducts: 'No AI products for sale yet.',
+        downloads: 'Downloads',
+        followers: 'Followers',
+        followError: 'An error occurred while processing the follow action.',
       },
     },
   ja: {
@@ -2655,6 +2729,21 @@ const resources = {
           },
         },
       },
+      creators: {
+        title: 'Top Creators',
+        subtitle: 'AIマーケットプレイスの人気クリエイターをご紹介',
+        empty: '表示するクリエイターがありません。',
+        notFound: 'クリエイターが見つかりません。',
+        follow: 'フォロー',
+        following: 'フォロー中',
+        viewProfile: 'プロフィールを見る',
+        joinDate: '登録日:',
+        productsTitle: '販売中のAI',
+        noProducts: 'まだ販売中のAIがありません。',
+        downloads: 'ダウンロード',
+        followers: 'フォロワー',
+        followError: 'フォロー処理中にエラーが発生しました。',
+      },
     },
   };
 
@@ -2666,6 +2755,34 @@ const getInitialLanguage = () => {
   return ['ko', 'ja', 'en'].includes(browserLang) ? browserLang : 'en';
 };
 
+// 리소스 구조 검증 (초기화 전에 실행)
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  console.log('Resources structure check (before init):');
+  ['ko', 'en', 'ja'].forEach(lang => {
+    if (resources[lang] && resources[lang].translation) {
+      const translationKeys = Object.keys(resources[lang].translation);
+      const hasCreators = 'creators' in resources[lang].translation;
+      console.log(`${lang} - creators exists:`, hasCreators);
+      console.log(`${lang} - all translation keys:`, translationKeys);
+      console.log(`${lang} - resources object keys:`, Object.keys(resources[lang]));
+      console.log(`${lang} - translation object type:`, typeof resources[lang].translation);
+      console.log(`${lang} - translation object:`, resources[lang].translation);
+      if (hasCreators && resources[lang].translation.creators) {
+        console.log(`${lang} - creators.title:`, resources[lang].translation.creators.title);
+        console.log(`${lang} - creators keys:`, Object.keys(resources[lang].translation.creators));
+      } else {
+        console.warn(`${lang} - creators NOT FOUND in translation object!`);
+        console.log(`${lang} - first 20 translation keys:`, translationKeys.slice(0, 20));
+        // 실제로 creators가 있는지 직접 확인
+        console.log(`${lang} - checking creators directly:`, resources[lang].translation.creators);
+        console.log(`${lang} - checking if creators is undefined:`, resources[lang].translation.creators === undefined);
+      }
+    } else {
+      console.error(`${lang} - translation object missing!`);
+    }
+  });
+}
+
 i18n
   .use(initReactI18next)
   .init({
@@ -2675,7 +2792,38 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    react: {
+      useSuspense: false,
+    },
+    debug: process.env.NODE_ENV === 'development',
+    returnNull: false,
+    returnEmptyString: false,
+    returnObjects: true,
   });
+
+// 초기화 확인 및 리소스 검증
+if (typeof window !== 'undefined') {
+  i18n.on('initialized', () => {
+    console.log('i18n initialized:', i18n.isInitialized);
+    console.log('i18n language:', i18n.language);
+    console.log('creators.title exists:', i18n.exists('creators.title'));
+    console.log('Available languages:', Object.keys(resources));
+    const currentLang = i18n.language;
+    if (resources[currentLang] && resources[currentLang].translation) {
+      console.log('Translation keys for', currentLang, ':', Object.keys(resources[currentLang].translation));
+      console.log('creators key exists:', 'creators' in resources[currentLang].translation);
+      if (resources[currentLang].translation.creators) {
+        console.log('creators.title value:', resources[currentLang].translation.creators.title);
+      }
+    }
+  });
+  
+  // 이미 초기화된 경우에도 확인
+  if (i18n.isInitialized) {
+    console.log('i18n already initialized');
+    console.log('creators.title exists:', i18n.exists('creators.title'));
+  }
+}
 
 i18n.on('languageChanged', (lng) => {
   if (typeof window !== 'undefined') {

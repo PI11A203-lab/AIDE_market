@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserPlus, UserMinus } from 'lucide-react';
 import { api } from '../../../config/api';
 import './FollowButton.css';
 
 const FollowButton = ({ targetUserId, targetUsername, currentUserId, onFollowChange, className = '', showAlways = false }) => {
+  const { t, i18n } = useTranslation();
   const [isFollowing, setIsFollowing] = useState(false);
   const [canFollow, setCanFollow] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ const FollowButton = ({ targetUserId, targetUsername, currentUserId, onFollowCha
       }
     } catch (error) {
       console.error('팔로우/언팔로우 실패:', error);
-      alert(error.response?.data?.error || '팔로우 처리 중 오류가 발생했습니다.');
+      alert(error.response?.data?.error || (i18n.exists('creators.followError') ? t('creators.followError') : 'An error occurred while processing the follow action.'));
     } finally {
       setActionLoading(false);
     }
@@ -89,18 +91,22 @@ const FollowButton = ({ targetUserId, targetUsername, currentUserId, onFollowCha
       type="button"
     >
       {isCompactStyle ? (
-        <span>{displayIsFollowing ? 'Following' : 'Follow'}</span>
+        <span>
+          {displayIsFollowing 
+            ? (i18n.exists('creators.following') ? t('creators.following') : 'Following')
+            : (i18n.exists('creators.follow') ? t('creators.follow') : 'Follow')}
+        </span>
       ) : (
         <>
           {displayIsFollowing ? (
             <>
               <UserMinus className="w-4 h-4" />
-              <span>팔로잉</span>
+              <span>{i18n.exists('creators.following') ? t('creators.following') : 'Following'}</span>
             </>
           ) : (
             <>
               <UserPlus className="w-4 h-4" />
-              <span>팔로우</span>
+              <span>{i18n.exists('creators.follow') ? t('creators.follow') : 'Follow'}</span>
             </>
           )}
         </>

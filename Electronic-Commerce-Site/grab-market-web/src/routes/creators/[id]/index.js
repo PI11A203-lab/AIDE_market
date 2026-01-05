@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import ProfileHeader from '../../profile/components/ProfileHeader';
@@ -9,6 +10,7 @@ import { Github } from 'lucide-react';
 import '../index.css';
 
 export default function CreatorDetailPage() {
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const history = useHistory();
   const [creator, setCreator] = useState(null);
@@ -59,7 +61,7 @@ export default function CreatorDetailPage() {
           tags: Array.isArray(userData.tags) ? userData.tags.map(t => typeof t === 'object' ? t.name : t) : [],
           email: userData.email || null,
           is_email_public: userData.is_email_public || false,
-          joinDate: userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' }) : 'January 2025',
+          joinDate: userData.createdAt ? new Date(userData.createdAt).toLocaleDateString(i18n.language === 'ko' ? 'ko-KR' : i18n.language === 'ja' ? 'ja-JP' : 'en-US', { year: 'numeric', month: 'long' }) : 'January 2025',
           follower_count: userData.follower_count || 0
         });
 
@@ -100,7 +102,7 @@ export default function CreatorDetailPage() {
     };
 
     loadCreatorData();
-  }, [id, history]);
+  }, [id, history, i18n.language]);
 
   const handleFollowChange = async () => {
     // 팔로우 변경 시 데이터 새로고침
@@ -143,7 +145,7 @@ export default function CreatorDetailPage() {
         <main className="creator-detail-main">
           <div className="creator-detail-container">
             <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-              로딩 중...
+              {t('common.loading')}
             </div>
           </div>
         </main>
@@ -158,7 +160,7 @@ export default function CreatorDetailPage() {
         <main className="creator-detail-main">
           <div className="creator-detail-container">
             <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-              크리에이터를 찾을 수 없습니다.
+              {t('creators.notFound')}
             </div>
           </div>
         </main>
@@ -214,7 +216,7 @@ export default function CreatorDetailPage() {
                     onClick={() => setShowFollowersModal(true)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <strong>{followerCount || 0}</strong> 팔로워
+                    <strong>{followerCount || 0}</strong> {t('profile.hero.followers')}
                   </span>
                   
                   {currentUserId && currentUserId !== creator.id && (
@@ -233,7 +235,7 @@ export default function CreatorDetailPage() {
                       onClick={() => history.push('/login')}
                       type="button"
                     >
-                      Follow
+                      {t('creators.follow')}
                     </button>
                   )}
                 </div>
@@ -250,18 +252,18 @@ export default function CreatorDetailPage() {
                   </div>
                 )}
 
-                <p className="creator-join-date">가입일: {creator.joinDate}</p>
+                <p className="creator-join-date">{t('creators.joinDate')} {creator.joinDate}</p>
               </div>
             </div>
           </div>
 
           {/* 판매 중인 AI 섹션 */}
           <div className="creator-products-section">
-            <h2 className="creator-section-title">판매 중인 AI</h2>
+            <h2 className="creator-section-title">{t('creators.productsTitle')}</h2>
             
             {products.length === 0 ? (
               <div className="creator-empty-state">
-                <p>아직 판매 중인 AI가 없습니다.</p>
+                <p>{t('creators.noProducts')}</p>
               </div>
             ) : (
               <div className="creator-products-grid">
@@ -283,7 +285,7 @@ export default function CreatorDetailPage() {
                     </div>
                     <div className="creator-product-info">
                       <div className="creator-product-category">
-                        {product.category_name || '카테고리'}
+                        {product.category_name || t('product.admin.detail.info.category')}
                       </div>
                       <h3 className="creator-product-name">{product.name}</h3>
                       <div className="creator-product-rating">
@@ -296,7 +298,7 @@ export default function CreatorDetailPage() {
                       <div className="creator-product-footer">
                         <span className="creator-product-price">¥{product.price?.toLocaleString() || 0}</span>
                         <span className="creator-product-downloads">
-                          다운로드 {product.download_count || 0}
+                          {t('creators.downloads')} {product.download_count || 0}
                         </span>
                       </div>
                     </div>

@@ -4,7 +4,6 @@
 }
 
 .creators-main {
-  padding-top: 80px;
   min-height: calc(100vh - 80px);
 }
 
@@ -19,12 +18,18 @@
   font-weight: 700;
   color: #1A1A1A;
   margin-bottom: 12px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.2;
 }
 
 .creators-subtitle {
   font-size: 16px;
   color: #6B7280;
   margin-bottom: 40px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
 }
 
 .creators-grid {
@@ -148,10 +153,12 @@
   display: flex;
   gap: 12px;
   margin-top: auto;
+  min-width: 0;
 }
 
 .follow-btn-card {
   flex: 1;
+  min-width: 0;
   padding: 10px 16px;
   background: #EEF2FF;
   color: #6366F1;
@@ -161,6 +168,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .follow-btn-card:hover {
@@ -178,6 +188,7 @@
 
 .view-profile-btn {
   flex: 1;
+  min-width: 0;
   padding: 10px 16px;
   background: white;
   color: #1A1A1A;
@@ -187,6 +198,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .view-profile-btn:hover {
@@ -203,6 +217,16 @@
 
   .creators-title {
     font-size: 28px;
+  }
+
+  .creators-subtitle {
+    font-size: 14px;
+  }
+
+  .follow-btn-card,
+  .view-profile-btn {
+    font-size: 12px;
+    padding: 8px 12px;
   }
 
   .creator-card {

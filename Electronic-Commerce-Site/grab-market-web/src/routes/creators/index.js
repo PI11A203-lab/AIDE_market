@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../config/api';
 import { API_URL } from '../../config/constants';
 import ProfileHeader from '../profile/components/ProfileHeader';
@@ -7,10 +8,129 @@ import FollowButton from '../profile/components/FollowButton';
 import './index.css';
 
 export default function CreatorsPage() {
+  const { t, i18n } = useTranslation();
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [i18nReady, setI18nReady] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    // 초기 상태를 localStorage에서 직접 읽기
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem('appLanguage');
+      return savedLanguage || i18n.language || 'en';
+    }
+    return i18n.language || 'en';
+  });
   const history = useHistory();
+
+  // localStorage에서 언어 설정 불러오기 및 동기화
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    console.log('Creators page - Saved language from localStorage:', savedLanguage);
+    console.log('Creators page - Current i18n.language:', i18n.language);
+    
+    if (savedLanguage) {
+      if (i18n.isInitialized) {
+        if (savedLanguage !== i18n.language) {
+          console.log('Changing language from', i18n.language, 'to', savedLanguage);
+          i18n.changeLanguage(savedLanguage);
+          setCurrentLanguage(savedLanguage);
+        } else {
+          setCurrentLanguage(savedLanguage);
+        }
+      } else {
+        // i18n이 아직 초기화되지 않았으면, 초기화될 때까지 대기
+        const checkAndSetLanguage = () => {
+          if (i18n.isInitialized && savedLanguage !== i18n.language) {
+            console.log('i18n initialized, changing language to', savedLanguage);
+            i18n.changeLanguage(savedLanguage);
+            setCurrentLanguage(savedLanguage);
+          }
+        };
+        
+        i18n.on('initialized', checkAndSetLanguage);
+        
+        // 이미 초기화된 경우
+        if (i18n.isInitialized) {
+          checkAndSetLanguage();
+        }
+        
+        return () => {
+          i18n.off('initialized', checkAndSetLanguage);
+        };
+      }
+    }
+  }, [i18n]);
+
+  // 언어 변경 감지
+  useEffect(() => {
+    const handleLanguageChanged = (lng) => {
+      console.log('Language changed event received:', lng);
+      setCurrentLanguage(lng);
+    };
+
+    i18n.on('languageChanged', handleLanguageChanged);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChanged);
+    };
+  }, [i18n]);
+
+  // i18n 초기화 대기
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      setI18nReady(true);
+      const savedLanguage = localStorage.getItem('appLanguage');
+      const langToUse = savedLanguage || i18n.language;
+      setCurrentLanguage(langToUse);
+      
+      // localStorage의 언어와 i18n 언어가 다르면 동기화
+      if (savedLanguage && savedLanguage !== i18n.language) {
+        i18n.changeLanguage(savedLanguage);
+      }
+    } else {
+      const checkInitialized = setInterval(() => {
+        if (i18n.isInitialized) {
+          setI18nReady(true);
+          const savedLanguage = localStorage.getItem('appLanguage');
+          const langToUse = savedLanguage || i18n.language;
+          setCurrentLanguage(langToUse);
+          
+          if (savedLanguage && savedLanguage !== i18n.language) {
+            i18n.changeLanguage(savedLanguage);
+          }
+          
+          clearInterval(checkInitialized);
+        }
+      }, 100);
+      
+      // 최대 5초 대기
+      setTimeout(() => {
+        clearInterval(checkInitialized);
+        if (i18n.isInitialized) {
+          setI18nReady(true);
+          const savedLanguage = localStorage.getItem('appLanguage');
+          const langToUse = savedLanguage || i18n.language;
+          setCurrentLanguage(langToUse);
+          
+          if (savedLanguage && savedLanguage !== i18n.language) {
+            i18n.changeLanguage(savedLanguage);
+          }
+        }
+      }, 5000);
+      
+      return () => clearInterval(checkInitialized);
+    }
+  }, [i18n]);
+
+  // 언어 변경 시 번역 업데이트 (currentLanguage 변경 시 리렌더링)
+  useEffect(() => {
+    if (!i18n.isInitialized || !i18nReady) {
+      return;
+    }
+    // 언어가 변경되면 컴포넌트가 리렌더링되어 번역이 업데이트됨
+    console.log('i18n language changed to:', currentLanguage);
+  }, [currentLanguage, i18nReady, i18n.isInitialized]);
 
   useEffect(() => {
     // 현재 로그인한 사용자 정보 가져오기
@@ -93,15 +213,18 @@ export default function CreatorsPage() {
     loadCreators();
   };
 
-  if (loading) {
+  // i18n이 준비되지 않았거나 데이터 로딩 중일 때
+  if (!i18nReady || loading) {
     return (
       <div className="creators-page">
         <ProfileHeader />
         <main className="creators-main">
           <div className="creators-container">
-            <h1 className="creators-title">Top Creators</h1>
+            <h1 className="creators-title">
+              {i18nReady && i18n.exists('creators.title') ? t('creators.title') : 'Top Creators'}
+            </h1>
             <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-              로딩 중...
+              {i18nReady && i18n.exists('common.loading') ? t('common.loading') : 'Loading...'}
             </div>
           </div>
         </main>
@@ -114,12 +237,16 @@ export default function CreatorsPage() {
       <ProfileHeader />
       <main className="creators-main">
         <div className="creators-container">
-          <h1 className="creators-title">Top Creators</h1>
-          <p className="creators-subtitle">AI 마켓플레이스의 인기 크리에이터들을 만나보세요</p>
+          <h1 className="creators-title">
+            {i18n.exists('creators.title') ? t('creators.title') : 'Top Creators'}
+          </h1>
+          <p className="creators-subtitle">
+            {i18n.exists('creators.subtitle') ? t('creators.subtitle') : 'Meet the popular creators of the AI marketplace'}
+          </p>
           
           {creators.length === 0 ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-              표시할 크리에이터가 없습니다.
+              {t('creators.empty')}
             </div>
           ) : (
             <div className="creators-grid">
@@ -165,7 +292,9 @@ export default function CreatorsPage() {
                     <div className="creator-card-stats">
                       <div className="creator-stat">
                         <span className="creator-stat-value">{creator.follower_count || 0}</span>
-                        <span className="creator-stat-label">팔로워</span>
+                        <span className="creator-stat-label">
+                          {i18n.exists('creators.followers') ? t('creators.followers') : 'Followers'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -190,7 +319,7 @@ export default function CreatorsPage() {
                         }}
                         type="button"
                       >
-                        Follow
+                        {i18n.exists('creators.follow') ? t('creators.follow') : 'Follow'}
                       </button>
                     ) : null}
                     
@@ -203,7 +332,7 @@ export default function CreatorsPage() {
                       }}
                       type="button"
                     >
-                      프로필 보기
+                      {i18n.exists('creators.viewProfile') ? t('creators.viewProfile') : 'View Profile'}
                     </button>
                   </div>
                 </div>
