@@ -2,6 +2,7 @@ import React from 'react';
 import ReviewForm from '../ReviewForm';
 import './index.css';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '../../../../config/constants';
 
 export default function OrderItem({
   item,
@@ -28,7 +29,15 @@ export default function OrderItem({
     <div className="order-item">
       <div className="product-header">
         <div className="product-avatar">
-          {item.product.name.substring(0, 2)}
+          {item.product.imageUrl ? (
+            <img 
+              src={`${API_URL}/${item.product.imageUrl}`} 
+              alt={item.product.name}
+              className="product-image"
+            />
+          ) : (
+            <span>{item.product.name.substring(0, 2)}</span>
+          )}
         </div>
         <div className="product-info">
           <h3 className="product-name">{item.product.name}</h3>

@@ -541,19 +541,240 @@ exports.sendSubscriptionCancelledEmail = async (subscription, baseUrl) => {
 exports.sendStudentVerifiedEmail = async (user, baseUrl) => {
     const language = user.preferred_language || 'ko';
     
-    // 간단한 템플릿 (필요시 확장 가능)
+    // 갱신일 포맷팅
+    const currentDate = new Date().toLocaleDateString(
+        language === 'ja' ? 'ja-JP' : language === 'en' ? 'en-US' : 'ko-KR',
+        {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }
+    );
+    
     const templates = {
         ko: {
             subject: '[AIDE Market] 학생 인증 완료',
-            html: `<div><h2>안녕하세요 ${user.username}님,</h2><p>학생 인증이 완료되었습니다. 이제 50% 할인 혜택을 받으실 수 있습니다.</p></div>`
+            html: `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 700px; margin: 0 auto; background-color: #ffffff;">
+                    <div style="background-color: #000000; padding: 40px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">AIDE Market</h1>
+                    </div>
+                    
+                    <div style="padding: 40px;">
+                        <div style="text-align: center; margin-bottom: 40px;">
+                            <h2 style="color: #1A1A1A; font-size: 28px; font-weight: 700; margin: 0 0 12px 0;">
+                                학생 인증 완료
+                            </h2>
+                            <p style="color: #6B7280; font-size: 16px; margin: 0;">
+                                안녕하세요 ${user.username}님,
+                            </p>
+                        </div>
+
+                        <div style="background-color: #D1FAE5; border: 2px solid #10B981; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
+                            <h3 style="color: #065F46; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">
+                                ✓ 인증 완료
+                            </h3>
+                            <p style="color: #047857; font-size: 16px; line-height: 1.6; margin: 0;">
+                                학생 인증이 완료되었습니다. 이제 <strong>50% 할인 혜택</strong>을 받으실 수 있습니다.
+                            </p>
+                        </div>
+
+                        <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
+                            <h3 style="color: #1A1A1A; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">
+                                인증 정보
+                            </h3>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #E5E7EB;">
+                                <span style="color: #6B7280; font-size: 14px;">사용자명</span>
+                                <span style="color: #1A1A1A; font-size: 14px; font-weight: 600;">${user.username}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span style="color: #6B7280; font-size: 14px;">인증 완료일</span>
+                                <span style="color: #1A1A1A; font-size: 14px; font-weight: 600;">${currentDate}</span>
+                            </div>
+                        </div>
+
+                        <div style="background-color: #F0F9FF; border-left: 4px solid #3B82F6; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                            <h3 style="color: #1E40AF; margin-top: 0; font-size: 16px; font-weight: 700;">
+                                💡 할인 혜택 안내
+                            </h3>
+                            <ul style="color: #1E3A8A; line-height: 1.8; padding-left: 20px; margin: 10px 0;">
+                                <li style="margin-bottom: 8px;">모든 AI 개발자 상품 구매 시 <strong>50% 할인</strong> 적용</li>
+                                <li style="margin-bottom: 8px;">정기 구독 상품에도 할인 혜택 적용</li>
+                                <li style="margin-bottom: 8px;">할인은 자동으로 적용되며 별도 쿠폰 입력 불필요</li>
+                            </ul>
+                        </div>
+
+                        <div style="text-align: center; margin: 40px 0;">
+                            <a href="${baseUrl || 'http://localhost:3000'}" style="display: inline-block; background-color: #000000; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                                마켓 둘러보기
+                            </a>
+                        </div>
+
+                        <p style="color: #6B7280; font-size: 14px; line-height: 1.6; margin-top: 40px;">
+                            문의사항이 있으시면 <a href="mailto:support@aidemarket.com" style="color: #1A1A1A; font-weight: 600;">support@aidemarket.com</a>으로 연락주세요.
+                        </p>
+                    </div>
+
+                    <div style="background-color: #F9FAFB; padding: 30px; text-align: center; border-top: 1px solid #E5E7EB;">
+                        <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
+                            © ${new Date().getFullYear()} AIDE Market - AI Developer Marketplace
+                        </p>
+                        <p style="color: #9CA3AF; font-size: 12px; margin: 8px 0 0 0;">
+                            갱신일: ${currentDate}
+                        </p>
+                    </div>
+                </div>
+            `
         },
         en: {
             subject: '[AIDE Market] Student Verification Completed',
-            html: `<div><h2>Hello ${user.username},</h2><p>Your student verification has been completed. You can now enjoy 50% discount benefits.</p></div>`
+            html: `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 700px; margin: 0 auto; background-color: #ffffff;">
+                    <div style="background-color: #000000; padding: 40px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">AIDE Market</h1>
+                    </div>
+                    
+                    <div style="padding: 40px;">
+                        <div style="text-align: center; margin-bottom: 40px;">
+                            <h2 style="color: #1A1A1A; font-size: 28px; font-weight: 700; margin: 0 0 12px 0;">
+                                Student Verification Completed
+                            </h2>
+                            <p style="color: #6B7280; font-size: 16px; margin: 0;">
+                                Hello ${user.username},
+                            </p>
+                        </div>
+
+                        <div style="background-color: #D1FAE5; border: 2px solid #10B981; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
+                            <h3 style="color: #065F46; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">
+                                ✓ Verification Complete
+                            </h3>
+                            <p style="color: #047857; font-size: 16px; line-height: 1.6; margin: 0;">
+                                Your student verification has been completed. You can now enjoy <strong>50% discount benefits</strong>.
+                            </p>
+                        </div>
+
+                        <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
+                            <h3 style="color: #1A1A1A; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">
+                                Verification Information
+                            </h3>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #E5E7EB;">
+                                <span style="color: #6B7280; font-size: 14px;">Username</span>
+                                <span style="color: #1A1A1A; font-size: 14px; font-weight: 600;">${user.username}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span style="color: #6B7280; font-size: 14px;">Verified Date</span>
+                                <span style="color: #1A1A1A; font-size: 14px; font-weight: 600;">${currentDate}</span>
+                            </div>
+                        </div>
+
+                        <div style="background-color: #F0F9FF; border-left: 4px solid #3B82F6; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                            <h3 style="color: #1E40AF; margin-top: 0; font-size: 16px; font-weight: 700;">
+                                💡 Discount Benefits
+                            </h3>
+                            <ul style="color: #1E3A8A; line-height: 1.8; padding-left: 20px; margin: 10px 0;">
+                                <li style="margin-bottom: 8px;"><strong>50% discount</strong> on all AI developer products</li>
+                                <li style="margin-bottom: 8px;">Discount applies to subscription products as well</li>
+                                <li style="margin-bottom: 8px;">Discount is applied automatically, no coupon code needed</li>
+                            </ul>
+                        </div>
+
+                        <div style="text-align: center; margin: 40px 0;">
+                            <a href="${baseUrl || 'http://localhost:3000'}" style="display: inline-block; background-color: #000000; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                                Browse Marketplace
+                            </a>
+                        </div>
+
+                        <p style="color: #6B7280; font-size: 14px; line-height: 1.6; margin-top: 40px;">
+                            If you have any questions, please contact us at <a href="mailto:support@aidemarket.com" style="color: #1A1A1A; font-weight: 600;">support@aidemarket.com</a>.
+                        </p>
+                    </div>
+
+                    <div style="background-color: #F9FAFB; padding: 30px; text-align: center; border-top: 1px solid #E5E7EB;">
+                        <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
+                            © ${new Date().getFullYear()} AIDE Market - AI Developer Marketplace
+                        </p>
+                        <p style="color: #9CA3AF; font-size: 12px; margin: 8px 0 0 0;">
+                            Updated: ${currentDate}
+                        </p>
+                    </div>
+                </div>
+            `
         },
         ja: {
             subject: '[AIDE Market] 学生認証完了',
-            html: `<div><h2>${user.username}様</h2><p>学生認証が完了しました。これで50%割引の特典を受けることができます。</p></div>`
+            html: `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 700px; margin: 0 auto; background-color: #ffffff;">
+                    <div style="background-color: #000000; padding: 40px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">AIDE Market</h1>
+                    </div>
+                    
+                    <div style="padding: 40px;">
+                        <div style="text-align: center; margin-bottom: 40px;">
+                            <h2 style="color: #1A1A1A; font-size: 28px; font-weight: 700; margin: 0 0 12px 0;">
+                                学生認証完了
+                            </h2>
+                            <p style="color: #6B7280; font-size: 16px; margin: 0;">
+                                ${user.username}様
+                            </p>
+                        </div>
+
+                        <div style="background-color: #D1FAE5; border: 2px solid #10B981; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
+                            <h3 style="color: #065F46; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">
+                                ✓ 認証完了
+                            </h3>
+                            <p style="color: #047857; font-size: 16px; line-height: 1.6; margin: 0;">
+                                学生認証が完了しました。これで<strong>50%割引</strong>の特典を受けることができます。
+                            </p>
+                        </div>
+
+                        <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
+                            <h3 style="color: #1A1A1A; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">
+                                認証情報
+                            </h3>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #E5E7EB;">
+                                <span style="color: #6B7280; font-size: 14px;">ユーザー名</span>
+                                <span style="color: #1A1A1A; font-size: 14px; font-weight: 600;">${user.username}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span style="color: #6B7280; font-size: 14px;">認証完了日</span>
+                                <span style="color: #1A1A1A; font-size: 14px; font-weight: 600;">${currentDate}</span>
+                            </div>
+                        </div>
+
+                        <div style="background-color: #F0F9FF; border-left: 4px solid #3B82F6; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                            <h3 style="color: #1E40AF; margin-top: 0; font-size: 16px; font-weight: 700;">
+                                💡 割引特典について
+                            </h3>
+                            <ul style="color: #1E3A8A; line-height: 1.8; padding-left: 20px; margin: 10px 0;">
+                                <li style="margin-bottom: 8px;">すべてのAI開発者商品購入時に<strong>50%割引</strong>適用</li>
+                                <li style="margin-bottom: 8px;">定期購読商品にも割引特典適用</li>
+                                <li style="margin-bottom: 8px;">割引は自動的に適用され、クーポンコードの入力は不要です</li>
+                            </ul>
+                        </div>
+
+                        <div style="text-align: center; margin: 40px 0;">
+                            <a href="${baseUrl || 'http://localhost:3000'}" style="display: inline-block; background-color: #000000; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                                マーケットを見る
+                            </a>
+                        </div>
+
+                        <p style="color: #6B7280; font-size: 14px; line-height: 1.6; margin-top: 40px;">
+                            ご質問がございましたら、<a href="mailto:support@aidemarket.com" style="color: #1A1A1A; font-weight: 600;">support@aidemarket.com</a>までお気軽にお問い合わせください。
+                        </p>
+                    </div>
+
+                    <div style="background-color: #F9FAFB; padding: 30px; text-align: center; border-top: 1px solid #E5E7EB;">
+                        <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
+                            © ${new Date().getFullYear()} AIDE Market - AI Developer Marketplace
+                        </p>
+                        <p style="color: #9CA3AF; font-size: 12px; margin: 8px 0 0 0;">
+                            更新日: ${currentDate}
+                        </p>
+                    </div>
+                </div>
+            `
         }
     };
 
@@ -620,6 +841,91 @@ exports.sendStudentExpiredEmail = async (user, baseUrl) => {
         return { sent: true, messageId: info.messageId };
     } catch (error) {
         console.error('학생 만료 이메일 전송 실패:', error);
+        throw error;
+    }
+};
+
+/**
+ * 주문 완료 이메일 전송
+ */
+exports.sendOrderConfirmationEmail = async (order, user, baseUrl) => {
+    if (!order || !user) {
+        console.error('주문 또는 사용자 정보가 없습니다.');
+        return { sent: false };
+    }
+
+    const language = user.preferred_language || 'ja';
+    const orderEmailTemplates = require('../order/orderEmailTemplates');
+    
+    // 주문 상품 정보 가져오기
+    const products = order.orderItems || [];
+    const productData = products.map(item => ({
+        id: item.product?.id || item.product_id,
+        name: item.product?.name || '상품',
+        price: item.product?.price || item.unit_price || 0,
+        category_name: item.product?.category_name || 'NLP',
+        imageUrl: item.product?.imageUrl || null
+    }));
+
+    // 액티베이션 코드 가져오기 (ProductActivation 테이블에서)
+    const models = require('../../db/initializer');
+    let activationCodes = [];
+    try {
+        activationCodes = await models.ProductActivation.findAll({
+            where: { order_id: order.id },
+            attributes: ['activation_code', 'product_id'],
+            raw: true
+        });
+    } catch (err) {
+        console.error('액티베이션 코드 조회 실패:', err);
+    }
+
+    // 주문 날짜 포맷팅
+    const orderDate = order.purchased_at 
+        ? new Date(order.purchased_at).toLocaleDateString(language === 'ja' ? 'ja-JP' : language === 'en' ? 'en-US' : 'ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        : new Date().toLocaleDateString();
+
+    const template = orderEmailTemplates.orderConfirmationTemplate(language, {
+        userName: user.username || 'お客様',
+        orderNumber: order.order_number || order.id,
+        orderDate: orderDate,
+        totalAmount: order.total_amount || 0,
+        products: productData,
+        activationCodes: activationCodes,
+        baseUrl: baseUrl || 'http://localhost:3000'
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER || 'sumin@kigawa.net',
+        to: user.email,
+        subject: template.subject,
+        html: template.html
+    };
+
+    const transporter = createTransporter();
+    if (!transporter) {
+        console.log('\n========================================');
+        console.log('📧 주문 완료 이메일 (개발 환경)');
+        console.log('========================================');
+        console.log('수신자:', user.email);
+        console.log('제목:', mailOptions.subject);
+        console.log('주문 번호:', order.order_number || order.id);
+        console.log('========================================\n');
+        return { sent: false };
+    }
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('주문 완료 이메일 전송 성공:', info.messageId);
+        return { sent: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('주문 완료 이메일 전송 실패:', error);
         throw error;
     }
 };

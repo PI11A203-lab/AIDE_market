@@ -8,7 +8,6 @@ export default function Header() {
       <div className="confirmation-header-container">
         <div className="confirmation-header-content">
           <h1 className="confirmation-header-title">
-            <span className="confirmation-header-emoji">🤖</span>
             <span className="confirmation-header-text">
               {t('purchase.confirmation.headerTitle')}
             </span>

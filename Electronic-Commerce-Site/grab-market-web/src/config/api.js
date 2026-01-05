@@ -28,12 +28,16 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // 인증 실패 시 로그아웃 처리
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
-      window.location.href = '/login';
+      // 현재 경로가 로그인 페이지가 아닌 경우에만 리다이렉트
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && !currentPath.startsWith('/login')) {
+        // 인증 실패 시 로그아웃 처리
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

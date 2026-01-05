@@ -1,14 +1,11 @@
 import React from 'react';
-import { CheckCircle, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function SuccessMessage({ orderNumber, isSubscription, nextPaymentDate }) {
   const { t } = useTranslation();
   return (
     <div className="confirmation-success-message">
-      <div className="confirmation-success-icon-wrapper">
-        <CheckCircle className="confirmation-success-icon" />
-      </div>
       <h2 className="confirmation-success-title">
         {t('purchase.confirmation.success.title')}
       </h2>

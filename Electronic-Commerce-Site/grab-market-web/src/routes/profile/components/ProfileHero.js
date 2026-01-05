@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Github, Settings } from 'lucide-react';
 import { useHistory } from 'react-router-dom';
-import { API_URL } from '../../../config/constants';
 import StatsSection from './StatsSection';
 import FollowButton from './FollowButton';
 import FollowListModal from './FollowListModal';
@@ -15,24 +14,6 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
 
   const handleSettingsClick = () => {
     history.push('/profile/settings');
-  };
-
-  // 프로필 이미지 또는 아바타 텍스트 표시
-  const renderAvatar = () => {
-    if (user.profile_image) {
-      return (
-        <img 
-          src={`${API_URL}/${user.profile_image}`} 
-          alt={user.name}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2rem' }}
-          onError={(e) => {
-            e.target.style.display = 'none';
-            e.target.parentElement.textContent = (user.name || 'User').substring(0, 2);
-          }}
-        />
-      );
-    }
-    return (user.name || 'User').substring(0, 2);
   };
 
   // 깃허브 사용자명 추출
@@ -54,9 +35,6 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
       <div className="profile-hero-content">
         <div className="profile-hero-layout">
           <div className="profile-avatar-section">
-            <div className="profile-avatar-large">
-              {renderAvatar()}
-            </div>
             <div className="profile-info">
               <div className="profile-name-row">
                 <h1 className="profile-name">{user.name}</h1>

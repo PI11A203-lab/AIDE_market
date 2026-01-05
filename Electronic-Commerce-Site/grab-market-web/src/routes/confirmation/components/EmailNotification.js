@@ -19,7 +19,7 @@ export default function EmailNotification({ userEmail, onCopyEmail }) {
           <Mail className="confirmation-email-icon" />
         </div>
         <div className="confirmation-email-main">
-          <h3 className="confirmation-email-title">📧 {t('purchase.confirmation.email.title')}</h3>
+          <h3 className="confirmation-email-title">{t('purchase.confirmation.email.title')}</h3>
           <p className="confirmation-email-description">
             {t('purchase.confirmation.email.description')}
           </p>

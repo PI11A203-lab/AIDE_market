@@ -37,9 +37,20 @@ exports.login = async (req, res) => {
             const attemptCount = await loginAttemptTracker.recordLoginFailure(ipAddress);
             const remainingAttempts = 5 - attemptCount;
 
+            // 사용자가 존재하지 않는 경우와 비밀번호가 틀린 경우를 구분하여 에러 코드 반환
+            let errorCode = 'invalidCredentials';
+            if (!user) {
+                errorCode = 'userNotFound';
+            } else if (user.auth_provider === 'google') {
+                errorCode = 'googleAccount';
+            } else {
+                errorCode = 'wrongPassword';
+            }
+
             return res.status(401).json({ 
                 success: false,
-                error: 'メールアドレスまたはパスワードが正しくありません',
+                error: errorCode,
+                errorMessage: errorCode, // 클라이언트에서 i18n 키로 사용
                 remainingAttempts: remainingAttempts > 0 ? remainingAttempts : 0
             });
         }

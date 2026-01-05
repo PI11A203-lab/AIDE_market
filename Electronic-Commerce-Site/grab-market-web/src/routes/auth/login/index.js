@@ -51,12 +51,36 @@ export default function LoginPage() {
         const from = redirectParam || location.state?.from?.pathname || '/';
         history.push(from);
       } else {
-        message.error(t('auth.login.fail'));
+        // 서버에서 보낸 에러 코드를 i18n 키로 변환
+        const errorCode = response.data?.error || response.data?.errorMessage;
+        let errorMsg;
+        
+        if (errorCode && ['userNotFound', 'wrongPassword', 'googleAccount', 'invalidCredentials'].includes(errorCode)) {
+          errorMsg = t(`auth.login.errors.${errorCode}`);
+        } else {
+          errorMsg = response.data?.error || t('auth.login.fail');
+        }
+        
+        message.error(errorMsg);
       }
     } catch (error) {
       console.error('Login error:', error);
-      const errorMessage = error.response?.data?.error || error.message || t('auth.login.error');
-      message.error(errorMessage);
+      // 서버에서 보낸 에러 코드를 i18n 키로 변환
+      const errorCode = error.response?.data?.error || error.response?.data?.errorMessage;
+      let errorMessage;
+      
+      if (errorCode && errorCode.startsWith('auth.login.errors.')) {
+        // 이미 i18n 키 형식인 경우
+        errorMessage = t(errorCode);
+      } else if (errorCode && ['userNotFound', 'wrongPassword', 'googleAccount', 'invalidCredentials'].includes(errorCode)) {
+        // 에러 코드를 i18n 키로 변환
+        errorMessage = t(`auth.login.errors.${errorCode}`);
+      } else {
+        // 기본 에러 메시지
+        errorMessage = error.response?.data?.error || error.message || t('auth.login.error');
+      }
+      
+      message.error(errorMessage, 5); // 5초간 표시
     } finally {
       setIsLoading(false);
     }

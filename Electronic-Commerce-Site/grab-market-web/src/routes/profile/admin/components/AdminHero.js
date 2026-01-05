@@ -1,6 +1,5 @@
 import React from 'react';
 import { Github, Calendar } from 'lucide-react';
-import { API_URL } from '../../../../config/constants';
 import { useTranslation } from 'react-i18next';
 
 export default function AdminHero({ admin }) {
@@ -16,23 +15,6 @@ export default function AdminHero({ admin }) {
     }
   };
 
-  const renderAvatar = () => {
-    if (admin?.profile_image) {
-      return (
-        <img
-          src={`${API_URL}/${admin.profile_image}`}
-          alt={admin.username}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2rem' }}
-          onError={(e) => {
-            e.target.style.display = 'none';
-            e.target.parentElement.textContent = (admin.username || 'Admin').substring(0, 2);
-          }}
-        />
-      );
-    }
-    return (admin?.username || 'Admin').substring(0, 2);
-  };
-
   const githubUsername = getGithubUsername();
 
   return (
@@ -40,9 +22,6 @@ export default function AdminHero({ admin }) {
       <div className="profile-hero-content">
         <div className="profile-hero-layout">
           <div className="profile-avatar-section">
-            <div className="profile-avatar-large">
-              {renderAvatar()}
-            </div>
             <div className="profile-info">
               <h1 className="profile-name">{admin.username}</h1>
               <p className="profile-email">{admin.email}</p>

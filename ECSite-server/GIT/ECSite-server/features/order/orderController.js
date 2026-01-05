@@ -84,6 +84,20 @@ exports.createOrder = async (req, res) => {
         
         createdOrderId = order.id;
         
+        // 주문 완료 이메일 발송 (비동기 처리, 실패해도 주문은 성공)
+        try {
+            const emailService = require('../user/emailService');
+            const user = order.user;
+            if (user && user.email) {
+                const baseUrl = req.protocol + '://' + req.get('host');
+                emailService.sendOrderConfirmationEmail(order, user, baseUrl).catch(err => {
+                    console.error('주문 완료 이메일 발송 실패 (주문은 성공):', err);
+                });
+            }
+        } catch (emailErr) {
+            console.error('이메일 발송 초기화 실패 (주문은 성공):', emailErr);
+        }
+        
         res.status(201).json({ order });
     } catch (err) {
         console.error('주문 생성 에러:', err);

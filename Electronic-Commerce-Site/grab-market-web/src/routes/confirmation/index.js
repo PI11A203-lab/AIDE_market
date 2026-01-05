@@ -50,6 +50,7 @@ export default function PurchaseConfirmation() {
                     category: product.category_name || 'NLP',
                     price: product.price,
                     avatar: product.name.substring(0, 2),
+                    imageUrl: product.imageUrl || null,
                     activationCode: `${product.name.toUpperCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
                     documentUrl: '#'
                   };
