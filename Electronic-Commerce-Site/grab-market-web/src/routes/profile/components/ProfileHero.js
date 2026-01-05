@@ -43,7 +43,7 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                   onClick={handleSettingsClick}
                   title={t('profile.hero.settings')}
                 >
-                  <Settings className="w-5 h-5" />
+                  <Settings size={24} />
                 </button>
               </div>
               {/* GitHub + 팔로워/팔로잉을 한 줄에 배치 */}

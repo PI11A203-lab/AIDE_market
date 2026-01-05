@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../config/api';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import ProfileHeader from '../components/ProfileHeader';
 import StudentStatusCard from './components/StudentStatusCard';
 import StudentDocumentUpload from './components/StudentDocumentUpload';
@@ -10,6 +11,7 @@ import './index.css';
 
 export default function StudentVerification() {
   const history = useHistory();
+  const { t } = useTranslation();
   const [studentStatus, setStudentStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -21,7 +23,7 @@ export default function StudentVerification() {
       try {
         const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
         if (!userFromStorage) {
-          message.warning('로그인이 필요합니다.');
+          message.warning(t('profile.studentVerification.page.loginRequired'));
           history.push('/login');
           return;
         }
@@ -34,14 +36,14 @@ export default function StudentVerification() {
         setStudentStatus(response.data);
       } catch (error) {
         console.error('학생 인증 상태 조회 실패:', error);
-        message.error('학생 인증 상태를 불러올 수 없습니다.');
+        message.error(t('profile.studentVerification.page.loadStatusError'));
       } finally {
         setLoading(false);
       }
     };
 
     loadStudentStatus();
-  }, [history]);
+  }, [history, t]);
 
   const handleUpload = async (file) => {
     setUploading(true);
@@ -51,7 +53,7 @@ export default function StudentVerification() {
 
       await api.studentAccount.verify(currentUserId, formData);
       message.success({
-        content: '✅ 학생 인증이 신청되었습니다. 관리자 검토 목록에 추가되었습니다.',
+        content: t('profile.studentVerification.page.uploadSuccess'),
         duration: 5
       });
       
@@ -60,7 +62,7 @@ export default function StudentVerification() {
       setStudentStatus(statusResponse.data);
     } catch (error) {
       console.error('학생 인증 신청 실패:', error);
-      const errorMessage = error.response?.data?.error || '학생 인증 신청에 실패했습니다.';
+      const errorMessage = error.response?.data?.error || t('profile.studentVerification.page.uploadFail');
       message.error(errorMessage);
     } finally {
       setUploading(false);
@@ -72,7 +74,7 @@ export default function StudentVerification() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-gray-600">로딩 중...</div>
+        <div className="text-xl text-gray-600">{t('profile.studentVerification.page.loading')}</div>
       </div>
     );
   }
@@ -106,21 +108,17 @@ export default function StudentVerification() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ProfileHeader />
+      <ProfileHeader 
+        backButtonLink="/profile/settings"
+        backButtonText="profile.studentVerification.page.backToSettings"
+      />
       
       <div className="max-w-4xl mx-auto px-5 md:px-12 py-10">
         {/* 헤더 */}
         <div className="mb-8">
-          <button
-            onClick={() => history.push('/profile/settings')}
-            className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-base">프로필 설정으로 돌아가기</span>
-          </button>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">학생 인증</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('profile.studentVerification.page.title')}</h1>
           <p className="text-base text-gray-600">
-            학생 계정으로 인증하면 모든 상품에 50% 할인을 받을 수 있습니다
+            {t('profile.studentVerification.page.subtitle')}
           </p>
         </div>
 
@@ -146,13 +144,13 @@ export default function StudentVerification() {
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-yellow-900 mb-2 flex items-center gap-2">
                   <span className="text-2xl">⏳</span>
-                  인증 대기 중
+                  {t('profile.studentVerification.page.pendingAlert.title')}
                 </h3>
                 <p className="text-sm text-yellow-800 mb-2">
-                  학생증이 성공적으로 업로드되었습니다. 관리자 검토 후 승인됩니다.
+                  {t('profile.studentVerification.page.pendingAlert.description')}
                 </p>
                 <p className="text-xs text-yellow-700">
-                  승인 완료까지 보통 1-2영업일이 소요됩니다.
+                  {t('profile.studentVerification.page.pendingAlert.note')}
                 </p>
               </div>
             </div>
@@ -162,7 +160,7 @@ export default function StudentVerification() {
                   onClick={() => history.push('/profile/super-admin/student-verifications')}
                   className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition font-semibold"
                 >
-                  관리자 페이지에서 승인하기
+                  {t('profile.studentVerification.page.pendingAlert.adminButton')}
                 </button>
               </div>
             )}
@@ -173,14 +171,14 @@ export default function StudentVerification() {
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
           <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
             <AlertCircle className="w-5 h-5" />
-            학생 인증 안내
+            {t('profile.studentVerification.page.guide.title')}
           </h3>
           <ul className="space-y-2 text-blue-800">
-            <li>• 학생 인증 시 모든 상품에 50% 할인이 자동으로 적용됩니다.</li>
-            <li>• 학생 할인은 쿠폰 할인과 중복 적용 가능하며, 최대 70%까지 할인됩니다.</li>
-            <li>• 학생 인증은 1년간 유효합니다. 만료 전에 갱신해주세요.</li>
-            <li>• 업로드된 문서는 관리자 검토 후 승인됩니다.</li>
-            <li>• 인증이 거부된 경우 고객센터로 문의해주세요.</li>
+            <li>• {t('profile.studentVerification.page.guide.item1')}</li>
+            <li>• {t('profile.studentVerification.page.guide.item2')}</li>
+            <li>• {t('profile.studentVerification.page.guide.item3')}</li>
+            <li>• {t('profile.studentVerification.page.guide.item4')}</li>
+            <li>• {t('profile.studentVerification.page.guide.item5')}</li>
           </ul>
         </div>
       </div>

@@ -24,11 +24,10 @@
   border-bottom: 2px solid #E5E7EB;
 }
 
-.page-header-top {
+.page-header-left {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .page-title {

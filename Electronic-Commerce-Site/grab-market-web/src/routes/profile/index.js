@@ -274,7 +274,10 @@ export default function UserProfile() {
 
   return (
     <div className="profile-container">
-      <ProfileHeader />
+      <ProfileHeader 
+        backButtonLink="/"
+        backButtonText="common.backHome"
+      />
 
       <main className="profile-main">
         <ProfileHero 

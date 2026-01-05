@@ -64,6 +64,15 @@ export default function OrderDetailPage() {
       <header className="header">
         <div className="header-content">
           <Link to="/" className="logo">AIDE Market</Link>
+          <button 
+            onClick={() => history.push('/profile')}
+            className="btn-back-to-profile"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            {t('order.backToProfile')}
+          </button>
         </div>
       </header>
 

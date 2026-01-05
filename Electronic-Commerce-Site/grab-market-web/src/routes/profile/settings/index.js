@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../config/api';
 import ProfileHeader from '../components/ProfileHeader';
@@ -10,7 +9,6 @@ import './index.css';
 
 export default function ProfileSettings() {
   const { t } = useTranslation();
-  const history = useHistory();
   const [user, setUser] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [studentStatus, setStudentStatus] = useState(null);
@@ -190,7 +188,7 @@ export default function ProfileSettings() {
   if (loading || !user) {
     return (
       <div className="profile-container">
-        <ProfileHeader />
+        <ProfileHeader showBackButton={false} />
         <main className="profile-main">
           <div className="text-center py-12">
             <div className="text-xl text-gray-600">{t('profile.settings.loading')}</div>
@@ -202,19 +200,13 @@ export default function ProfileSettings() {
 
   return (
     <div className="profile-container">
-      <ProfileHeader />
+      <ProfileHeader 
+        backButtonLink="/profile"
+        backButtonText="profile.settings.backToProfile"
+      />
       <main className="profile-settings-main">
         <div className="settings-header">
           <h1 className="settings-title">{t('profile.settings.title')}</h1>
-          <button 
-            className="btn-back-to-profile"
-            onClick={() => history.push('/profile')}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            {t('profile.settings.backToProfile')}
-          </button>
         </div>
 
         <div className="settings-content">

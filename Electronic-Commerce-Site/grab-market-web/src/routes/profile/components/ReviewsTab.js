@@ -12,7 +12,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ rating: 0, comment: '' });
   const [deletingId, setDeletingId] = useState(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // 수정 시작
   const handleEditStart = (review) => {
@@ -238,7 +238,24 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
           >
             {/* 아바타를 왼쪽에 따로 배치 */}
             <div className="review-avatar">
-              {(review.product?.name || review.order_item?.product?.name || review.aiName || 'AI').substring(0, 2)}
+              {(() => {
+                const productImageUrl = review.product?.imageUrl || review.order_item?.product?.imageUrl;
+                const productName = review.product?.name || review.order_item?.product?.name || review.aiName || 'AI';
+                
+                if (productImageUrl) {
+                  return (
+                    <img
+                      src={`${API_URL}/${productImageUrl}`}
+                      alt={productName}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.textContent = productName.substring(0, 2);
+                      }}
+                    />
+                  );
+                }
+                return productName.substring(0, 2);
+              })()}
             </div>
             
             {/* 오른쪽 컨텐츠 영역 */}
@@ -278,7 +295,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                     onClick={() => handleEditStart(review)}
                     disabled={isEditing || isDeleting}
                     className="btn-icon"
-                    title="Edit"
+                    title={t('profile.reviews.edit')}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -289,7 +306,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                     onClick={() => handleDelete(reviewId, productId)}
                     disabled={isEditing || isDeleting}
                     className="btn-icon btn-delete"
-                    title="Delete"
+                    title={t('profile.reviews.delete')}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="3 6 5 6 21 6"/>
@@ -303,7 +320,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
               {isEditing ? (
                 <div className="space-y-4 pb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">별점</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.reviews.ratingLabel')}</label>
                   <div className="flex items-center gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
@@ -316,17 +333,17 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                         onClick={() => setEditForm({ ...editForm, rating: star })}
                       />
                     ))}
-                    <span className="ml-2 text-sm text-gray-600">{editForm.rating}점</span>
+                    <span className="ml-2 text-sm text-gray-600">{t('profile.reviews.ratingPoints', { rating: editForm.rating })}</span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">리뷰 내용</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.reviews.reviewContentLabel')}</label>
                   <textarea
                     value={editForm.comment}
                     onChange={(e) => setEditForm({ ...editForm, comment: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={4}
-                    placeholder="리뷰를 작성해주세요..."
+                    placeholder={t('profile.reviews.reviewPlaceholder')}
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -335,14 +352,14 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     <Check className="w-4 h-4" />
-                    저장
+                    {t('profile.reviews.save')}
                   </button>
                   <button
                     onClick={handleEditCancel}
                     className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                   >
                     <X className="w-4 h-4" />
-                    취소
+                    {t('profile.reviews.cancel')}
                   </button>
                 </div>
               </div>
@@ -371,13 +388,13 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                             <Image
                               key={index}
                               src={imageUrl.startsWith('http') ? imageUrl : `${API_URL}/${imageUrl}`}
-                              alt={`리뷰 이미지 ${index + 1}`}
+                              alt={t('profile.reviews.reviewImage', { index: index + 1 })}
                               className="object-cover rounded-lg"
                               width={100}
                               height={100}
                               style={{ cursor: 'pointer' }}
                               preview={{
-                                mask: '확대'
+                                mask: t('profile.reviews.expand')
                               }}
                             />
                           ))}
@@ -388,7 +405,9 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                   
                   <span className="review-date">
                     {review.created_at 
-                      ? new Date(review.created_at).toLocaleDateString('ko-KR', {
+                      ? new Date(review.created_at).toLocaleDateString(
+                          i18n.language === 'ko' ? 'ko-KR' : 
+                          i18n.language === 'ja' ? 'ja-JP' : 'en-US', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'

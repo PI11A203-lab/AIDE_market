@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { formatDate, calculateDaysUntil } from '../../../subscription/utils/formatters';
 
 export default function StudentStatusCard({ studentStatus }) {
+  const { t, i18n } = useTranslation();
   const daysUntilExpiry = () => {
     if (!studentStatus?.student_expires_at) return null;
     return calculateDaysUntil(studentStatus.student_expires_at);
@@ -13,21 +15,21 @@ export default function StudentStatusCard({ studentStatus }) {
       return (
         <span className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
           <CheckCircle2 className="w-4 h-4" />
-          인증 완료
+          {t('profile.studentVerification.page.statusBadge.verified')}
         </span>
       );
     } else if (status === 'pending') {
       return (
         <span className="flex items-center gap-2 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
           <Clock className="w-4 h-4" />
-          검토 중
+          {t('profile.studentVerification.page.statusBadge.pending')}
         </span>
       );
     } else {
       return (
         <span className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold">
           <XCircle className="w-4 h-4" />
-          미인증
+          {t('profile.studentVerification.page.statusBadge.notApplied')}
         </span>
       );
     }
@@ -61,7 +63,7 @@ export default function StudentStatusCard({ studentStatus }) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-gray-900">현재 상태</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('profile.studentVerification.page.currentStatus')}</h2>
         {getStatusBadge(status)}
       </div>
 
@@ -70,9 +72,9 @@ export default function StudentStatusCard({ studentStatus }) {
           <div className="flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-green-600" />
             <div>
-              <p className="text-sm text-gray-600">인증 완료일</p>
+              <p className="text-sm text-gray-600">{t('profile.studentVerification.page.statusCard.verifiedDate')}</p>
               <p className="font-semibold text-gray-900">
-                {formatDate(studentStatus.student_verified_at)}
+                {formatDate(studentStatus.student_verified_at, i18n.language)}
               </p>
             </div>
           </div>
@@ -80,15 +82,15 @@ export default function StudentStatusCard({ studentStatus }) {
             <div className="flex items-center gap-3">
               <Clock className="w-5 h-5 text-blue-600" />
               <div>
-                <p className="text-sm text-gray-600">만료일</p>
+                <p className="text-sm text-gray-600">{t('profile.studentVerification.page.statusCard.expiryDate')}</p>
                 <p className="font-semibold text-gray-900">
-                  {formatDate(studentStatus.student_expires_at)}
+                  {formatDate(studentStatus.student_expires_at, i18n.language)}
                 </p>
                 {days !== null && (
                   <p className={`text-sm mt-1 ${days > 30 ? 'text-green-600' : days > 0 ? 'text-yellow-600' : 'text-red-600'}`}>
                     {days > 0 
-                      ? `${days}일 남음`
-                      : '만료됨'}
+                      ? t('profile.studentVerification.page.statusCard.daysRemaining', { days })
+                      : t('profile.studentVerification.page.statusCard.expired')}
                   </p>
                 )}
               </div>
@@ -96,7 +98,7 @@ export default function StudentStatusCard({ studentStatus }) {
           )}
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
             <p className="text-green-800 font-semibold">
-              ✓ 학생 할인 (50%)이 적용되고 있습니다
+              {t('profile.studentVerification.page.statusCard.discountApplied')}
             </p>
           </div>
         </div>
@@ -108,10 +110,10 @@ export default function StudentStatusCard({ studentStatus }) {
             <span className="text-2xl">⏳</span>
             <div>
               <p className="text-yellow-900 font-semibold mb-1">
-                관리자 검토 대기 중입니다
+                {t('profile.studentVerification.page.statusCard.pendingTitle')}
               </p>
               <p className="text-sm text-yellow-800">
-                학생증이 업로드되었습니다. 관리자 승인을 기다리고 있습니다.
+                {t('profile.studentVerification.page.statusCard.pendingDescription')}
               </p>
             </div>
           </div>
@@ -121,7 +123,7 @@ export default function StudentStatusCard({ studentStatus }) {
       {status === 'not_applied' && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
           <p className="text-gray-800">
-            학생 인증을 신청하려면 학생증 또는 재학증명서를 업로드해주세요.
+            {t('profile.studentVerification.page.statusCard.notAppliedDescription')}
           </p>
         </div>
       )}
@@ -129,13 +131,13 @@ export default function StudentStatusCard({ studentStatus }) {
       {status === 'expired' && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800 font-semibold mb-2">
-            학생 인증이 만료되었습니다
+            {t('profile.studentVerification.page.statusCard.expiredTitle')}
           </p>
           <p className="text-red-700">
-            만료일: {formatDate(studentStatus.student_expires_at)}
+            {t('profile.studentVerification.page.statusCard.expiredDescription', { date: formatDate(studentStatus.student_expires_at, i18n.language) })}
           </p>
           <p className="text-sm text-red-600 mt-2">
-            학생 할인을 계속 받으려면 학생증을 다시 업로드해주세요.
+            {t('profile.studentVerification.page.statusCard.expiredRenew')}
           </p>
         </div>
       )}

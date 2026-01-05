@@ -1,9 +1,11 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { GraduationCap, CheckCircle, XCircle, Clock, ArrowRight } from 'lucide-react';
 
 export default function StudentVerificationSection({ studentStatus }) {
   const history = useHistory();
+  const { t, i18n } = useTranslation();
 
   const getStatusInfo = () => {
     // 상태 계산 로직 - student-verification/index.js와 동일
@@ -38,10 +40,10 @@ export default function StudentVerificationSection({ studentStatus }) {
       return {
         status: 'verified',
         icon: <CheckCircle className="w-5 h-5" style={{ color: '#10b981' }} />,
-        text: '인증 완료',
+        text: t('profile.settings.studentVerification.status.verified'),
         description: daysUntilExpiry !== null 
-          ? `학생 할인(50%)이 적용 중입니다. 만료까지 ${daysUntilExpiry}일 남았습니다.`
-          : '학생 할인(50%)이 적용 중입니다.',
+          ? t('profile.settings.studentVerification.description.verifiedWithExpiry', { days: daysUntilExpiry })
+          : t('profile.settings.studentVerification.description.verified'),
         color: 'green'
       };
     }
@@ -50,8 +52,8 @@ export default function StudentVerificationSection({ studentStatus }) {
       return {
         status: 'pending',
         icon: <Clock className="w-5 h-5" style={{ color: '#f59e0b' }} />,
-        text: '인증 대기 중',
-        description: '학생증이 업로드되었습니다. 관리자 검토 후 승인됩니다.',
+        text: t('profile.settings.studentVerification.status.pending'),
+        description: t('profile.settings.studentVerification.description.pending'),
         color: 'yellow'
       };
     }
@@ -60,8 +62,8 @@ export default function StudentVerificationSection({ studentStatus }) {
       return {
         status: 'expired',
         icon: <XCircle className="w-5 h-5" style={{ color: '#ef4444' }} />,
-        text: '인증 만료',
-        description: '학생 인증이 만료되었습니다. 갱신해주세요.',
+        text: t('profile.settings.studentVerification.status.expired'),
+        description: t('profile.settings.studentVerification.description.expired'),
         color: 'red'
       };
     }
@@ -70,8 +72,8 @@ export default function StudentVerificationSection({ studentStatus }) {
     return {
       status: 'not_applied',
       icon: <Clock className="w-5 h-5" style={{ color: '#6b7280' }} />,
-      text: '미인증',
-      description: '학생 인증을 신청하면 모든 상품에 50% 할인을 받을 수 있습니다.',
+      text: t('profile.settings.studentVerification.status.notApplied'),
+      description: t('profile.settings.studentVerification.description.notApplied'),
       color: 'gray'
     };
   };
@@ -81,7 +83,9 @@ export default function StudentVerificationSection({ studentStatus }) {
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', { 
+    return date.toLocaleDateString(
+      i18n.language === 'ko' ? 'ko-KR' : 
+      i18n.language === 'ja' ? 'ja-JP' : 'en-US', { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
@@ -93,13 +97,13 @@ export default function StudentVerificationSection({ studentStatus }) {
       <div className="settings-section-header">
         <div className="settings-section-title">
           <GraduationCap className="w-6 h-6" />
-          <h2>학생 인증</h2>
+          <h2>{t('profile.settings.studentVerification.title')}</h2>
         </div>
         <button
           className="btn-add"
           onClick={() => history.push('/profile/student-verification')}
         >
-          학생 인증 관리
+          {t('profile.settings.studentVerification.manage')}
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -117,12 +121,12 @@ export default function StudentVerificationSection({ studentStatus }) {
           {statusInfo.status === 'verified' && studentStatus?.student_verified_at && (
             <div className="student-status-details">
               <div className="student-status-detail-item">
-                <span className="detail-label">인증 완료일:</span>
+                <span className="detail-label">{t('profile.settings.studentVerification.labels.verifiedDate')}</span>
                 <span className="detail-value">{formatDate(studentStatus.student_verified_at)}</span>
               </div>
               {studentStatus.student_expires_at && (
                 <div className="student-status-detail-item">
-                  <span className="detail-label">만료일:</span>
+                  <span className="detail-label">{t('profile.settings.studentVerification.labels.expiryDate')}</span>
                   <span className="detail-value">{formatDate(studentStatus.student_expires_at)}</span>
                 </div>
               )}
@@ -133,8 +137,8 @@ export default function StudentVerificationSection({ studentStatus }) {
           {statusInfo.status === 'pending' && (
             <div className="student-status-details">
               <div className="student-status-detail-item">
-                <span className="detail-label">상태:</span>
-                <span className="detail-value">관리자 검토 대기 중</span>
+                <span className="detail-label">{t('profile.settings.studentVerification.labels.status')}</span>
+                <span className="detail-value">{t('profile.settings.studentVerification.labels.pendingStatus')}</span>
               </div>
             </div>
           )}
@@ -143,7 +147,7 @@ export default function StudentVerificationSection({ studentStatus }) {
           {statusInfo.status === 'expired' && studentStatus?.student_expires_at && (
             <div className="student-status-details">
               <div className="student-status-detail-item">
-                <span className="detail-label">만료일:</span>
+                <span className="detail-label">{t('profile.settings.studentVerification.labels.expiryDate')}</span>
                 <span className="detail-value">{formatDate(studentStatus.student_expires_at)}</span>
               </div>
             </div>
@@ -153,9 +157,9 @@ export default function StudentVerificationSection({ studentStatus }) {
         {/* 안내 메시지 */}
         <div className="student-verification-info">
           <ul className="student-info-list">
-            <li>• 학생 인증 시 모든 상품에 50% 할인이 자동으로 적용됩니다.</li>
-            <li>• 학생 할인은 쿠폰 할인과 중복 적용 가능하며, 최대 70%까지 할인됩니다.</li>
-            <li>• 학생 인증은 1년간 유효합니다.</li>
+            <li>• {t('profile.settings.studentVerification.info.item1')}</li>
+            <li>• {t('profile.settings.studentVerification.info.item2')}</li>
+            <li>• {t('profile.settings.studentVerification.info.item3')}</li>
           </ul>
         </div>
       </div>

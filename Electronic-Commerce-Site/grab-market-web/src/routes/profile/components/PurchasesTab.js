@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 export default function PurchasesTab({ orders }) {
   const history = useHistory();
   const [orderItemCounts, setOrderItemCounts] = useState({});
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // 각 주문의 아이템 개수 가져오기
   useEffect(() => {
@@ -48,7 +48,9 @@ export default function PurchasesTab({ orders }) {
     
     orders.forEach(order => {
       const orderDate = new Date(order.purchased_at || order.createdAt || Date.now());
-      const dateKey = orderDate.toLocaleDateString('ko-KR', {
+      const locale = i18n.language === 'ko' ? 'ko-KR' : 
+                     i18n.language === 'ja' ? 'ja-JP' : 'en-US';
+      const dateKey = orderDate.toLocaleDateString(locale, {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
