@@ -12,125 +12,38 @@ export default function CreatorsPage() {
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [i18nReady, setI18nReady] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState(() => {
-    // 초기 상태를 localStorage에서 직접 읽기
-    if (typeof window !== 'undefined') {
-      const savedLanguage = localStorage.getItem('appLanguage');
-      return savedLanguage || i18n.language || 'en';
-    }
-    return i18n.language || 'en';
-  });
   const history = useHistory();
 
-  // localStorage에서 언어 설정 불러오기 및 동기화
+  // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('appLanguage');
-    console.log('Creators page - Saved language from localStorage:', savedLanguage);
-    console.log('Creators page - Current i18n.language:', i18n.language);
-    
-    if (savedLanguage) {
-      if (i18n.isInitialized) {
-        if (savedLanguage !== i18n.language) {
-          console.log('Changing language from', i18n.language, 'to', savedLanguage);
-          i18n.changeLanguage(savedLanguage);
-          setCurrentLanguage(savedLanguage);
-        } else {
-          setCurrentLanguage(savedLanguage);
-        }
-      } else {
-        // i18n이 아직 초기화되지 않았으면, 초기화될 때까지 대기
-        const checkAndSetLanguage = () => {
-          if (i18n.isInitialized && savedLanguage !== i18n.language) {
-            console.log('i18n initialized, changing language to', savedLanguage);
-            i18n.changeLanguage(savedLanguage);
-            setCurrentLanguage(savedLanguage);
-          }
-        };
-        
-        i18n.on('initialized', checkAndSetLanguage);
-        
-        // 이미 초기화된 경우
-        if (i18n.isInitialized) {
-          checkAndSetLanguage();
-        }
-        
-        return () => {
-          i18n.off('initialized', checkAndSetLanguage);
-        };
-      }
-    }
-  }, [i18n]);
-
-  // 언어 변경 감지
-  useEffect(() => {
-    const handleLanguageChanged = (lng) => {
-      console.log('Language changed event received:', lng);
-      setCurrentLanguage(lng);
-    };
-
-    i18n.on('languageChanged', handleLanguageChanged);
-
-    return () => {
-      i18n.off('languageChanged', handleLanguageChanged);
-    };
-  }, [i18n]);
-
-  // i18n 초기화 대기
-  useEffect(() => {
-    if (i18n.isInitialized) {
-      setI18nReady(true);
+    const syncLanguage = () => {
       const savedLanguage = localStorage.getItem('appLanguage');
-      const langToUse = savedLanguage || i18n.language;
-      setCurrentLanguage(langToUse);
-      
-      // localStorage의 언어와 i18n 언어가 다르면 동기화
-      if (savedLanguage && savedLanguage !== i18n.language) {
+      if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage) && savedLanguage !== i18n.language) {
+        // 저장된 언어로 강제 변경
         i18n.changeLanguage(savedLanguage);
       }
-    } else {
-      const checkInitialized = setInterval(() => {
-        if (i18n.isInitialized) {
-          setI18nReady(true);
-          const savedLanguage = localStorage.getItem('appLanguage');
-          const langToUse = savedLanguage || i18n.language;
-          setCurrentLanguage(langToUse);
-          
-          if (savedLanguage && savedLanguage !== i18n.language) {
-            i18n.changeLanguage(savedLanguage);
-          }
-          
-          clearInterval(checkInitialized);
-        }
-      }, 100);
-      
-      // 최대 5초 대기
-      setTimeout(() => {
-        clearInterval(checkInitialized);
-        if (i18n.isInitialized) {
-          setI18nReady(true);
-          const savedLanguage = localStorage.getItem('appLanguage');
-          const langToUse = savedLanguage || i18n.language;
-          setCurrentLanguage(langToUse);
-          
-          if (savedLanguage && savedLanguage !== i18n.language) {
-            i18n.changeLanguage(savedLanguage);
-          }
-        }
-      }, 5000);
-      
-      return () => clearInterval(checkInitialized);
-    }
-  }, [i18n]);
+    };
 
-  // 언어 변경 시 번역 업데이트 (currentLanguage 변경 시 리렌더링)
-  useEffect(() => {
-    if (!i18n.isInitialized || !i18nReady) {
-      return;
-    }
-    // 언어가 변경되면 컴포넌트가 리렌더링되어 번역이 업데이트됨
-    console.log('i18n language changed to:', currentLanguage);
-  }, [currentLanguage, i18nReady, i18n.isInitialized]);
+    // 컴포넌트 마운트 시 언어 동기화
+    syncLanguage();
+
+    // storage 이벤트 리스너 추가 (다른 탭에서 언어 변경 시 감지)
+    const handleStorageChange = (e) => {
+      if (e.key === 'appLanguage') {
+        syncLanguage();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // i18n 언어 변경 이벤트 구독
+    i18n.on('languageChanged', syncLanguage);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      i18n.off('languageChanged', syncLanguage);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     // 현재 로그인한 사용자 정보 가져오기
@@ -213,18 +126,18 @@ export default function CreatorsPage() {
     loadCreators();
   };
 
-  // i18n이 준비되지 않았거나 데이터 로딩 중일 때
-  if (!i18nReady || loading) {
+  // 데이터 로딩 중일 때
+  if (loading) {
     return (
       <div className="creators-page">
         <ProfileHeader />
         <main className="creators-main">
           <div className="creators-container">
             <h1 className="creators-title">
-              {i18nReady && i18n.exists('creators.title') ? t('creators.title') : 'Top Creators'}
+              {i18n.exists('creators.title') ? t('creators.title') : 'Top Creators'}
             </h1>
             <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-              {i18nReady && i18n.exists('common.loading') ? t('common.loading') : 'Loading...'}
+              {i18n.exists('common.loading') ? t('common.loading') : 'Loading...'}
             </div>
           </div>
         </main>

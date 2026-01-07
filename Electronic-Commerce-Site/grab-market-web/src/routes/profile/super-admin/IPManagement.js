@@ -393,9 +393,11 @@ export default function IPManagement() {
   return (
     <SuperAdminLayout>
       <div className="ip-management-page">
-        <div className="header">
-          <h1>IP管理</h1>
-          <p>アクセスログ、統計、IPブロック管理</p>
+        <div className="page-header">
+          <div className="page-header-content">
+            <h1 className="page-title">IP管理</h1>
+            <p className="page-subtitle">アクセスログ、統計、IPブロック管理</p>
+          </div>
         </div>
 
         <div className="stats-grid">

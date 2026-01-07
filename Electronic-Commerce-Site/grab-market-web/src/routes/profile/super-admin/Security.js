@@ -450,9 +450,11 @@ export default function Security() {
   return (
     <SuperAdminLayout>
       <div className="security-page">
-        <div className="header">
-          <h1>セキュリティ管理</h1>
-          <p>ボット検出、セキュリティイベント、脅威監視</p>
+        <div className="page-header">
+          <div className="page-header-content">
+            <h1 className="page-title">セキュリティ管理</h1>
+            <p className="page-subtitle">ボット検出、セキュリティイベント、脅威監視</p>
+          </div>
         </div>
 
         <div className="stats-grid">

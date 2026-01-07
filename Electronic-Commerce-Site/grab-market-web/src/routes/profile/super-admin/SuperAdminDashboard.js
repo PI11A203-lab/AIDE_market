@@ -67,9 +67,11 @@ export default function SuperAdminDashboard() {
   return (
     <SuperAdminLayout>
       <div className="dashboard-page">
-        <div className="header">
-          <h1>サイト管理者ダッシュボード</h1>
-          <p>システム全体の管理と監視</p>
+        <div className="page-header">
+          <div className="page-header-content">
+            <h1 className="page-title">サイト管理者ダッシュボード</h1>
+            <p className="page-subtitle">システム全体の管理と監視</p>
+          </div>
         </div>
 
         <div className="stats-grid">

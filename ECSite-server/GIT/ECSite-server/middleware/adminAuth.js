@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 
 /**
  * JWT 토큰에서 사용자 정보 가져오기
+ * @returns {Object|null} 사용자 객체 또는 null (토큰이 없거나 유효하지 않은 경우)
+ * @throws {Error} 토큰이 만료된 경우 TokenExpiredError를 throw
  */
 const getUserFromToken = async (req) => {
   // 이미 req.user가 설정되어 있는 경우
@@ -37,6 +39,12 @@ const getUserFromToken = async (req) => {
 
     return user.toJSON ? user.toJSON() : user;
   } catch (error) {
+    // 토큰 만료는 명시적으로 throw하여 상위에서 처리
+    if (error.name === 'TokenExpiredError') {
+      console.error('JWT 토큰 만료:', error.message);
+      throw error; // 토큰 만료는 상위로 전달
+    }
+    // 기타 JWT 오류는 로그만 남기고 null 반환
     console.error('JWT 토큰 검증 실패:', error.message);
     return null;
   }
@@ -48,7 +56,21 @@ const getUserFromToken = async (req) => {
 const adminAuth = async (req, res, next) => {
   try {
     // JWT 토큰에서 사용자 정보 가져오기
-    let user = await getUserFromToken(req);
+    let user;
+    try {
+      user = await getUserFromToken(req);
+    } catch (tokenError) {
+      // 토큰 만료 오류 처리
+      if (tokenError.name === 'TokenExpiredError') {
+        return res.status(401).json({ 
+          success: false,
+          error: '토큰이 만료되었습니다. 다시 로그인해주세요.',
+          code: 'TOKEN_EXPIRED'
+        });
+      }
+      // 기타 오류는 user가 null인 것으로 처리
+      user = null;
+    }
     
     // 헤더에서 user-id 가져오기 (임시, JWT가 없을 경우)
     if (!user) {
@@ -85,7 +107,21 @@ const adminAuth = async (req, res, next) => {
 const requireSuperAdmin = async (req, res, next) => {
   try {
     // JWT 토큰에서 사용자 정보 가져오기
-    let user = await getUserFromToken(req);
+    let user;
+    try {
+      user = await getUserFromToken(req);
+    } catch (tokenError) {
+      // 토큰 만료 오류 처리
+      if (tokenError.name === 'TokenExpiredError') {
+        return res.status(401).json({ 
+          success: false,
+          error: '토큰이 만료되었습니다. 다시 로그인해주세요.',
+          code: 'TOKEN_EXPIRED'
+        });
+      }
+      // 기타 오류는 user가 null인 것으로 처리
+      user = null;
+    }
     
     // 헤더에서 user-id 가져오기 (임시, JWT가 없을 경우)
     if (!user) {

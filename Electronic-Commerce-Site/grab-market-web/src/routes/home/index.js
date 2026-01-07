@@ -47,6 +47,19 @@ function MainPage() {
     { value: 'en', label: 'English' },
   ];
 
+  // i18n 언어 변경 이벤트 구독
+  useEffect(() => {
+    const handleLanguageChange = (lng) => {
+      setLanguage(lng);
+    };
+    
+    i18n.on('languageChanged', handleLanguageChange);
+    
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [i18n]);
+
   // 카테고리 정의 (동적으로 count 계산)
   const categories = useMemo(() => {
     const baseCategories = [
@@ -163,8 +176,8 @@ function MainPage() {
   };
 
   const handleLanguageChange = (value) => {
-    setLanguage(value);
     i18n.changeLanguage(value);
+    setLanguage(value);
     if (typeof window !== 'undefined') {
       localStorage.setItem('appLanguage', value);
     }

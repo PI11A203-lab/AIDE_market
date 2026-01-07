@@ -81,9 +81,11 @@ export default function Products() {
   return (
     <SuperAdminLayout>
       <div className="products-page">
-        <div className="header">
-          <h1>商品承認管理</h1>
-          <p>管理者が申請した商品の承認・却下</p>
+        <div className="page-header">
+          <div className="page-header-content">
+            <h1 className="page-title">商品承認管理</h1>
+            <p className="page-subtitle">管理者が申請した商品の承認・却下</p>
+          </div>
         </div>
 
         <div className="stats-grid">

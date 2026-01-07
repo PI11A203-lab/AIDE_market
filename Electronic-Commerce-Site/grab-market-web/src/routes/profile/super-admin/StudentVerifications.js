@@ -98,9 +98,11 @@ export default function StudentVerifications() {
   return (
     <SuperAdminLayout>
       <div className="student-verifications-page">
-        <div className="header">
-          <h1>学生認証管理</h1>
-          <p>学生認証申請の承認・却下</p>
+        <div className="page-header">
+          <div className="page-header-content">
+            <h1 className="page-title">学生認証管理</h1>
+            <p className="page-subtitle">学生認証申請の承認・却下</p>
+          </div>
         </div>
 
         <div className="stats-grid">

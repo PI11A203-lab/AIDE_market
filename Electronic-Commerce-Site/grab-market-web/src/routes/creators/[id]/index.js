@@ -20,6 +20,37 @@ export default function CreatorDetailPage() {
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
 
+  // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
+  useEffect(() => {
+    const syncLanguage = () => {
+      const savedLanguage = localStorage.getItem('appLanguage');
+      if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage) && savedLanguage !== i18n.language) {
+        // 저장된 언어로 강제 변경
+        i18n.changeLanguage(savedLanguage);
+      }
+    };
+
+    // 컴포넌트 마운트 시 언어 동기화
+    syncLanguage();
+
+    // storage 이벤트 리스너 추가 (다른 탭에서 언어 변경 시 감지)
+    const handleStorageChange = (e) => {
+      if (e.key === 'appLanguage') {
+        syncLanguage();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // i18n 언어 변경 이벤트 구독
+    i18n.on('languageChanged', syncLanguage);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      i18n.off('languageChanged', syncLanguage);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     // 현재 로그인한 사용자 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -74,9 +105,10 @@ export default function CreatorDetailPage() {
           setFollowerCount(userData.follower_count || 0);
         }
 
-        // 판매 중인 AI 리스트 가져오기 (seller 필드로 검색)
+        // 판매 중인 AI 리스트 가져오기 (seller 필드로 필터링)
         try {
-          const productsResponse = await api.products.getList({ limit: 100, search: userData.username });
+          // 더 많은 상품을 가져오기 위해 limit을 늘림
+          const productsResponse = await api.products.getList({ limit: 500 });
           const allProducts = productsResponse.data?.products || productsResponse.data || [];
           
           // seller 필드가 정확히 일치하는 상품만 필터링

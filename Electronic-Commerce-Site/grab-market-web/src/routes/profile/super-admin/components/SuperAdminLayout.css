@@ -1,18 +1,171 @@
 .super-admin-container {
-  display: flex;
   min-height: 100vh;
   background: #f5f5f5;
+  position: relative;
 }
 
-.super-admin-main {
-  margin-left: 250px;
+.super-admin-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  transition: opacity 0.3s ease;
+}
+
+.super-admin-content-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.super-admin-header {
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.super-admin-header-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.super-admin-menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #1a1a1a;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.super-admin-menu-button:hover {
+  background: #f5f5f5;
+  color: #3B82F6;
+}
+
+.super-admin-menu-button:active {
+  transform: scale(0.95);
+}
+
+.super-admin-menu-button:focus {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+.super-admin-header-logo {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  user-select: none;
   flex: 1;
-  padding: 24px;
+}
+
+.super-admin-home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #1A1A1A;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.super-admin-home-link:hover {
+  background: #2D2D2D;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.super-admin-home-link:active {
+  transform: translateY(0);
+}
+
+.super-admin-home-link svg {
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
+  .super-admin-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+  
+  .super-admin-header-content {
+    gap: 12px;
+  }
+  
+  .super-admin-menu-button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .super-admin-header-logo {
+    font-size: 16px;
+  }
+  
+  .super-admin-home-link {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  .super-admin-home-link span {
+    display: none;
+  }
+  
   .super-admin-main {
+    padding: 16px;
+  }
+}
+
+.super-admin-main {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .super-admin-content-wrapper {
     margin-left: 0;
+  }
+  
+  .super-admin-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+  
+  .super-admin-home-link {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  .super-admin-main {
     padding: 16px;
   }
 }

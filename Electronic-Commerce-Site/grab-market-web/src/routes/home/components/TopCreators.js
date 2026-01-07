@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import FollowButton from '../../profile/components/FollowButton';
 
 const TopCreators = () => {
+  const { t, i18n } = useTranslation();
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -88,10 +90,12 @@ const TopCreators = () => {
     return (
       <div className="sidebar-card">
         <div className="sidebar-title">
-          <span>Top Creators</span>
+          <span>{i18n.exists('creators.title') ? t('creators.title') : 'Top Creators'}</span>
         </div>
         <div className="creator-list">
-          <div style={{ padding: '1rem', textAlign: 'center', color: '#6b7280' }}>로딩 중...</div>
+          <div style={{ padding: '1rem', textAlign: 'center', color: '#6b7280' }}>
+            {i18n.exists('common.loading') ? t('common.loading') : 'Loading...'}
+          </div>
         </div>
       </div>
     );
@@ -101,10 +105,12 @@ const TopCreators = () => {
     return (
       <div className="sidebar-card">
         <div className="sidebar-title">
-          <span>Top Creators</span>
+          <span>{i18n.exists('creators.title') ? t('creators.title') : 'Top Creators'}</span>
         </div>
         <div className="creator-list">
-          <div style={{ padding: '1rem', textAlign: 'center', color: '#6b7280' }}>표시할 크리에이터가 없습니다.</div>
+          <div style={{ padding: '1rem', textAlign: 'center', color: '#6b7280' }}>
+            {i18n.exists('creators.empty') ? t('creators.empty') : 'No creators to display.'}
+          </div>
         </div>
       </div>
     );
@@ -113,13 +119,13 @@ const TopCreators = () => {
   return (
     <div className="sidebar-card">
       <div className="sidebar-title">
-        <span>Top Creators</span>
+        <span>{i18n.exists('creators.title') ? t('creators.title') : 'Top Creators'}</span>
         <Link 
           to="/creators"
           className="see-all"
           style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'none' }}
         >
-          See All
+          {i18n.exists('home.seeAll') ? t('home.seeAll') : (i18n.exists('home.viewAll') ? t('home.viewAll') : 'See All')}
         </Link>
       </div>
       <div className="creator-list">
@@ -170,7 +176,7 @@ const TopCreators = () => {
                 }}
                 type="button"
               >
-                Follow
+                {i18n.exists('creators.follow') ? t('creators.follow') : 'Follow'}
               </button>
             ) : null}
           </Link>
