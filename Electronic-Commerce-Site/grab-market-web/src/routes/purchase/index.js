@@ -60,6 +60,7 @@ export default function PurchasePage() {
         category: product.category_name || 'NLP',
         price: product.price,
         avatar: product.name.substring(0, 2),
+        imageUrl: product.imageUrl || null,
         is_purchased: product.is_purchased === 1 || product.is_purchased === true,
         tags: tags.map(tag => tag.name || tag).length > 0 
           ? tags.map(tag => tag.name || tag) 
@@ -131,6 +132,7 @@ export default function PurchasePage() {
                 category: 'NLP',
                 price: item.product?.price || 0,
                 avatar: (item.product?.name || 'U').substring(0, 2),
+                imageUrl: item.product?.imageUrl || null,
                 is_purchased: false,
                 tags: ['AI/ML', 'Expert']
               }));
@@ -402,6 +404,12 @@ export default function PurchasePage() {
     try {
       const user = JSON.parse(userFromStorage);
       
+      // super admin 권한 체크 - super admin은 결제 불가
+      if (user.role === 'super_admin' || currentUser?.role === 'super_admin') {
+        message.warning(t('purchase.messages.superAdminCannotPurchase'));
+        return;
+      }
+      
       // 결제방법 확인
       const response = await api.paymentMethods.getByUser(user.id);
       const methods = response.data.paymentMethods || [];
@@ -649,8 +657,16 @@ export default function PurchasePage() {
                         className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
                       >
                         <div className="flex-1 flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 font-semibold">
-                            {item.avatar}
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden ${item.imageUrl ? 'bg-[#f3f4f6]' : 'bg-gray-200'}`}>
+                            {item.imageUrl ? (
+                              <img 
+                                src={`${API_URL}/${item.imageUrl}`} 
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-gray-600 font-semibold">{item.avatar}</span>
+                            )}
                           </div>
                           <div className="flex-1">
                             <h4 className="font-semibold text-gray-900">{item.name}</h4>

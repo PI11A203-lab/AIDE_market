@@ -28,7 +28,7 @@ export default function OrderItem({
   return (
     <div className="order-item">
       <div className="product-header">
-        <div className="product-avatar">
+        <div className={`product-avatar ${item.product.imageUrl ? 'has-image' : ''}`}>
           {item.product.imageUrl ? (
             <img 
               src={`${API_URL}/${item.product.imageUrl}`} 

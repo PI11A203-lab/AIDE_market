@@ -1,14 +1,23 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '../../../config/constants';
 
 export default function CartItem({ item, onRemove }) {
   const { t } = useTranslation();
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-6 transition-all hover:border-gray-300 hover:shadow-md">
       <div className="flex items-center gap-5">
-        {/* 아바타 */}
-        <div className="w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
-          {item.avatar}
+        {/* 상품 이미지 또는 아바타 */}
+        <div className={`w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden ${item.imageUrl ? 'bg-[#f3f4f6]' : 'bg-gradient-to-br from-gray-800 to-gray-600'}`}>
+          {item.imageUrl ? (
+            <img 
+              src={`${API_URL}/${item.imageUrl}`} 
+              alt={item.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-white text-3xl font-bold">{item.avatar}</span>
+          )}
         </div>
 
         {/* 정보 */}

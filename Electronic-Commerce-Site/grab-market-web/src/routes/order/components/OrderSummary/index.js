@@ -28,7 +28,6 @@ export default function OrderSummary({ order }) {
 
   return (
     <div className="order-summary">
-      <h2 className="section-title">{t('order.summaryTitle')}</h2>
       <div className="summary-row">
         <span className="summary-label">{t('order.statusLabel')}</span>
         <span className={`summary-value status ${getStatusClass(order.status)}`}>

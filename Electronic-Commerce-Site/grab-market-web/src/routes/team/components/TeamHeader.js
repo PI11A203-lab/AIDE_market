@@ -1,23 +1,25 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export default function TeamHeader() {
-  const history = useHistory();
   const { t } = useTranslation();
 
   return (
     <header className="profile-header">
       <div className="header-content">
-        <h1 className="logo">
+        <Link to="/" className="logo">
           <span className="logo-text">AIDE Market</span>
-        </h1>
-        <button 
-          onClick={() => history.push('/')}
-          className="btn-back"
+        </Link>
+        <Link 
+          to="/"
+          className="btn-back-to-home"
         >
-          ← {t('common.backHome')}
-        </button>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          {t('common.backHome')}
+        </Link>
       </div>
     </header>
   );

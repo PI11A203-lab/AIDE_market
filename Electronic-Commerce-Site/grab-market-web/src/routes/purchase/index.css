@@ -1,3 +1,52 @@
+/* 헤더 스타일 (profile 페이지와 동일) */
+.profile-header {
+  background-color: white;
+  border-bottom: 1px solid #E5E7EB;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.profile-header .header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-header .logo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-header .logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.profile-header .btn-back-to-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #6B7280;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.profile-header .btn-back-to-home:hover {
+  color: #1A1A1A;
+}
+
 /* 삭제 버튼 스타일 (마이페이지 리뷰 삭제 버튼과 동일) */
 .btn-icon {
   width: 36px !important;

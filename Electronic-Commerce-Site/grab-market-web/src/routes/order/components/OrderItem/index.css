@@ -30,12 +30,32 @@
   font-weight: 700;
   flex-shrink: 0;
   overflow: hidden;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-.product-avatar .product-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.product-avatar img,
+.product-avatar .product-image,
+.product-avatar img.product-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* 이미지가 있는 경우 배경 숨김 */
+/* 이미지가 있을 때 배경 제거 */
+.product-avatar.has-image {
+  background: transparent !important;
 }
 
 .product-info {

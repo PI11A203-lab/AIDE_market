@@ -1014,7 +1014,7 @@ const resources = {
         review: {
           completed: '리뷰가 작성되었습니다',
           title: '리뷰 작성',
-          ratingLabel: '별점:',
+          ratingLabel: '별점 :',
           ratingValue: '{{rating}}점',
           titleLabel: '리뷰 제목',
           titlePlaceholder: '리뷰 제목을 입력해주세요 (선택사항)',
@@ -1214,6 +1214,7 @@ const resources = {
           alreadyPurchasedWarning: '이미 구매한 상품은 제외하고 주문을 진행합니다.',
           noItemsToPurchase: '구매 가능한 상품이 없습니다.',
           cartLoadFail: '장바구니를 불러오는데 실패했습니다.',
+          superAdminCannotPurchase: '관리자 권한으로는 결제를 진행할 수 없습니다.',
         },
         availableCartItems: {
           title: '장바구니에 있는 다른 상품들',
@@ -2558,6 +2559,7 @@ const resources = {
           alreadyPurchasedWarning: 'Already purchased items will be excluded from the order.',
           noItemsToPurchase: 'No items available for purchase.',
           cartLoadFail: 'Failed to load cart.',
+          superAdminCannotPurchase: 'You cannot proceed with payment as an administrator.',
         },
         availableCartItems: {
           title: 'Items in Cart',
@@ -3951,6 +3953,7 @@ const resources = {
           alreadyPurchasedWarning: 'すでに購入済みの商品は注文から除外されます。',
           noItemsToPurchase: '購入可能な商品がありません。',
           cartLoadFail: 'カートの読み込みに失敗しました。',
+          superAdminCannotPurchase: '管理者権限では決済を進めることはできません。',
         },
         availableCartItems: {
           title: 'カートに追加された商品',

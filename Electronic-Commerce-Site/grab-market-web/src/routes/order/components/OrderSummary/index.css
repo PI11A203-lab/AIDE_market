@@ -1,6 +1,12 @@
 /* 주문 요약 */
 .order-summary {
   padding-bottom: 25px;
+  padding-top: 0;
+  margin-top: -8px;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .section-title {
@@ -13,22 +19,35 @@
 .summary-row {
   display: flex;
   justify-content: space-between;
-  padding: 14px 0;
+  padding: 0;
+  margin: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .summary-row:first-child {
   border-bottom: none;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .summary-row:last-child {
   padding-top: 20px;
+  padding-bottom: 20px;
   margin-top: 8px;
-  border-top: 2px solid #E5E7EB;
+  border-top: 1px solid #E5E7EB;
+  border-bottom: 1px solid #E5E7EB;
 }
 
 .summary-label {
   font-size: 15px;
   color: #6B7280;
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
 }
 
 .summary-value {

@@ -1,6 +1,6 @@
 import "./App.css";
 import MainPageComponent from "./routes/home";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useLocation } from "react-router-dom";
 import ProductPage from "./routes/product";
 import UploadPage from "./routes/upload";
 import LoginPage from "./routes/auth/login";
@@ -34,6 +34,9 @@ import SuperAdminIPManagement from "./routes/profile/super-admin/IPManagement";
 import SuperAdminSecurity from "./routes/profile/super-admin/Security";
 
 function App() {
+  const location = useLocation();
+  const isOrderPage = location.pathname.startsWith('/order/');
+
   return (
     <div>
       <div id="body">
@@ -97,7 +100,7 @@ function App() {
           </Route>
         </Switch>
       </div>
-      <div id="footer"></div>
+      {!isOrderPage && <div id="footer"></div>}
     </div>
   );
 }
