@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../../config/api';
 import { Calendar, AlertCircle } from 'lucide-react';
 import PaymentInfoCard from '../../components/PaymentInfoCard';
@@ -15,9 +16,19 @@ import './index.css';
 export default function SubscriptionReminder() {
   const history = useHistory();
   const { token } = useParams();
+  const { t, i18n } = useTranslation();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
+
+  // localStorage에서 언어 설정 불러오기
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const loadSubscription = async () => {
@@ -25,7 +36,7 @@ export default function SubscriptionReminder() {
         // 로그인 확인
         const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
         if (!userFromStorage) {
-          message.warning('로그인이 필요합니다.');
+          message.warning(t('subscription.reminder.loginRequired'));
           history.push(`/login?redirect=/subscription/reminder/${token}`);
           return;
         }
@@ -35,7 +46,7 @@ export default function SubscriptionReminder() {
         setSubscription(response.data.subscription);
       } catch (error) {
         console.error('구독 정보 조회 실패:', error);
-        const errorMessage = error.response?.data?.error || '구독 정보를 불러올 수 없습니다.';
+        const errorMessage = error.response?.data?.error || t('subscription.reminder.loadFail');
         message.error(errorMessage);
         
         // 토큰이 유효하지 않거나 만료된 경우
@@ -50,7 +61,7 @@ export default function SubscriptionReminder() {
     };
 
     loadSubscription();
-  }, [token, history]);
+  }, [token, history, t]);
 
   const handleUpdateCoupon = async (couponCode) => {
     setApplyingCoupon(true);
@@ -67,10 +78,10 @@ export default function SubscriptionReminder() {
       // 구독 정보 새로고침
       const response = await api.subscriptions.getByReminderToken(token);
       setSubscription(response.data.subscription);
-      message.success('쿠폰이 적용되었습니다.');
+      message.success(t('subscription.reminder.couponApplied'));
     } catch (error) {
       console.error('쿠폰 적용 실패:', error);
-      const errorMessage = error.response?.data?.error || '쿠폰 적용에 실패했습니다.';
+      const errorMessage = error.response?.data?.error || t('subscription.reminder.couponApplyFail');
       message.error(errorMessage);
     } finally {
       setApplyingCoupon(false);
@@ -80,7 +91,7 @@ export default function SubscriptionReminder() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-gray-600">로딩 중...</div>
+        <div className="text-xl text-gray-600">{t('common.loading')}</div>
       </div>
     );
   }
@@ -90,13 +101,13 @@ export default function SubscriptionReminder() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">구독 정보를 찾을 수 없습니다</h2>
-          <p className="text-gray-600">링크가 만료되었거나 유효하지 않습니다.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('subscription.reminder.notFoundTitle')}</h2>
+          <p className="text-gray-600">{t('subscription.reminder.notFoundDescription')}</p>
           <button
             onClick={() => history.push('/subscription/manage')}
             className="mt-4 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-900"
           >
-            구독 관리로 이동
+            {t('subscription.reminder.goToManage')}
           </button>
         </div>
       </div>
@@ -113,15 +124,15 @@ export default function SubscriptionReminder() {
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
               <Calendar className="w-10 h-10 text-blue-600" />
-              정기결제 안내
+              {t('subscription.reminder.title')}
             </h1>
             <SubscriptionStatusBadge status={subscription.status} />
           </div>
           <p className="text-base text-gray-600">
-            다음 결제일과 구독 정보를 확인하세요
+            {t('subscription.reminder.subtitle')}
             {daysUntilPayment > 0 && (
               <span className="ml-2 text-blue-600 font-medium">
-                ({daysUntilPayment}일 남음)
+                {t('subscription.reminder.daysRemaining', { days: daysUntilPayment })}
               </span>
             )}
           </p>
@@ -155,13 +166,12 @@ export default function SubscriptionReminder() {
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
           <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
             <AlertCircle className="w-5 h-5" />
-            안내 사항
+            {t('subscription.reminder.infoTitle')}
           </h3>
           <ul className="space-y-2 text-blue-800">
-            <li>• 정기결제는 매월 말일에 자동으로 결제됩니다.</li>
-            <li>• 결제 실패 시 3일의 유예 기간이 제공됩니다.</li>
-            <li>• 유예 기간 내 재결제하지 않으면 활성화 코드가 정지됩니다.</li>
-            <li>• 구독 관리는 프로필 페이지에서 할 수 있습니다.</li>
+            {t('subscription.reminder.infoItems', { returnObjects: true }).map((item, index) => (
+              <li key={index}>• {item}</li>
+            ))}
           </ul>
         </div>
 
@@ -171,7 +181,7 @@ export default function SubscriptionReminder() {
             onClick={() => history.push('/subscription/manage')}
             className="px-6 py-2 text-gray-600 hover:text-gray-900"
           >
-            ← 구독 관리로 돌아가기
+            {t('subscription.reminder.backToManage')}
           </button>
         </div>
       </div>

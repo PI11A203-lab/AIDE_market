@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ProfileHeader from './components/ProfileHeader';
 import ProfileHero from './components/ProfileHero';
 import TabNavigation from './components/TabNavigation';
@@ -14,7 +15,17 @@ import './index.css';
 
 export default function UserProfile() {
   const history = useHistory();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('purchases');
+  
+  // localStorage에서 언어 설정 불러오기
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [orders, setOrders] = useState([]); // 주문 목록
@@ -259,7 +270,7 @@ export default function UserProfile() {
         <ProfileHeader />
         <main className="profile-main">
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('common.loading')}</div>
           </div>
         </main>
       </div>

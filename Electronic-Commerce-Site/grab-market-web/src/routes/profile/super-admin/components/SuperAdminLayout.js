@@ -50,7 +50,7 @@ export default function SuperAdminLayout({ children }) {
             <button
               className="super-admin-menu-button"
               onClick={toggleSidebar}
-              aria-label="메뉴 토글"
+              aria-label={t('profile.superAdmin.layout.menuToggle')}
             >
               {sidebarOpen ? (
                 <X size={22} strokeWidth={2.5} />
@@ -61,7 +61,7 @@ export default function SuperAdminLayout({ children }) {
             
             {/* 로고 */}
             <div className="super-admin-header-logo">
-              <span>サイト管理者</span>
+              <span>{t('profile.superAdmin.layout.title')}</span>
             </div>
 
             {/* 홈 버튼 */}

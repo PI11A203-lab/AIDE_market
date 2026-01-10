@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config/constants';
 
 const RecommendedSection = ({ products }) => {
+  const { t } = useTranslation();
   const trackRef = useRef(null);
   const autoSlideRef = useRef(null);
   const containerRef = useRef(null);
@@ -161,8 +163,8 @@ const RecommendedSection = ({ products }) => {
     <div className="featured-card recommended-card">
       <div className="featured-header">
         <div>
-          <h2 className="featured-title">Recommended for You</h2>
-          <p className="featured-subtitle">Handpicked AI developers based on your preferences</p>
+          <h2 className="featured-title">{t('home.recommended.title')}</h2>
+          <p className="featured-subtitle">{t('home.recommended.subtitle')}</p>
         </div>
       </div>
       <div 
@@ -194,7 +196,7 @@ const RecommendedSection = ({ products }) => {
                   <div className="recommended-info">
                     <div className="recommended-name">{product.name}</div>
                     <div className="recommended-category">
-                      {product.category_name || 'AI Developer'}
+                      {product.category_name || t('purchase.productCard.categoryFallback')}
                     </div>
                     <div className="recommended-rating">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="#FCD34D" stroke="#FCD34D">

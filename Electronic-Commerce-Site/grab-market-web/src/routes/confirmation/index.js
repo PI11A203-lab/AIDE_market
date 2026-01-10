@@ -12,11 +12,20 @@ import { API_URL } from '../../config/constants';
 import './index.css';
 
 export default function PurchaseConfirmation() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [purchasedAIs, setPurchasedAIs] = useState([]);
   const [orderDetails, setOrderDetails] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const loadOrderData = async () => {
@@ -129,7 +138,7 @@ export default function PurchaseConfirmation() {
         <Header />
         <main className="confirmation-main">
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('common.loading')}</div>
           </div>
         </main>
       </div>

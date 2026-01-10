@@ -1,36 +1,38 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, Package, GraduationCap, Globe, Lock, X } from 'lucide-react';
 import './SuperAdminSidebar.css';
 
 export default function SuperAdminSidebar({ isOpen = true, onClose }) {
   const location = useLocation();
+  const { t } = useTranslation();
 
   const menuItems = [
     {
       path: '/profile/super-admin',
-      label: 'ダッシュボード',
+      label: t('profile.superAdmin.sidebar.dashboard'),
       icon: Shield,
       exact: true
     },
     {
       path: '/profile/super-admin/products',
-      label: '商品承認管理',
+      label: t('profile.superAdmin.sidebar.products'),
       icon: Package
     },
     {
       path: '/profile/super-admin/student-verifications',
-      label: '学生認証管理',
+      label: t('profile.superAdmin.sidebar.studentVerifications'),
       icon: GraduationCap
     },
     {
       path: '/profile/super-admin/ip-management',
-      label: 'IP管理',
+      label: t('profile.superAdmin.sidebar.ipManagement'),
       icon: Globe
     },
     {
       path: '/profile/super-admin/security',
-      label: 'セキュリティ',
+      label: t('profile.superAdmin.sidebar.security'),
       icon: Lock
     }
   ];
@@ -47,12 +49,12 @@ export default function SuperAdminSidebar({ isOpen = true, onClose }) {
       <div className="sidebar-header">
         <div className="sidebar-header-title">
           <Shield size={20} />
-          <span>サイト管理者</span>
+          <span>{t('profile.superAdmin.layout.title')}</span>
         </div>
         <button 
           className="sidebar-close-button"
           onClick={onClose}
-          aria-label="메뉴 닫기"
+          aria-label={t('profile.superAdmin.layout.closeMenu')}
         >
           <X size={20} />
         </button>

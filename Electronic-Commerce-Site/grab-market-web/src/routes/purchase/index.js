@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import PurchaseHeader from './components/PurchaseHeader';
 import CartItem from './components/CartItem';
 import CouponSection from './components/CouponSection';
@@ -15,10 +16,20 @@ import './index.css';
 export default function PurchasePage() {
   const history = useHistory();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
   const [cartItems, setCartItems] = useState([]);
   const [buyNowItem, setBuyNowItem] = useState(null); // 바로 구매 상품
   const [availableCartItems, setAvailableCartItems] = useState([]); // 장바구니에 있는 다른 상품들
   const [loading, setLoading] = useState(true);
+
+  // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 상품 정보를 가져오는 함수
   const fetchProduct = async (id) => {
@@ -66,7 +77,7 @@ export default function PurchasePage() {
         // 사용자 정보 확인
         const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
         if (!userFromStorage) {
-          message.warning('로그인이 필요합니다.');
+          message.warning(t('purchase.messages.loginRequired'));
           history.push('/login');
           return;
         }
@@ -100,7 +111,7 @@ export default function PurchasePage() {
           // 바로 구매 모드: 해당 상품만 표시
           const product = await fetchProduct(buyNowId);
           if (product.is_purchased) {
-            message.warning('이미 구매한 상품입니다. 한 유저당 한 상품은 한 번만 구매 가능합니다.');
+            message.warning(t('purchase.messages.alreadyPurchased'));
             history.push('/');
             return;
           }
@@ -164,7 +175,7 @@ export default function PurchasePage() {
             const availableItems = validItems.filter(item => !item.is_purchased);
             
             if (purchasedItems.length > 0) {
-              message.warning(`${purchasedItems.length}개의 상품이 이미 구매되어 장바구니에서 제거되었습니다.`);
+              message.warning(t('purchase.messages.itemsRemovedFromCart', { count: purchasedItems.length }));
               // 장바구니에서 구매한 상품 제거 (API 호출)
               await Promise.all(
                 purchasedItems.map(item => api.carts.removeItem(userId, item.id))
@@ -174,7 +185,7 @@ export default function PurchasePage() {
             setCartItems(availableItems);
           } catch (error) {
             console.error('Failed to load cart from API:', error);
-            message.error('장바구니를 불러오는데 실패했습니다.');
+            message.error(t('purchase.messages.cartLoadFail'));
             setCartItems([]);
           }
         }
@@ -186,7 +197,7 @@ export default function PurchasePage() {
     };
 
     loadData();
-  }, [location.search, history]);
+  }, [location.search, history, t]);
 
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -233,7 +244,7 @@ export default function PurchasePage() {
     try {
       const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
       if (!userFromStorage) {
-        message.warning('로그인이 필요합니다.');
+        message.warning(t('purchase.messages.loginRequired'));
         return;
       }
 
@@ -252,10 +263,10 @@ export default function PurchasePage() {
         setAvailableCartItems([...availableCartItems, removedItem]);
       }
 
-      message.success('장바구니에서 제거되었습니다.');
+      message.success(t('purchase.messages.cartItemRemoved'));
     } catch (error) {
       console.error('Failed to remove from cart:', error);
-      const errorMessage = error.response?.data?.error || '장바구니에서 제거하는데 실패했습니다.';
+      const errorMessage = error.response?.data?.error || t('purchase.messages.removeCartItemFail');
       message.error(errorMessage);
     }
   };
@@ -275,7 +286,7 @@ export default function PurchasePage() {
   // 쿠폰 적용
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
-      message.warning('쿠폰 코드를 입력해주세요.');
+      message.warning(t('purchase.messages.couponCodeRequired'));
       return;
     }
 
@@ -304,10 +315,10 @@ export default function PurchasePage() {
       localStorage.setItem('purchaseCouponCode', couponCode.trim());
       localStorage.setItem('purchaseAppliedCoupon', JSON.stringify(couponInfo));
       
-      message.success('쿠폰이 적용되었습니다.');
+      message.success(t('purchase.messages.couponApplied'));
     } catch (error) {
       console.error('Failed to apply coupon:', error);
-      const errorMessage = error.response?.data?.error || '쿠폰 적용에 실패했습니다.';
+      const errorMessage = error.response?.data?.error || t('purchase.messages.couponApplyFail');
       message.error(errorMessage);
       
       // 에러 발생 시 localStorage에서 제거
@@ -323,7 +334,7 @@ export default function PurchasePage() {
     setCouponCode('');
     localStorage.removeItem('purchaseCouponCode');
     localStorage.removeItem('purchaseAppliedCoupon');
-    message.info('쿠폰이 제거되었습니다.');
+    message.info(t('purchase.messages.couponRemoved'));
   };
 
   // 학생 할인 적용 여부 확인
@@ -383,7 +394,7 @@ export default function PurchasePage() {
     // 사용자 정보 확인
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('purchase.messages.loginRequired'));
       history.push('/login');
       return;
     }
@@ -396,9 +407,9 @@ export default function PurchasePage() {
       const methods = response.data.paymentMethods || [];
       
       if (methods.length === 0) {
-        message.warning('결제를 위해 카드를 등록해주세요.', 3);
+        message.warning(t('purchase.messages.paymentMethodRequired'), 3);
         setTimeout(() => {
-          if (window.confirm('카드 등록 페이지로 이동하시겠습니까?')) {
+          if (window.confirm(t('purchase.messages.goToPaymentMethod'))) {
             history.push('/profile/settings');
           }
         }, 500);
@@ -451,13 +462,13 @@ export default function PurchasePage() {
       const validItems = cartItems.filter(item => !item.is_purchased);
       
       if (validItems.length === 0) {
-        message.error('구매 가능한 상품이 없습니다.');
+        message.error(t('purchase.messages.noItemsToPurchase'));
         setIsProcessing(false);
         return;
       }
       
       if (validItems.length < cartItems.length) {
-        message.warning('이미 구매한 상품은 제외하고 주문을 진행합니다.');
+        message.warning(t('purchase.messages.alreadyPurchasedWarning'));
       }
       
       await Promise.all(validItems.map(item => 
@@ -513,7 +524,7 @@ export default function PurchasePage() {
         } catch (subscriptionError) {
           console.error('구독 생성 실패:', subscriptionError);
           // 구독 생성 실패해도 주문은 완료되었으므로 경고만 표시
-          message.warning('정기결제 구독 생성에 실패했습니다. 고객센터로 문의해주세요.');
+          message.warning(t('purchase.messages.subscriptionCreateFail'));
         }
       }
 
@@ -558,7 +569,7 @@ export default function PurchasePage() {
       console.error('Failed to create order:', error);
       console.error('Error response:', error.response);
       
-      let errorMessage = '주문 생성에 실패했습니다.';
+      let errorMessage = t('purchase.messages.orderCreateFail');
       
       if (error.response) {
         // 서버에서 반환한 에러 메시지
@@ -566,15 +577,15 @@ export default function PurchasePage() {
         
         // HTTP 상태 코드에 따른 메시지
         if (error.response.status === 400) {
-          errorMessage = `요청 오류: ${errorMessage}`;
+          errorMessage = t('purchase.messages.requestError', { message: errorMessage });
         } else if (error.response.status === 401) {
-          errorMessage = '인증이 필요합니다. 다시 로그인해주세요.';
+          errorMessage = t('purchase.messages.authRequired');
           history.push('/login');
         } else if (error.response.status === 500) {
-          errorMessage = `서버 오류: ${errorMessage}`;
+          errorMessage = t('purchase.messages.serverError', { message: errorMessage });
         }
       } else if (error.request) {
-        errorMessage = '서버에 연결할 수 없습니다. 네트워크를 확인해주세요.';
+        errorMessage = t('purchase.messages.networkError');
       } else {
         errorMessage = error.message || errorMessage;
       }
@@ -597,16 +608,16 @@ export default function PurchasePage() {
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
-            Shopping Cart
+            {t('purchase.header.title')}
           </h1>
           <p className="text-base text-gray-500">
-            Review your selected AI developers before purchase
+            {t('purchase.header.subtitle')}
           </p>
         </div>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">Loading...</div>
+            <div className="text-xl text-gray-600">{t('common.loading')}</div>
           </div>
         ) : cartItems.length === 0 && availableCartItems.length === 0 ? (
           <EmptyCart />
@@ -626,10 +637,10 @@ export default function PurchasePage() {
               {buyNowItem && availableCartItems.length > 0 && (
                 <div className="mt-8 pt-8 border-t border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    カートに追加された商品
+                    {t('purchase.availableCartItems.title')}
                   </h3>
                   <p className="text-sm text-gray-600 mb-4">
-                    一緒に購入したい商品を選択してください
+                    {t('purchase.availableCartItems.description')}
                   </p>
                   <div className="space-y-3">
                     {availableCartItems.map((item) => (
@@ -662,7 +673,7 @@ export default function PurchasePage() {
                         <button
                           onClick={() => addCartItemToPurchase(item)}
                           className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-lg font-bold text-xl hover:bg-blue-700 transition shadow-sm hover:shadow-md"
-                          title="구매 목록에 추가"
+                          title={t('purchase.availableCartItems.addToPurchase')}
                         >
                           +
                         </button>

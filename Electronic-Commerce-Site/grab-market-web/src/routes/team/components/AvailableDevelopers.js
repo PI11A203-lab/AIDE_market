@@ -3,16 +3,7 @@ import { Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import DeveloperCard from './DeveloperCard';
 import { useTranslation } from 'react-i18next';
 
-// 카테고리 ID 매핑 (숫자 → 문자열)
-const CATEGORY_ID_TO_NAME = {
-  1: 'フロントエンド',
-  2: 'バックエンド',
-  3: 'イメージ',
-  4: '設計・マネジメント',
-  5: 'インフラ',
-  6: 'セキュリティ',
-  7: 'ドキュメント',
-};
+// 카테고리 ID 매핑은 동적으로 언어에 따라 변환됩니다
 
 // 카테고리 ID → 아이콘 경로 매핑
 const CATEGORY_ID_TO_ICON = {
@@ -36,15 +27,30 @@ export default function AvailableDevelopers({
   onRemoveFromTeam 
 }) {
   const { t } = useTranslation();
+  
   // 카테고리별로 그룹화
   const developersByCategory = useMemo(() => {
+    // 카테고리 이름 매핑 (언어별)
+    const getCategoryName = (categoryId) => {
+      const categoryMap = {
+        1: t('home.tabs.fe'),
+        2: t('home.tabs.be'),
+        3: t('home.tabs.design'),
+        4: t('home.tabs.mg'),
+        5: t('home.tabs.inf'),
+        6: t('home.tabs.sec'),
+        7: t('home.tabs.doc'),
+      };
+      return categoryMap[categoryId] || t('home.tabs.all');
+    };
+    
     const grouped = {};
     
     developers.forEach(dev => {
       const categoryId = dev.categoryId || 'other';
       const categoryName = categoryId && categoryId !== 'other' 
-        ? (CATEGORY_ID_TO_NAME[categoryId] || dev.category) 
-        : (dev.category || 'その他');
+        ? (getCategoryName(categoryId) || dev.category) 
+        : (dev.category || t('home.tabs.all'));
       
       if (!grouped[categoryId]) {
         grouped[categoryId] = {
@@ -69,7 +75,7 @@ export default function AvailableDevelopers({
       .concat(grouped['other'] ? [grouped['other']] : []);
     
     return sortedCategories;
-  }, [developers]);
+  }, [developers, t]);
 
   return (
     <div className="available-developers-section">

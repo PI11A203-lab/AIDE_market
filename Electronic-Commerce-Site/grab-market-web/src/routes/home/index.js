@@ -63,14 +63,14 @@ function MainPage() {
   // 카테고리 정의 (동적으로 count 계산)
   const categories = useMemo(() => {
     const baseCategories = [
-      { id: 'all', name: 'すべて', icon: '/images/icons/all.png' },
-      { id: 'fe', name: 'フロントエンド', icon: '/images/icons/fe.png' },
-      { id: 'be', name: 'バックエンド', icon: '/images/icons/be.png' },
-      { id: 'design', name: 'イメージ', icon: '/images/icons/design.png' },
-      { id: 'mg', name: '設計・マネジメント', icon: '/images/icons/mg.png' },
-      { id: 'inf', name: 'インフラ', icon: '/images/icons/inf.png' },
-      { id: 'sec', name: 'セキュリティ', icon: '/images/icons/sec.png' },
-      { id: 'doc', name: 'ドキュメント', icon: '/images/icons/doc.png' },
+      { id: 'all', name: t('home.tabs.all'), icon: '/images/icons/all.png' },
+      { id: 'fe', name: t('home.tabs.fe'), icon: '/images/icons/fe.png' },
+      { id: 'be', name: t('home.tabs.be'), icon: '/images/icons/be.png' },
+      { id: 'design', name: t('home.tabs.design'), icon: '/images/icons/design.png' },
+      { id: 'mg', name: t('home.tabs.mg'), icon: '/images/icons/mg.png' },
+      { id: 'inf', name: t('home.tabs.inf'), icon: '/images/icons/inf.png' },
+      { id: 'sec', name: t('home.tabs.sec'), icon: '/images/icons/sec.png' },
+      { id: 'doc', name: t('home.tabs.doc'), icon: '/images/icons/doc.png' },
     ];
 
     // 각 카테고리별 상품 수 계산 (랭킹과 별개로 전체 데이터)
@@ -84,7 +84,7 @@ function MainPage() {
       }
       return { ...cat, count };
     });
-  }, [allProducts]);
+  }, [allProducts, t]);
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -448,7 +448,7 @@ function MainPage() {
             {loading ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0' }}>
                 <div style={{ width: '48px', height: '48px', border: '4px solid #667eea', borderTop: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '16px' }}></div>
-                <p style={{ color: '#6B7280' }}>読み込み中...</p>
+                <p style={{ color: '#6B7280' }}>{t('common.loading')}</p>
               </div>
             ) : (
               <>
@@ -458,7 +458,7 @@ function MainPage() {
                 {/* 상품이 없을 때 */}
                 {products.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '80px 0' }}>
-                    <p style={{ color: '#6B7280', fontSize: '18px' }}>該当する商品がありません</p>
+                    <p style={{ color: '#6B7280', fontSize: '18px' }}>{t('home.noProducts')}</p>
                   </div>
                 )}
 
@@ -482,7 +482,7 @@ function MainPage() {
                       onMouseEnter={(e) => { if (currentPage !== 1) e.target.style.background = '#F9FAFB'; }}
                       onMouseLeave={(e) => { if (currentPage !== 1) e.target.style.background = 'white'; }}
                     >
-                      前へ
+                      {t('home.pagination.prev')}
                     </button>
                     <span style={{ color: '#374151', fontWeight: '500' }}>
                       {currentPage} / {totalPages}
@@ -504,7 +504,7 @@ function MainPage() {
                       onMouseEnter={(e) => { if (currentPage !== totalPages) e.target.style.background = '#F9FAFB'; }}
                       onMouseLeave={(e) => { if (currentPage !== totalPages) e.target.style.background = 'white'; }}
                     >
-                      次へ
+                      {t('home.pagination.next')}
                     </button>
                   </div>
                 )}

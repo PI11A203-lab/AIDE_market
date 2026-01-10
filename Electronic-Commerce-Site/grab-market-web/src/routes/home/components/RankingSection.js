@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config/constants';
 
 const RankingSection = ({ topProducts }) => {
+  const { t } = useTranslation();
   if (topProducts.length === 0) {
     return null;
   }
@@ -35,8 +37,8 @@ const RankingSection = ({ topProducts }) => {
                 </svg>
                 {parseFloat(product.rating_average || 0).toFixed(1)}
               </span>
-              <span className="ranking-stat">{(product.download_count || 0)} projects</span>
-              <span className="ranking-stat">{Math.round(parseFloat(product.rating_average || 0) * 20)}% skill</span>
+              <span className="ranking-stat">{(product.download_count || 0)} {t('home.ranking.projects')}</span>
+              <span className="ranking-stat">{Math.round(parseFloat(product.rating_average || 0) * 20)}% {t('home.ranking.skill')}</span>
             </div>
           </div>
           <div className="ranking-price">¥{product.price.toLocaleString()}</div>

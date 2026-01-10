@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import { api } from '../../../config/api';
 import { Modal, Input, message } from 'antd';
@@ -7,6 +8,7 @@ import './Products.css';
 const { TextArea } = Input;
 
 export default function Products() {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0 });
@@ -37,7 +39,7 @@ export default function Products() {
       }));
     } catch (error) {
       console.error('상품 목록 로드 실패:', error);
-      message.error('상품 목록을 불러오는데 실패했습니다.');
+      message.error(t('profile.superAdmin.products.messages.loadFail'));
     } finally {
       setLoading(false);
     }
@@ -46,30 +48,30 @@ export default function Products() {
   const handleApprove = async (productId) => {
     try {
       await api.superAdmin.products.approve(productId);
-      message.success('상품이 승인되었습니다.');
+      message.success(t('profile.superAdmin.products.messages.approveSuccess'));
       loadProducts();
     } catch (error) {
       console.error('상품 승인 실패:', error);
-      message.error(error.response?.data?.error || '상품 승인에 실패했습니다.');
+      message.error(error.response?.data?.error || t('profile.superAdmin.products.messages.approveFail'));
     }
   };
 
   const handleReject = async () => {
     if (!selectedProduct || !rejectReason.trim()) {
-      message.warning('거부 사유를 입력해주세요.');
+      message.warning(t('profile.superAdmin.products.messages.rejectWarning'));
       return;
     }
 
     try {
       await api.superAdmin.products.reject(selectedProduct.id, rejectReason);
-      message.success('상품이 거부되었습니다.');
+      message.success(t('profile.superAdmin.products.messages.rejectSuccess'));
       setRejectModalVisible(false);
       setRejectReason('');
       setSelectedProduct(null);
       loadProducts();
     } catch (error) {
       console.error('상품 거부 실패:', error);
-      message.error(error.response?.data?.error || '상품 거부에 실패했습니다.');
+      message.error(error.response?.data?.error || t('profile.superAdmin.products.messages.rejectFail'));
     }
   };
 
@@ -83,36 +85,36 @@ export default function Products() {
       <div className="products-page">
         <div className="page-header">
           <div className="page-header-content">
-            <h1 className="page-title">商品承認管理</h1>
-            <p className="page-subtitle">管理者が申請した商品の承認・却下</p>
+            <h1 className="page-title">{t('profile.superAdmin.products.title')}</h1>
+            <p className="page-subtitle">{t('profile.superAdmin.products.subtitle')}</p>
           </div>
         </div>
 
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-label">承認待ち</div>
+            <div className="stat-label">{t('profile.superAdmin.products.stats.pending')}</div>
             <div className="stat-value">{pagination.total}</div>
           </div>
         </div>
 
         <div className="filters">
           <div className="filter-item">
-            <label>ステータス</label>
+            <label>{t('profile.superAdmin.products.filters.status')}</label>
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
             >
-              <option value="">すべて</option>
-              <option value="pending">承認待ち</option>
-              <option value="approved">承認済み</option>
-              <option value="rejected">却下</option>
+              <option value="">{t('profile.superAdmin.products.filters.all')}</option>
+              <option value="pending">{t('profile.superAdmin.products.filters.pending')}</option>
+              <option value="approved">{t('profile.superAdmin.products.filters.approved')}</option>
+              <option value="rejected">{t('profile.superAdmin.products.filters.rejected')}</option>
             </select>
           </div>
           <div className="filter-item">
-            <label>検索</label>
+            <label>{t('profile.superAdmin.products.filters.search')}</label>
             <input
               type="text"
-              placeholder="商品名で検索..."
+              placeholder={t('profile.superAdmin.products.filters.searchPlaceholder')}
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             />
@@ -122,7 +124,7 @@ export default function Products() {
         <div className="section">
           <div className="product-grid">
             {loading ? (
-              <div className="loading">読み込み中...</div>
+              <div className="loading">{t('profile.superAdmin.products.loading')}</div>
             ) : products.length > 0 ? (
               products.map((product) => (
                 <div key={product.id} className="product-card">
@@ -132,57 +134,57 @@ export default function Products() {
                     </div>
                     <div className="product-info">
                       <h3>{product.name}</h3>
-                      <p>申請者: {product.creator?.username || '-'}</p>
+                      <p>{t('profile.superAdmin.products.card.applicant')}: {product.creator?.username || '-'}</p>
                     </div>
                   </div>
                   <div className="product-details">
                     <div className="detail-row">
-                      <span className="detail-label">価格:</span>
+                      <span className="detail-label">{t('profile.superAdmin.products.card.price')}:</span>
                       <span className="detail-value">¥{product.price?.toLocaleString() || '0'}</span>
                     </div>
                     <div className="detail-row">
-                      <span className="detail-label">カテゴリ:</span>
+                      <span className="detail-label">{t('profile.superAdmin.products.card.category')}:</span>
                       <span className="detail-value">{product.category?.name || '-'}</span>
                     </div>
                     <div className="detail-row">
-                      <span className="detail-label">申請日:</span>
+                      <span className="detail-label">{t('profile.superAdmin.products.card.requestDate')}:</span>
                       <span className="detail-value">
-                        {new Date(product.approval_requested_at || product.createdAt).toLocaleDateString('ja-JP')}
+                        {new Date(product.approval_requested_at || product.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="detail-row">
-                      <span className="detail-label">ステータス:</span>
-                      <span className="badge pending">承認待ち</span>
+                      <span className="detail-label">{t('profile.superAdmin.products.card.status')}:</span>
+                      <span className="badge pending">{t('profile.superAdmin.products.filters.pending')}</span>
                     </div>
                   </div>
                   <div className="product-description">
-                    {product.description || '説明なし'}
+                    {product.description || t('profile.superAdmin.products.card.noDescription')}
                   </div>
                   <div className="product-actions">
                     <button
                       className="btn btn-approve"
                       onClick={() => handleApprove(product.id)}
                     >
-                      ✓ 承認
+                      {t('profile.superAdmin.products.actions.approve')}
                     </button>
                     <button
                       className="btn btn-reject"
                       onClick={() => openRejectModal(product)}
                     >
-                      × 却下
+                      {t('profile.superAdmin.products.actions.reject')}
                     </button>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="empty-state">承認待ちの商品はありません</div>
+              <div className="empty-state">{t('profile.superAdmin.products.empty')}</div>
             )}
           </div>
         </div>
 
         {/* 거부 모달 */}
         <Modal
-          title="商品却下"
+          title={t('profile.superAdmin.products.rejectModal.title')}
           open={rejectModalVisible}
           onOk={handleReject}
           onCancel={() => {
@@ -190,15 +192,15 @@ export default function Products() {
             setRejectReason('');
             setSelectedProduct(null);
           }}
-          okText="却下"
-          cancelText="キャンセル"
+          okText={t('profile.superAdmin.products.rejectModal.ok')}
+          cancelText={t('profile.superAdmin.products.rejectModal.cancel')}
         >
-          <p>商品を却下する理由を入力してください。</p>
+          <p>{t('profile.superAdmin.products.rejectModal.content')}</p>
           <TextArea
             rows={4}
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
-            placeholder="却下理由..."
+            placeholder={t('profile.superAdmin.products.rejectModal.placeholder')}
           />
         </Modal>
       </div>

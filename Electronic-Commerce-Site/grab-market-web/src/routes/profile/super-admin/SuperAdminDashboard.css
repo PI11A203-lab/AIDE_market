@@ -36,22 +36,58 @@
 
 .dashboard-page .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 24px;
+  justify-content: center;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  place-items: stretch;
+}
+
+@media (max-width: 1400px) {
+  .dashboard-page .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .dashboard-page .stat-card {
   background: white;
-  padding: 24px;
+  padding: 28px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-height: 150px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard-page .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.dashboard-page .stat-card.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.dashboard-page .stat-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.dashboard-page .stat-card.clickable:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .dashboard-page .stat-label {

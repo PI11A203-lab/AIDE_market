@@ -22,7 +22,7 @@ export default function TeamSidebar({
 
   const handleSaveTeam = async () => {
     if (selectedTeam.length === 0) {
-      message.warning('팀원을 선택해주세요.');
+      message.warning(t('teamBuilder.messages.selectMembers'));
       return;
     }
 
@@ -43,7 +43,7 @@ export default function TeamSidebar({
       // 사용자 정보 가져오기
       const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
       if (!userFromStorage) {
-        message.error('로그인이 필요합니다.');
+        message.error(t('teamBuilder.messages.loginRequired'));
         setIsSaving(false);
         return;
       }
@@ -72,7 +72,7 @@ export default function TeamSidebar({
 
       await Promise.all(memberPromises);
 
-      message.success('팀이 저장되었습니다!');
+      message.success(t('teamBuilder.messages.saveSuccess'));
       setTeamName('');
       setShowNameInput(false);
       
@@ -80,7 +80,7 @@ export default function TeamSidebar({
       // setSelectedTeam([]);
     } catch (error) {
       console.error('팀 저장 실패:', error);
-      message.error('팀 저장에 실패했습니다.');
+      message.error(t('teamBuilder.messages.saveFail'));
     } finally {
       setIsSaving(false);
     }

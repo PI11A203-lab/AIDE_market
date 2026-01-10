@@ -1,31 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import { api } from '../../../config/api';
 import './SuperAdminDashboard.css';
 
 export default function SuperAdminDashboard() {
+  const { t } = useTranslation();
+  const history = useHistory();
   const [stats, setStats] = useState({
     pendingProducts: 0,
     pendingStudents: 0,
     todayAccess: 0,
-    securityEvents: 0
+    securityEvents: 0,
+    pendingProductsChange: 0,
+    pendingStudentsChange: 0,
+    todayAccessChange: 0,
+    securityEventsChange: 0
   });
   const [loading, setLoading] = useState(true);
   const [recentProducts, setRecentProducts] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       
       // 통계 데이터 로드
-      const [productsRes, studentsRes] = await Promise.all([
+      const today = new Date().toISOString().split('T')[0];
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      
+      const [productsRes, studentsRes, ipStatsTodayRes, ipStatsYesterdayRes, securityEventsTodayRes, securityEventsYesterdayRes] = await Promise.all([
         api.superAdmin.products.getPending({ limit: 1 }).catch(() => ({ data: { totalCount: 0 } })),
-        api.superAdmin.studentVerifications.getPending({ limit: 1 }).catch(() => ({ data: { totalCount: 0 } }))
+        api.superAdmin.studentVerifications.getPending({ limit: 1 }).catch(() => ({ data: { totalCount: 0 } })),
+        // 오늘 날짜의 IP 로그 통계 가져오기
+        api.superAdmin.ip.getStats({ 
+          dateFrom: today,
+          dateTo: today
+        }).catch(() => ({ data: { todayAccess: 0 } })),
+        // 어제 날짜의 IP 로그 통계 가져오기
+        api.superAdmin.ip.getStats({ 
+          dateFrom: yesterdayStr,
+          dateTo: yesterdayStr
+        }).catch(() => ({ data: { todayAccess: 0 } })),
+        // 오늘 날짜의 보안 이벤트 가져오기
+        api.superAdmin.security.getEvents({ 
+          limit: 1,
+          dateFrom: today,
+          dateTo: today
+        }).catch(() => ({ data: { totalCount: 0 } })),
+        // 어제 날짜의 보안 이벤트 가져오기
+        api.superAdmin.security.getEvents({ 
+          limit: 1,
+          dateFrom: yesterdayStr,
+          dateTo: yesterdayStr
+        }).catch(() => ({ data: { totalCount: 0 } }))
       ]);
 
       // 최근 상품 목록
@@ -34,18 +65,35 @@ export default function SuperAdminDashboard() {
       // 최근 활동 (간단한 목록)
       const activities = [
         ...recentProductsData.slice(0, 3).map(p => ({
-          time: '최근',
-          type: '상품 신청',
+          time: t('profile.superAdmin.dashboard.recent'),
+          type: t('profile.superAdmin.dashboard.productRequest'),
           detail: p.name,
-          status: '대기 중'
+          status: t('profile.superAdmin.dashboard.pending')
         }))
       ];
 
+      const todayAccess = ipStatsTodayRes.data?.todayAccess || ipStatsTodayRes.data?.totalAccess || 0;
+      const yesterdayAccess = ipStatsYesterdayRes.data?.todayAccess || ipStatsYesterdayRes.data?.totalAccess || 0;
+      const todaySecurityEvents = securityEventsTodayRes.data?.totalCount || 0;
+      const yesterdaySecurityEvents = securityEventsYesterdayRes.data?.totalCount || 0;
+      
+      // 변화량 계산 (오늘 - 어제)
+      const accessChange = todayAccess - yesterdayAccess;
+      const securityEventsChange = todaySecurityEvents - yesterdaySecurityEvents;
+      
+      // pendingProducts와 pendingStudents는 변화량을 0으로 설정 (임시로, 실제로는 이전 데이터와 비교 필요)
+      const pendingProducts = productsRes.data?.totalCount || 0;
+      const pendingStudents = studentsRes.data?.totalCount || 0;
+
       setStats({
-        pendingProducts: productsRes.data?.totalCount || 0,
-        pendingStudents: studentsRes.data?.totalCount || 0,
-        todayAccess: 0, // TODO: 실제 IP 통계에서 가져오기
-        securityEvents: 0 // TODO: 실제 보안 이벤트에서 가져오기
+        pendingProducts,
+        pendingStudents,
+        todayAccess,
+        securityEvents: todaySecurityEvents,
+        pendingProductsChange: 0, // 실제로는 이전 데이터와 비교 필요
+        pendingStudentsChange: 0, // 실제로는 이전 데이터와 비교 필요
+        todayAccessChange: accessChange,
+        securityEventsChange: securityEventsChange
       });
       setRecentProducts(recentProductsData.slice(0, 3));
       setRecentActivities(activities);
@@ -54,12 +102,16 @@ export default function SuperAdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   if (loading) {
     return (
       <SuperAdminLayout>
-        <div className="loading-container">読み込み中...</div>
+        <div className="loading-container">{t('profile.superAdmin.dashboard.loading')}</div>
       </SuperAdminLayout>
     );
   }
@@ -69,47 +121,79 @@ export default function SuperAdminDashboard() {
       <div className="dashboard-page">
         <div className="page-header">
           <div className="page-header-content">
-            <h1 className="page-title">サイト管理者ダッシュボード</h1>
-            <p className="page-subtitle">システム全体の管理と監視</p>
+            <h1 className="page-title">{t('profile.superAdmin.dashboard.title')}</h1>
+            <p className="page-subtitle">{t('profile.superAdmin.dashboard.subtitle')}</p>
           </div>
         </div>
 
         <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-label">承認待ち商品</div>
+          <div 
+            className="stat-card clickable" 
+            onClick={() => history.push('/profile/super-admin/products')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="stat-label">{t('profile.superAdmin.dashboard.stats.pendingProducts')}</div>
             <div className="stat-value">{stats.pendingProducts}</div>
-            <div className="stat-change">+0 今日</div>
+            <div className={stats.pendingProductsChange !== 0 ? "stat-change" : "stat-change"} style={{ color: stats.pendingProductsChange > 0 ? '#10b981' : stats.pendingProductsChange < 0 ? '#ef4444' : '#666' }}>
+              {stats.pendingProductsChange > 0 ? `+${stats.pendingProductsChange} ${t('profile.superAdmin.dashboard.today')}` : 
+               stats.pendingProductsChange < 0 ? `${stats.pendingProductsChange} ${t('profile.superAdmin.dashboard.today')}` : 
+               t('profile.superAdmin.dashboard.stats.noNewRequest')}
+            </div>
           </div>
-          <div className="stat-card">
-            <div className="stat-label">学生認証申請</div>
+          <div 
+            className="stat-card clickable" 
+            onClick={() => history.push('/profile/super-admin/student-verifications')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="stat-label">{t('profile.superAdmin.dashboard.stats.pendingStudents')}</div>
             <div className="stat-value">{stats.pendingStudents}</div>
-            <div className="stat-change">+0 今日</div>
+            <div className={stats.pendingStudentsChange !== 0 ? "stat-change" : "stat-change"} style={{ color: stats.pendingStudentsChange > 0 ? '#10b981' : stats.pendingStudentsChange < 0 ? '#ef4444' : '#666' }}>
+              {stats.pendingStudentsChange > 0 ? `+${stats.pendingStudentsChange} ${t('profile.superAdmin.dashboard.today')}` : 
+               stats.pendingStudentsChange < 0 ? `${stats.pendingStudentsChange} ${t('profile.superAdmin.dashboard.today')}` : 
+               t('profile.superAdmin.dashboard.stats.noNewRequest')}
+            </div>
           </div>
-          <div className="stat-card">
-            <div className="stat-label">今日のアクセス</div>
+          <div 
+            className="stat-card clickable" 
+            onClick={() => history.push('/profile/super-admin/ip-management')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="stat-label">{t('profile.superAdmin.dashboard.stats.todayAccess')}</div>
             <div className="stat-value">{stats.todayAccess.toLocaleString()}</div>
-            <div className="stat-change">+0%</div>
+            <div className={stats.todayAccessChange !== 0 ? "stat-change" : "stat-change"} style={{ color: stats.todayAccessChange > 0 ? '#10b981' : stats.todayAccessChange < 0 ? '#ef4444' : '#666' }}>
+              {stats.todayAccessChange > 0 ? `+${stats.todayAccessChange.toLocaleString()}` : 
+               stats.todayAccessChange < 0 ? `${stats.todayAccessChange.toLocaleString()}` : 
+               t('profile.superAdmin.dashboard.stats.noChange')}
+            </div>
           </div>
-          <div className="stat-card">
-            <div className="stat-label">セキュリティイベント</div>
+          <div 
+            className="stat-card clickable" 
+            onClick={() => history.push('/profile/super-admin/security')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="stat-label">{t('profile.superAdmin.dashboard.stats.securityEvents')}</div>
             <div className="stat-value">{stats.securityEvents}</div>
-            <div className="stat-change negative">要注意</div>
+            <div className={stats.securityEventsChange !== 0 ? (stats.securityEventsChange > 0 ? "stat-change negative" : "stat-change") : "stat-change"} style={{ color: stats.securityEventsChange > 0 ? '#ef4444' : stats.securityEventsChange < 0 ? '#10b981' : '#666' }}>
+              {stats.securityEventsChange > 0 ? t('profile.superAdmin.dashboard.stats.attention') : 
+               stats.securityEventsChange < 0 ? `-${Math.abs(stats.securityEventsChange)}` : 
+               t('profile.superAdmin.dashboard.stats.normal')}
+            </div>
           </div>
         </div>
 
         <div className="section">
           <div className="section-header">
-            <h2 className="section-title">承認待ち商品</h2>
+            <h2 className="section-title">{t('profile.superAdmin.dashboard.sections.pendingProducts')}</h2>
           </div>
           <table>
             <thead>
               <tr>
-                <th>商品名</th>
-                <th>カテゴリ</th>
-                <th>価格</th>
-                <th>申請者</th>
-                <th>申請日</th>
-                <th>ステータス</th>
+                <th>{t('profile.superAdmin.dashboard.table.productName')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.category')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.price')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.applicant')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.requestDate')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -120,14 +204,14 @@ export default function SuperAdminDashboard() {
                     <td>{product.category?.name || '-'}</td>
                     <td>¥{product.price?.toLocaleString() || '0'}</td>
                     <td>{product.creator?.username || '-'}</td>
-                    <td>{new Date(product.approval_requested_at || product.createdAt).toLocaleDateString('ja-JP')}</td>
-                    <td><span className="badge pending">承認待ち</span></td>
+                    <td>{new Date(product.approval_requested_at || product.createdAt).toLocaleDateString()}</td>
+                    <td><span className="badge pending">{t('profile.superAdmin.dashboard.pending')}</span></td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>
-                    承認待ちの商品はありません
+                    {t('profile.superAdmin.dashboard.empty.noPendingProducts')}
                   </td>
                 </tr>
               )}
@@ -137,15 +221,15 @@ export default function SuperAdminDashboard() {
 
         <div className="section">
           <div className="section-header">
-            <h2 className="section-title">最近のアクティビティ</h2>
+            <h2 className="section-title">{t('profile.superAdmin.dashboard.sections.recentActivity')}</h2>
           </div>
           <table>
             <thead>
               <tr>
-                <th>時刻</th>
-                <th>イベント</th>
-                <th>詳細</th>
-                <th>ステータス</th>
+                <th>{t('profile.superAdmin.dashboard.table.time')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.event')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.detail')}</th>
+                <th>{t('profile.superAdmin.dashboard.table.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -161,7 +245,7 @@ export default function SuperAdminDashboard() {
               ) : (
                 <tr>
                   <td colSpan="4" style={{ textAlign: 'center', padding: '40px' }}>
-                    最近のアクティビティはありません
+                    {t('profile.superAdmin.dashboard.empty.noRecentActivity')}
                   </td>
                 </tr>
               )}

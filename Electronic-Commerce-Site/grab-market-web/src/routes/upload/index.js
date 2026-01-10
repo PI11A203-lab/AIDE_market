@@ -9,17 +9,39 @@ import {
   ConfigProvider,
 } from "antd";
 import jaJP from "antd/locale/ja_JP";
+import koKR from "antd/locale/ko_KR";
+import enUS from "antd/locale/en_US";
 import "./index.css";
 import FormItem from "antd/es/form/FormItem";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { API_URL } from "../../config/constants";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 function UploadPage() {
   const [imageUrl, setImageUrl] = useState(null);
-  //↓ ReactHookではuseHistoryを使ってページ遷移を行う
   const history = useHistory();
+  const { t, i18n } = useTranslation();
+  
+  // Antd locale 설정
+  const getAntdLocale = () => {
+    switch(i18n.language) {
+      case 'ko': return koKR;
+      case 'ja': return jaJP;
+      default: return enUS;
+    }
+  };
+  
+  // localStorage에서 언어 설정 불러오기
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
   const onFinish = (values) => {
     axios
       .post(`${API_URL}/products`, {
@@ -36,7 +58,7 @@ function UploadPage() {
       })
       .catch((error) => {
         console.error(error);
-        message.error(`エラーが発生しました。${error.message}`);
+        message.error(t('productAdmin.upload.fail', { defaultValue: 'Failed to upload product.' }));
       });
   };
   const onChangeImage = (info) => {
@@ -50,12 +72,12 @@ function UploadPage() {
     }
   };
   return (
-    <ConfigProvider locale={jaJP}>
+    <ConfigProvider locale={getAntdLocale()}>
       <div id="upload-container">
-      <Form name="商品アップロード" onFinish={onFinish}>
+      <Form name={t('productAdmin.upload.title')} onFinish={onFinish}>
         <Form.Item
           name="upload"
-          label={<div className="upload-label">商品写真</div>}
+          label={<div className="upload-label">{t('productAdmin.upload.imageSection')}</div>}
         >
           <Upload
             name="image"
@@ -69,60 +91,60 @@ function UploadPage() {
             ) : (
               <div id="upload-img-placeholder">
                 <img src="/images/icons/camera.png" alt="Camera icon" />
-                <span>イメージをアップロードしてください。</span>
+                <span>{t('productAdmin.upload.imageUpload')}</span>
               </div>
             )}
           </Upload>
         </Form.Item>
         <Divider />
         <Form.Item
-          label={<div className="upload-label">販売者名</div>}
+          label={<div className="upload-label">{t('productAdmin.upload.sellerName')}</div>}
           name="seller"
-          rules={[{ required: true, message: "販売者名を入力してください。" }]}
+          rules={[{ required: true, message: t('productAdmin.upload.sellerNameRequired') }]}
         >
           <Input
             className="upload-name"
             size="large"
-            placeholder="名前を入力してください。"
+            placeholder={t('productAdmin.upload.sellerNamePlaceholder')}
           />
         </Form.Item>
         <Divider />
         <Form.Item
           name="name"
-          label={<div className="upload-label">商品名</div>}
-          rules={[{ required: true, message: "商品名を入力してください。" }]}
+          label={<div className="upload-label">{t('productAdmin.upload.productName')}</div>}
+          rules={[{ required: true, message: t('productAdmin.upload.productNameRequired') }]}
         >
           <Input
             className="upload-name"
             size="large"
-            placeholder="商品名を入力してください。"
+            placeholder={t('productAdmin.upload.productNamePlaceholder')}
           />
         </Form.Item>
         <Divider />
         <FormItem
           name="price"
-          label={<div className="upload-label">商品価格</div>}
-          rules={[{ required: true, message: "商品価格を入力してください。" }]}
+          label={<div className="upload-label">{t('productAdmin.upload.price')}</div>}
+          rules={[{ required: true, message: t('productAdmin.upload.priceRequired') }]}
         >
           <InputNumber defaultValue={0} className="upload-price" size="large" />
         </FormItem>
         <Divider />
         <Form.Item
           name="description"
-          label={<div className="upload-label">商品紹介</div>}
-          rules={[{ required: true, message: "商品紹介を入力してください。" }]}
+          label={<div className="upload-label">{t('productAdmin.upload.description')}</div>}
+          rules={[{ required: true, message: t('productAdmin.upload.descriptionRequired') }]}
         >
           <Input.TextArea
             size="large"
             id="product-description"
             showCount
             maxLength={300}
-            placeholder="商品紹介を入力してください。"
+            placeholder={t('productAdmin.upload.descriptionPlaceholder')}
           />
         </Form.Item>
         <Form.Item>
           <Button id="submit-button" size="large" htmlType="submit">
-            商品登録
+            {t('productAdmin.upload.submit')}
           </Button>
         </Form.Item>
       </Form>

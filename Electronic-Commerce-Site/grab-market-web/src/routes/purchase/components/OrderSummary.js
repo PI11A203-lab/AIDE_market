@@ -61,7 +61,7 @@ export default function OrderSummary({
         {/* 학생 할인 표시 */}
         {isStudent && studentDiscount > 0 && (
           <div className="flex justify-between py-3 text-[15px] text-blue-700">
-            <span>학생 할인 (50%)</span>
+            <span>{t('purchase.summary.studentDiscount')}</span>
             <span>-¥{studentDiscount.toLocaleString()}</span>
           </div>
         )}

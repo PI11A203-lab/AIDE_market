@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import ProductHeader from './components/ProductHeader';
 import ProfileHeader from './components/ProfileHeader';
 import TabNavigation from './components/TabNavigation';
@@ -16,6 +17,7 @@ import "./index.css";
 export default function ProductPage() {
   const { id } = useParams();
   const history = useHistory();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
   const [isLiked, setIsLiked] = useState(false);
   const [developer, setDeveloper] = useState(null);
@@ -24,6 +26,15 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [isPurchased, setIsPurchased] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+
+  // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 사용자 정보 및 찜목록 상태 확인
   useEffect(() => {
@@ -257,7 +268,7 @@ export default function ProductPage() {
     try {
       const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
       if (!userFromStorage) {
-        message.warning('로그인이 필요합니다.');
+        message.warning(t('product.messages.loginRequired'));
         history.push('/login');
         return;
       }
@@ -272,10 +283,10 @@ export default function ProductPage() {
         quantity: 1
       });
 
-      message.success('カートに追加しました');
+      message.success(t('product.messages.addToCartSuccess'));
     } catch (error) {
       console.error('Failed to add to cart:', error);
-      const errorMessage = error.response?.data?.error || '장바구니 추가에 실패했습니다.';
+      const errorMessage = error.response?.data?.error || t('product.messages.addToCartFail');
       message.error(errorMessage);
     }
   };
@@ -283,7 +294,7 @@ export default function ProductPage() {
   // "今すぐ買う" 버튼 클릭 핸들러 - 장바구니에 추가하지 않고 바로 구매 페이지로 이동
   const handleBuyNow = () => {
     if (isPurchased) {
-      message.warning('이미 구매한 상품입니다.');
+      message.warning(t('product.messages.alreadyPurchased'));
       return;
     }
     if (developer && developer.id) {
@@ -295,7 +306,7 @@ export default function ProductPage() {
   // "カートに入れる" 버튼 클릭 핸들러
   const handleAddToCart = async () => {
     if (isPurchased) {
-      message.warning('이미 구매한 상품입니다.');
+      message.warning(t('product.messages.alreadyPurchased'));
       return;
     }
     if (developer && developer.id) {
@@ -306,7 +317,7 @@ export default function ProductPage() {
   // 찜목록 토글 핸들러
   const handleLikeToggle = async () => {
     if (!user) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('product.messages.loginRequired'));
       return;
     }
 
@@ -315,7 +326,7 @@ export default function ProductPage() {
         // 찜목록에서 제거
         await api.favorites.delete(user.id, developer.id);
         setIsLiked(false);
-        message.success('찜목록에서 제거되었습니다.');
+        message.success(t('product.messages.favoriteRemoved'));
       } else {
         // 찜목록에 추가
         await api.favorites.create({
@@ -323,11 +334,11 @@ export default function ProductPage() {
           product_id: developer.id,
         });
         setIsLiked(true);
-        message.success('찜목록에 추가되었습니다.');
+        message.success(t('product.messages.favoriteAdded'));
       }
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
-      message.error('찜목록 업데이트에 실패했습니다.');
+      message.error(t('product.messages.favoriteUpdateFail'));
     }
   };
 
@@ -335,7 +346,7 @@ export default function ProductPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-xl text-gray-600">Loading...</div>
+          <div className="text-xl text-gray-600">{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -345,22 +356,22 @@ export default function ProductPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md">
-          <div className="text-xl text-gray-600 mb-4">商品が見つかりませんでした</div>
-          <div className="text-gray-500 mb-2">商品ID: {id}</div>
+          <div className="text-xl text-gray-600 mb-4">{t('product.notFound.title')}</div>
+          <div className="text-gray-500 mb-2">{t('product.notFound.subtitle', { id })}</div>
           <div className="text-sm text-gray-400 mb-4">
-            API: {API_URL}/api/products/{id}
+            {t('product.notFound.apiUrl', { url: `${API_URL}/api/products/${id}` })}
           </div>
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 text-left">
-            <div className="text-sm text-red-800 font-semibold mb-2">エラー情報:</div>
+            <div className="text-sm text-red-800 font-semibold mb-2">{t('product.notFound.errorInfo')}</div>
             <div className="text-xs text-red-600">
-              サーバーエラーが発生しました。データベースの問題の可能性があります。
+              {t('product.notFound.errorMessage')}
               <br />
-              ブラウザのコンソールで詳細を確認してください。
+              {t('product.notFound.errorDetail')}
             </div>
           </div>
           <div className="mt-4">
             <a href="/" className="text-blue-600 hover:underline">
-              メインページに戻る
+              {t('product.notFound.backToHome')}
             </a>
           </div>
         </div>

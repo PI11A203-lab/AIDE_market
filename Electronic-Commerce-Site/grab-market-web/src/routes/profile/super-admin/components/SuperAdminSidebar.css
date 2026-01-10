@@ -86,7 +86,7 @@
 
 .sidebar-logo:hover {
   background: #f5f5f5;
-  color: #6366F1;
+  color: #3B82F6;
 }
 
 .sidebar-logo:active {
@@ -94,7 +94,7 @@
 }
 
 .sidebar-logo:focus {
-  outline: 2px solid #6366F1;
+  outline: 2px solid #3B82F6;
   outline-offset: -2px;
   border-radius: 4px;
 }
