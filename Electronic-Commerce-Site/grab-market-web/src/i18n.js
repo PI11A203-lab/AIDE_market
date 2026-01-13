@@ -9,6 +9,10 @@ const resources = {
         loading: '로딩 중...',
         logout: '로그아웃',
         login: '로그인',
+        close: '닫기',
+        untitled: '제목 없음',
+        unknown: '알 수 없음',
+        other: '기타',
       },
       profile: {
         tabs: {
@@ -130,8 +134,8 @@ const resources = {
           noDate: '날짜 없음',
           noMembers: '멤버 없음',
           synergy: 'Synergy',
-          synergyScore: 'Team Synergy Score',
-          membersTitle: 'Team Members',
+          synergyScore: '팀 시너지 점수',
+          membersTitle: '팀 멤버',
           createdAt: '생성일',
           memberCount: '팀원 수',
           deleteConfirm: '이 팀을 삭제하시겠습니까?',
@@ -139,6 +143,11 @@ const resources = {
           deleteFail: '팀 삭제에 실패했습니다.',
           edit: '편집',
           membersLabel: '{{count}}명',
+          categories: {
+            image: '이미지 생성',
+            infrastructure: '인프라',
+            documents: '문서',
+          },
         },
         favorites: {
           empty: '찜목록이 비어있습니다',
@@ -1383,6 +1392,10 @@ const resources = {
         loading: 'Loading...',
         logout: 'Logout',
         login: 'Login',
+        close: 'Close',
+        untitled: 'Untitled',
+        unknown: 'Unknown',
+        other: 'Other',
       },
       header: {
         title: 'AIDE Market',
@@ -1577,6 +1590,11 @@ const resources = {
           deleteFail: 'Failed to delete team.',
           edit: 'Edit',
           membersLabel: '{{count}} members',
+          categories: {
+            image: 'Image Generation',
+            infrastructure: 'Infrastructure',
+            documents: 'Documents',
+          },
         },
         favorites: {
           empty: 'Favorites list is empty',
@@ -2776,6 +2794,10 @@ const resources = {
         loading: '読み込み中...',
         logout: 'ログアウト',
         login: 'ログイン',
+        close: '閉じる',
+        untitled: 'タイトルなし',
+        unknown: '不明',
+        other: 'その他',
       },
       header: {
         title: 'AIDE Market',
@@ -2970,6 +2992,11 @@ const resources = {
           deleteFail: 'チームの削除に失敗しました。',
           edit: '編集',
           membersLabel: '{{count}}人',
+          categories: {
+            image: '画像生成',
+            infrastructure: 'インフラ',
+            documents: '文書',
+          },
         },
         favorites: {
           empty: 'お気に入りリストが空です',

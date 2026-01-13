@@ -12,15 +12,22 @@ export default function StatsCards({ ratingDistribution }) {
     1: '⭐'
   };
 
+  console.log('[StatsCards] ratingDistribution:', ratingDistribution);
+
   return (
     <div className="stats-grid">
-      {ratings.map(rating => (
-        <div key={rating} className="stat-card">
-          <div className="stat-label">{stars[rating]}</div>
-          <div className="stat-value">{ratingDistribution[rating] || 0}</div>
-          <div className="stat-count">{t('profile.admin.reviewsPage.statsCards.reviews')}</div>
-        </div>
-      ))}
+      {ratings.map(rating => {
+        const count = ratingDistribution 
+          ? (ratingDistribution[rating] || ratingDistribution[String(rating)] || 0)
+          : 0;
+        return (
+          <div key={rating} className="stat-card">
+            <div className="stat-label">{stars[rating]}</div>
+            <div className="stat-value">{count}</div>
+            <div className="stat-count">{t('profile.admin.reviewsPage.statsCards.reviews')}</div>
+          </div>
+        );
+      })}
     </div>
   );
 }

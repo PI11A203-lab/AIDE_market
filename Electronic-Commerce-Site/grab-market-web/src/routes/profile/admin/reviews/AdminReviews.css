@@ -144,27 +144,40 @@
 /* 통계 요약 */
 .summary-bar {
   display: flex;
-  gap: 32px;
-  padding: 20px 0;
-  margin-bottom: 24px;
-  border-bottom: 1px solid #E5E7EB;
+  align-items: center;
+  gap: 48px;
+  padding: 24px 0;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #F3F4F6;
 }
 
 .summary-item {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  flex: 1;
 }
 
 .summary-label {
   font-size: 13px;
-  color: #6B7280;
-  margin-bottom: 4px;
+  color: #9CA3AF;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .summary-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1A1A1A;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.summary-value.positive {
+  color: #10B981;
+}
+
+.summary-value.attention {
+  color: #EF4444;
 }
 
 /* 리뷰 목록 */
@@ -396,7 +409,11 @@
 
   .summary-bar {
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 32px;
+  }
+  
+  .summary-item {
+    flex: 0 0 calc(50% - 16px);
   }
 }
 
@@ -416,7 +433,11 @@
 
   .summary-bar {
     flex-direction: column;
-    gap: 12px;
+    gap: 24px;
+  }
+  
+  .summary-item {
+    flex: 1;
   }
 
   .review-top {

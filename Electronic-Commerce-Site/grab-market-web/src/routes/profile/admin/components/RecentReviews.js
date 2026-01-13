@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '../../../../config/constants';
 
 export default function RecentReviews({ reviews }) {
   const { t, i18n } = useTranslation();
@@ -25,13 +26,33 @@ export default function RecentReviews({ reviews }) {
         <div className="reviews-container">
           {reviews.map((review) => {
             const reviewId = review.id || review.review_id;
-            const productId = review.product_id || review.order_item?.product_id;
+            const productId = review.product_id || review.product?.id || review.order_item?.product_id;
+            const productName = review.product_name || review.product?.name || review.order_item?.product?.name || review.aiName || t('profile.admin.recentReviews.productFallback');
+            const productImage = review.product_image || review.product?.image || review.order_item?.product?.imageUrl;
 
             return (
               <div key={reviewId} className="review-card">
                 <div className="review-header">
                   <div className="review-avatar">
-                    {(review.product?.name || review.order_item?.product?.name || review.aiName || 'AI').substring(0, 2)}
+                    {productImage ? (
+                      <img 
+                        src={`${API_URL}/${productImage}`}
+                        alt={productName}
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          objectFit: 'cover',
+                          borderRadius: '12px',
+                          border: '1px solid #E5E7EB'
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.textContent = productName.substring(0, 2);
+                        }}
+                      />
+                    ) : (
+                      productName.substring(0, 2)
+                    )}
                   </div>
                   <div className="review-info">
                     <Link
@@ -39,7 +60,7 @@ export default function RecentReviews({ reviews }) {
                       className="review-product-name"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {review.product?.name || review.order_item?.product?.name || review.aiName || t('profile.admin.recentReviews.productFallback')}
+                      {productName}
                     </Link>
                     <div className="review-rating">
                       {[...Array(5)].map((_, i) => (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '../../../../../config/constants';
 
 const formatDate = (value, locale) => {
   if (!value) return '-';
@@ -39,7 +40,25 @@ export default function OrdersTable({ orders, onView }) {
               <td>
                 <div className="product-cell">
                   <div className="product-image">
-                    {order.productIcon || '🛒'}
+                    {order.productImage ? (
+                      <img 
+                        src={`${API_URL}/${order.productImage}`}
+                        alt={order.productName}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                          border: '1px solid #E5E7EB'
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.textContent = order.productIcon || '🛒';
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '24px' }}>{order.productIcon || '🛒'}</span>
+                    )}
                   </div>
                   <span className="product-name">{order.productName}</span>
                 </div>

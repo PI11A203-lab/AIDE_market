@@ -30,7 +30,16 @@ export default function AdminProducts() {
     total: 0,
     totalPages: 0
   });
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // 언어 설정 로드
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 필터 상태
   const [filters, setFilters] = useState({

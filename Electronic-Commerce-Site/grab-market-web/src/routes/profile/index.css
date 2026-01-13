@@ -744,24 +744,52 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .team-header {
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-margin-bottom: 16px;
+display: flex !important;
+justify-content: space-between !important;
+align-items: flex-start !important;
+margin-bottom: 16px !important;
+gap: 16px !important;
 }
 
-.team-name {
-font-size: 18px;
-font-weight: 700;
-color: #1A1A1A;
-margin-bottom: 4px;
-line-height: 1.2;
+.team-card .team-header {
+display: flex !important;
+justify-content: space-between !important;
+align-items: flex-start !important;
 }
 
-.team-date {
-font-size: 13px;
-color: #9CA3AF;
-line-height: 1.2;
+/* 팀 정보 영역 - 왼쪽 정렬 */
+.teams-grid .team-card .team-header .team-info {
+text-align: left !important;
+flex: 1 !important;
+display: flex !important;
+flex-direction: column !important;
+align-items: flex-start !important;
+gap: 4px !important;
+margin: 0 !important;
+padding: 0 !important;
+}
+
+/* 팀 이름 - 명시적으로 왼쪽 정렬 */
+.teams-grid .team-card .team-header .team-info .team-name {
+font-size: 18px !important;
+font-weight: 700 !important;
+color: #1A1A1A !important;
+margin: 0 !important;
+text-align: left !important;
+width: 100% !important;
+line-height: 1.2 !important;
+align-self: flex-start !important;
+}
+
+/* 팀 날짜 - 명시적으로 왼쪽 정렬 */
+.teams-grid .team-card .team-header .team-info .team-date {
+font-size: 13px !important;
+color: #9CA3AF !important;
+margin: 0 !important;
+text-align: left !important;
+width: 100% !important;
+line-height: 1.2 !important;
+align-self: flex-start !important;
 }
 
 .synergy-badge {
@@ -812,7 +840,7 @@ border-radius: 6px;
 .member-avatar {
 width: 32px;
 height: 32px;
-background: linear-gradient(135deg, #1A1A1A 0%, #7c7c7c 100%);
+background: #ffffff;
 border-radius: 6px;
 display: flex;
 align-items: center;
@@ -1042,12 +1070,13 @@ padding: 16px;
 display: flex;
 align-items: center;
 gap: 16px;
+background: #f8f9fa;
 }
 
 .member-card-avatar {
 width: 56px;
 height: 56px;
-background: linear-gradient(135deg, #1A1A1A 0%, #4B5563 100%);
+background: #ffffff;
 border-radius: 8px;
 display: flex;
 align-items: center;

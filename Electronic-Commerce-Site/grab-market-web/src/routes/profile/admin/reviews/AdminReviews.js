@@ -45,7 +45,16 @@ export default function AdminReviews() {
     rating: '',
     sort: 'recent'
   });
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // 언어 설정 로드
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 상품 목록 로드
   const loadProducts = useCallback(async () => {
@@ -65,14 +74,35 @@ export default function AdminReviews() {
     try {
       const response = await api.admin.getReviewsStats();
       const statsData = response.data;
+      console.log('[AdminReviews] 통계 데이터:', statsData);
+      console.log('[AdminReviews] distribution:', statsData.distribution);
+      
+      // distribution이 객체인지 배열인지 확인
+      let ratingDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      if (statsData.distribution) {
+        if (Array.isArray(statsData.distribution)) {
+          // 배열인 경우
+          statsData.distribution.forEach(item => {
+            if (item.rating && item.count) {
+              ratingDist[item.rating] = parseInt(item.count) || 0;
+            }
+          });
+        } else {
+          // 객체인 경우
+          ratingDist = {
+            5: parseInt(statsData.distribution[5] || statsData.distribution['5'] || 0),
+            4: parseInt(statsData.distribution[4] || statsData.distribution['4'] || 0),
+            3: parseInt(statsData.distribution[3] || statsData.distribution['3'] || 0),
+            2: parseInt(statsData.distribution[2] || statsData.distribution['2'] || 0),
+            1: parseInt(statsData.distribution[1] || statsData.distribution['1'] || 0)
+          };
+        }
+      }
+      
+      console.log('[AdminReviews] 정규화된 ratingDistribution:', ratingDist);
+      
       setStats({
-        ratingDistribution: {
-          5: statsData.distribution?.[5] ?? statsData.rating_5 ?? 0,
-          4: statsData.distribution?.[4] ?? statsData.rating_4 ?? 0,
-          3: statsData.distribution?.[3] ?? statsData.rating_3 ?? 0,
-          2: statsData.distribution?.[2] ?? statsData.rating_2 ?? 0,
-          1: statsData.distribution?.[1] ?? statsData.rating_1 ?? 0
-        },
+        ratingDistribution: ratingDist,
         totalReviews: statsData.totalReviews ?? statsData.total_reviews ?? 0,
         averageRating: parseFloat(statsData.avgRating ?? statsData.average_rating ?? 0).toFixed(1),
         thisMonth: statsData.thisMonth ?? statsData.this_month ?? 0,
@@ -84,6 +114,29 @@ export default function AdminReviews() {
       // 실패 시 mock 데이터 사용
       setStats(mockReviewsStats);
     }
+  }, []);
+
+  // 리뷰 데이터 정규화 (백엔드 응답 구조에 맞춤)
+  const normalizeReview = useCallback((review) => {
+    // 백엔드 응답: author, author_email, product_id, product_name, product_image, review_text, rating, helpful_count, created_at
+    return {
+      id: review.id,
+      rating: review.rating || 0,
+      comment: review.review_text || review.comment || '',
+      created_at: review.created_at || review.createdAt,
+      helpful_count: review.helpful_count || review.helpfulCount || 0,
+      verified: review.verified || false,
+      user: {
+        username: review.author || review.user?.username || 'Unknown',
+        email: review.author_email || review.user?.email || ''
+      },
+      product: {
+        id: review.product_id || review.product?.id,
+        name: review.product_name || review.product?.name || 'Unknown Product',
+        image: review.product_image || review.product?.image || null,
+        icon: review.product_image ? '🖼️' : '📦'
+      }
+    };
   }, []);
 
   // 리뷰 목록 로드
@@ -100,7 +153,8 @@ export default function AdminReviews() {
       };
 
       const response = await api.admin.getReviewsList(params);
-      const reviewsData = response.data?.reviews || [];
+      const rawReviews = response.data?.reviews || [];
+      const normalizedReviews = rawReviews.map(normalizeReview);
       const paginationData = response.data?.pagination || {
         total: 0,
         page: pagination.page,
@@ -108,7 +162,7 @@ export default function AdminReviews() {
         totalPages: 0
       };
 
-      setReviews(reviewsData);
+      setReviews(normalizedReviews);
       setPagination(prev => ({
         ...prev,
         total: paginationData.total || 0,
@@ -127,7 +181,7 @@ export default function AdminReviews() {
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.page, pagination.limit, t]);
+  }, [filters, pagination.page, pagination.limit, normalizeReview, t]);
 
   useEffect(() => {
     loadProducts();

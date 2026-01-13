@@ -38,7 +38,16 @@ export default function AdminOrders() {
     totalPages: 0,
   });
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // 언어 설정 로드
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('appLanguage');
+    if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const mergeProductOptions = useCallback((list) => {
     const names = list
@@ -51,16 +60,13 @@ export default function AdminOrders() {
   }, []);
 
   const normalizeOrder = useCallback((order) => {
-    const primaryItem =
-      order.items?.[0] ||
-      order.order_items?.[0] ||
-      (order.products?.length ? order.products[0] : null);
-
+    // 백엔드 응답 구조: order_id, order_number, product_name, buyer_name, buyer_email, total_amount, status, purchased_at, product_image
+    console.log('[normalizeOrder] 입력 데이터:', order);
+    
     const productName =
-      primaryItem?.product_name ||
-      primaryItem?.name ||
       order.product_name ||
-      order.productName;
+      order.productName ||
+      'N/A';
 
     const buyerName =
       order.buyer_name ||
@@ -85,17 +91,21 @@ export default function AdminOrders() {
 
     const status = (order.status || 'pending').toLowerCase();
 
-    return {
-      id: order.id || order.order_id || order.orderId,
-      orderId: order.order_number || order.orderNumber || `#${order.id || order.order_id || ''}`,
-      productName: productName || 'N/A',
-      productIcon: primaryItem?.icon || order.product_icon || '🛒',
+    const normalized = {
+      id: order.order_id || order.id || order.orderId,
+      orderId: order.order_number || order.orderNumber || `#${order.order_id || order.id || ''}`,
+      productName: productName,
+      productImage: order.product_image || order.productImage || null,
+      productIcon: order.product_image ? '🖼️' : '🛒',
       buyerName,
       buyerEmail,
-      amount,
+      amount: parseFloat(amount) || 0,
       status,
-      date: order.created_at || order.order_date || order.date || order.createdAt,
+      date: order.purchased_at || order.created_at || order.order_date || order.date || order.createdAt,
     };
+    
+    console.log('[normalizeOrder] 정규화 결과:', normalized);
+    return normalized;
   }, []);
 
   const applyMockWithFilters = useCallback((list) => {
@@ -208,8 +218,20 @@ export default function AdminOrders() {
       };
 
       const res = await api.admin.getOrders(params);
+      console.log('[AdminOrders] 전체 API 응답:', res);
+      console.log('[AdminOrders] res.data:', res.data);
+      console.log('[AdminOrders] res.data?.orders:', res.data?.orders);
+      console.log('[AdminOrders] res.data?.data:', res.data?.data);
+      
       const list = res.data?.orders || res.data?.data || [];
+      console.log('[AdminOrders] 주문 목록 (정규화 전, length:', list.length, '):', list);
+      
+      if (list.length === 0) {
+        console.warn('[AdminOrders] 주문 목록이 비어있습니다. 응답 구조:', res.data);
+      }
+      
       const normalized = list.map(normalizeOrder);
+      console.log('[AdminOrders] 주문 목록 (정규화 후, length:', normalized.length, '):', normalized);
 
       const paginationData =
         res.data?.pagination || {

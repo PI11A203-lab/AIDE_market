@@ -44,7 +44,7 @@ export default function ReviewItem({ review }) {
             </div>
           </div>
           <span className="review-product">
-            {review.product?.icon} {review.product?.name}
+            {review.product?.name}
           </span>
           <p className="review-text">{review.comment}</p>
           <div className="review-footer">

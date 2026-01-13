@@ -108,9 +108,9 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
               onClick={() => openModal(team)}
             >
               <div className="team-header">
-                <div>
-                  <div className="team-name">{team.name || t('common.untitled')}</div>
-                  <div className="team-date">{formattedDate}</div>
+                <div className="team-info" style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <div className="team-name" style={{ textAlign: 'left', width: '100%' }}>{team.name || t('common.untitled')}</div>
+                  <div className="team-date" style={{ textAlign: 'left', width: '100%' }}>{formattedDate}</div>
                 </div>
                 <div className="synergy-badge">
                   <span className="synergy-score">{team.total_synergy_score || 0}</span>
@@ -218,20 +218,21 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
                       <div className="member-card-info">
                         <div className="member-card-name">{member.name || t('common.unknown')}</div>
                         <div className="member-card-category">
-                          {member.category === 'Image' ? 'Image Generation' : 
-                           member.category === 'Infrastructure' ? 'Infrastructure' :
+                          {member.category === 'Image' ? t('profile.teams.categories.image') : 
+                           member.category === 'Infrastructure' ? t('profile.teams.categories.infrastructure') :
+                           member.category === 'documents' ? t('profile.teams.categories.documents') :
                            member.category || t('common.other')}
                         </div>
                         <div className="member-card-stats">
-                          <span className="stat">Tech: <strong>95</strong></span>
-                          <span className="stat">Creative: <strong>88</strong></span>
-                          <span className="stat">Reliable: <strong>93</strong></span>
+                          <span className="stat">{t('developerCard.tech')}: <strong>95</strong></span>
+                          <span className="stat">{t('developerCard.creative')}: <strong>88</strong></span>
+                          <span className="stat">{t('developerCard.reliable')}: <strong>93</strong></span>
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>멤버 없음</p>
+                  <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>{t('profile.teams.noMembers')}</p>
                 )}
               </div>
             </div>

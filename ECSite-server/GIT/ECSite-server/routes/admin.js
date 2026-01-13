@@ -260,7 +260,8 @@ router.get('/recent-reviews', auth, adminAuth, async (req, res) => {
         r.helpful_count,
         u.username as author,
         p.id as product_id,
-        p.name as product_name
+        p.name as product_name,
+        p.imageUrl as product_image
       FROM product_reviews r
       JOIN users u ON r.user_id = u.id
       JOIN products p ON r.product_id = p.id
@@ -911,8 +912,15 @@ router.get('/reviews/stats', auth, adminAuth, async (req, res) => {
 
     const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     ratingDistribution.forEach((item) => {
-      distribution[item.rating] = item.count;
+      const rating = parseInt(item.rating) || 0;
+      const count = parseInt(item.count) || 0;
+      if (rating >= 1 && rating <= 5) {
+        distribution[rating] = count;
+      }
     });
+    
+    console.log('[Admin Reviews Stats] ratingDistribution 쿼리 결과:', ratingDistribution);
+    console.log('[Admin Reviews Stats] 최종 distribution:', distribution);
 
     const positive = distribution[5] + distribution[4];
     const needsAttention = distribution[3] + distribution[2] + distribution[1];

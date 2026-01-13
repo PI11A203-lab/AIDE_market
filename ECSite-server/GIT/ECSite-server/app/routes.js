@@ -65,7 +65,8 @@ module.exports = (app) => {
     app.use("/api/admin/products", productAdminRoutes); // 상품 승인 관리 (super_admin) - 먼저 등록!
     app.use("/api/admin/ip", ipManagementRoutes); // IP 관리 (super_admin)
     app.use("/api/admin/security", securityRoutes); // 보안 관리 (super_admin)
-    app.use("/api/admin", studentVerificationAdminRoutes); // 학생 인증 관리 (super_admin) - /api/admin/student-verifications/pending
+    // studentVerificationAdminRoutes는 각 라우트에 직접 requireSuperAdmin 적용하므로 /api/admin에 등록 가능
+    app.use("/api/admin", studentVerificationAdminRoutes); // 학생 인증 관리 (super_admin) - /api/admin/student-verifications/pending, /api/admin/users/:userId/student-verification/*
     app.use("/api/admin", adminRoutes); // 일반 admin 라우트는 마지막에 등록
     
     // 인증 라우트 (구글 OAuth)
