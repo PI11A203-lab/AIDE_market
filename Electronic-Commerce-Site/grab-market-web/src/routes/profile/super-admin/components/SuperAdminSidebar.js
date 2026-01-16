@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, Package, GraduationCap, Globe, Lock, X } from 'lucide-react';
+import { Shield, Package, GraduationCap, Globe, Lock, X, UserCheck } from 'lucide-react';
 import './SuperAdminSidebar.css';
 
 export default function SuperAdminSidebar({ isOpen = true, onClose }) {
@@ -24,6 +24,11 @@ export default function SuperAdminSidebar({ isOpen = true, onClose }) {
       path: '/profile/super-admin/student-verifications',
       label: t('profile.superAdmin.sidebar.studentVerifications'),
       icon: GraduationCap
+    },
+    {
+      path: '/profile/super-admin/seller-applications',
+      label: '판매자 신청 관리',
+      icon: UserCheck
     },
     {
       path: '/profile/super-admin/ip-management',

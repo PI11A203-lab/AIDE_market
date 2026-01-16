@@ -1,0 +1,143 @@
+.seller-applications-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.seller-applications-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 32px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background: #F9FAFB;
+}
+
+.filter-btn.active {
+  background: #3B82F6;
+  color: #fff;
+  border-color: #3B82F6;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.applications-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.applications-table thead {
+  background: #F9FAFB;
+}
+
+.applications-table th {
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #E5E7EB;
+}
+
+.applications-table td {
+  padding: 12px;
+  font-size: 14px;
+  color: #1A1A1A;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.applications-table tbody tr:hover {
+  background: #F9FAFB;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.badge-approved {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.badge-rejected {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.btn-view {
+  color: #3B82F6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.btn-view:hover {
+  color: #2563EB;
+  text-decoration: underline;
+}
+
+.loading,
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #6B7280;
+}
+
+@media (max-width: 768px) {
+  .seller-applications-container {
+    padding: 20px 16px;
+  }
+
+  .seller-applications-content {
+    padding: 24px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .filter-bar {
+    flex-wrap: wrap;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+}

@@ -108,6 +108,31 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(255),
             allowNull: true,
             comment: '학생증 파일 경로'
+        },
+        seller_requested_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            comment: '판매자 신청 시간'
+        },
+        seller_approved_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            comment: '판매자 승인 시간'
+        },
+        seller_rejected_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            comment: '판매자 반려 시간'
+        },
+        seller_rejection_reason: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+            comment: '반려 사유'
+        },
+        seller_application_data: {
+            type: DataTypes.JSON,
+            allowNull: true,
+            comment: '신청 정보 (JSON)'
         }
     }, {
         tableName: 'users',

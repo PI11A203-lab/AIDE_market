@@ -29,6 +29,8 @@ const productAdminRoutes = require("../features/product/productAdminRoutes");
 const ipManagementRoutes = require("../features/security/ipManagementRoutes");
 const securityRoutes = require("../features/security/securityRoutes");
 const studentVerificationAdminRoutes = require("../features/admin/studentVerificationAdminRoutes");
+const sellerAdminRoutes = require("../features/admin/sellerAdminRoutes");
+const sellerRoutes = require("../features/seller/sellerRoutes");
 
 module.exports = (app) => {
     // 기존 라우트 (하위 호환성)
@@ -60,6 +62,7 @@ module.exports = (app) => {
     app.use("/api/subscriptions", subscriptionRoutes);
     app.use("/api/product-activations", productActivationRoutes);
     app.use("/api/users", studentAccountRoutes); // 학생 계정 관련은 /api/users 하위에 (일반 사용자용)
+    app.use("/api/seller", sellerRoutes); // 판매자 신청 관련
     
     // Super Admin 라우트는 더 구체적인 경로를 먼저 등록 (라우트 매칭 순서 문제 해결)
     app.use("/api/admin/products", productAdminRoutes); // 상품 승인 관리 (super_admin) - 먼저 등록!
@@ -67,6 +70,7 @@ module.exports = (app) => {
     app.use("/api/admin/security", securityRoutes); // 보안 관리 (super_admin)
     // studentVerificationAdminRoutes는 각 라우트에 직접 requireSuperAdmin 적용하므로 /api/admin에 등록 가능
     app.use("/api/admin", studentVerificationAdminRoutes); // 학생 인증 관리 (super_admin) - /api/admin/student-verifications/pending, /api/admin/users/:userId/student-verification/*
+    app.use("/api/admin", sellerAdminRoutes); // 판매자 신청 관리 (super_admin)
     app.use("/api/admin", adminRoutes); // 일반 admin 라우트는 마지막에 등록
     
     // 인증 라우트 (구글 OAuth)

@@ -1015,6 +1015,34 @@ export const api = {
       getDocument: (userId) => apiClient.get(`/api/admin/users/${userId}/verification-document`),
     },
     
+    // 판매자 신청 관리
+    sellerApplications: {
+      /**
+       * 신청 목록 조회
+       * @param {Object} params - { status }
+       */
+      getList: (params = {}) => apiClient.get('/api/admin/seller-applications', { params }),
+      
+      /**
+       * 신청 상세 조회
+       * @param {number} userId - 사용자 ID
+       */
+      getDetail: (userId) => apiClient.get(`/api/admin/seller-applications/${userId}`),
+      
+      /**
+       * 승인
+       * @param {number} userId - 사용자 ID
+       */
+      approve: (userId) => apiClient.post(`/api/admin/seller-applications/${userId}/approve`),
+      
+      /**
+       * 반려
+       * @param {number} userId - 사용자 ID
+       * @param {string} reason - 반려 사유
+       */
+      reject: (userId, reason) => apiClient.post(`/api/admin/seller-applications/${userId}/reject`, { reason }),
+    },
+    
     // IP 관리
     ip: {
       /**
@@ -1176,6 +1204,20 @@ export const api = {
        */
       getTopAttackIPs: (params = {}) => apiClient.get('/api/admin/security/events/top-ips', { params }),
     },
+  },
+
+  // ==================== 판매자 신청 관련 ====================
+  seller: {
+    /**
+     * 신청 상태 확인
+     */
+    getApplicationStatus: () => apiClient.get('/api/seller/application-status'),
+
+    /**
+     * 판매자 신청
+     * @param {Object} data - 신청 정보
+     */
+    apply: (data) => apiClient.post('/api/seller/apply', data),
   },
 
   // ==================== Admin 관련 ====================

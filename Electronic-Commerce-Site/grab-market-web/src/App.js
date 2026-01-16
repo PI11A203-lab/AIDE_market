@@ -32,6 +32,10 @@ import SuperAdminProducts from "./routes/profile/super-admin/Products";
 import SuperAdminStudentVerifications from "./routes/profile/super-admin/StudentVerifications";
 import SuperAdminIPManagement from "./routes/profile/super-admin/IPManagement";
 import SuperAdminSecurity from "./routes/profile/super-admin/Security";
+import SellerApply from "./routes/profile/seller-apply/SellerApply";
+import SellerApplications from "./routes/profile/super-admin/SellerApplications";
+import SellerApplicationDetail from "./routes/profile/super-admin/SellerApplicationDetail";
+import SellerInfo from "./routes/seller-info/SellerInfo";
 
 function App() {
   const location = useLocation();
@@ -68,11 +72,15 @@ function App() {
           <Route exact={true} path="/creators/:id">
             <CreatorDetailPage />
           </Route>
+          <Route exact={true} path="/seller-info">
+            <SellerInfo />
+          </Route>
           {/* 보호된 라우트 - 로그인 필요 */}
           <ProtectedRoute exact={true} path="/upload" component={UploadPage} />
           <ProtectedRoute exact={true} path="/profile" component={UserProfile} />
           <ProtectedRoute exact={true} path="/profile/settings" component={ProfileSettings} />
           <ProtectedRoute exact={true} path="/profile/student-verification" component={StudentVerification} />
+          <ProtectedRoute exact={true} path="/profile/seller-apply" component={SellerApply} />
           <ProtectedRoute exact={true} path="/team" component={TeamBuilder} />
           <ProtectedRoute exact={true} path="/purchase" component={PurchasePage} />
           <ProtectedRoute exact={true} path="/confirmation" component={PurchaseConfirmation} />
@@ -94,6 +102,8 @@ function App() {
           <ProtectedRoute exact={true} path="/profile/super-admin/student-verifications" component={SuperAdminStudentVerifications} requireSuperAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/super-admin/ip-management" component={SuperAdminIPManagement} requireSuperAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/super-admin/security" component={SuperAdminSecurity} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/seller-applications" component={SellerApplications} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/seller-applications/:userId" component={SellerApplicationDetail} requireSuperAdmin={true} />
           
           <Route exact={true} path="/auth/callback">
             <AuthCallback />

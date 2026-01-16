@@ -517,6 +517,26 @@ function MainPage() {
             <TopCreators />
           </aside>
         </div>
+
+        {/* 판매자 신청 섹션 */}
+        <div style={{
+          marginTop: '60px',
+          padding: '24px',
+          textAlign: 'center',
+          borderTop: '1px solid #E5E7EB'
+        }}>
+          <Link
+            to="/seller-info"
+            style={{
+              fontSize: '14px',
+              color: '#6B7280',
+              textDecoration: 'none',
+              display: 'inline-block'
+            }}
+          >
+            {t('home.sellerApplyLink')} <span style={{ color: '#3B82F6', textDecoration: 'underline' }}>{t('home.sellerApplyClickHere')}</span>
+          </Link>
+        </div>
       </main>
     </div>
   );

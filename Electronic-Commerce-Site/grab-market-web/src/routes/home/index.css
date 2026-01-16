@@ -102,20 +102,26 @@
   background: #F3F4F6;
 }
 
-.btn-primary {
+.header-actions .btn-primary {
   padding: 10px 24px;
-  background: #000000;
-  color: white;
+  background: #000000 !important;
+  color: white !important;
   border: none;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.btn-primary:hover {
-  background: #1A1A1A;
+.header-actions .btn-primary:hover,
+.header-actions .btn-primary:focus,
+.header-actions .btn-primary:active {
+  background: #000000 !important;
+  color: white !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* 히어로 섹션 */
