@@ -3,6 +3,20 @@ import { Link } from 'react-router-dom';
 import { API_URL } from '../../../config/constants';
 import { useTranslation } from 'react-i18next';
 
+// 카테고리 ID를 번역 키로 변환
+const getCategoryKey = (categoryId) => {
+  const categoryMap = {
+    1: 'fe',
+    2: 'be',
+    3: 'design',
+    4: 'mg',
+    5: 'inf',
+    6: 'sec',
+    7: 'doc'
+  };
+  return categoryMap[categoryId] || null;
+};
+
 const ProductList = ({ products }) => {
   const { t } = useTranslation();
 
@@ -43,7 +57,12 @@ const ProductList = ({ products }) => {
             </div>
             <div className="card-content">
               <div className="card-category">
-                {product.category_name || t('purchase.productCard.categoryFallback')}
+                {(() => {
+                  const categoryKey = getCategoryKey(product.category_id);
+                  return categoryKey 
+                    ? t(`home.tabs.${categoryKey}`)
+                    : (product.category_name || t('purchase.productCard.categoryFallback'));
+                })()}
               </div>
               <div className="card-header">
                 <h3 className="card-title">{product.name}</h3>
