@@ -36,6 +36,7 @@ import SellerApply from "./routes/profile/seller-apply/SellerApply";
 import SellerApplications from "./routes/profile/super-admin/SellerApplications";
 import SellerApplicationDetail from "./routes/profile/super-admin/SellerApplicationDetail";
 import SellerInfo from "./routes/seller-info/SellerInfo";
+import RankingsPage from "./routes/rankings";
 
 function App() {
   const location = useLocation();
@@ -47,6 +48,9 @@ function App() {
         <Switch>
           <Route exact={true} path="/">
             <MainPageComponent />
+          </Route>
+          <Route exact={true} path="/rankings">
+            <RankingsPage />
           </Route>
           <Route exact={true} path="/products/:id">
             <ProductPage />
