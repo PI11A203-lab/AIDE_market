@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { useHistory, useLocation } from 'react-router-dom';
-import TeamHeader from './components/TeamHeader';
+import { Search, ShoppingCart, Globe } from 'lucide-react';
 import AvailableDevelopers from './components/AvailableDevelopers';
 import TeamSidebar from './components/TeamSidebar';
 import { API_URL } from '../../config/constants';
 import { api } from '../../config/api';
+import LogoutButton from '../home/components/LogoutButton';
+import '../home/index.css';
 import './index.css';
 import { useTranslation } from 'react-i18next';
 
@@ -13,10 +15,65 @@ export default function TeamBuilder() {
   const [selectedTeam, setSelectedTeam] = useState([]);
   const [availableDevelopers, setAvailableDevelopers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [searchText, setSearchText] = useState('');
   const maxTeamSize = 5;
   const history = useHistory();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language || 'en');
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef(null);
+
+  const languageOptions = [
+    { value: 'ko', label: '한국어' },
+    { value: 'ja', label: '日本語' },
+    { value: 'en', label: 'English' },
+  ];
+
+  // i18n 언어 변경 이벤트 구독
+  useEffect(() => {
+    const handleLanguageChange = (lng) => {
+      setLanguage(lng);
+    };
+    
+    i18n.on('languageChanged', handleLanguageChange);
+    
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [i18n]);
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (userFromStorage) {
+        try {
+          setUser(JSON.parse(userFromStorage));
+        } catch (e) {
+          console.error('Failed to parse user data:', e);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkLoginStatus();
+    window.addEventListener('storage', checkLoginStatus);
+    return () => window.removeEventListener('storage', checkLoginStatus);
+  }, []);
+
+  // 언어 드롭다운 외부 클릭 닫기
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // URL 파라미터를 업데이트하는 함수
   const updateURLParams = (teamIds) => {
@@ -189,6 +246,28 @@ export default function TeamBuilder() {
     return Math.round(avgScore + sizeBonus + diversityBonus);
   };
 
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    setUser(null);
+    history.push('/');
+  };
+
+  const handleLanguageChange = (value) => {
+    i18n.changeLanguage(value);
+    setLanguage(value);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('appLanguage', value);
+    }
+    setLangOpen(false);
+  };
+
+  const currentLangLabel =
+    languageOptions.find((opt) => opt.value === language)?.label || 'Language';
+
   const teamStats = calculateTeamStats();
   const synergyScore = calculateSynergyScore();
   const totalPrice = calculateTotalPrice();
@@ -196,7 +275,89 @@ export default function TeamBuilder() {
   if (loading) {
     return (
       <div className="team-builder">
-        <TeamHeader />
+        {/* 헤더 */}
+        <header className="header">
+          <div className="header-inner">
+            <Link to="/" className="logo" style={{ color: '#1A1A1A', textDecoration: 'none' }}>
+              <span className="logo-text" style={{ color: '#1A1A1A' }}>{t('header.title')}</span>
+            </Link>
+            
+            <nav className="nav">
+              <Link to="/" className="nav-link">{t('home.nav.marketplace')}</Link>
+              <Link to="/rankings" className="nav-link">{t('home.nav.rankings')}</Link>
+              <Link to="/team" className="nav-link active">{t('home.nav.teams')}</Link>
+              <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.resources')}</button>
+            </nav>
+
+            <div className="header-actions">
+              <div style={{ position: 'relative' }}>
+                <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', color: '#9CA3AF', pointerEvents: 'none' }} />
+                <input
+                  type="text"
+                  placeholder={t('home.searchPlaceholder')}
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  style={{
+                    width: '200px',
+                    height: '40px',
+                    padding: '0 16px 0 40px',
+                    background: '#F3F4F6',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    color: '#1A1A1A',
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.background = '#E5E7EB';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.background = '#F3F4F6';
+                  }}
+                />
+              </div>
+              <div className="custom-dropdown" ref={langRef} style={{ minWidth: '160px' }}>
+                <button
+                  className={`dropdown-button ${langOpen ? 'active' : ''}`}
+                  onClick={() => setLangOpen((v) => !v)}
+                >
+                  <span className="dropdown-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <Globe width={16} height={16} />
+                    {currentLangLabel}
+                  </span>
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                <div className={`dropdown-menu ${langOpen ? 'show' : ''}`}>
+                  {languageOptions.map((opt) => (
+                    <div
+                      key={opt.value}
+                      className={`dropdown-item ${language === opt.value ? 'active' : ''}`}
+                      onClick={() => handleLanguageChange(opt.value)}
+                    >
+                      {opt.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Link to="/purchase" className="icon-btn">
+                <ShoppingCart width={20} height={20} />
+              </Link>
+              {user ? (
+                <>
+                  <Link to="/profile" className="btn-primary">
+                    {user.nickname}
+                  </Link>
+                  <LogoutButton onLogout={handleLogout} />
+                </>
+              ) : (
+                <Link to="/login" className="btn-primary">{t('common.login')}</Link>
+              )}
+            </div>
+          </div>
+        </header>
         <main className="team-main">
           <div className="text-center py-12">
             <div className="text-xl text-gray-600">{t('common.loading')}</div>
@@ -208,7 +369,89 @@ export default function TeamBuilder() {
 
   return (
     <div className="team-builder">
-      <TeamHeader />
+      {/* 헤더 */}
+      <header className="header">
+        <div className="header-inner">
+          <Link to="/" className="logo" style={{ color: '#1A1A1A', textDecoration: 'none' }}>
+            <span className="logo-text" style={{ color: '#1A1A1A' }}>{t('header.title')}</span>
+          </Link>
+          
+          <nav className="nav">
+            <Link to="/" className="nav-link">{t('home.nav.marketplace')}</Link>
+            <Link to="/rankings" className="nav-link">{t('home.nav.rankings')}</Link>
+            <Link to="/team" className="nav-link active">{t('home.nav.teams')}</Link>
+            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.resources')}</button>
+          </nav>
+
+          <div className="header-actions">
+            <div style={{ position: 'relative' }}>
+              <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', color: '#9CA3AF', pointerEvents: 'none' }} />
+              <input
+                type="text"
+                placeholder={t('home.searchPlaceholder')}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{
+                  width: '200px',
+                  height: '40px',
+                  padding: '0 16px 0 40px',
+                  background: '#F3F4F6',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  color: '#1A1A1A',
+                  outline: 'none',
+                  transition: 'all 0.2s'
+                }}
+                onFocus={(e) => {
+                  e.target.style.background = '#E5E7EB';
+                }}
+                onBlur={(e) => {
+                  e.target.style.background = '#F3F4F6';
+                }}
+              />
+            </div>
+            <div className="custom-dropdown" ref={langRef} style={{ minWidth: '160px' }}>
+              <button
+                className={`dropdown-button ${langOpen ? 'active' : ''}`}
+                onClick={() => setLangOpen((v) => !v)}
+              >
+                <span className="dropdown-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Globe width={16} height={16} />
+                  {currentLangLabel}
+                </span>
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <div className={`dropdown-menu ${langOpen ? 'show' : ''}`}>
+                {languageOptions.map((opt) => (
+                  <div
+                    key={opt.value}
+                    className={`dropdown-item ${language === opt.value ? 'active' : ''}`}
+                    onClick={() => handleLanguageChange(opt.value)}
+                  >
+                    {opt.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Link to="/purchase" className="icon-btn">
+              <ShoppingCart width={20} height={20} />
+            </Link>
+            {user ? (
+              <>
+                <Link to="/profile" className="btn-primary">
+                  {user.nickname}
+                </Link>
+                <LogoutButton onLogout={handleLogout} />
+              </>
+            ) : (
+              <Link to="/login" className="btn-primary">{t('common.login')}</Link>
+            )}
+          </div>
+        </div>
+      </header>
       
       <main className="team-main">
         <div className="team-intro">

@@ -942,6 +942,380 @@ const resources = {
         sellerApplyLink: 'AI 개발자로서 당신의 제품을 판매하고 수익을 창출하세요. 판매자로 전환하여 마켓플레이스에서 상품을 등록하고 판매할 수 있습니다.',
         sellerApplyClickHere: '여기를 클릭하세요',
       },
+      resources: {
+        pageTitle: '리소스',
+        pageSubtitle: 'AI 개발자를 더 효과적으로 활용하기 위한 가이드, 템플릿, 그리고 유용한 자료들',
+        categories: {
+          all: '전체',
+          guide: '가이드',
+          category: '카테고리별',
+          faq: 'FAQ',
+          template: '템플릿',
+          stats: '통계',
+        },
+        empty: '검색 결과가 없습니다.',
+        items: {
+          guide1: {
+            title: 'AI 개발자 활용 가이드',
+            description: 'AIDE Market에서 AI 개발자를 처음 사용하는 분들을 위한 완벽한 시작 가이드입니다. 계정 생성부터 첫 프로젝트 완성까지 단계별로 안내합니다.',
+            content: `## AI 개발자 활용 가이드
+
+### 1단계: 계정 설정
+- 회원가입 및 프로필 설정
+- 관심 카테고리 선택
+- 학생 인증으로 50% 할인 받기
+
+### 2단계: AI 개발자 탐색
+- 마켓플레이스에서 원하는 개발자 검색
+- 카테고리별 필터링 활용
+- 평점 및 리뷰 확인
+
+### 3단계: 개발자 선택
+- 프로젝트 요구사항 분석
+- 예산 계획 수립
+- 여러 개발자 비교 검토
+
+### 4단계: 프로젝트 시작
+- 개발자 구매 및 다운로드
+- 프로젝트에 통합
+- 지속적인 협업 및 관리
+
+### 팁
+- 무료 체험 버전 활용하기
+- 팀 기능으로 여러 개발자 조합하기
+- 정기 업데이트 확인하기`,
+          },
+          guide2: {
+            title: '팀 구성 최적화 가이드',
+            description: '최대 5명의 AI 개발자로 강력한 팀을 구성하는 방법과 시너지 효과를 극대화하는 전략을 배워보세요. 팀 빌딩의 베스트 프랙티스를 제공합니다.',
+            content: `## 팀 구성 최적화 가이드
+
+### 팀 구성 전략
+1. **역할 분담**: 각 개발자의 전문 분야를 고려
+   - 프론트엔드: UI/UX 구현
+   - 백엔드: 서버 및 API 개발
+   - 디자인: 시각적 요소 디자인
+   - 인프라: 배포 및 관리
+
+2. **시너지 효과**: 다양한 카테고리 조합으로 +20% 성능 향상
+   - 상호 보완적 기술 스택 선택
+   - 커뮤니케이션 스킬 고려
+
+3. **예산 최적화**
+   - 필수 개발자 우선 선택
+   - 프로젝트 단계별 팀 확장
+
+### 추천 팀 조합
+- **웹 애플리케이션**: 프론트엔드 + 백엔드 + 디자인
+- **API 서비스**: 백엔드 + 인프라 + 보안
+- **모바일 앱**: 프론트엔드 + 디자인 + 백엔드
+
+### 시너지 점수 계산
+- 기본 스탯 평균 + 팀 크기 보너스 + 다양성 보너스`,
+          },
+          guide3: {
+            title: 'AI 개발자 평가 가이드',
+            description: 'AI 개발자를 선택할 때 고려해야 할 요소와 평가 기준을 알아보세요. 평점, 리뷰, 기술 스택, 가격 등을 종합적으로 평가하는 방법을 안내합니다.',
+            content: `## AI 개발자 평가 가이드
+
+### 평가 항목
+
+#### 1. 기술적 역량
+- **평점**: 4.5 이상 권장
+- **기술 스택**: 프로젝트 요구사항과 일치 여부
+- **업데이트 주기**: 최근 업데이트 날짜 확인
+
+#### 2. 사용자 리뷰
+- **리뷰 수**: 충분한 리뷰가 있는지 확인
+- **평균 평점**: 전체적인 평가 확인
+- **상세 리뷰**: 실제 사용 경험 확인
+
+#### 3. 가격 대비 성능
+- **비용**: 예산 내에서 최적의 선택
+- **기능**: 제공 기능이 가격에 적합한지
+- **할인**: 학생 할인, 프로모션 활용
+
+#### 4. 커뮤니티 지원
+- **문서화**: 문서의 완성도
+- **예제**: 사용 예제 제공 여부
+- **지원**: 문제 해결 지원 여부
+
+### 체크리스트
+- [ ] 프로젝트 요구사항과 기술 스택 일치
+- [ ] 평점 4.5 이상
+- [ ] 최근 3개월 이내 업데이트
+- [ ] 리뷰 10개 이상
+- [ ] 예산 내 가격
+- [ ] 충분한 문서화
+
+### 비교 방법
+1. 여러 개발자 나열
+2. 평가 항목별 점수 매기기
+3. 종합 점수로 비교
+4. 실제 리뷰 확인 후 최종 결정`,
+          },
+          category1: {
+            title: '프론트엔드 AI 활용법',
+            description: 'React, Vue, Next.js 등 프론트엔드 개발에 특화된 AI 개발자들을 활용하여 효율적인 웹 개발을 시작하세요. 컴포넌트 개발부터 상태 관리까지 다룹니다.',
+            content: `## 프론트엔드 AI 활용법
+
+### 주요 활용 분야
+- **컴포넌트 개발**: 재사용 가능한 UI 컴포넌트 자동 생성
+- **상태 관리**: Redux, Context API 등 상태 관리 패턴 구현
+- **스타일링**: CSS-in-JS, Tailwind CSS 스타일 자동 생성
+- **성능 최적화**: 번들 크기 최적화, 코드 스플리팅
+
+### 추천 개발자
+1. **React 전문가**: 컴포넌트 아키텍처 설계
+2. **TypeScript 전문가**: 타입 안정성 향상
+3. **디자인 시스템 전문가**: 일관된 UI 구현
+
+### 실전 예제
+\`\`\`jsx
+// AI가 생성한 컴포넌트 예시
+import React from 'react';
+
+const ProductCard = ({ product }) => {
+  return (
+    <div className="product-card">
+      <img src={product.image} alt={product.name} />
+      <h3>{product.name}</h3>
+      <p>{product.price}</p>
+    </div>
+  );
+};
+\`\`\``,
+          },
+          category2: {
+            title: '백엔드 AI 활용법',
+            description: 'Node.js, Python, Go 등 백엔드 인프라와 API 개발을 위한 AI 개발자들을 활용하는 방법을 알아보세요. 데이터베이스 설계부터 마이크로서비스 아키텍처까지.',
+            content: `## 백엔드 AI 활용법
+
+### 주요 활용 분야
+- **API 개발**: RESTful API, GraphQL 엔드포인트 생성
+- **데이터베이스**: 스키마 설계, 쿼리 최적화
+- **인증/보안**: JWT, OAuth 구현
+- **마이크로서비스**: 서비스 분리 및 통신 설계
+
+### 추천 개발자
+1. **API 설계 전문가**: RESTful API 구조 설계
+2. **데이터베이스 전문가**: 효율적인 스키마 설계
+3. **보안 전문가**: 인증 및 보안 패턴 구현
+
+### 실전 예제
+\`\`\`javascript
+// AI가 생성한 API 라우트 예시
+app.get('/api/products', async (req, res) => {
+  const products = await Product.find();
+  res.json(products);
+});
+\`\`\``,
+          },
+          category3: {
+            title: '디자인 AI 활용법',
+            description: 'Figma, Adobe XD 등 디자인 도구와 연동하여 UI/UX 디자인 프로세스에 AI 개발자를 통합하세요. 디자인 시스템부터 프로토타이핑까지.',
+            content: `## 디자인 AI 활용법
+
+### 주요 활용 분야
+- **디자인 시스템**: 일관된 컴포넌트 라이브러리 구축
+- **프로토타이핑**: 빠른 프로토타입 제작
+- **사용자 경험**: UX 플로우 설계 및 개선
+- **시각적 요소**: 아이콘, 일러스트레이션 생성
+
+### 추천 개발자
+1. **UI 디자이너**: 인터페이스 디자인
+2. **UX 연구원**: 사용자 경험 개선
+3. **브랜딩 전문가**: 일관된 브랜드 아이덴티티
+
+### 디자인 워크플로우
+1. 와이어프레임 설계
+2. 시각적 디자인 작업
+3. 프로토타입 제작
+4. 개발자와 협업`,
+          },
+          faq1: {
+            title: '자주 묻는 질문 (FAQ)',
+            description: 'AIDE Market 이용 시 가장 자주 묻는 질문과 답변을 모았습니다. 계정, 결제, 기술 지원 등 다양한 주제를 다룹니다.',
+            content: `## 자주 묻는 질문
+
+### 계정 관련
+**Q: 회원가입은 어떻게 하나요?**
+A: 상단 헤더의 "로그인" 버튼을 클릭하고 "회원가입"을 선택하세요. 이메일 인증 후 계정을 생성할 수 있습니다.
+
+**Q: 학생 할인을 받으려면?**
+A: 프로필 설정에서 학생 인증을 신청하세요. 학생증을 업로드하면 50% 할인 혜택을 받을 수 있습니다.
+
+### 구매 및 결제
+**Q: 구매한 AI 개발자는 어떻게 사용하나요?**
+A: 구매 후 다운로드 섹션에서 다운로드하고 프로젝트에 통합하세요.
+
+**Q: 환불이 가능한가요?**
+A: 구매 후 7일 이내 환불이 가능합니다. 문제가 있으시면 고객 지원팀에 문의하세요.
+
+### 기술 지원
+**Q: AI 개발자와 관련된 문제가 발생했어요**
+A: 각 개발자의 리뷰 섹션에서 도움을 받거나, 커뮤니티 포럼에서 질문하세요.`,
+          },
+          faq2: {
+            title: '결제 및 구매 가이드',
+            description: '상품 구매부터 결제, 다운로드까지의 전체 프로세스를 자세히 안내합니다. 결제 방법, 할인 쿠폰, 주문 관리 등을 다룹니다.',
+            content: `## 결제 및 구매 가이드
+
+### 구매 프로세스
+1. **상품 선택**: 마켓플레이스에서 원하는 AI 개발자 선택
+2. **장바구니 추가**: 쇼핑 카트 아이콘 클릭
+3. **결제 진행**: 구매 페이지에서 결제 정보 입력
+4. **다운로드**: 결제 완료 후 즉시 다운로드 가능
+
+### 결제 방법
+- **신용카드**: Visa, Mastercard, JCB 지원
+- **계좌이체**: 온라인 계좌이체 가능
+- **간편결제**: PayPal, Stripe 등
+
+### 할인 혜택
+- 학생 인증: 50% 할인
+- 쿠폰 코드: 프로모션 코드 입력
+- 팀 구매: 5명 이상 구매 시 추가 할인
+
+### 주문 관리
+- 주문 내역: 프로필 > 구매한 AI에서 확인
+- 영수증: 이메일로 자동 발송
+- 다운로드: 구매한 AI 페이지에서 재다운로드 가능`,
+          },
+          template1: {
+            title: '프로젝트 템플릿',
+            description: '다양한 프로젝트 유형에 맞춘 스타터 템플릿을 다운로드하세요. React, Vue, Next.js, Node.js 등 인기 프레임워크 템플릿 제공.',
+            content: `## 프로젝트 템플릿
+
+### 제공 템플릿 목록
+
+#### 웹 애플리케이션
+- **React + TypeScript**: 모던 React 애플리케이션 템플릿
+- **Next.js + Tailwind CSS**: SEO 최적화된 웹사이트
+- **Vue 3 + Vite**: 빠른 개발 환경 구성
+
+#### 백엔드 서비스
+- **Node.js + Express**: RESTful API 서버
+- **Python + FastAPI**: 고성능 API 서버
+- **Go + Gin**: 경량 마이크로서비스
+
+#### 풀스택
+- **Next.js + Prisma**: 풀스택 타입 안전 애플리케이션
+- **Remix + PostgreSQL**: 서버 사이드 렌더링 앱
+
+### 사용 방법
+1. 템플릿 선택 및 다운로드
+2. 의존성 설치: \`npm install\`
+3. 환경 변수 설정
+4. 개발 서버 실행: \`npm run dev\`
+
+### 커스터마이징
+- 템플릿을 기반으로 원하는 대로 수정 가능
+- AI 개발자를 추가하여 기능 확장`,
+          },
+          template2: {
+            title: '코드 스니펫 라이브러리',
+            description: '자주 사용하는 코드 스니펫과 예제를 검색하고 활용하세요. 인증, API 통신, 폼 처리 등 실무에서 바로 사용 가능한 코드 제공.',
+            content: `## 코드 스니펫 라이브러리
+
+### 카테고리별 스니펫
+
+#### 인증 & 보안
+- JWT 토큰 생성 및 검증
+- 비밀번호 해싱 (bcrypt)
+- OAuth 로그인 구현
+
+#### API 통신
+- Axios 인터셉터 설정
+- 에러 핸들링
+- 리트라이 로직
+
+#### 폼 처리
+- React Hook Form 예제
+- 유효성 검사
+- 파일 업로드
+
+#### 데이터베이스
+- ORM 쿼리 예제
+- 트랜잭션 처리
+- 관계형 쿼리
+
+### 사용 예제
+\`\`\`javascript
+// JWT 토큰 검증 예제
+const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    throw new Error('Invalid token');
+  }
+};
+\`\`\`
+
+### 기여하기
+- 유용한 스니펫을 커뮤니티에 공유하세요
+- 개선 제안을 환영합니다`,
+          },
+          stats1: {
+            title: '마켓 트렌드 분석',
+            description: '인기 카테고리와 최신 트렌드를 확인하여 프로젝트에 적용해보세요. 월간 통계와 카테고리별 인기도를 제공합니다.',
+            content: `## 마켓 트렌드 분석
+
+### 이번 달 인기 카테고리
+1. **프론트엔드** (35%): React, Next.js 관련 개발자 인기
+2. **AI/ML** (28%): 머신러닝 모델 개발 수요 증가
+3. **백엔드** (22%): API 및 서버 인프라 개발
+4. **디자인** (15%): UI/UX 디자인 서비스
+
+### 트렌드 인사이트
+- **TypeScript**: 점점 더 많은 프로젝트에서 타입 안정성 요구
+- **클라우드 네이티브**: 인프라 자동화 수요 증가
+- **접근성**: 웹 접근성(A11y) 중요성 증가
+
+### 성장 추세
+- 월간 신규 개발자: +15%
+- 평균 평점: 4.7/5.0
+- 사용자 만족도: 92%
+
+### 추천 조합
+현재 가장 인기 있는 팀 조합:
+- 프론트엔드 + 백엔드 + 디자인 (시너지 +18%)`,
+          },
+          stats2: {
+            title: '성공 사례',
+            description: 'AIDE Market을 활용하여 성공한 프로젝트 사례들을 살펴보세요. 스타트업부터 기업 프로젝트까지 다양한 성공 스토리를 확인할 수 있습니다.',
+            content: `## 성공 사례
+
+### 스타트업 프로젝트
+**이커머스 플랫폼 구축**
+- 팀 구성: 프론트엔드 + 백엔드 + 디자인 (3명)
+- 기간: 3개월
+- 결과: MVP 완성 및 시리즈 A 투자 유치
+
+### 기업 프로젝트
+**내부 관리 시스템 구축**
+- 팀 구성: 프론트엔드 + 백엔드 + 인프라 (5명)
+- 기간: 6개월
+- 결과: 개발 시간 50% 단축, 운영 효율성 향상
+
+### 개인 프로젝트
+**포트폴리오 웹사이트**
+- 팀 구성: 프론트엔드 + 디자인 (2명)
+- 기간: 2주
+- 결과: 취업 성공 및 GitHub 스타 500+ 획득
+
+### 주요 성공 요소
+1. 적절한 개발자 선택
+2. 명확한 프로젝트 목표
+3. 지속적인 커뮤니케이션
+4. 팀 시너지 효과 활용
+
+### 후기
+"AI 개발자들을 활용하여 빠르게 프로토타입을 만들 수 있었고, 
+실제 서비스 출시까지 시간을 크게 단축할 수 있었습니다." - 프로젝트 리더`,
+          },
+        },
+      },
       subscription: {
         manage: {
           title: '구독 관리',
@@ -1531,6 +1905,379 @@ const resources = {
         noProducts: 'No matching products found',
         sellerApplyLink: 'Sell your products as an AI developer and generate revenue. Become a seller to register and sell products in the marketplace.',
         sellerApplyClickHere: 'Click here',
+      },
+      resources: {
+        pageTitle: 'Resources',
+        pageSubtitle: 'Guides, templates, and useful materials to help you utilize AI developers more effectively',
+        categories: {
+          all: 'All',
+          guide: 'Guide',
+          category: 'By Category',
+          faq: 'FAQ',
+          template: 'Template',
+          stats: 'Statistics',
+        },
+        empty: 'No search results found.',
+        items: {
+          guide1: {
+            title: 'AI Developer Usage Guide',
+            description: 'A complete starter guide for those new to using AI developers on AIDE Market. Step-by-step instructions from account creation to completing your first project.',
+            content: `## AI Developer Usage Guide
+
+### Step 1: Account Setup
+- Sign up and set up your profile
+- Select categories of interest
+- Get 50% discount with student verification
+
+### Step 2: Explore AI Developers
+- Search for desired developers in the marketplace
+- Use category-specific filtering
+- Check ratings and reviews
+
+### Step 3: Select Developer
+- Analyze project requirements
+- Establish a budget plan
+- Compare and review multiple developers
+
+### Step 4: Start Project
+- Purchase and download developer
+- Integrate into project
+- Ongoing collaboration and management
+
+### Tips
+- Use free trial versions
+- Combine multiple developers with team feature
+- Check regular updates`,
+          },
+          guide2: {
+            title: 'Team Optimization Guide',
+            description: 'Learn how to build a powerful team with up to 5 AI developers and maximize synergy effects. Best practices for team building.',
+            content: `## Team Optimization Guide
+
+### Team Building Strategy
+1. **Role Allocation**: Consider each developer's expertise
+   - Frontend: UI/UX implementation
+   - Backend: Server and API development
+   - Design: Visual element design
+   - Infrastructure: Deployment and management
+
+2. **Synergy Effects**: +20% performance improvement with diverse category combinations
+   - Choose complementary technology stacks
+   - Consider communication skills
+
+3. **Budget Optimization**
+   - Prioritize essential developers
+   - Expand team by project phase
+
+### Recommended Team Combinations
+- **Web Application**: Frontend + Backend + Design
+- **API Service**: Backend + Infrastructure + Security
+- **Mobile App**: Frontend + Design + Backend
+
+### Synergy Score Calculation
+- Base stat average + Team size bonus + Diversity bonus`,
+          },
+          guide3: {
+            title: 'AI Developer Evaluation Guide',
+            description: 'Learn about factors and evaluation criteria to consider when selecting AI developers. A comprehensive guide to evaluating ratings, reviews, tech stacks, and pricing.',
+            content: `## AI Developer Evaluation Guide
+
+### Evaluation Criteria
+
+#### 1. Technical Capability
+- **Rating**: 4.5 or higher recommended
+- **Tech Stack**: Match with project requirements
+- **Update Frequency**: Check recent update dates
+
+#### 2. User Reviews
+- **Review Count**: Check for sufficient reviews
+- **Average Rating**: Check overall evaluation
+- **Detailed Reviews**: Check actual usage experiences
+
+#### 3. Price-Performance Ratio
+- **Cost**: Optimal choice within budget
+- **Features**: Check if features justify price
+- **Discounts**: Utilize student discounts, promotions
+
+#### 4. Community Support
+- **Documentation**: Check documentation completeness
+- **Examples**: Check if usage examples are provided
+- **Support**: Check if problem-solving support is available
+
+### Checklist
+- [ ] Tech stack matches project requirements
+- [ ] Rating 4.5 or higher
+- [ ] Updated within last 3 months
+- [ ] 10 or more reviews
+- [ ] Price within budget
+- [ ] Sufficient documentation
+
+### Comparison Method
+1. List multiple developers
+2. Score each evaluation item
+3. Compare by overall score
+4. Final decision after checking actual reviews`,
+          },
+          category1: {
+            title: 'Frontend AI Utilization',
+            description: 'Start efficient web development using AI developers specialized in React, Vue, Next.js, and other frontend technologies. From component development to state management.',
+            content: `## Frontend AI Utilization
+
+### Key Application Areas
+- **Component Development**: Automatic generation of reusable UI components
+- **State Management**: Implementation of state management patterns like Redux, Context API
+- **Styling**: Automatic style generation with CSS-in-JS, Tailwind CSS
+- **Performance Optimization**: Bundle size optimization, code splitting
+
+### Recommended Developers
+1. **React Expert**: Component architecture design
+2. **TypeScript Expert**: Type safety improvement
+3. **Design System Expert**: Consistent UI implementation
+
+### Practical Example
+\`\`\`jsx
+// Example component generated by AI
+import React from 'react';
+
+const ProductCard = ({ product }) => {
+  return (
+    <div className="product-card">
+      <img src={product.image} alt={product.name} />
+      <h3>{product.name}</h3>
+      <p>{product.price}</p>
+    </div>
+  );
+};
+\`\`\``,
+          },
+          category2: {
+            title: 'Backend AI Utilization',
+            description: 'Learn how to utilize AI developers for backend infrastructure and API development using Node.js, Python, Go, etc. From database design to microservice architecture.',
+            content: `## Backend AI Utilization
+
+### Key Application Areas
+- **API Development**: RESTful API, GraphQL endpoint generation
+- **Database**: Schema design, query optimization
+- **Authentication/Security**: JWT, OAuth implementation
+- **Microservices**: Service separation and communication design
+
+### Recommended Developers
+1. **API Design Expert**: RESTful API structure design
+2. **Database Expert**: Efficient schema design
+3. **Security Expert**: Authentication and security pattern implementation
+
+### Practical Example
+\`\`\`javascript
+// Example API route generated by AI
+app.get('/api/products', async (req, res) => {
+  const products = await Product.find();
+  res.json(products);
+});
+\`\`\``,
+          },
+          category3: {
+            title: 'Design AI Utilization',
+            description: 'Integrate AI developers into your UI/UX design process by connecting with design tools like Figma and Adobe XD. From design systems to prototyping.',
+            content: `## Design AI Utilization
+
+### Key Application Areas
+- **Design System**: Build consistent component libraries
+- **Prototyping**: Rapid prototype creation
+- **User Experience**: UX flow design and improvement
+- **Visual Elements**: Icon and illustration generation
+
+### Recommended Developers
+1. **UI Designer**: Interface design
+2. **UX Researcher**: User experience improvement
+3. **Branding Expert**: Consistent brand identity
+
+### Design Workflow
+1. Wireframe design
+2. Visual design work
+3. Prototype creation
+4. Collaboration with developers`,
+          },
+          faq1: {
+            title: 'Frequently Asked Questions (FAQ)',
+            description: 'A collection of the most frequently asked questions and answers about using AIDE Market. Covers various topics including accounts, payments, and technical support.',
+            content: `## Frequently Asked Questions
+
+### Account Related
+**Q: How do I sign up?**
+A: Click the "Login" button in the top header and select "Sign Up". You can create an account after email verification.
+
+**Q: How do I get student discount?**
+A: Apply for student verification in profile settings. Upload your student ID to receive a 50% discount.
+
+### Purchase and Payment
+**Q: How do I use purchased AI developers?**
+A: Download from the download section after purchase and integrate into your project.
+
+**Q: Can I get a refund?**
+A: Refunds are available within 7 days of purchase. Contact customer support if you have any issues.
+
+### Technical Support
+**Q: I'm having issues with an AI developer**
+A: Get help from each developer's review section or ask questions on the community forum.`,
+          },
+          faq2: {
+            title: 'Payment and Purchase Guide',
+            description: 'Detailed guide to the entire process from product purchase to payment and download. Covers payment methods, discount coupons, order management, and more.',
+            content: `## Payment and Purchase Guide
+
+### Purchase Process
+1. **Select Product**: Choose desired AI developer from marketplace
+2. **Add to Cart**: Click shopping cart icon
+3. **Proceed to Payment**: Enter payment information on purchase page
+4. **Download**: Available for immediate download after payment
+
+### Payment Methods
+- **Credit Card**: Visa, Mastercard, JCB supported
+- **Bank Transfer**: Online bank transfer available
+- **Easy Payment**: PayPal, Stripe, etc.
+
+### Discount Benefits
+- Student Verification: 50% discount
+- Coupon Code: Enter promotion code
+- Team Purchase: Additional discount for 5+ purchases
+
+### Order Management
+- Order History: Check in Profile > Purchased AI
+- Receipt: Automatically sent via email
+- Download: Re-download available on Purchased AI page`,
+          },
+          template1: {
+            title: 'Project Templates',
+            description: 'Download starter templates for various project types. Templates for popular frameworks like React, Vue, Next.js, Node.js, and more.',
+            content: `## Project Templates
+
+### Available Templates
+
+#### Web Applications
+- **React + TypeScript**: Modern React application template
+- **Next.js + Tailwind CSS**: SEO-optimized website
+- **Vue 3 + Vite**: Fast development environment setup
+
+#### Backend Services
+- **Node.js + Express**: RESTful API server
+- **Python + FastAPI**: High-performance API server
+- **Go + Gin**: Lightweight microservice
+
+#### Full Stack
+- **Next.js + Prisma**: Full-stack type-safe application
+- **Remix + PostgreSQL**: Server-side rendering app
+
+### Usage
+1. Select and download template
+2. Install dependencies: \`npm install\`
+3. Set environment variables
+4. Run development server: \`npm run dev\`
+
+### Customization
+- Modify template as needed
+- Extend functionality by adding AI developers`,
+          },
+          template2: {
+            title: 'Code Snippet Library',
+            description: 'Search and utilize frequently used code snippets and examples. Ready-to-use code for authentication, API communication, form handling, and more.',
+            content: `## Code Snippet Library
+
+### Snippets by Category
+
+#### Authentication & Security
+- JWT token generation and verification
+- Password hashing (bcrypt)
+- OAuth login implementation
+
+#### API Communication
+- Axios interceptor setup
+- Error handling
+- Retry logic
+
+#### Form Processing
+- React Hook Form examples
+- Validation
+- File upload
+
+#### Database
+- ORM query examples
+- Transaction processing
+- Relational queries
+
+### Usage Example
+\`\`\`javascript
+// JWT token verification example
+const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    throw new Error('Invalid token');
+  }
+};
+\`\`\`
+
+### Contributing
+- Share useful snippets with the community
+- Improvement suggestions welcome`,
+          },
+          stats1: {
+            title: 'Market Trend Analysis',
+            description: 'Check popular categories and latest trends to apply to your projects. Monthly statistics and category popularity rankings.',
+            content: `## Market Trend Analysis
+
+### This Month's Popular Categories
+1. **Frontend** (35%): React, Next.js developers trending
+2. **AI/ML** (28%): Increased demand for machine learning model development
+3. **Backend** (22%): API and server infrastructure development
+4. **Design** (15%): UI/UX design services
+
+### Trend Insights
+- **TypeScript**: Increasing demand for type safety in projects
+- **Cloud Native**: Growing need for infrastructure automation
+- **Accessibility**: Increasing importance of web accessibility (A11y)
+
+### Growth Trends
+- Monthly new developers: +15%
+- Average rating: 4.7/5.0
+- User satisfaction: 92%
+
+### Recommended Combinations
+Currently most popular team combination:
+- Frontend + Backend + Design (Synergy +18%)`,
+          },
+          stats2: {
+            title: 'Success Stories',
+            description: 'Explore successful project cases using AIDE Market. Check out various success stories from startups to enterprise projects.',
+            content: `## Success Stories
+
+### Startup Project
+**E-commerce Platform Development**
+- Team: Frontend + Backend + Design (3 members)
+- Duration: 3 months
+- Result: MVP completion and Series A investment secured
+
+### Enterprise Project
+**Internal Management System Development**
+- Team: Frontend + Backend + Infrastructure (5 members)
+- Duration: 6 months
+- Result: 50% reduction in development time, improved operational efficiency
+
+### Personal Project
+**Portfolio Website**
+- Team: Frontend + Design (2 members)
+- Duration: 2 weeks
+- Result: Successful job placement and 500+ GitHub stars
+
+### Key Success Factors
+1. Appropriate developer selection
+2. Clear project goals
+3. Continuous communication
+4. Team synergy effect utilization
+
+### Testimonial
+"Using AI developers allowed us to quickly create prototypes and significantly reduce time to service launch." - Project Leader`,
+          },
+        },
       },
       creators: {
         title: 'Top Creators',
@@ -3017,6 +3764,380 @@ const resources = {
         noProducts: '該当する商品がありません',
         sellerApplyLink: 'AI開発者としてあなたの製品を販売し、収益を創出しましょう。販売者に転換してマーケットプレイスで商品を登録し、販売できます。',
         sellerApplyClickHere: 'ここをクリック',
+      },
+      resources: {
+        pageTitle: 'リソース',
+        pageSubtitle: 'AI開発者をより効果的に活用するためのガイド、テンプレート、そして有用な資料',
+        categories: {
+          all: 'すべて',
+          guide: 'ガイド',
+          category: 'カテゴリー別',
+          faq: 'FAQ',
+          template: 'テンプレート',
+          stats: '統計',
+        },
+        empty: '検索結果がありません。',
+        items: {
+          guide1: {
+            title: 'AI開発者活用ガイド',
+            description: 'AIDE MarketでAI開発者を初めて使用する方のための完全なスタートガイドです。アカウント作成から最初のプロジェクト完成まで段階的に案内します。',
+            content: `## AI開発者活用ガイド
+
+### 1ステップ: アカウント設定
+- 会員登録とプロフィール設定
+- 興味のあるカテゴリーを選択
+- 学生認証で50%割引を受ける
+
+### 2ステップ: AI開発者探索
+- マーケットプレイスで希望の開発者を検索
+- カテゴリー別フィルタリングを活用
+- 評価とレビューを確認
+
+### 3ステップ: 開発者選択
+- プロジェクト要件の分析
+- 予算計画の立案
+- 複数の開発者を比較検討
+
+### 4ステップ: プロジェクト開始
+- 開発者の購入とダウンロード
+- プロジェクトに統合
+- 継続的な協業と管理
+
+### ヒント
+- 無料体験版を活用する
+- チーム機能で複数の開発者を組み合わせる
+- 定期的な更新を確認する`,
+          },
+          guide2: {
+            title: 'チーム構成最適化ガイド',
+            description: '最大5名のAI開発者で強力なチームを構成する方法とシナジー効果を最大化する戦略を学びましょう。チームビルディングのベストプラクティスを提供します。',
+            content: `## チーム構成最適化ガイド
+
+### チーム構成戦略
+1. **役割分担**: 各開発者の専門分野を考慮
+   - フロントエンド: UI/UX実装
+   - バックエンド: サーバーおよびAPI開発
+   - デザイン: 視覚的要素のデザイン
+   - インフラ: デプロイと管理
+
+2. **シナジー効果**: 多様なカテゴリーの組み合わせで+20%のパフォーマンス向上
+   - 相互補完的な技術スタックを選択
+   - コミュニケーションスキルを考慮
+
+3. **予算最適化**
+   - 必須開発者を優先選択
+   - プロジェクト段階ごとにチームを拡張
+
+### 推奨チーム構成
+- **Webアプリケーション**: フロントエンド + バックエンド + デザイン
+- **APIサービス**: バックエンド + インフラ + セキュリティ
+- **モバイルアプリ**: フロントエンド + デザイン + バックエンド
+
+### シナジースコア計算
+- 基本ステータス平均 + チームサイズボーナス + 多様性ボーナス`,
+          },
+          guide3: {
+            title: 'AI開発者評価ガイド',
+            description: 'AI開発者を選択する際に考慮すべき要素と評価基準を学びましょう。評価、レビュー、技術スタック、価格などを総合的に評価する方法を案内します。',
+            content: `## AI開発者評価ガイド
+
+### 評価項目
+
+#### 1. 技術的キャパシティ
+- **評価**: 4.5以上を推奨
+- **技術スタック**: プロジェクト要件との一致
+- **更新頻度**: 最近の更新日を確認
+
+#### 2. ユーザーレビュー
+- **レビュー数**: 十分なレビューがあるか確認
+- **平均評価**: 全体的な評価を確認
+- **詳細レビュー**: 実際の使用経験を確認
+
+#### 3. 価格対性能
+- **コスト**: 予算内で最適な選択
+- **機能**: 提供機能が価格に適しているか
+- **割引**: 学生割引、プロモーション活用
+
+#### 4. コミュニティサポート
+- **ドキュメント化**: ドキュメントの完成度
+- **例**: 使用例の提供有無
+- **サポート**: 問題解決サポートの有無
+
+### チェックリスト
+- [ ] プロジェクト要件と技術スタックが一致
+- [ ] 評価4.5以上
+- [ ] 最近3ヶ月以内に更新
+- [ ] レビュー10件以上
+- [ ] 予算内の価格
+- [ ] 十分なドキュメント化
+
+### 比較方法
+1. 複数の開発者をリストアップ
+2. 評価項目ごとにスコアを付ける
+3. 総合スコアで比較
+4. 実際のレビューを確認して最終決定`,
+          },
+          category1: {
+            title: 'フロントエンドAI活用法',
+            description: 'React、Vue、Next.jsなどフロントエンド開発に特化したAI開発者を活用して効率的なWeb開発を始めましょう。コンポーネント開発から状態管理まで扱います。',
+            content: `## フロントエンドAI活用法
+
+### 主な活用分野
+- **コンポーネント開発**: 再利用可能なUIコンポーネントの自動生成
+- **状態管理**: Redux、Context APIなどの状態管理パターンの実装
+- **スタイリング**: CSS-in-JS、Tailwind CSSスタイルの自動生成
+- **パフォーマンス最適化**: バンドルサイズの最適化、コードスプリッティング
+
+### 推奨開発者
+1. **React専門家**: コンポーネントアーキテクチャ設計
+2. **TypeScript専門家**: 型安全性の向上
+3. **デザインシステム専門家**: 一貫したUI実装
+
+### 実践例
+\`\`\`jsx
+// AIが生成したコンポーネント例
+import React from 'react';
+
+const ProductCard = ({ product }) => {
+  return (
+    <div className="product-card">
+      <img src={product.image} alt={product.name} />
+      <h3>{product.name}</h3>
+      <p>{product.price}</p>
+    </div>
+  );
+};
+\`\`\``,
+          },
+          category2: {
+            title: 'バックエンドAI活用法',
+            description: 'Node.js、Python、GoなどのバックエンドインフラとAPI開発のためのAI開発者を活用する方法を学びましょう。データベース設計からマイクロサービスアーキテクチャまで。',
+            content: `## バックエンドAI活用法
+
+### 主な活用分野
+- **API開発**: RESTful API、GraphQLエンドポイント生成
+- **データベース**: スキーマ設計、クエリ最適化
+- **認証/セキュリティ**: JWT、OAuth実装
+- **マイクロサービス**: サービス分離と通信設計
+
+### 推奨開発者
+1. **API設計専門家**: RESTful API構造設計
+2. **データベース専門家**: 効率的なスキーマ設計
+3. **セキュリティ専門家**: 認証とセキュリティパターンの実装
+
+### 実践例
+\`\`\`javascript
+// AIが生成したAPIルート例
+app.get('/api/products', async (req, res) => {
+  const products = await Product.find();
+  res.json(products);
+});
+\`\`\``,
+          },
+          category3: {
+            title: 'デザインAI活用法',
+            description: 'Figma、Adobe XDなどのデザインツールと連携してUI/UXデザインプロセスにAI開発者を統合しましょう。デザインシステムからプロトタイピングまで。',
+            content: `## デザインAI活用法
+
+### 主な活用分野
+- **デザインシステム**: 一貫したコンポーネントライブラリの構築
+- **プロトタイピング**: 迅速なプロトタイプ制作
+- **ユーザー体験**: UXフローの設計と改善
+- **視覚的要素**: アイコン、イラストレーション生成
+
+### 推奨開発者
+1. **UIデザイナー**: インターフェースデザイン
+2. **UXリサーチャー**: ユーザー体験の改善
+3. **ブランディング専門家**: 一貫したブランドアイデンティティ
+
+### デザインワークフロー
+1. ワイヤーフレーム設計
+2. 視覚的デザイン作業
+3. プロトタイプ制作
+4. 開発者との協業`,
+          },
+          faq1: {
+            title: 'よくある質問（FAQ）',
+            description: 'AIDE Market利用時に最もよくある質問と回答をまとめました。アカウント、決済、技術サポートなど様々なトピックを扱います。',
+            content: `## よくある質問
+
+### アカウント関連
+**Q: 会員登録はどのようにしますか？**
+A: 上部ヘッダーの「ログイン」ボタンをクリックし、「会員登録」を選択してください。メール認証後、アカウントを作成できます。
+
+**Q: 学生割引を受けるには？**
+A: プロフィール設定で学生認証を申請してください。学生証をアップロードすると50%割引の特典を受けることができます。
+
+### 購入および決済
+**Q: 購入したAI開発者はどのように使用しますか？**
+A: 購入後、ダウンロードセクションからダウンロードし、プロジェクトに統合してください。
+
+**Q: 返金は可能ですか？**
+A: 購入後7日以内に返金が可能です。問題がある場合はカスタマーサポートにお問い合わせください。
+
+### 技術サポート
+**Q: AI開発者に関連する問題が発生しました**
+A: 各開発者のレビューセクションで助けを得るか、コミュニティフォーラムで質問してください。`,
+          },
+          faq2: {
+            title: '決済および購入ガイド',
+            description: '商品購入から決済、ダウンロードまでの全プロセスを詳しく案内します。決済方法、割引クーポン、注文管理などを扱います。',
+            content: `## 決済および購入ガイド
+
+### 購入プロセス
+1. **商品選択**: マーケットプレイスで希望のAI開発者を選択
+2. **カートに追加**: ショッピングカートアイコンをクリック
+3. **決済進行**: 購入ページで決済情報を入力
+4. **ダウンロード**: 決済完了後すぐにダウンロード可能
+
+### 決済方法
+- **クレジットカード**: Visa、Mastercard、JCB対応
+- **銀行振込**: オンラインバンキング可能
+- **簡単決済**: PayPal、Stripeなど
+
+### 割引特典
+- 学生認証: 50%割引
+- クーポンコード: プロモーションコード入力
+- チーム購入: 5名以上購入で追加割引
+
+### 注文管理
+- 注文履歴: プロフィール > 購入したAIで確認
+- 領収書: メールで自動送信
+- ダウンロード: 購入したAIページで再ダウンロード可能`,
+          },
+          template1: {
+            title: 'プロジェクトテンプレート',
+            description: '様々なプロジェクトタイプに合わせたスターターテンプレートをダウンロードしましょう。React、Vue、Next.js、Node.jsなどの人気フレームワークテンプレートを提供。',
+            content: `## プロジェクトテンプレート
+
+### 提供テンプレート一覧
+
+#### Webアプリケーション
+- **React + TypeScript**: モダンなReactアプリケーションテンプレート
+- **Next.js + Tailwind CSS**: SEO最適化されたウェブサイト
+- **Vue 3 + Vite**: 高速な開発環境構築
+
+#### バックエンドサービス
+- **Node.js + Express**: RESTful APIサーバー
+- **Python + FastAPI**: 高性能APIサーバー
+- **Go + Gin**: 軽量マイクロサービス
+
+#### フルスタック
+- **Next.js + Prisma**: フルスタック型安全アプリケーション
+- **Remix + PostgreSQL**: サーバーサイドレンダリングアプリ
+
+### 使用方法
+1. テンプレートを選択してダウンロード
+2. 依存関係をインストール: \`npm install\`
+3. 環境変数を設定
+4. 開発サーバーを実行: \`npm run dev\`
+
+### カスタマイズ
+- テンプレートをベースに自由に修正可能
+- AI開発者を追加して機能を拡張`,
+          },
+          template2: {
+            title: 'コードスニペットライブラリ',
+            description: 'よく使用するコードスニペットと例を検索して活用しましょう。認証、API通信、フォーム処理など実務で即座に使用可能なコードを提供。',
+            content: `## コードスニペットライブラリ
+
+### カテゴリー別スニペット
+
+#### 認証 & セキュリティ
+- JWTトークンの生成と検証
+- パスワードハッシュ化 (bcrypt)
+- OAuthログイン実装
+
+#### API通信
+- Axiosインタセプター設定
+- エラーハンドリング
+- リトライロジック
+
+#### フォーム処理
+- React Hook Form例
+- バリデーション
+- ファイルアップロード
+
+#### データベース
+- ORMクエリ例
+- トランザクション処理
+- リレーショナルクエリ
+
+### 使用例
+\`\`\`javascript
+// JWTトークン検証例
+const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    throw new Error('Invalid token');
+  }
+};
+\`\`\`
+
+### 貢献
+- 有用なスニペットをコミュニティで共有してください
+- 改善提案を歓迎します`,
+          },
+          stats1: {
+            title: 'マーケットトレンド分析',
+            description: '人気カテゴリーと最新トレンドを確認してプロジェクトに適用しましょう。月間統計とカテゴリー別人気度を提供します。',
+            content: `## マーケットトレンド分析
+
+### 今月の人気カテゴリー
+1. **フロントエンド** (35%): React、Next.js関連開発者が人気
+2. **AI/ML** (28%): 機械学習モデル開発の需要が増加
+3. **バックエンド** (22%): APIおよびサーバーインフラ開発
+4. **デザイン** (15%): UI/UXデザインサービス
+
+### トレンドインサイト
+- **TypeScript**: プロジェクトで型安全性への要求が増加
+- **クラウドネイティブ**: インフラ自動化の需要が増加
+- **アクセシビリティ**: Webアクセシビリティ(A11y)の重要性が増加
+
+### 成長トレンド
+- 月間新規開発者: +15%
+- 平均評価: 4.7/5.0
+- ユーザー満足度: 92%
+
+### 推奨組み合わせ
+現在最も人気のあるチーム組み合わせ:
+- フロントエンド + バックエンド + デザイン (シナジー +18%)`,
+          },
+          stats2: {
+            title: '成功事例',
+            description: 'AIDE Marketを活用して成功したプロジェクト事例を閲覧しましょう。スタートアップから企業プロジェクトまで様々な成功ストーリーを確認できます。',
+            content: `## 成功事例
+
+### スタートアッププロジェクト
+**ECプラットフォーム構築**
+- チーム構成: フロントエンド + バックエンド + デザイン (3名)
+- 期間: 3ヶ月
+- 結果: MVP完成とシリーズA投資獲得
+
+### 企業プロジェクト
+**社内管理システム構築**
+- チーム構成: フロントエンド + バックエンド + インフラ (5名)
+- 期間: 6ヶ月
+- 結果: 開発時間50%短縮、運営効率向上
+
+### 個人プロジェクト
+**ポートフォリオウェブサイト**
+- チーム構成: フロントエンド + デザイン (2名)
+- 期間: 2週間
+- 結果: 就職成功とGitHubスター500+獲得
+
+### 主な成功要因
+1. 適切な開発者の選択
+2. 明確なプロジェクト目標
+3. 継続的なコミュニケーション
+4. チームシナジー効果の活用
+
+### レビュー
+"AI開発者を活用して迅速にプロトタイプを作成でき、
+実際のサービスリリースまで時間を大幅に短縮できました。" - プロジェクトリーダー`,
+          },
+        },
       },
       creators: {
         title: 'Top Creators',

@@ -302,7 +302,7 @@ function MainPage() {
             <Link to="/" className="nav-link">{t('home.nav.marketplace')}</Link>
             <Link to="/rankings" className="nav-link">{t('home.nav.rankings')}</Link>
             <Link to="/team" className="nav-link">{t('home.nav.teams')}</Link>
-            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.resources')}</button>
+            <Link to="/resources" className="nav-link">{t('home.nav.resources')}</Link>
           </nav>
 
           <div className="header-actions">
