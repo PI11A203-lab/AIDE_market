@@ -31,6 +31,7 @@ const securityRoutes = require("../features/security/securityRoutes");
 const studentVerificationAdminRoutes = require("../features/admin/studentVerificationAdminRoutes");
 const sellerAdminRoutes = require("../features/admin/sellerAdminRoutes");
 const sellerRoutes = require("../features/seller/sellerRoutes");
+const templateRoutes = require("../features/template/templateRoutes");
 
 module.exports = (app) => {
     // 기존 라우트 (하위 호환성)
@@ -63,6 +64,8 @@ module.exports = (app) => {
     app.use("/api/product-activations", productActivationRoutes);
     app.use("/api/users", studentAccountRoutes); // 학생 계정 관련은 /api/users 하위에 (일반 사용자용)
     app.use("/api/seller", sellerRoutes); // 판매자 신청 관련
+    app.use("/api/templates", templateRoutes); // 템플릿 관련
+    console.log("✅ Template routes registered at /api/templates");
     
     // Super Admin 라우트는 더 구체적인 경로를 먼저 등록 (라우트 매칭 순서 문제 해결)
     app.use("/api/admin/products", productAdminRoutes); // 상품 승인 관리 (super_admin) - 먼저 등록!

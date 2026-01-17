@@ -104,7 +104,30 @@ export default function PurchasePage() {
           console.error('사용자 정보 조회 실패:', error);
         }
 
-        // URL 파라미터에서 buyNow 확인
+        // location.state에서 템플릿 상품들 확인 (템플릿에서 바로 구매)
+        if (location.state?.templateProducts && Array.isArray(location.state.templateProducts) && location.state.templateProducts.length > 0) {
+          // 템플릿 상품들을 바로 구매 상품으로 설정
+          setBuyNowItem(null); // buyNowItem은 단일 상품용
+          const templateProductsData = location.state.templateProducts.map(p => ({
+            id: p.id,
+            name: p.name,
+            category: p.category || 'AI/ML',
+            price: p.price || 0,
+            avatar: p.avatar || p.name?.substring(0, 2) || 'AI',
+            imageUrl: p.imageUrl || null,
+            is_purchased: p.is_purchased || false,
+            tags: p.tags || [],
+            quantity: 1
+          }));
+          
+          // 템플릿 상품들을 cartItems에 추가
+          setCartItems(templateProductsData);
+          setAvailableCartItems([]);
+          setLoading(false);
+          return;
+        }
+
+        // URL 파라미터에서 buyNow 확인 (단일 상품 바로 구매)
         const searchParams = new URLSearchParams(location.search);
         const buyNowId = searchParams.get('buyNow');
 
@@ -144,7 +167,8 @@ export default function PurchasePage() {
               setAvailableCartItems(otherProducts);
             }
           } catch (e) {
-            console.error('Failed to load cart from API:', e);
+            // 장바구니 로드 실패는 무시하고 계속 진행
+            console.error('Failed to load additional cart items:', e);
           }
         } else {
           // 일반 장바구니 모드: API에서 장바구니 로드
@@ -178,17 +202,31 @@ export default function PurchasePage() {
             
             if (purchasedItems.length > 0) {
               message.warning(t('purchase.messages.itemsRemovedFromCart', { count: purchasedItems.length }));
-              // 장바구니에서 구매한 상품 제거 (API 호출)
+              // 장바구니에서 구매한 상품 제거 (API 호출) - 에러가 발생해도 계속 진행
               await Promise.all(
-                purchasedItems.map(item => api.carts.removeItem(userId, item.id))
+                purchasedItems.map(async (item) => {
+                  try {
+                    await api.carts.removeItem(userId, item.id);
+                  } catch (error) {
+                    // 404 에러는 이미 장바구니에 없는 상품이므로 무시
+                    if (error.response?.status !== 404) {
+                      console.error(`Failed to remove purchased item ${item.id} from cart:`, error);
+                    }
+                  }
+                })
               );
             }
             
             setCartItems(availableItems);
           } catch (error) {
             console.error('Failed to load cart from API:', error);
-            message.error(t('purchase.messages.cartLoadFail'));
-            setCartItems([]);
+            // 404 에러는 장바구니가 비어있음을 의미하므로 빈 배열 설정
+            if (error.response?.status === 404) {
+              setCartItems([]);
+            } else {
+              message.error(t('purchase.messages.cartLoadFail'));
+              setCartItems([]);
+            }
           }
         }
       } catch (error) {
@@ -199,7 +237,8 @@ export default function PurchasePage() {
     };
 
     loadData();
-  }, [location.search, history, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search, location.state?.templateProducts, history, t]);
 
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -244,6 +283,20 @@ export default function PurchasePage() {
   // 장바구니에서 제거 (API 사용)
   const removeFromCart = async (itemId) => {
     try {
+      // 템플릿에서 온 상품인지 확인 (location.state에 templateProducts가 있으면 템플릿 상품)
+      const isTemplateProduct = location.state?.templateProducts && 
+        location.state.templateProducts.some(p => p.id === itemId);
+
+      if (isTemplateProduct) {
+        // 템플릿 상품은 실제 장바구니에 없으므로 API 호출 없이 로컬 state만 업데이트
+        const updatedItems = cartItems.filter(item => item.id !== itemId);
+        setCartItems(updatedItems);
+        
+        message.success(t('purchase.messages.cartItemRemoved'));
+        return;
+      }
+
+      // 일반 장바구니 상품인 경우 API 호출
       const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
       if (!userFromStorage) {
         message.warning(t('purchase.messages.loginRequired'));
@@ -268,8 +321,15 @@ export default function PurchasePage() {
       message.success(t('purchase.messages.cartItemRemoved'));
     } catch (error) {
       console.error('Failed to remove from cart:', error);
-      const errorMessage = error.response?.data?.error || t('purchase.messages.removeCartItemFail');
-      message.error(errorMessage);
+      // 404 에러인 경우 (장바구니에 없는 상품) 로컬 state만 업데이트
+      if (error.response?.status === 404) {
+        const updatedItems = cartItems.filter(item => item.id !== itemId);
+        setCartItems(updatedItems);
+        message.success(t('purchase.messages.cartItemRemoved'));
+      } else {
+        const errorMessage = error.response?.data?.error || t('purchase.messages.removeCartItemFail');
+        message.error(errorMessage);
+      }
     }
   };
 

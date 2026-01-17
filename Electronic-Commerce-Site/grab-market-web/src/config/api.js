@@ -1118,6 +1118,61 @@ export const api = {
       getTopAccessIPs: (params = {}) => apiClient.get('/api/admin/ip/access/top-ips', { params }),
     },
     
+    // 템플릿 관리
+    templates: {
+      /**
+       * 템플릿 목록 조회 (슈퍼 어드민)
+       * @param {Object} params - { page, limit, search }
+       */
+      getList: (params = {}) => apiClient.get('/api/admin/templates', { params }),
+      
+      /**
+       * 템플릿 상세 조회
+       * @param {number} id - 템플릿 ID
+       */
+      getDetail: (id) => apiClient.get(`/api/admin/templates/${id}`),
+      
+      /**
+       * 템플릿 생성
+       * @param {Object} data - { name, description, icon_url }
+       */
+      create: (data) => apiClient.post('/api/admin/templates', data),
+      
+      /**
+       * 템플릿 업데이트
+       * @param {number} id - 템플릿 ID
+       * @param {Object} data - 업데이트할 정보
+       */
+      update: (id, data) => apiClient.put(`/api/admin/templates/${id}`, data),
+      
+      /**
+       * 템플릿 삭제
+       * @param {number} id - 템플릿 ID
+       */
+      delete: (id) => apiClient.delete(`/api/admin/templates/${id}`),
+      
+      /**
+       * 템플릿에 상품 추가
+       * @param {number} templateId - 템플릿 ID
+       * @param {Object} data - { product_id, display_order }
+       */
+      addProduct: (templateId, data) => apiClient.post(`/api/admin/templates/${templateId}/products`, data),
+      
+      /**
+       * 템플릿에서 상품 제거
+       * @param {number} templateId - 템플릿 ID
+       * @param {number} productId - 상품 ID
+       */
+      removeProduct: (templateId, productId) => apiClient.delete(`/api/admin/templates/${templateId}/products/${productId}`),
+      
+      /**
+       * 템플릿 상품 순서 변경
+       * @param {number} templateId - 템플릿 ID
+       * @param {Array} productOrders - [{ product_id, display_order }]
+       */
+      updateProductOrder: (templateId, productOrders) => apiClient.put(`/api/admin/templates/${templateId}/products/order`, { productOrders }),
+    },
+    
     // 보안 관리
     security: {
       /**
@@ -1204,6 +1259,27 @@ export const api = {
        */
       getTopAttackIPs: (params = {}) => apiClient.get('/api/admin/security/events/top-ips', { params }),
     },
+  },
+
+  // ==================== 템플릿 관련 (공개) ====================
+  templates: {
+    /**
+     * 공개 템플릿 목록 조회
+     * @param {Object} params - { page, limit, search }
+     */
+    getList: (params = {}) => apiClient.get('/api/templates', { params }),
+    
+    /**
+     * 템플릿 상세 조회 (공개)
+     * @param {number} id - 템플릿 ID
+     */
+    getDetail: (id) => apiClient.get(`/api/templates/${id}`),
+    
+    /**
+     * 상품이 포함된 템플릿 목록 조회
+     * @param {number} productId - 상품 ID
+     */
+    getByProduct: (productId) => apiClient.get(`/api/templates/by-product/${productId}`),
   },
 
   // ==================== 판매자 신청 관련 ====================

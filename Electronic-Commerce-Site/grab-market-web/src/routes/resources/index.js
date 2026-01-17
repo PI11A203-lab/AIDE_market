@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Search, ShoppingCart, Globe, BookOpen, HelpCircle, FileText, BarChart3, Download, ArrowRight, ChevronRight } from 'lucide-react';
+import { Search, ShoppingCart, Globe, BookOpen, HelpCircle, FileText, BarChart3, Download, ChevronRight } from 'lucide-react';
 import LogoutButton from '../home/components/LogoutButton';
 import { useTranslation } from 'react-i18next';
 import '../home/index.css';
@@ -245,6 +245,7 @@ function ResourcesPage() {
           <nav className="nav">
             <Link to="/" className="nav-link">{t('home.nav.marketplace')}</Link>
             <Link to="/rankings" className="nav-link">{t('home.nav.rankings')}</Link>
+            <Link to="/templates" className="nav-link">{t('home.nav.templates')}</Link>
             <Link to="/team" className="nav-link">{t('home.nav.teams')}</Link>
             <Link to="/resources" className="nav-link active">{t('home.nav.resources')}</Link>
           </nav>

@@ -761,6 +761,8 @@ const resources = {
         tipDescription: '다양한 전문성을 가진 팀을 구성해 최고의 결과를 만들어보세요!',
         scrollLeft: '왼쪽으로 스크롤',
         scrollRight: '오른쪽으로 스크롤',
+        templateTeams: '템플릿 팀',
+        addTemplateTeam: '추가',
         messages: {
           selectMembers: '팀원을 선택해주세요.',
           loginRequired: '로그인이 필요합니다.',
@@ -898,6 +900,7 @@ const resources = {
         nav: {
           marketplace: '마켓플레이스',
           rankings: '랭킹',
+          templates: '템플릿',
           teams: '팀',
           resources: '리소스',
         },
@@ -941,6 +944,38 @@ const resources = {
         noProducts: '해당하는 상품이 없습니다',
         sellerApplyLink: 'AI 개발자로서 당신의 제품을 판매하고 수익을 창출하세요. 판매자로 전환하여 마켓플레이스에서 상품을 등록하고 판매할 수 있습니다.',
         sellerApplyClickHere: '여기를 클릭하세요',
+      },
+      templates: {
+        pageTitle: 'AI 프로젝트 템플릿',
+        pageSubtitle: '프로젝트 유형별로 필요한 AI 상품을 한눈에 확인하고 선택하세요',
+        categories: {
+          all: '전체',
+          web: '웹개발',
+          app: '어플개발',
+          data: '데이터 분석',
+          document: '문서',
+          image: '이미지생성',
+        },
+        empty: '등록된 템플릿이 없습니다.',
+        productCount: '{{count}}개의 AI 상품',
+        detail: {
+          backToList: '템플릿 목록으로 돌아가기',
+          purchased: '{{count}}명이 구매했습니다',
+          aiProducts: '{{count}}개의 AI 상품',
+          buyNow: '바로 구매',
+          addToCart: '장바구니에 추가',
+          addToTeam: '팀으로 추가',
+          projectDescription: '프로젝트 설명',
+          whySelected: '왜 이 AI로 구성되었나요?',
+          aiDescriptions: '어떤 AI인가요?',
+          compatibilityTable: 'AI 적합성 비교표',
+          projectType: '프로젝트 유형',
+          verySuitable: '매우 적합',
+          suitable: '적합',
+          normal: '보통',
+          unsuitable: '부적합',
+          templateProducts: '이 템플릿의 상품',
+        },
       },
       resources: {
         pageTitle: '리소스',
@@ -987,7 +1022,7 @@ const resources = {
           },
           guide2: {
             title: '팀 구성 최적화 가이드',
-            description: '최대 5명의 AI 개발자로 강력한 팀을 구성하는 방법과 시너지 효과를 극대화하는 전략을 배워보세요. 팀 빌딩의 베스트 프랙티스를 제공합니다.',
+            description: '최대 10명의 AI 개발자로 강력한 팀을 구성하는 방법과 시너지 효과를 극대화하는 전략을 배워보세요. 팀 빌딩의 베스트 프랙티스를 제공합니다.',
             content: `## 팀 구성 최적화 가이드
 
 ### 팀 구성 전략
@@ -1862,6 +1897,7 @@ const verifyToken = (token) => {
         nav: {
           marketplace: 'Marketplace',
           rankings: 'Rankings',
+          templates: 'Templates',
           teams: 'Teams',
           resources: 'Resources',
         },
@@ -1905,6 +1941,38 @@ const verifyToken = (token) => {
         noProducts: 'No matching products found',
         sellerApplyLink: 'Sell your products as an AI developer and generate revenue. Become a seller to register and sell products in the marketplace.',
         sellerApplyClickHere: 'Click here',
+      },
+      templates: {
+        pageTitle: 'AI Project Templates',
+        pageSubtitle: 'Browse and select AI products needed for each project type at a glance',
+        categories: {
+          all: 'All',
+          web: 'Web Development',
+          app: 'App Development',
+          data: 'Data Analysis',
+          document: 'Documents',
+          image: 'Image Generation',
+        },
+        empty: 'No templates registered.',
+        productCount: '{{count}} AI products',
+        detail: {
+          backToList: 'Back to Template List',
+          purchased: '{{count}} people purchased',
+          aiProducts: '{{count}} AI products',
+          buyNow: 'Buy Now',
+          addToCart: 'Add to Cart',
+          addToTeam: 'Add to Team',
+          projectDescription: 'Project Description',
+          whySelected: 'Why were these AIs selected?',
+          aiDescriptions: 'What are these AIs?',
+          compatibilityTable: 'AI Suitability Comparison Table',
+          projectType: 'Project Type',
+          verySuitable: 'Very Suitable',
+          suitable: 'Suitable',
+          normal: 'Normal',
+          unsuitable: 'Unsuitable',
+          templateProducts: 'Products in this template',
+        },
       },
       resources: {
         pageTitle: 'Resources',
@@ -1951,7 +2019,7 @@ const verifyToken = (token) => {
           },
           guide2: {
             title: 'Team Optimization Guide',
-            description: 'Learn how to build a powerful team with up to 5 AI developers and maximize synergy effects. Best practices for team building.',
+            description: 'Learn how to build a powerful team with up to 10 AI developers and maximize synergy effects. Best practices for team building.',
             content: `## Team Optimization Guide
 
 ### Team Building Strategy
@@ -3122,6 +3190,8 @@ Currently most popular team combination:
         tipDescription: 'Build a diverse team with various expertise to achieve the best results!',
         scrollLeft: 'Scroll Left',
         scrollRight: 'Scroll Right',
+        templateTeams: 'Template Teams',
+        addTemplateTeam: 'Add',
         messages: {
           selectMembers: 'Please select team members.',
           loginRequired: 'Login required.',
@@ -3721,6 +3791,7 @@ Currently most popular team combination:
         nav: {
           marketplace: 'マーケットプレイス',
           rankings: 'ランキング',
+          templates: 'テンプレート',
           teams: 'チーム',
           resources: 'リソース',
         },
@@ -3764,6 +3835,38 @@ Currently most popular team combination:
         noProducts: '該当する商品がありません',
         sellerApplyLink: 'AI開発者としてあなたの製品を販売し、収益を創出しましょう。販売者に転換してマーケットプレイスで商品を登録し、販売できます。',
         sellerApplyClickHere: 'ここをクリック',
+      },
+      templates: {
+        pageTitle: 'AIプロジェクトテンプレート',
+        pageSubtitle: 'プロジェクトタイプごとに必要なAI商品を一目で確認して選択できます',
+        categories: {
+          all: 'すべて',
+          web: 'ウェブ開発',
+          app: 'アプリ開発',
+          data: 'データ分析',
+          document: 'ドキュメント',
+          image: '画像生成',
+        },
+        empty: '登録されたテンプレートがありません。',
+        productCount: 'AI商品{{count}}個',
+        detail: {
+          backToList: 'テンプレート一覧に戻る',
+          purchased: '{{count}}人が購入しました',
+          aiProducts: 'AI商品{{count}}個',
+          buyNow: '今すぐ購入',
+          addToCart: 'カートに追加',
+          addToTeam: 'チームに追加',
+          projectDescription: 'プロジェクト説明',
+          whySelected: 'なぜこれらのAIが選択されたのですか？',
+          aiDescriptions: 'これらのAIは何ですか？',
+          compatibilityTable: 'AI適合性比較表',
+          projectType: 'プロジェクトタイプ',
+          verySuitable: '非常に適している',
+          suitable: '適している',
+          normal: '普通',
+          unsuitable: '適さない',
+          templateProducts: 'このテンプレートの商品',
+        },
       },
       resources: {
         pageTitle: 'リソース',
@@ -3810,7 +3913,7 @@ Currently most popular team combination:
           },
           guide2: {
             title: 'チーム構成最適化ガイド',
-            description: '最大5名のAI開発者で強力なチームを構成する方法とシナジー効果を最大化する戦略を学びましょう。チームビルディングのベストプラクティスを提供します。',
+            description: '最大10名のAI開発者で強力なチームを構成する方法とシナジー効果を最大化する戦略を学びましょう。チームビルディングのベストプラクティスを提供します。',
             content: `## チーム構成最適化ガイド
 
 ### チーム構成戦略
@@ -4983,6 +5086,8 @@ const verifyToken = (token) => {
         tipDescription: '多様な専門性を持つチームを構成して最高の結果を作りましょう！',
         scrollLeft: '左にスクロール',
         scrollRight: '右にスクロール',
+        templateTeams: 'テンプレートチーム',
+        addTemplateTeam: '追加',
         messages: {
           selectMembers: 'チームメンバーを選択してください。',
           loginRequired: 'ログインが必要です。',

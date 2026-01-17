@@ -9,6 +9,7 @@ import TabNavigation from './components/TabNavigation';
 import PriceSidebar from './components/PriceSidebar';
 import TrustBadges from './components/TrustBadges';
 import ShareModal from './components/ShareModal';
+import ProductList from '../home/components/ProductList';
 import { API_URL } from '../../config/constants';
 import { api } from '../../config/api';
 import { getRatingCache, setRatingCache } from '../../utils/ratingCache';
@@ -26,6 +27,8 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [isPurchased, setIsPurchased] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [templateProducts, setTemplateProducts] = useState([]);
+  const [templateName, setTemplateName] = useState(null);
 
   // localStorage에서 언어 설정 불러오기 (메인 페이지에서 변경된 언어 반영)
   useEffect(() => {
@@ -314,6 +317,32 @@ export default function ProductPage() {
     }
   };
 
+  // 템플릿 관련 상품 로드
+  const loadTemplateProducts = async (productId) => {
+    try {
+      const response = await api.templates.getByProduct(productId);
+      const templates = response.data.templates || [];
+      
+      if (templates.length > 0) {
+        // 첫 번째 템플릿의 상품들을 가져옴
+        const firstTemplate = templates[0];
+        setTemplateName(firstTemplate.name);
+        
+        // 템플릿 상세 정보 가져오기
+        const templateDetailResponse = await api.templates.getDetail(firstTemplate.id);
+        const templateProductsData = templateDetailResponse.data.template?.products || [];
+        
+        // 현재 상품을 제외한 상품들만 표시
+        const otherProducts = templateProductsData.filter(p => p.id !== productId);
+        setTemplateProducts(otherProducts.slice(0, 6)); // 최대 6개만 표시
+      }
+    } catch (error) {
+      console.error('템플릿 상품 로드 실패:', error);
+      // API가 없을 수 있으므로 빈 배열로 초기화
+      setTemplateProducts([]);
+    }
+  };
+
   // 찜목록 토글 핸들러
   const handleLikeToggle = async () => {
     if (!user) {
@@ -467,11 +496,14 @@ export default function ProductPage() {
                       // 캐시 업데이트 (최신 정보로)
                       setRatingCache(parseInt(id), ratingAverage, ratingCount);
 
-                      setDeveloper(prev => ({
-                        ...prev,
-                        rating: parseFloat(ratingAverage || 0).toFixed(1),
-                        reviewCount: ratingCount || 0,
-                      }));
+        setDeveloper(prev => ({
+          ...prev,
+          rating: parseFloat(ratingAverage || 0).toFixed(1),
+          reviewCount: ratingCount || 0,
+        }));
+        
+        // 템플릿 관련 상품 로드
+        loadTemplateProducts(parseInt(id));
                     }
                   } catch (error) {
                     console.error('Failed to reload reviews:', error);
@@ -506,6 +538,21 @@ export default function ProductPage() {
             <TrustBadges />
           </div>
         </div>
+
+        {/* 템플릿 추천 섹션 */}
+        {templateProducts.length > 0 && templateName && (
+          <div style={{ marginTop: '60px', paddingTop: '40px', borderTop: '1px solid #E5E7EB' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '8px' }}>
+                이 템플릿에 포함된 상품
+              </h2>
+              <p style={{ fontSize: '14px', color: '#6B7280' }}>
+                "{templateName}" 템플릿의 다른 AI 상품들
+              </p>
+            </div>
+            <ProductList products={templateProducts} />
+          </div>
+        )}
       </main>
 
       {/* 공유 모달 */}

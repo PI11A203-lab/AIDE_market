@@ -1,0 +1,19 @@
+/* 템플릿 상세 페이지 스타일 */
+.template-detail-page {
+  min-height: 100vh;
+  background: #F9FAFB;
+}
+
+.compatibility-table {
+  border: 1px solid #E5E7EB;
+}
+
+.compatibility-table th,
+.compatibility-table td {
+  border-right: 1px solid #E5E7EB;
+}
+
+.compatibility-table th:last-child,
+.compatibility-table td:last-child {
+  border-right: none;
+}

@@ -32,12 +32,15 @@ import SuperAdminProducts from "./routes/profile/super-admin/Products";
 import SuperAdminStudentVerifications from "./routes/profile/super-admin/StudentVerifications";
 import SuperAdminIPManagement from "./routes/profile/super-admin/IPManagement";
 import SuperAdminSecurity from "./routes/profile/super-admin/Security";
+import SuperAdminTemplates from "./routes/profile/super-admin/Templates";
 import SellerApply from "./routes/profile/seller-apply/SellerApply";
 import SellerApplications from "./routes/profile/super-admin/SellerApplications";
 import SellerApplicationDetail from "./routes/profile/super-admin/SellerApplicationDetail";
 import SellerInfo from "./routes/seller-info/SellerInfo";
 import RankingsPage from "./routes/rankings";
 import ResourcesPage from "./routes/resources";
+import TemplatesPage from "./routes/templates";
+import TemplateDetailPage from "./routes/templates/[id]";
 
 function App() {
   const location = useLocation();
@@ -55,6 +58,12 @@ function App() {
           </Route>
           <Route exact={true} path="/resources">
             <ResourcesPage />
+          </Route>
+          <Route exact={true} path="/templates">
+            <TemplatesPage />
+          </Route>
+          <Route exact={true} path="/templates/:id">
+            <TemplateDetailPage />
           </Route>
           <Route exact={true} path="/products/:id">
             <ProductPage />
@@ -112,6 +121,7 @@ function App() {
           <ProtectedRoute exact={true} path="/profile/super-admin/security" component={SuperAdminSecurity} requireSuperAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/super-admin/seller-applications" component={SellerApplications} requireSuperAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/super-admin/seller-applications/:userId" component={SellerApplicationDetail} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/templates" component={SuperAdminTemplates} requireSuperAdmin={true} />
           
           <Route exact={true} path="/auth/callback">
             <AuthCallback />

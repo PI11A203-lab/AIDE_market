@@ -14,10 +14,11 @@ import { useTranslation } from 'react-i18next';
 export default function TeamBuilder() {
   const [selectedTeam, setSelectedTeam] = useState([]);
   const [availableDevelopers, setAvailableDevelopers] = useState([]);
+  const [templateTeams, setTemplateTeams] = useState([]); // 템플릿 팀 구성 목록
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [searchText, setSearchText] = useState('');
-  const maxTeamSize = 5;
+  const maxTeamSize = 10;
   const history = useHistory();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -121,47 +122,48 @@ export default function TeamBuilder() {
           .map(fav => fav.product_id || fav.product?.id || fav.id)
           .filter(id => id != null);
 
-        if (favoriteProductIds.length === 0) {
-          setAvailableDevelopers([]);
-          setLoading(false);
-          return;
-        }
-
-        // 모든 상품 가져오기
+        // 모든 상품 가져오기 (템플릿 팀 로드를 위해 먼저 가져옴)
         const productsResponse = await axios.get(`${API_URL}/api/products`);
         const allProducts = productsResponse.data?.products || [];
         
-        // 찜목록에 있는 상품만 필터링
-        const favoriteProducts = allProducts.filter(product => 
-          favoriteProductIds.includes(product.id)
-        );
+        if (favoriteProductIds.length === 0) {
+          setAvailableDevelopers([]);
+        } else {
+          // 찜목록에 있는 상품만 필터링
+          const favoriteProducts = allProducts.filter(product => 
+            favoriteProductIds.includes(product.id)
+          );
 
-        // API 응답을 developer 형식으로 변환
-        const developers = favoriteProducts.map(product => ({
-          id: product.id,
-          name: product.name,
-          category: product.category_name || 'その他', // 카테고리 이름 사용
-          categoryId: product.category_id, // 카테고리 ID 추가
-          price: product.price,
-          imageUrl: product.imageUrl,
-          stats: {
-            technical: 95,
-            communication: 90,
-            creativity: 88,
-            speed: 92,
-            reliability: 93,
-            innovation: 90
+          // API 응답을 developer 형식으로 변환
+          const developers = favoriteProducts.map(product => ({
+            id: product.id,
+            name: product.name,
+            category: product.category_name || 'その他', // 카테고리 이름 사용
+            categoryId: product.category_id, // 카테고리 ID 추가
+            price: product.price,
+            imageUrl: product.imageUrl,
+            stats: {
+              technical: 95,
+              communication: 90,
+              creativity: 88,
+              speed: 92,
+              reliability: 93,
+              innovation: 90
+            }
+          }));
+          
+          setAvailableDevelopers(developers);
+          
+          // URL 파라미터에서 선택된 팀원 복원
+          const selectedIds = getSelectedIdsFromURL();
+          if (selectedIds.length > 0) {
+            const restoredTeam = developers.filter(dev => selectedIds.includes(dev.id));
+            setSelectedTeam(restoredTeam);
           }
-        }));
-        
-        setAvailableDevelopers(developers);
-        
-        // URL 파라미터에서 선택된 팀원 복원
-        const selectedIds = getSelectedIdsFromURL();
-        if (selectedIds.length > 0) {
-          const restoredTeam = developers.filter(dev => selectedIds.includes(dev.id));
-          setSelectedTeam(restoredTeam);
         }
+        
+        // 템플릿 팀 구성 로드 (항상 실행)
+        await loadTemplateTeams(userId, allProducts);
         
         setLoading(false);
       } catch (error) {
@@ -173,6 +175,66 @@ export default function TeamBuilder() {
     loadData();
   }, [location.search]);
 
+  // 템플릿 팀 구성 로드 함수
+  const loadTemplateTeams = async (userId, allProducts) => {
+    try {
+      // 사용자의 팀 구성 목록 가져오기
+      const teamsResponse = await api.teamCompositions.getByUser(userId, { limit: 100 });
+      const teams = teamsResponse.data?.teamCompositions || teamsResponse.data?.teams || [];
+      
+      // 템플릿에서 생성된 팀만 필터링 (이름에 "템플릿" 또는 "テンプレート" 또는 "template" 포함)
+      const templateTeamCompositions = teams.filter(team => {
+        const name = (team.name || '').toLowerCase();
+        return name.includes('템플릿') || name.includes('テンプレート') || name.includes('template');
+      });
+      
+      // 각 템플릿 팀의 멤버 정보 가져오기
+      const templateTeamsWithMembers = await Promise.all(
+        templateTeamCompositions.map(async (team) => {
+          try {
+            const membersResponse = await api.teamMembers.getByTeam(team.id);
+            const members = membersResponse.data?.teamMembers || membersResponse.data?.members || [];
+            
+            // 멤버 정보와 상품 정보 결합
+            const membersWithProducts = members.map(member => {
+              const product = allProducts.find(p => p.id === member.product_id);
+              if (product) {
+                return {
+                  id: product.id,
+                  name: product.name,
+                  category: product.category_name || 'その他',
+                  categoryId: product.category_id,
+                  price: product.price,
+                  imageUrl: product.imageUrl,
+                  position: member.position
+                };
+              }
+              return null;
+            }).filter(Boolean);
+            
+            return {
+              id: team.id,
+              name: team.name,
+              synergyScore: team.total_synergy_score || 0,
+              members: membersWithProducts,
+              createdAt: team.created_at
+            };
+          } catch (error) {
+            console.error(`팀 ${team.id}의 멤버 정보 로드 실패:`, error);
+            return null;
+          }
+        })
+      );
+      
+      // null 값 제거
+      const validTeams = templateTeamsWithMembers.filter(Boolean);
+      setTemplateTeams(validTeams);
+    } catch (error) {
+      console.error('템플릿 팀 구성 로드 실패:', error);
+      setTemplateTeams([]);
+    }
+  };
+
   // 팀에 추가
   const addToTeam = (developer) => {
     if (selectedTeam.length < maxTeamSize && !selectedTeam.find(d => d.id === developer.id)) {
@@ -181,6 +243,39 @@ export default function TeamBuilder() {
       // URL 파라미터 업데이트
       updateURLParams(newTeam.map(d => d.id));
     }
+  };
+
+  // 템플릿 팀 전체를 AIチーム에 추가
+  const addTemplateTeamToSelectedTeam = (templateTeam) => {
+    // 템플릿 팀의 멤버를 developer 형식으로 변환
+    const developersToAdd = templateTeam.members
+      .filter(member => !selectedTeam.find(d => d.id === member.id)) // 이미 추가된 멤버 제외
+      .filter(member => selectedTeam.length < maxTeamSize) // 최대 팀 크기 제한
+      .map(member => ({
+        id: member.id,
+        name: member.name,
+        category: member.category,
+        categoryId: member.categoryId,
+        price: member.price,
+        imageUrl: member.imageUrl,
+        stats: {
+          technical: 95,
+          communication: 90,
+          creativity: 88,
+          speed: 92,
+          reliability: 93,
+          innovation: 90
+        }
+      }));
+
+    if (developersToAdd.length === 0) {
+      return;
+    }
+
+    const newTeam = [...selectedTeam, ...developersToAdd];
+    setSelectedTeam(newTeam);
+    // URL 파라미터 업데이트
+    updateURLParams(newTeam.map(d => d.id));
   };
 
   // 팀에서 제거
@@ -285,8 +380,9 @@ export default function TeamBuilder() {
             <nav className="nav">
               <Link to="/" className="nav-link">{t('home.nav.marketplace')}</Link>
               <Link to="/rankings" className="nav-link">{t('home.nav.rankings')}</Link>
+              <Link to="/templates" className="nav-link">{t('home.nav.templates')}</Link>
               <Link to="/team" className="nav-link active">{t('home.nav.teams')}</Link>
-              <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.resources')}</button>
+              <Link to="/resources" className="nav-link">{t('home.nav.resources')}</Link>
             </nav>
 
             <div className="header-actions">
@@ -379,8 +475,9 @@ export default function TeamBuilder() {
           <nav className="nav">
             <Link to="/" className="nav-link">{t('home.nav.marketplace')}</Link>
             <Link to="/rankings" className="nav-link">{t('home.nav.rankings')}</Link>
+            <Link to="/templates" className="nav-link">{t('home.nav.templates')}</Link>
             <Link to="/team" className="nav-link active">{t('home.nav.teams')}</Link>
-            <button type="button" className="nav-link" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('home.nav.resources')}</button>
+            <Link to="/resources" className="nav-link">{t('home.nav.resources')}</Link>
           </nav>
 
           <div className="header-actions">
@@ -462,13 +559,127 @@ export default function TeamBuilder() {
         </div>
 
         <div className="team-content-grid">
-          <AvailableDevelopers
-            developers={availableDevelopers}
-            selectedTeam={selectedTeam}
-            maxTeamSize={maxTeamSize}
-            onAddToTeam={addToTeam}
-            onRemoveFromTeam={removeFromTeam}
-          />
+          <div className="team-left-section">
+            <AvailableDevelopers
+              developers={availableDevelopers}
+              selectedTeam={selectedTeam}
+              maxTeamSize={maxTeamSize}
+              onAddToTeam={addToTeam}
+              onRemoveFromTeam={removeFromTeam}
+            />
+
+            {/* 템플릿 팀 섹션 */}
+            {templateTeams.length > 0 && (
+              <div className="template-teams-section" style={{ marginTop: '2rem' }}>
+                <div className="section-card">
+                  <h3 className="section-title">
+                    <span>{t('teamBuilder.templateTeams') || '템플릿 팀'}</span>
+                  </h3>
+                  
+                  <div className="template-teams-list">
+                    {templateTeams.map((team) => (
+                      <div key={team.id} className="template-team-card" style={{
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '0.75rem',
+                        padding: '1.5rem',
+                        marginBottom: '1rem',
+                        background: '#ffffff'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                          <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1A1A1A', margin: 0 }}>
+                            {team.name}
+                          </h4>
+                          <span style={{ fontSize: '0.875rem', color: '#6B7280' }}>
+                            {t('synergy.label')}: {team.synergyScore}
+                          </span>
+                        </div>
+                        
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+                          {team.members.map((member) => (
+                            <div key={member.id} style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              padding: '0.5rem',
+                              background: '#F3F4F6',
+                              borderRadius: '0.5rem',
+                              fontSize: '0.875rem'
+                            }}>
+                              {member.imageUrl ? (
+                                <img 
+                                  src={`${API_URL}/${member.imageUrl}`}
+                                  alt={member.name}
+                                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    if (e.target.nextSibling) {
+                                      e.target.nextSibling.textContent = member.name.substring(0, 2);
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <div style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  borderRadius: '50%',
+                                  background: '#9CA3AF',
+                                  color: '#ffffff',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '0.75rem',
+                                  fontWeight: '600'
+                                }}>
+                                  {member.name.substring(0, 2)}
+                                </div>
+                              )}
+                              <span style={{ color: '#1A1A1A' }}>{member.name}</span>
+                              <span style={{ color: '#6B7280' }}>¥{member.price.toLocaleString()}</span>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <button
+                          onClick={() => addTemplateTeamToSelectedTeam(team)}
+                          disabled={selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))}
+                          style={{
+                            width: '100%',
+                            padding: '0.75rem 1rem',
+                            background: selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))
+                              ? '#E5E7EB'
+                              : '#1A1A1A',
+                            color: selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))
+                              ? '#9CA3AF'
+                              : '#ffffff',
+                            border: 'none',
+                            borderRadius: '0.5rem',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            cursor: selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))
+                              ? 'not-allowed'
+                              : 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!e.target.disabled) {
+                              e.target.style.background = '#374151';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!e.target.disabled) {
+                              e.target.style.background = '#1A1A1A';
+                            }
+                          }}
+                        >
+                          {t('teamBuilder.addTemplateTeam')}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           <TeamSidebar
             selectedTeam={selectedTeam}

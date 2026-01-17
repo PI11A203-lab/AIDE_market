@@ -301,6 +301,7 @@ function MainPage() {
           <nav className="nav">
             <Link to="/" className="nav-link">{t('home.nav.marketplace')}</Link>
             <Link to="/rankings" className="nav-link">{t('home.nav.rankings')}</Link>
+            <Link to="/templates" className="nav-link">{t('home.nav.templates')}</Link>
             <Link to="/team" className="nav-link">{t('home.nav.teams')}</Link>
             <Link to="/resources" className="nav-link">{t('home.nav.resources')}</Link>
           </nav>
