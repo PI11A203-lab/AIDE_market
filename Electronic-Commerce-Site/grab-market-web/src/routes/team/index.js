@@ -15,6 +15,7 @@ export default function TeamBuilder() {
   const [selectedTeam, setSelectedTeam] = useState([]);
   const [availableDevelopers, setAvailableDevelopers] = useState([]);
   const [templateTeams, setTemplateTeams] = useState([]); // 템플릿 팀 구성 목록
+  const [selectedTemplateTeamIds, setSelectedTemplateTeamIds] = useState(new Set()); // 선택된 템플릿 팀 ID들
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [searchText, setSearchText] = useState('');
@@ -156,9 +157,57 @@ export default function TeamBuilder() {
           
           // URL 파라미터에서 선택된 팀원 복원
           const selectedIds = getSelectedIdsFromURL();
+          
+          // localStorage에서 템플릿 팀 정보 복원
+          let restoredTemplateTeamIds = new Set();
+          let templateTeamsInfo = [];
+          try {
+            const savedTemplateTeamIds = localStorage.getItem('selectedTemplateTeamIds');
+            const savedTemplateTeamsInfo = localStorage.getItem('templateTeamsInfo');
+            if (savedTemplateTeamIds) {
+              restoredTemplateTeamIds = new Set(JSON.parse(savedTemplateTeamIds));
+            }
+            if (savedTemplateTeamsInfo) {
+              templateTeamsInfo = JSON.parse(savedTemplateTeamsInfo);
+            }
+          } catch (error) {
+            console.error('템플릿 팀 정보 복원 실패:', error);
+          }
+          
           if (selectedIds.length > 0) {
-            const restoredTeam = developers.filter(dev => selectedIds.includes(dev.id));
+            const restoredTeam = [];
+            
+            // 템플릿 팀 멤버 먼저 복원
+            templateTeamsInfo.forEach(templateTeam => {
+              const templateMemberIds = templateTeam.memberIds || [];
+              templateMemberIds.forEach(memberId => {
+                if (selectedIds.includes(memberId)) {
+                  const dev = developers.find(d => d.id === memberId);
+                  if (dev) {
+                    restoredTeam.push({
+                      ...dev,
+                      templateTeamId: templateTeam.id,
+                      templateTeamName: templateTeam.name
+                    });
+                  }
+                }
+              });
+            });
+            
+            // 나머지 개별 상품 복원 (템플릿 팀에 속하지 않은 것들)
+            const templateMemberIds = templateTeamsInfo.flatMap(t => t.memberIds || []);
+            const individualIds = selectedIds.filter(id => !templateMemberIds.includes(id));
+            individualIds.forEach(id => {
+              const dev = developers.find(d => d.id === id);
+              if (dev && !restoredTeam.find(r => r.id === id)) {
+                restoredTeam.push(dev);
+              }
+            });
+            
             setSelectedTeam(restoredTeam);
+            setSelectedTemplateTeamIds(restoredTemplateTeamIds);
+          } else {
+            setSelectedTemplateTeamIds(restoredTemplateTeamIds);
           }
         }
         
@@ -247,33 +296,142 @@ export default function TeamBuilder() {
 
   // 템플릿 팀 전체를 AIチーム에 추가
   const addTemplateTeamToSelectedTeam = (templateTeam) => {
-    // 템플릿 팀의 멤버를 developer 형식으로 변환
-    const developersToAdd = templateTeam.members
-      .filter(member => !selectedTeam.find(d => d.id === member.id)) // 이미 추가된 멤버 제외
-      .filter(member => selectedTeam.length < maxTeamSize) // 최대 팀 크기 제한
-      .map(member => ({
-        id: member.id,
-        name: member.name,
-        category: member.category,
-        categoryId: member.categoryId,
-        price: member.price,
-        imageUrl: member.imageUrl,
-        stats: {
-          technical: 95,
-          communication: 90,
-          creativity: 88,
-          speed: 92,
-          reliability: 93,
-          innovation: 90
+    console.log('템플릿 팀 추가 시작:', templateTeam);
+    
+    // 템플릿 팀 ID를 숫자로 변환 (타입 일치를 위해)
+    const templateTeamId = typeof templateTeam.id === 'string' ? parseInt(templateTeam.id) : templateTeam.id;
+    
+    // 템플릿 팀이 이미 추가되어 있는지 확인
+    if (selectedTemplateTeamIds.has(templateTeamId)) {
+      console.log('템플릿 팀이 이미 추가되어 있습니다:', templateTeamId);
+      return;
+    }
+
+    // 템플릿 팀 멤버 확인
+    if (!templateTeam.members || templateTeam.members.length === 0) {
+      console.error('템플릿 팀 멤버가 없습니다:', templateTeam);
+      return;
+    }
+
+    console.log('템플릿 팀 멤버 수:', templateTeam.members.length);
+
+    // 최대 팀 크기 확인
+    const remainingSlots = maxTeamSize - selectedTeam.length;
+    if (remainingSlots <= 0) {
+      console.log('팀 크기가 최대치에 도달했습니다.');
+      return;
+    }
+
+    // 템플릿 팀의 멤버를 developer 형식으로 변환 (템플릿 팀 ID 포함)
+    // 템플릿 팀의 모든 멤버를 추가하되, 남은 슬롯을 초과하지 않도록 함
+    const membersToAdd = templateTeam.members.slice(0, Math.min(templateTeam.members.length, remainingSlots));
+    
+    const developersToAdd = membersToAdd
+      .filter(member => {
+        // 이미 추가된 멤버는 제외
+        const alreadyExists = selectedTeam.find(d => d.id === member.id);
+        if (alreadyExists) {
+          console.log('멤버가 이미 추가되어 있습니다:', member.name);
         }
-      }));
+        return !alreadyExists;
+      })
+      .map(member => {
+        const developer = {
+          id: member.id,
+          name: member.name,
+          category: member.category,
+          categoryId: member.categoryId,
+          price: member.price,
+          imageUrl: member.imageUrl,
+          templateTeamId: templateTeamId, // 템플릿 팀 ID 추가 (숫자로 통일)
+          templateTeamName: templateTeam.name, // 템플릿 팀 이름 추가
+          stats: {
+            technical: 95,
+            communication: 90,
+            creativity: 88,
+            speed: 92,
+            reliability: 93,
+            innovation: 90
+          }
+        };
+        console.log(`멤버 ${member.name} 변환:`, {
+          id: developer.id,
+          templateTeamId: developer.templateTeamId,
+          templateTeamName: developer.templateTeamName
+        });
+        return developer;
+      });
 
     if (developersToAdd.length === 0) {
       return;
     }
 
+    console.log('템플릿 팀 추가:', {
+      templateTeamId,
+      templateTeamName: templateTeam.name,
+      membersCount: developersToAdd.length,
+      members: developersToAdd.map(m => m.name),
+      developersToAdd: developersToAdd // 전체 객체 확인
+    });
+
+    console.log('현재 selectedTeam:', selectedTeam);
+    console.log('현재 selectedTemplateTeamIds:', Array.from(selectedTemplateTeamIds));
+
     const newTeam = [...selectedTeam, ...developersToAdd];
+    const newTemplateTeamIds = new Set([...selectedTemplateTeamIds, templateTeamId]);
+    
+    console.log('새로운 newTeam:', newTeam);
+    console.log('새로운 newTemplateTeamIds:', Array.from(newTemplateTeamIds));
+    
     setSelectedTeam(newTeam);
+    setSelectedTemplateTeamIds(newTemplateTeamIds);
+    
+    // localStorage에 템플릿 팀 정보 저장 (페이지 새로고침 시 복원용)
+    try {
+      const templateTeamsInfo = Array.from(newTemplateTeamIds).map(id => {
+        const teamMembers = newTeam.filter(dev => dev.templateTeamId === id);
+        return {
+          id: id,
+          name: teamMembers[0]?.templateTeamName || 'Template Team',
+          memberIds: teamMembers.map(m => m.id)
+        };
+      });
+      localStorage.setItem('selectedTemplateTeamIds', JSON.stringify(Array.from(newTemplateTeamIds)));
+      localStorage.setItem('templateTeamsInfo', JSON.stringify(templateTeamsInfo));
+    } catch (error) {
+      console.error('템플릿 팀 정보 저장 실패:', error);
+    }
+    
+    // URL 파라미터 업데이트
+    updateURLParams(newTeam.map(d => d.id));
+  };
+
+  // 템플릿 팀 전체를 AIチーム에서 제거
+  const removeTemplateTeamFromSelectedTeam = (templateTeamId) => {
+    const templateTeamIdNum = typeof templateTeamId === 'string' ? parseInt(templateTeamId) : templateTeamId;
+    const newTeam = selectedTeam.filter(dev => dev.templateTeamId !== templateTeamIdNum);
+    setSelectedTeam(newTeam);
+    // 선택된 템플릿 팀 ID에서 제거
+    const newSet = new Set(selectedTemplateTeamIds);
+    newSet.delete(templateTeamIdNum);
+    setSelectedTemplateTeamIds(newSet);
+    
+    // localStorage 업데이트
+    try {
+      const templateTeamsInfo = Array.from(newSet).map(id => {
+        const teamMembers = newTeam.filter(dev => dev.templateTeamId === id);
+        return {
+          id: id,
+          name: teamMembers[0]?.templateTeamName || 'Template Team',
+          memberIds: teamMembers.map(m => m.id)
+        };
+      });
+      localStorage.setItem('selectedTemplateTeamIds', JSON.stringify(Array.from(newSet)));
+      localStorage.setItem('templateTeamsInfo', JSON.stringify(templateTeamsInfo));
+    } catch (error) {
+      console.error('템플릿 팀 정보 업데이트 실패:', error);
+    }
+    
     // URL 파라미터 업데이트
     updateURLParams(newTeam.map(d => d.id));
   };
@@ -641,21 +799,21 @@ export default function TeamBuilder() {
                         
                         <button
                           onClick={() => addTemplateTeamToSelectedTeam(team)}
-                          disabled={selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))}
+                          disabled={selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)}
                           style={{
                             width: '100%',
                             padding: '0.75rem 1rem',
-                            background: selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))
+                            background: selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)
                               ? '#E5E7EB'
                               : '#1A1A1A',
-                            color: selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))
+                            color: selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)
                               ? '#9CA3AF'
                               : '#ffffff',
                             border: 'none',
                             borderRadius: '0.5rem',
                             fontSize: '0.875rem',
                             fontWeight: '600',
-                            cursor: selectedTeam.length >= maxTeamSize || team.members.every(member => selectedTeam.find(d => d.id === member.id))
+                            cursor: selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)
                               ? 'not-allowed'
                               : 'pointer',
                             transition: 'all 0.2s'
@@ -688,6 +846,8 @@ export default function TeamBuilder() {
             synergyScore={synergyScore}
             totalPrice={totalPrice}
             onRemoveFromTeam={removeFromTeam}
+            onRemoveTemplateTeam={removeTemplateTeamFromSelectedTeam}
+            selectedTemplateTeamIds={selectedTemplateTeamIds}
           />
         </div>
       </main>

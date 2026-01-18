@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../config/api';
 import LogoutButton from '../home/components/LogoutButton';
 import { TEMPLATE_DETAILS_MAP } from './templateData';
+import TemplateIllustration from './components/TemplateIllustration';
 import './index.css';
 
 // 템플릿 카테고리 정의
@@ -47,6 +48,9 @@ function TemplatesPage() {
   const [language, setLanguage] = useState(i18n.language || 'en');
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [typingText, setTypingText] = useState('');
+  const [typingIndex, setTypingIndex] = useState(0);
 
   const languageOptions = [
     { value: 'ko', label: '한국어' },
@@ -151,6 +155,58 @@ function TemplatesPage() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // 타이핑 애니메이션
+  useEffect(() => {
+    const typingTexts = {
+      ko: [
+        '비즈니스 분석부터 시작해보세요',
+        '마케팅 이미지를 만들어보세요',
+        '머신러닝 프로젝트를 구축해보세요'
+      ],
+      ja: [
+        'ビジネス分析から始めてみませんか？',
+        'マーケティング画像を作成しましょう',
+        '機械学習プロジェクトを構築しましょう'
+      ],
+      en: [
+        'Start with business analysis',
+        'Create marketing images',
+        'Build a machine learning project'
+      ]
+    };
+
+    const texts = typingTexts[language] || typingTexts.ko;
+    if (texts.length === 0) return;
+
+    setTypingText(texts[0]);
+    setTypingIndex(0);
+
+    const interval = setInterval(() => {
+      setTypingIndex((prev) => {
+        const nextIndex = (prev + 1) % texts.length;
+        setTypingText(texts[nextIndex]);
+        return nextIndex;
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [language]);
+
+  // 자동 슬라이드
+  useEffect(() => {
+    const recommendedTemplates = [...templates]
+      .sort((a, b) => (b.purchase_count || 0) - (a.purchase_count || 0))
+      .slice(0, 3);
+    
+    if (recommendedTemplates.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % recommendedTemplates.length);
+    }, 4000); // 4초마다 자동 슬라이드
+
+    return () => clearInterval(interval);
+  }, [templates]);
 
   // 로그아웃 함수
   const handleLogout = () => {
@@ -301,10 +357,191 @@ function TemplatesPage() {
         <div className="templates-header">
           <h1 className="templates-page-title">{t('templates.pageTitle')}</h1>
           <p className="templates-page-subtitle">{t('templates.pageSubtitle')}</p>
+          
+          {/* 타이핑 애니메이션 */}
+          <div className="typing-container">
+            <div className={`typing-text ${typingText ? 'fade-in' : ''}`} key={typingIndex}>
+              {typingText}
+            </div>
+          </div>
+        </div>
+
+        {/* 추천 템플릿 섹션 */}
+        {(() => {
+          // 구매량이 높은 템플릿 3개 추천
+          const recommendedTemplates = [...templates]
+            .sort((a, b) => (b.purchase_count || 0) - (a.purchase_count || 0))
+            .slice(0, 3);
+
+          if (recommendedTemplates.length === 0) return null;
+
+          return (
+            <div className="templates-featured-section">
+              <h2 className="templates-featured-title">{t('templates.featured.title')}</h2>
+              <div className="templates-featured-carousel">
+                <div className="templates-featured-carousel-track">
+                  {recommendedTemplates.map((template, index) => {
+                  const categoryInfo = TEMPLATE_CATEGORIES[template.category] || TEMPLATE_CATEGORIES.web;
+                  
+                  // 카테고리 이름 다국어 처리
+                  let categoryName = categoryInfo.name;
+                  if (language === 'ja') {
+                    const categoryNamesJa = {
+                      'web': 'ウェブ開発',
+                      'app': 'アプリ開発',
+                      'data': 'データ分析',
+                      'document': 'ドキュメント',
+                      'image': '画像生成'
+                    };
+                    categoryName = categoryNamesJa[template.category] || categoryInfo.name;
+                  } else if (language === 'en') {
+                    const categoryNamesEn = {
+                      'web': 'Web Development',
+                      'app': 'App Development',
+                      'data': 'Data Analysis',
+                      'document': 'Documents',
+                      'image': 'Image Generation'
+                    };
+                    categoryName = categoryNamesEn[template.category] || categoryInfo.name;
+                  }
+                  
+                  // 카테고리별 배경 클래스
+                  let categoryClass;
+                  if (template.id === 9) {
+                    // 機械学習プロジェクト는 초록색
+                    categoryClass = 'ml';
+                  } else if (template.category === 'data') {
+                    categoryClass = 'business';
+                  } else if (template.category === 'image') {
+                    categoryClass = 'marketing';
+                  } else if (template.category === 'app') {
+                    categoryClass = 'ml';
+                  } else {
+                    categoryClass = template.category;
+                  }
+                  
+                  return (
+                    <div
+                      key={template.id}
+                      className={`slide ${categoryClass} ${currentSlide === index ? 'active' : ''}`}
+                    >
+                      <div className="slide-bg"></div>
+                      <div className="decorations">
+                        <div className="decoration-circle top"></div>
+                        <div className="decoration-circle bottom"></div>
+                      </div>
+                      <div className="slide-content">
+                        <div className="slide-text">
+                          <span className="category-badge">{categoryName}</span>
+                          <h2 className="slide-title">{getLocalizedField(template, 'name') || template.name}</h2>
+                          <p className="slide-description" dangerouslySetInnerHTML={{
+                            __html: (() => {
+                              const desc = getLocalizedField(template, 'description') || template.description || '설명이 없습니다.';
+                              // 첫 번째 마침표(。 또는 .) 뒤에 줄바꿈 추가
+                              const firstPeriodIndex = desc.indexOf('。');
+                              if (firstPeriodIndex !== -1 && firstPeriodIndex < desc.length - 1) {
+                                return desc.substring(0, firstPeriodIndex + 1) + '<br/>' + desc.substring(firstPeriodIndex + 1);
+                              }
+                              const firstDotIndex = desc.indexOf('.');
+                              if (firstDotIndex !== -1 && firstDotIndex < desc.length - 1 && desc[firstDotIndex + 1] === ' ') {
+                                return desc.substring(0, firstDotIndex + 1) + '<br/>' + desc.substring(firstDotIndex + 2);
+                              }
+                              return desc;
+                            })()
+                          }}></p>
+                          <Link to={`/templates/${template.id}`} className="cta-button">
+                            {language === 'ja' ? '詳しく見る' : language === 'en' ? 'Learn More' : '자세히 보기'}
+                          </Link>
+                        </div>
+                        <div className="slide-visual">
+                          <div className="dashboard-mockup">
+                            <TemplateIllustration 
+                              templateId={template.id} 
+                              category={template.category}
+                              color={categoryInfo.color}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                  })}
+                </div>
+                <button 
+                  className="nav-button prev"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentSlide((prev) => (prev - 1 + recommendedTemplates.length) % recommendedTemplates.length);
+                  }}
+                  aria-label="Previous slide"
+                >
+                  ‹
+                </button>
+                <button 
+                  className="nav-button next"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentSlide((prev) => (prev + 1) % recommendedTemplates.length);
+                  }}
+                  aria-label="Next slide"
+                >
+                  ›
+                </button>
+              </div>
+              <div className="indicators">
+                {recommendedTemplates.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`indicator ${currentSlide === index ? 'active' : ''}`}
+                    onClick={() => setCurrentSlide(index)}
+                    aria-label={`Slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* 3단계 설명 카드 */}
+        <div className="info-card">
+          <div className="info-step">
+            <div className="info-icon">📋</div>
+            <div className="info-title">{language === 'ja' ? 'テンプレート選択' : language === 'en' ? 'Template Selection' : '템플릿 선택'}</div>
+            <div className="info-desc" dangerouslySetInnerHTML={{
+              __html: language === 'ja' ? 'プロジェクトに合った<br/>テンプレートを選んでください' : 
+                       language === 'en' ? 'Choose a template<br/>that fits your project' : 
+                       '프로젝트에 맞는<br/>템플릿을 고르세요'
+            }} />
+          </div>
+          
+          <div className="arrow">→</div>
+          
+          <div className="info-step">
+            <div className="info-icon">👥</div>
+            <div className="info-title">{language === 'ja' ? 'チーム構成' : language === 'en' ? 'Team Formation' : '팀 구성'}</div>
+            <div className="info-desc" dangerouslySetInnerHTML={{
+              __html: language === 'ja' ? '専門AI開発者が<br/>自動的に構成されます' : 
+                       language === 'en' ? 'Professional AI developers<br/>are automatically formed' : 
+                       '전문 AI 개발자들이<br/>자동으로 구성됩니다'
+            }} />
+          </div>
+          
+          <div className="arrow">→</div>
+          
+          <div className="info-step">
+            <div className="info-icon">🚀</div>
+            <div className="info-title">{language === 'ja' ? 'すぐに始める' : language === 'en' ? 'Start Immediately' : '바로 시작'}</div>
+            <div className="info-desc" dangerouslySetInnerHTML={{
+              __html: language === 'ja' ? '構成されたチームで<br/>すぐに作業を開始' : 
+                       language === 'en' ? 'Start working immediately<br/>with the formed team' : 
+                       '구성된 팀으로<br/>즉시 작업 시작'
+            }} />
+          </div>
         </div>
 
         {/* 카테고리 필터 */}
-        <div className="templates-categories">
+        <div className="templates-categories-section">
+          <div className="templates-categories">
           {categories.map((category) => {
             const Icon = category.icon;
             return (
@@ -318,6 +555,7 @@ function TemplatesPage() {
               </button>
             );
           })}
+          </div>
         </div>
 
         {filteredTemplates.length === 0 ? (

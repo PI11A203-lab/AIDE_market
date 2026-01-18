@@ -13,7 +13,9 @@ export default function TeamSidebar({
   teamStats, 
   synergyScore, 
   totalPrice, 
-  onRemoveFromTeam 
+  onRemoveFromTeam,
+  onRemoveTemplateTeam,
+  selectedTemplateTeamIds = new Set()
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
@@ -105,34 +107,119 @@ export default function TeamSidebar({
           <>
             {/* 선택된 팀원 */}
             <div className="selected-team-list">
-              {selectedTeam.map((dev) => (
-                <div key={dev.id} className="team-member-item">
-                  <div className="team-member-avatar">
-                  {dev.imageUrl ? (
-                    <img
-                    src={`${API_URL}/${dev.imageUrl}`}
-                    alt={dev.name}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.parentElement.textContent = dev.name.substring(0, 2);
-                    }}
-                  />
-                  ) : (
-                    dev.name.substring(0, 2)
-                  )}
+              {/* 템플릿 팀 그룹 */}
+              {(() => {
+                console.log('TeamSidebar 렌더링:', {
+                  selectedTeamCount: selectedTeam.length,
+                  selectedTemplateTeamIds: Array.from(selectedTemplateTeamIds),
+                  selectedTeam: selectedTeam.map(dev => ({
+                    id: dev.id,
+                    name: dev.name,
+                    templateTeamId: dev.templateTeamId
+                  }))
+                });
+                return null;
+              })()}
+              {Array.from(selectedTemplateTeamIds).map((templateTeamId) => {
+                const templateTeamMembers = selectedTeam.filter(dev => dev.templateTeamId === templateTeamId);
+                console.log(`템플릿 팀 ${templateTeamId} 멤버:`, templateTeamMembers);
+                if (templateTeamMembers.length === 0) return null;
+                
+                const templateTeamName = templateTeamMembers[0]?.templateTeamName || 'Template Team';
+                const templateTeamTotalPrice = templateTeamMembers.reduce((sum, dev) => sum + dev.price, 0);
+                
+                return (
+                  <div key={`template-${templateTeamId}`} style={{ marginBottom: '1rem' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      marginBottom: '0.5rem',
+                      padding: '0.5rem',
+                      background: '#F3F4F6',
+                      borderRadius: '0.5rem'
+                    }}>
+                      <div>
+                        <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1A1A1A', margin: 0 }}>
+                          {templateTeamName}
+                        </h4>
+                        <p style={{ fontSize: '0.75rem', color: '#6B7280', margin: '0.25rem 0 0 0' }}>
+                          {templateTeamMembers.length}명 · ¥{templateTeamTotalPrice.toLocaleString()}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => onRemoveTemplateTeam(templateTeamId)}
+                        className="team-member-remove"
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <X className="remove-icon" style={{ width: '16px', height: '16px', color: '#EF4444' }} />
+                      </button>
+                    </div>
+                    {templateTeamMembers.map((dev) => (
+                      <div key={dev.id} className="team-member-item" style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>
+                        <div className="team-member-avatar">
+                          {dev.imageUrl ? (
+                            <img
+                              src={`${API_URL}/${dev.imageUrl}`}
+                              alt={dev.name}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.parentElement.textContent = dev.name.substring(0, 2);
+                              }}
+                            />
+                          ) : (
+                            dev.name.substring(0, 2)
+                          )}
+                        </div>
+                        <div className="team-member-info">
+                          <h4 className="team-member-name">{dev.name}</h4>
+                          <p className="team-member-price">¥{dev.price.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="team-member-info">
-                    <h4 className="team-member-name">{dev.name}</h4>
-                    <p className="team-member-price">¥{dev.price.toLocaleString()}</p>
+                );
+              })}
+              
+              {/* 개별 상품 (템플릿 팀에 속하지 않은 멤버) */}
+              {selectedTeam
+                .filter(dev => !dev.templateTeamId)
+                .map((dev) => (
+                  <div key={dev.id} className="team-member-item">
+                    <div className="team-member-avatar">
+                      {dev.imageUrl ? (
+                        <img
+                          src={`${API_URL}/${dev.imageUrl}`}
+                          alt={dev.name}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.textContent = dev.name.substring(0, 2);
+                          }}
+                        />
+                      ) : (
+                        dev.name.substring(0, 2)
+                      )}
+                    </div>
+                    <div className="team-member-info">
+                      <h4 className="team-member-name">{dev.name}</h4>
+                      <p className="team-member-price">¥{dev.price.toLocaleString()}</p>
+                    </div>
+                    <button
+                      onClick={() => onRemoveFromTeam(dev.id)}
+                      className="team-member-remove"
+                    >
+                      <X className="remove-icon" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => onRemoveFromTeam(dev.id)}
-                    className="team-member-remove"
-                  >
-                    <X className="remove-icon" />
-                  </button>
-                </div>
-              ))}
+                ))}
             </div>
 
             {/* 팀 스탯 레이더 차트 */}

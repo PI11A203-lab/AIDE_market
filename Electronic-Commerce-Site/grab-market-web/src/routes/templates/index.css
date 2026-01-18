@@ -13,21 +13,499 @@
 /* 페이지 헤더 */
 .templates-header {
   margin-bottom: 40px;
+  text-align: center;
+}
+
+/* 추천 템플릿 섹션 */
+.templates-featured-section {
+  margin-bottom: 48px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  position: relative;
+  overflow: visible;
+  text-align: center;
+}
+
+.templates-featured-title {
+  display: none; /* 제목은 페이지 헤더에서 처리하므로 숨김 */
+}
+
+.templates-featured-carousel {
+  position: relative;
+  height: 360px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  background: #000000;
+  z-index: 1;
+}
+
+.templates-featured-carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.templates-featured-carousel-track > * {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease;
+}
+
+.templates-featured-carousel-track > .active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  background: #d1d5db;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.4s;
+}
+
+.indicator.active {
+  width: 28px;
+  background: #6366f1;
+}
+
+/* 네비게이션 버튼 */
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: backdrop-filter 0.3s;
+}
+
+.nav-button:hover {
+  backdrop-filter: blur(20px);
+}
+
+.nav-button.prev {
+  left: 15px;
+}
+
+.nav-button.next {
+  right: 15px;
+}
+
+/* 3단계 설명 카드 */
+.info-card {
+  max-width: 100%;
+  margin: 60px auto 80px;
+  padding: 48px 60px;
+  position: relative;
+  z-index: 10;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.info-step {
+  flex: 1;
+  text-align: center;
+}
+
+.info-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.info-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.info-desc {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.arrow {
+  font-size: 24px;
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease;
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.slide .slide-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.slide.business .slide-bg {
+  background: linear-gradient(135deg, #2563eb 0%, #1e293b 100%);
+}
+
+.slide.marketing .slide-bg {
+  background: linear-gradient(135deg, #8b5cf6 0%, #1e293b 100%);
+}
+
+.slide.ml .slide-bg {
+  background: linear-gradient(135deg, #059669 0%, #1e293b 100%);
+}
+
+.slide.web .slide-bg {
+  background: linear-gradient(135deg, #667eea 0%, #1e293b 100%);
+}
+
+.slide.document .slide-bg {
+  background: linear-gradient(135deg, #43e97b 0%, #1e293b 100%);
+}
+
+.slide.image .slide-bg {
+  background: linear-gradient(135deg, #fa709a 0%, #1e293b 100%);
+}
+
+.slide .decorations {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  overflow: hidden;
+}
+
+.slide .decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.slide .decoration-circle.top {
+  top: -30px;
+  right: 30px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.slide .decoration-circle.bottom {
+  bottom: -30px;
+  left: 30px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+
+.template-featured-icon-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.template-featured-card:hover .template-featured-icon-wrapper {
+  transform: scale(1.05);
+}
+
+/* 템플릿 카테고리별 배경 패턴 */
+.template-featured-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  background-size: 60px 60px;
+  background-repeat: repeat;
+  pointer-events: none;
+}
+
+/* 웹개발: 그리드 패턴 */
+.template-featured-bg-web .template-featured-pattern {
+  background-image: 
+    linear-gradient(rgba(102, 126, 234, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(102, 126, 234, 0.3) 1px, transparent 1px);
+}
+
+/* 앱개발: 원형 패턴 */
+.template-featured-bg-app .template-featured-pattern {
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(240, 147, 251, 0.3) 2px, transparent 2px),
+    radial-gradient(circle at 80% 80%, rgba(240, 147, 251, 0.3) 2px, transparent 2px),
+    radial-gradient(circle at 40% 20%, rgba(240, 147, 251, 0.3) 2px, transparent 2px);
+  background-size: 80px 80px, 60px 60px, 100px 100px;
+}
+
+/* 데이터 분석: 차트 패턴 */
+.template-featured-bg-data .template-featured-pattern {
+  background-image: 
+    linear-gradient(45deg, rgba(79, 172, 254, 0.2) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(79, 172, 254, 0.2) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(79, 172, 254, 0.2) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(79, 172, 254, 0.2) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+}
+
+/* 문서: 줄 패턴 */
+.template-featured-bg-document .template-featured-pattern {
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 8px,
+      rgba(67, 233, 123, 0.2) 8px,
+      rgba(67, 233, 123, 0.2) 10px
+    );
+}
+
+/* 이미지생성: 다이아몬드 패턴 */
+.template-featured-bg-image .template-featured-pattern {
+  background-image: 
+    linear-gradient(135deg, rgba(250, 112, 154, 0.2) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(250, 112, 154, 0.2) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(250, 112, 154, 0.2) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(250, 112, 154, 0.2) 25%, transparent 25%);
+  background-size: 50px 50px;
+  background-position: 0 0, 25px 0, 25px 25px, 0 25px;
+}
+
+/* 아이콘에 z-index 추가하여 패턴 위에 표시 */
+.template-featured-icon-wrapper > svg {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* 호버 시 패턴 애니메이션 */
+.template-featured-card:hover .template-featured-pattern {
+  animation: patternMove 3s linear infinite;
+}
+
+@keyframes patternMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(60px, 60px);
+  }
+}
+
+/* 배경 그라데이션 효과 추가 */
+.template-featured-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.template-featured-card:hover .template-featured-icon-wrapper::before {
+  opacity: 1;
+}
+
+.slide-content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 50px;
+  z-index: 1;
+  gap: 40px;
+}
+
+.slide-text {
+  flex: 1;
+  color: white;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  font-size: 12px;
+  margin-bottom: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.slide-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.slide-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 10px 24px;
+  background: #ffffff;
+  color: #313131;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.slide-visual {
+  flex: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-mockup {
+  position: relative;
+  width: 280px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 20px;
+}
+
+.dashboard-mockup svg {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 }
 
 .templates-page-title {
-  font-size: 40px;
-  font-weight: 700;
-  color: #1A1A1A;
-  margin-bottom: 12px;
-  line-height: 1.2;
+  font-size: 48px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 16px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  animation: fadeInUp 0.8s ease-out;
+  text-align: center;
 }
 
 .templates-page-subtitle {
   font-size: 18px;
-  color: #6B7280;
-  margin: 0;
+  color: #64748b;
+  margin: 0 0 20px 0;
   line-height: 1.6;
+  text-align: center;
+  animation: fadeInUp 1s ease-out;
+}
+
+/* 타이핑 애니메이션 */
+.typing-container {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.typing-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: #6366f1;
+  min-width: 450px;
+  text-align: center;
+  position: relative;
+}
+
+.typing-text::after {
+  content: '|';
+  position: absolute;
+  right: -10px;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 카테고리 필터 섹션 - 회색 배경 */
+.templates-categories-section {
+  background: #F9FAFB;
+  padding: 32px 40px;
+  margin: 0 -40px 32px -40px;
+  border-radius: 0;
 }
 
 /* 카테고리 필터 */
@@ -35,9 +513,9 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .category-filter-btn {
@@ -104,9 +582,9 @@
 }
 
 .template-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  border-color: #D1D5DB;
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
 }
 
 .template-card:hover::before {
@@ -201,6 +679,38 @@
 
   .templates-page-subtitle {
     font-size: 16px;
+  }
+
+  .templates-featured-title {
+    font-size: 24px;
+  }
+
+  .templates-featured-grid {
+    gap: 20px;
+  }
+
+  .templates-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .template-featured-card {
+    flex-direction: column;
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .template-featured-image {
+    width: 100%;
+    height: 100px;
+  }
+
+  .template-featured-content {
+    padding: 0;
+  }
+
+  .template-featured-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .templates-categories {

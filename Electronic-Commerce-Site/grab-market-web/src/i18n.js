@@ -958,6 +958,9 @@ const resources = {
         },
         empty: '등록된 템플릿이 없습니다.',
         productCount: '{{count}}개의 AI 상품',
+        featured: {
+          title: '추천 템플릿',
+        },
         detail: {
           backToList: '템플릿 목록으로 돌아가기',
           purchased: '{{count}}명이 구매했습니다',
@@ -1955,6 +1958,9 @@ const verifyToken = (token) => {
         },
         empty: 'No templates registered.',
         productCount: '{{count}} AI products',
+        featured: {
+          title: 'Featured Templates',
+        },
         detail: {
           backToList: 'Back to Template List',
           purchased: '{{count}} people purchased',
@@ -3849,6 +3855,9 @@ Currently most popular team combination:
         },
         empty: '登録されたテンプレートがありません。',
         productCount: 'AI商品{{count}}個',
+        featured: {
+          title: 'おすすめテンプレート',
+        },
         detail: {
           backToList: 'テンプレート一覧に戻る',
           purchased: '{{count}}人が購入しました',
