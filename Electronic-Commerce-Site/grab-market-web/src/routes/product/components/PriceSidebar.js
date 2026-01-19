@@ -2,7 +2,52 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function PriceSidebar({ developer, onBuyNow, onAddToCart, isPurchased }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // 날짜를 언어에 맞게 포맷팅하는 함수
+  const formatJoinedDate = (dateString) => {
+    if (!dateString) return '';
+    
+    // 이미 포맷된 문자열인 경우 (예: "November 2025")
+    if (typeof dateString === 'string' && !dateString.includes('-') && !dateString.includes('/')) {
+      // 날짜 파싱 시도
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        // 파싱 실패 시 원본 반환
+        return dateString;
+      }
+      
+      const localeMap = {
+        'ko': 'ko-KR',
+        'ja': 'ja-JP',
+        'en': 'en-US'
+      };
+      
+      const locale = localeMap[i18n.language] || 'en-US';
+      
+      return date.toLocaleDateString(locale, {
+        year: 'numeric',
+        month: 'long'
+      });
+    }
+    
+    // ISO 형식이나 다른 형식인 경우
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    
+    const localeMap = {
+      'ko': 'ko-KR',
+      'ja': 'ja-JP',
+      'en': 'en-US'
+    };
+    
+    const locale = localeMap[i18n.language] || 'en-US';
+    
+    return date.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'long'
+    });
+  };
   return (
     <div className={`bg-white border border-gray-200 rounded-xl p-6 relative ${isPurchased ? 'opacity-60' : ''}`}>
       {isPurchased && (
@@ -54,7 +99,7 @@ export default function PriceSidebar({ developer, onBuyNow, onAddToCart, isPurch
             <line x1="8" y1="2" x2="8" y2="6"/>
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          <span>{t('product.price.joined', { date: developer.joined })}</span>
+          <span>{t('product.price.joined', { date: formatJoinedDate(developer.joined) })}</span>
         </div>
         <div className="flex items-center gap-3 text-sm text-gray-600">
           <svg className="w-5 h-5 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

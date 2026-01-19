@@ -9,7 +9,29 @@ import { API_URL } from '../../../config/constants';
 import { clearRatingCache } from '../../../utils/ratingCache';
 
 export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpfulUpdate }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // 날짜를 언어에 맞게 포맷팅하는 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; // 유효하지 않은 날짜면 원본 반환
+    
+    const localeMap = {
+      'ko': 'ko-KR',
+      'ja': 'ja-JP',
+      'en': 'en-US'
+    };
+    
+    const locale = localeMap[i18n.language] || 'en-US';
+    
+    return date.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ rating: 0, comment: '', images: [] });
   const [uploadingImages, setUploadingImages] = useState([]);
@@ -24,9 +46,15 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [developerTypeFilter, setDeveloperTypeFilter] = useState('');
+  const [ratingFilter, setRatingFilter] = useState(null); // null이면 모든 별점, 숫자면 해당 별점만
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const [ratingFilterDropdownOpen, setRatingFilterDropdownOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const slideContainerRef = useRef(null);
   const filterDropdownRef = useRef(null);
+  const ratingFilterDropdownRef = useRef(null);
+  
+  const REVIEWS_PER_PAGE = 10;
   
   // reviews prop이 변경되면 상태 업데이트
   useEffect(() => {
@@ -101,30 +129,58 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
       if (filterDropdownRef.current && !filterDropdownRef.current.contains(e.target)) {
         setFilterDropdownOpen(false);
       }
+      if (ratingFilterDropdownRef.current && !ratingFilterDropdownRef.current.contains(e.target)) {
+        setRatingFilterDropdownOpen(false);
+      }
     };
 
-    if (filterDropdownOpen) {
+    if (filterDropdownOpen || ratingFilterDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [filterDropdownOpen]);
+  }, [filterDropdownOpen, ratingFilterDropdownOpen]);
 
   // 개발자 타입별 필터링된 리뷰
   const filteredReviews = useMemo(() => {
-    if (!developerTypeFilter) {
-      return reviewsState;
+    let filtered = [...reviewsState];
+    
+    // 개발자 타입 필터 적용
+    if (developerTypeFilter) {
+      filtered = filtered.filter(review => {
+        // developer_type이 정확히 일치하는지 확인
+        return review.developer_type === developerTypeFilter;
+      });
     }
     
-    const filtered = reviewsState.filter(review => {
-      // developer_type이 정확히 일치하는지 확인
-      return review.developer_type === developerTypeFilter;
-    });
+    // 별점 필터 적용
+    if (ratingFilter !== null) {
+      filtered = filtered.filter(review => {
+        const rating = Number(review.rating) || 0;
+        const roundedRating = Math.round(rating);
+        return roundedRating === ratingFilter;
+      });
+    }
     
     return filtered;
-  }, [reviewsState, developerTypeFilter]);
+  }, [reviewsState, developerTypeFilter, ratingFilter]);
+
+  // 페이지네이션된 리뷰
+  const paginatedReviews = useMemo(() => {
+    const startIndex = (currentPage - 1) * REVIEWS_PER_PAGE;
+    const endIndex = startIndex + REVIEWS_PER_PAGE;
+    return filteredReviews.slice(startIndex, endIndex);
+  }, [filteredReviews, currentPage]);
+
+  // 총 페이지 수
+  const totalPages = Math.ceil(filteredReviews.length / REVIEWS_PER_PAGE);
+
+  // 필터 변경 시 첫 페이지로 이동
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [developerTypeFilter, ratingFilter]);
 
   // 리뷰 이미지 수집 (리뷰 ID와 함께 저장) - 필터링된 리뷰 기준
   const reviewImages = useMemo(() => {
@@ -170,9 +226,12 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     const total = reviewsState.length;
 
     reviewsState.forEach(review => {
-      const rating = review.rating || 0;
-      if (rating >= 1 && rating <= 5) {
-        distribution[rating]++;
+      const rating = Number(review.rating) || 0;
+      // 소수점 별점을 정수로 반올림 (예: 4.5 -> 5, 3.7 -> 4)
+      // rating이 0이면 기본값 3으로 설정 (모든 리뷰가 분포에 포함되도록)
+      const roundedRating = rating > 0 ? Math.round(rating) : 3;
+      if (roundedRating >= 1 && roundedRating <= 5) {
+        distribution[roundedRating]++;
       }
     });
 
@@ -314,6 +373,41 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     e?.preventDefault();
     e?.stopPropagation();
     
+    // Mock 리뷰인지 확인 (ID가 'mock_'로 시작하는 경우)
+    const isMockReview = reviewId.toString().startsWith('mock_');
+    
+    if (isMockReview) {
+      // Mock 리뷰의 경우 클라이언트 사이드에서만 처리
+      const currentReview = reviewsState.find(r => r.id === reviewId);
+      if (!currentReview) return;
+      
+      const newIsHelpful = !currentReview.is_helpful;
+      const newHelpfulCount = newIsHelpful 
+        ? (currentReview.helpful || 0) + 1 
+        : Math.max(0, (currentReview.helpful || 0) - 1);
+
+      // 로컬 리뷰 상태 즉시 업데이트
+      setReviewsState(prevReviews => 
+        prevReviews.map(r => 
+          r.id === reviewId 
+            ? { 
+                ...r, 
+                helpful: newHelpfulCount,
+                is_helpful: newIsHelpful
+              }
+            : r
+        )
+      );
+
+      // 부모 컴포넌트에 즉시 업데이트
+      if (onHelpfulUpdate) {
+        onHelpfulUpdate(reviewId, newHelpfulCount, newIsHelpful);
+      }
+      
+      return;
+    }
+    
+    // 실제 API 리뷰의 경우 기존 로직 사용
     // 로그인한 유저 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
@@ -424,10 +518,10 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
 
   return (
     <div className="flex flex-col gap-8">
-      {/* 개발자 타입 필터 - 메인페이지와 동일한 디자인 */}
+      {/* 필터 섹션 - 개발자 타입 및 별점 필터 */}
       {reviewsState.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
               {t('product.reviews.filter.label')}
             </label>
@@ -556,7 +650,51 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                 </div>
               </div>
             </div>
-            {developerTypeFilter && (
+            
+            {/* 별점 필터 */}
+            <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+              {t('product.reviews.filter.ratingLabel')}:
+            </label>
+            <div className="custom-dropdown" ref={ratingFilterDropdownRef} style={{ minWidth: '150px' }}>
+              <button
+                className={`dropdown-button ${ratingFilterDropdownOpen ? 'active' : ''}`}
+                onClick={() => setRatingFilterDropdownOpen((v) => !v)}
+              >
+                <span className="dropdown-label">
+                  {ratingFilter !== null 
+                    ? `★${ratingFilter}`
+                    : t('product.reviews.filter.all')}
+                </span>
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <div className={`dropdown-menu ${ratingFilterDropdownOpen ? 'show' : ''}`}>
+                <div
+                  className={`dropdown-item ${ratingFilter === null ? 'active' : ''}`}
+                  onClick={() => {
+                    setRatingFilter(null);
+                    setRatingFilterDropdownOpen(false);
+                  }}
+                >
+                  {t('product.reviews.filter.all')}
+                </div>
+                {[5, 4, 3, 2, 1].map((rating) => (
+                  <div
+                    key={rating}
+                    className={`dropdown-item ${ratingFilter === rating ? 'active' : ''}`}
+                    onClick={() => {
+                      setRatingFilter(rating);
+                      setRatingFilterDropdownOpen(false);
+                    }}
+                  >
+                    ★{rating}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {(developerTypeFilter || ratingFilter !== null) && (
               <span className="text-sm text-gray-600">
                 ({filteredReviews.length}{t('product.reviews.filter.count')})
               </span>
@@ -923,7 +1061,8 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
           </p>
         </div>
       ) : (
-        filteredReviews.map((review) => {
+        <>
+        {paginatedReviews.map((review) => {
         const isEditing = editingId === review.id;
         const isDeleting = deletingId === review.id;
         const isCurrentUserReview = review.isCurrentUser || false;
@@ -932,7 +1071,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
           <div 
             key={review.id} 
             data-review-id={review.id}
-            className="pb-8 border-b border-gray-200 last:border-0 last:pb-0 transition-colors duration-500"
+            className={`pb-8 transition-colors duration-500 ${review.id !== paginatedReviews[paginatedReviews.length - 1]?.id ? 'border-b border-gray-200' : ''}`}
           >
             <div className="flex items-start gap-4">
               {/* 48px 아바타 */}
@@ -950,7 +1089,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                         </span>
                       )}
                     </div>
-                    <div className="text-[13px] text-gray-400">{review.date}</div>
+                    <div className="text-[13px] text-gray-400">{formatDate(review.date)}</div>
                   </div>
                   {/* 본인 리뷰만 수정/삭제 버튼 표시 */}
                   {isCurrentUserReview && !isEditing && (
@@ -1194,7 +1333,35 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
             </div>
           </div>
         );
-        })
+        })}
+        
+        {/* 페이지네이션 */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              {t('home.pagination.prev')}
+            </button>
+            
+            <span className="text-sm text-gray-600">
+              {currentPage} / {totalPages}
+            </span>
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+            >
+              {t('home.pagination.next')}
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+        </>
       )}
     </div>
   );

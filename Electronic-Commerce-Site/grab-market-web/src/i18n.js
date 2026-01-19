@@ -1488,11 +1488,27 @@ const verifyToken = (token) => {
         reviews: {
           filter: {
             label: '개발자 타입 필터:',
+            ratingLabel: '별점 필터',
             all: '전체',
             count: '개의 리뷰',
             empty: '리뷰가 없습니다.',
             emptyFiltered: '{{type}}의 리뷰가 없습니다.',
+            clearRating: '별점 필터 해제',
           },
+        },
+        recommended: {
+          title: '추천 상품',
+          description: '이 상품과 함께 자주 구매되는 상품',
+          categoryTitle: '{{category}} 추천 상품',
+          categoryDescription: '같은 카테고리의 추천 상품을 확인해보세요',
+        },
+        viewed: {
+          title: '다른 고객들이 자주 조회하는 상품',
+          description: '다른 고객들이 많이 본 인기 상품을 확인해보세요',
+        },
+        templates: {
+          title: '이 상품이 포함된 템플릿',
+          description: '이 상품을 활용할 수 있는 템플릿들을 확인해보세요',
         },
       },
       purchase: {
@@ -3399,11 +3415,27 @@ Currently most popular team combination:
         reviews: {
           filter: {
             label: 'Developer Type Filter:',
+            ratingLabel: 'Rating Filter',
             all: 'All',
             count: 'reviews',
             empty: 'No reviews.',
             emptyFiltered: 'No {{type}} reviews.',
+            clearRating: 'Clear Rating Filter',
           },
+        },
+        recommended: {
+          title: 'Recommended Products',
+          description: 'Frequently bought together with this product',
+          categoryTitle: '{{category}} Recommended Products',
+          categoryDescription: 'Check out recommended products in the same category',
+        },
+        viewed: {
+          title: 'Other Customers Also Viewed',
+          description: 'Check out popular products that other customers are viewing',
+        },
+        templates: {
+          title: 'Templates with this Product',
+          description: 'Check out templates that include this product',
         },
         notFound: {
           title: 'Product not found',
@@ -5303,11 +5335,27 @@ const verifyToken = (token) => {
         reviews: {
           filter: {
             label: '開発者タイプフィルター:',
+            ratingLabel: '評価フィルター',
             all: 'すべて',
             count: '件のレビュー',
             empty: 'レビューがありません。',
             emptyFiltered: '{{type}}のレビューがありません。',
+            clearRating: '評価フィルターをクリア',
           },
+        },
+        recommended: {
+          title: 'おすすめ商品',
+          description: 'この商品と一緒によく購入される商品',
+          categoryTitle: '{{category}}おすすめ商品',
+          categoryDescription: '同じカテゴリーのおすすめ商品を確認してください',
+        },
+        viewed: {
+          title: '他のお客様がよく閲覧している商品',
+          description: '他のお客様がよく閲覧している人気商品を確認してください',
+        },
+        templates: {
+          title: 'この商品が含まれるテンプレート',
+          description: 'この商品を活用できるテンプレートを確認してください',
         },
         notFound: {
           title: '商品が見つかりませんでした',
