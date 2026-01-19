@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import SuperAdminSidebar from './SuperAdminSidebar';
 import './SuperAdminLayout.css';
 
@@ -66,7 +66,9 @@ export default function SuperAdminLayout({ children }) {
 
             {/* 홈 버튼 */}
             <Link to="/" className="super-admin-home-link">
-              <Home size={18} />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
               <span>{t('common.backHome')}</span>
             </Link>
           </div>

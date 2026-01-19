@@ -1,7 +1,6 @@
 .seller-application-detail-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 40px 20px;
+  width: 100%;
+  padding: 0;
 }
 
 .seller-application-detail-content {
@@ -63,8 +62,8 @@
 }
 
 .score-approved {
-  background: #D1FAE5;
-  color: #065F46;
+  background: #37b15e;
+  color: #ffffff;
 }
 
 .score-review {
@@ -85,8 +84,8 @@
 }
 
 .recommendation-approved {
-  background: #D1FAE5;
-  color: #065F46;
+  background: #37b15e;
+  color: #ffffff;
 }
 
 .recommendation-review {
@@ -160,8 +159,10 @@
 .text-content p {
   font-size: 14px;
   color: #1A1A1A;
-  line-height: 1.6;
+  line-height: 1.8;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-word;
   padding: 16px;
   background: #F9FAFB;
   border-radius: 8px;

@@ -25,3 +25,16 @@
   color: #6b7280;
   margin: 0;
 }
+
+.templates-page .page-header .ant-btn-primary {
+  background: #3B82F6;
+  border-color: #3B82F6;
+  color: #ffffff;
+}
+
+.templates-page .page-header .ant-btn-primary:hover,
+.templates-page .page-header .ant-btn-primary:focus {
+  background: #3B82F6;
+  border-color: #3B82F6;
+  color: #ffffff;
+}

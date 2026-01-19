@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import { api } from '../../../config/api';
 import { Modal, Input, Button, message, Table, Space, Popconfirm } from 'antd';
@@ -9,6 +10,7 @@ import './Templates.css';
 const { TextArea } = Input;
 
 export default function Templates() {
+  const { t } = useTranslation();
   const history = useHistory();
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,34 +65,34 @@ export default function Templates() {
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      message.warning('템플릿 이름을 입력해주세요.');
+      message.warning(t('profile.superAdmin.templates.messages.nameRequired'));
       return;
     }
 
     try {
       if (editingTemplate) {
         await api.superAdmin.templates.update(editingTemplate.id, formData);
-        message.success('템플릿이 수정되었습니다.');
+        message.success(t('profile.superAdmin.templates.messages.updateSuccess'));
       } else {
         await api.superAdmin.templates.create(formData);
-        message.success('템플릿이 생성되었습니다.');
+        message.success(t('profile.superAdmin.templates.messages.createSuccess'));
       }
       setModalVisible(false);
       loadTemplates();
     } catch (error) {
       console.error('템플릿 저장 실패:', error);
-      message.error(error.response?.data?.error || '템플릿 저장에 실패했습니다.');
+      message.error(error.response?.data?.error || t('profile.superAdmin.templates.messages.saveFail'));
     }
   };
 
   const handleDelete = async (templateId) => {
     try {
       await api.superAdmin.templates.delete(templateId);
-      message.success('템플릿이 삭제되었습니다.');
+      message.success(t('profile.superAdmin.templates.messages.deleteSuccess'));
       loadTemplates();
     } catch (error) {
       console.error('템플릿 삭제 실패:', error);
-      message.error(error.response?.data?.error || '템플릿 삭제에 실패했습니다.');
+      message.error(error.response?.data?.error || t('profile.superAdmin.templates.messages.deleteFail'));
     }
   };
 
@@ -100,38 +102,38 @@ export default function Templates() {
 
   const columns = [
     {
-      title: 'ID',
+      title: t('profile.superAdmin.templates.table.id'),
       dataIndex: 'id',
       key: 'id',
       width: 80,
     },
     {
-      title: '템플릿 이름',
+      title: t('profile.superAdmin.templates.table.name'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: '설명',
+      title: t('profile.superAdmin.templates.table.description'),
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
     },
     {
-      title: '포함 상품 수',
+      title: t('profile.superAdmin.templates.table.productCount'),
       dataIndex: 'product_count',
       key: 'product_count',
       width: 120,
       render: (count) => count || 0,
     },
     {
-      title: '생성일',
+      title: t('profile.superAdmin.templates.table.createdAt'),
       dataIndex: 'created_at',
       key: 'created_at',
       width: 180,
       render: (date) => date ? new Date(date).toLocaleDateString('ko-KR') : '-',
     },
     {
-      title: '작업',
+      title: t('profile.superAdmin.templates.table.action'),
       key: 'action',
       width: 200,
       render: (_, record) => (
@@ -141,27 +143,27 @@ export default function Templates() {
             icon={<EyeOutlined />}
             onClick={() => handleViewDetail(record.id)}
           >
-            상세
+            {t('profile.superAdmin.templates.table.view')}
           </Button>
           <Button
             type="link"
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            수정
+            {t('profile.superAdmin.templates.table.edit')}
           </Button>
           <Popconfirm
-            title="템플릿을 삭제하시겠습니까?"
+            title={t('profile.superAdmin.templates.messages.deleteConfirm')}
             onConfirm={() => handleDelete(record.id)}
-            okText="삭제"
-            cancelText="취소"
+            okText={t('profile.superAdmin.templates.messages.deleteConfirmOk')}
+            cancelText={t('profile.superAdmin.templates.messages.deleteConfirmCancel')}
           >
             <Button
               type="link"
               danger
               icon={<DeleteOutlined />}
             >
-              삭제
+              {t('profile.superAdmin.templates.table.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -174,15 +176,15 @@ export default function Templates() {
       <div className="templates-page">
         <div className="page-header">
           <div className="page-header-content">
-            <h1 className="page-title">템플릿 관리</h1>
-            <p className="page-subtitle">프로젝트 유형별 AI 상품 세트를 관리합니다.</p>
+            <h1 className="page-title">{t('profile.superAdmin.templates.title')}</h1>
+            <p className="page-subtitle">{t('profile.superAdmin.templates.subtitle')}</p>
           </div>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleCreate}
           >
-            템플릿 등록
+            {t('profile.superAdmin.templates.create')}
           </Button>
         </div>
 
@@ -200,44 +202,44 @@ export default function Templates() {
         />
 
         <Modal
-          title={editingTemplate ? '템플릿 수정' : '템플릿 등록'}
+          title={editingTemplate ? t('profile.superAdmin.templates.edit') : t('profile.superAdmin.templates.create')}
           open={modalVisible}
           onOk={handleSave}
           onCancel={() => setModalVisible(false)}
-          okText="저장"
-          cancelText="취소"
+          okText={t('profile.superAdmin.templates.modal.save')}
+          cancelText={t('profile.superAdmin.templates.modal.cancel')}
           width={600}
         >
           <div style={{ marginTop: 20 }}>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>
-                템플릿 이름 *
+                {t('profile.superAdmin.templates.form.name')}
               </label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="예: 웹 애플리케이션 개발"
+                placeholder={t('profile.superAdmin.templates.form.namePlaceholder')}
               />
             </div>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>
-                설명
+                {t('profile.superAdmin.templates.form.description')}
               </label>
               <TextArea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="예: 풀스택 웹 앱을 만들기 위한 AI 세트"
+                placeholder={t('profile.superAdmin.templates.form.descriptionPlaceholder')}
                 rows={4}
               />
             </div>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>
-                아이콘 URL
+                {t('profile.superAdmin.templates.form.iconUrl')}
               </label>
               <Input
                 value={formData.icon_url}
                 onChange={(e) => setFormData({ ...formData, icon_url: e.target.value })}
-                placeholder="예: /images/templates/web.png"
+                placeholder={t('profile.superAdmin.templates.form.iconUrlPlaceholder')}
               />
             </div>
           </div>

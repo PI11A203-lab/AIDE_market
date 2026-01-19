@@ -27,12 +27,12 @@ export default function SuperAdminSidebar({ isOpen = true, onClose }) {
     },
     {
       path: '/profile/super-admin/seller-applications',
-      label: '판매자 신청 관리',
+      label: t('profile.superAdmin.sellerApplications.title'),
       icon: UserCheck
     },
     {
       path: '/profile/super-admin/templates',
-      label: '템플릿 관리',
+      label: t('profile.superAdmin.templates.title'),
       icon: FileText
     },
     {

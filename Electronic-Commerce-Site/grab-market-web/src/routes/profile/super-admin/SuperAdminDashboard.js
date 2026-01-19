@@ -11,10 +11,12 @@ export default function SuperAdminDashboard() {
   const [stats, setStats] = useState({
     pendingProducts: 0,
     pendingStudents: 0,
+    pendingSellerApplications: 0,
     todayAccess: 0,
     securityEvents: 0,
     pendingProductsChange: 0,
     pendingStudentsChange: 0,
+    pendingSellerApplicationsChange: 0,
     todayAccessChange: 0,
     securityEventsChange: 0
   });
@@ -32,9 +34,10 @@ export default function SuperAdminDashboard() {
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().split('T')[0];
       
-      const [productsRes, studentsRes, ipStatsTodayRes, ipStatsYesterdayRes, securityEventsTodayRes, securityEventsYesterdayRes] = await Promise.all([
+      const [productsRes, studentsRes, sellerApplicationsRes, ipStatsTodayRes, ipStatsYesterdayRes, securityEventsTodayRes, securityEventsYesterdayRes] = await Promise.all([
         api.superAdmin.products.getPending({ limit: 1 }).catch(() => ({ data: { totalCount: 0 } })),
         api.superAdmin.studentVerifications.getPending({ limit: 1 }).catch(() => ({ data: { totalCount: 0 } })),
+        api.superAdmin.sellerApplications.getList({ status: 'pending' }).catch(() => ({ data: [] })),
         // 오늘 날짜의 IP 로그 통계 가져오기
         api.superAdmin.ip.getStats({ 
           dateFrom: today,
@@ -84,14 +87,17 @@ export default function SuperAdminDashboard() {
       // pendingProducts와 pendingStudents는 변화량을 0으로 설정 (임시로, 실제로는 이전 데이터와 비교 필요)
       const pendingProducts = productsRes.data?.totalCount || 0;
       const pendingStudents = studentsRes.data?.totalCount || 0;
+      const pendingSellerApplications = Array.isArray(sellerApplicationsRes.data) ? sellerApplicationsRes.data.length : 0;
 
       setStats({
         pendingProducts,
         pendingStudents,
+        pendingSellerApplications,
         todayAccess,
         securityEvents: todaySecurityEvents,
         pendingProductsChange: 0, // 실제로는 이전 데이터와 비교 필요
         pendingStudentsChange: 0, // 실제로는 이전 데이터와 비교 필요
+        pendingSellerApplicationsChange: 0, // 실제로는 이전 데이터와 비교 필요
         todayAccessChange: accessChange,
         securityEventsChange: securityEventsChange
       });
@@ -164,6 +170,19 @@ export default function SuperAdminDashboard() {
               {stats.todayAccessChange > 0 ? `+${stats.todayAccessChange.toLocaleString()}` : 
                stats.todayAccessChange < 0 ? `${stats.todayAccessChange.toLocaleString()}` : 
                t('profile.superAdmin.dashboard.stats.noChange')}
+            </div>
+          </div>
+          <div 
+            className="stat-card clickable" 
+            onClick={() => history.push('/profile/super-admin/seller-applications')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="stat-label">{t('profile.superAdmin.dashboard.stats.pendingSellerApplications')}</div>
+            <div className="stat-value">{stats.pendingSellerApplications}</div>
+            <div className={stats.pendingSellerApplicationsChange !== 0 ? "stat-change" : "stat-change"} style={{ color: stats.pendingSellerApplicationsChange > 0 ? '#10b981' : stats.pendingSellerApplicationsChange < 0 ? '#ef4444' : '#666' }}>
+              {stats.pendingSellerApplicationsChange > 0 ? `+${stats.pendingSellerApplicationsChange} ${t('profile.superAdmin.dashboard.today')}` : 
+               stats.pendingSellerApplicationsChange < 0 ? `${stats.pendingSellerApplicationsChange} ${t('profile.superAdmin.dashboard.today')}` : 
+               t('profile.superAdmin.dashboard.stats.noNewRequest')}
             </div>
           </div>
           <div 

@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { api } from '../../../config/api';
+import SuperAdminLayout from './components/SuperAdminLayout';
 import './SellerApplications.css';
 
 export default function SellerApplications() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState('all');
@@ -18,10 +19,11 @@ export default function SellerApplications() {
       setApplications(response.data || []);
     } catch (error) {
       console.error('신청 목록 로드 오류:', error);
-      message.error('신청 목록을 불러오는 중 오류가 발생했습니다.');
+      message.error(t('profile.superAdmin.sellerApplications.messages.loadFail'));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   useEffect(() => {
@@ -29,8 +31,11 @@ export default function SellerApplications() {
     if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
       i18n.changeLanguage(savedLanguage);
     }
+  }, [i18n]);
+
+  useEffect(() => {
     loadApplications();
-  }, [i18n, loadApplications]);
+  }, [loadApplications]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
@@ -43,11 +48,11 @@ export default function SellerApplications() {
 
   const getStatusBadge = (app) => {
     if (app.role === 'admin') {
-      return <span className="badge badge-approved">✅ 승인됨</span>;
+      return <span className="badge badge-approved">{t('profile.superAdmin.sellerApplications.status.approved')}</span>;
     } else if (app.seller_rejected_at) {
-      return <span className="badge badge-rejected">❌ 반려됨</span>;
+      return <span className="badge badge-rejected">{t('profile.superAdmin.sellerApplications.status.rejected')}</span>;
     } else {
-      return <span className="badge badge-pending">⏳ 대기중</span>;
+      return <span className="badge badge-pending">{t('profile.superAdmin.sellerApplications.status.pending')}</span>;
     }
   };
 
@@ -62,86 +67,88 @@ export default function SellerApplications() {
   };
 
   return (
-    <div className="seller-applications-container">
-      <div className="seller-applications-content">
-        <h1 className="page-title">판매자 신청 관리</h1>
+    <SuperAdminLayout>
+      <div className="seller-applications-container">
+        <div className="seller-applications-content">
+          <h1 className="page-title">{t('profile.superAdmin.sellerApplications.title')}</h1>
 
-        {/* 필터 */}
-        <div className="filter-bar">
-          <button
-            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            전체
-          </button>
-          <button
-            className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
-            onClick={() => setFilter('pending')}
-          >
-            대기중
-          </button>
-          <button
-            className={`filter-btn ${filter === 'approved' ? 'active' : ''}`}
-            onClick={() => setFilter('approved')}
-          >
-            승인됨
-          </button>
-          <button
-            className={`filter-btn ${filter === 'rejected' ? 'active' : ''}`}
-            onClick={() => setFilter('rejected')}
-          >
-            반려됨
-          </button>
-        </div>
-
-        {/* 테이블 */}
-        {loading ? (
-          <div className="loading">로딩 중...</div>
-        ) : applications.length === 0 ? (
-          <div className="empty-state">신청 내역이 없습니다.</div>
-        ) : (
-          <div className="table-container">
-            <table className="applications-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>신청자</th>
-                  <th>판매자명</th>
-                  <th>이메일</th>
-                  <th>전문분야</th>
-                  <th>신청일</th>
-                  <th>상태</th>
-                  <th>작업</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applications.map((app) => {
-                  const appData = getApplicationData(app);
-                  return (
-                    <tr key={app.user_id}>
-                      <td>{app.user_id}</td>
-                      <td>{app.username}</td>
-                      <td>{appData.seller_name || '-'}</td>
-                      <td>{appData.contact_email || '-'}</td>
-                      <td>{appData.specialization || '-'}</td>
-                      <td>{formatDate(app.seller_requested_at)}</td>
-                      <td>{getStatusBadge(app)}</td>
-                      <td>
-                        <Link
-                          to={`/profile/super-admin/seller-applications/${app.user_id}`}
-                          className="btn-view"
-                        >
-                          상세보기
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          {/* 필터 */}
+          <div className="filter-bar">
+            <button
+              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              {t('profile.superAdmin.sellerApplications.filters.all')}
+            </button>
+            <button
+              className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
+              onClick={() => setFilter('pending')}
+            >
+              {t('profile.superAdmin.sellerApplications.filters.pending')}
+            </button>
+            <button
+              className={`filter-btn ${filter === 'approved' ? 'active' : ''}`}
+              onClick={() => setFilter('approved')}
+            >
+              {t('profile.superAdmin.sellerApplications.filters.approved')}
+            </button>
+            <button
+              className={`filter-btn ${filter === 'rejected' ? 'active' : ''}`}
+              onClick={() => setFilter('rejected')}
+            >
+              {t('profile.superAdmin.sellerApplications.filters.rejected')}
+            </button>
           </div>
-        )}
+
+          {/* 테이블 */}
+          {loading ? (
+            <div className="loading">{t('profile.superAdmin.sellerApplications.messages.loading')}</div>
+          ) : applications.length === 0 ? (
+            <div className="empty-state">{t('profile.superAdmin.sellerApplications.messages.empty')}</div>
+          ) : (
+            <div className="table-container">
+              <table className="applications-table">
+                <thead>
+                  <tr>
+                    <th>{t('profile.superAdmin.sellerApplications.table.id')}</th>
+                    <th>{t('profile.superAdmin.sellerApplications.table.applicant')}</th>
+                    <th>{t('profile.superAdmin.sellerApplications.table.sellerName')}</th>
+                    <th>{t('profile.superAdmin.sellerApplications.table.email')}</th>
+                    <th>{t('profile.superAdmin.sellerApplications.table.specialization')}</th>
+                    <th>{t('profile.superAdmin.sellerApplications.table.requestDate')}</th>
+                    <th>{t('profile.superAdmin.sellerApplications.table.status')}</th>
+                    <th>{t('profile.superAdmin.sellerApplications.table.action')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {applications.map((app) => {
+                    const appData = getApplicationData(app);
+                    return (
+                      <tr key={app.user_id}>
+                        <td>{app.user_id}</td>
+                        <td>{app.username}</td>
+                        <td>{appData.seller_name || '-'}</td>
+                        <td>{appData.contact_email || '-'}</td>
+                        <td>{appData.specialization || '-'}</td>
+                        <td>{formatDate(app.seller_requested_at)}</td>
+                        <td>{getStatusBadge(app)}</td>
+                        <td>
+                          <Link
+                            to={`/profile/super-admin/seller-applications/${app.user_id}`}
+                            className="btn-view"
+                          >
+                            {t('profile.superAdmin.sellerApplications.table.viewDetail')}
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </SuperAdminLayout>
   );
 }

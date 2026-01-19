@@ -35,24 +35,24 @@
   top: 0;
   z-index: 100;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .super-admin-header-content {
-  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 18px 40px;
+  padding: 20px 40px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .super-admin-menu-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -78,37 +78,35 @@
 }
 
 .super-admin-header-logo {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: #1a1a1a;
   user-select: none;
   flex: 1;
+  min-width: 0;
 }
 
 .super-admin-home-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background: #1A1A1A;
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #6B7280;
   cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+  line-height: 1.5;
+  height: auto;
+  margin: 0;
+  vertical-align: middle;
   flex-shrink: 0;
 }
 
 .super-admin-home-link:hover {
-  background: #2D2D2D;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.super-admin-home-link:active {
-  transform: translateY(0);
+  color: #1A1A1A;
 }
 
 .super-admin-home-link svg {
@@ -117,17 +115,18 @@
 
 @media (max-width: 768px) {
   .super-admin-header {
-    padding: 0 16px;
-    height: 56px;
+    padding: 0;
+    height: auto;
   }
   
   .super-admin-header-content {
+    padding: 16px;
     gap: 12px;
   }
   
   .super-admin-menu-button {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
   
   .super-admin-header-logo {
@@ -135,42 +134,20 @@
   }
   
   .super-admin-home-link {
-    padding: 8px 16px;
-    font-size: 13px;
-  }
-  
-  .super-admin-home-link span {
-    display: none;
+    font-size: 14px;
   }
   
   .super-admin-main {
     padding: 16px;
+    max-width: 100%;
   }
 }
 
 .super-admin-main {
   flex: 1;
-  padding: 24px;
+  padding: 24px 40px;
   overflow-y: auto;
+  width: 100%;
 }
 
-@media (max-width: 768px) {
-  .super-admin-content-wrapper {
-    margin-left: 0;
-  }
-  
-  .super-admin-header {
-    padding: 0 16px;
-    height: 56px;
-  }
-  
-  .super-admin-home-link {
-    padding: 8px 16px;
-    font-size: 13px;
-  }
-  
-  .super-admin-main {
-    padding: 16px;
-  }
-}
 
