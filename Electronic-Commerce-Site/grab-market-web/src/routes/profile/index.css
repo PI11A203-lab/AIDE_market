@@ -7,20 +7,31 @@ color: #1A1A1A;
 
 /* 헤더 */
 .profile-header {
-background: white;
-border-bottom: 1px solid #E5E7EB;
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(10px);
+border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 position: sticky;
 top: 0;
 z-index: 100;
+height: 78px; /* 메인 페이지 헤더 높이 기준 - 고정값 */
+box-sizing: border-box;
 }
 
 .profile-header .header-content {
-max-width: 1400px;
+max-width: 1200px;
 margin: 0 auto;
-padding: 20px 40px;
+padding: 18px 40px;
 display: flex;
 align-items: center;
 justify-content: space-between;
+position: relative;
+height: 100%; /* 부모 높이에 맞춤 */
+box-sizing: border-box;
+}
+
+.profile-header .header-content > * {
+  display: flex;
+  align-items: center;
 }
 
 .profile-header .menu-toggle-btn {
@@ -59,8 +70,10 @@ font-weight: 700;
 color: #1A1A1A;
 }
 
-.profile-header .btn-back-to-home {
-  display: flex;
+/* order 페이지와 동일한 버튼 스타일 적용 */
+.profile-header .btn-back-to-home,
+.btn-back-to-profile {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 0;
@@ -71,9 +84,14 @@ color: #1A1A1A;
   cursor: pointer;
   transition: color 0.2s;
   text-decoration: none;
+  line-height: 1.5;
+  height: auto;
+  margin: 0;
+  vertical-align: middle;
 }
 
-.profile-header .btn-back-to-home:hover {
+.profile-header .btn-back-to-home:hover,
+.btn-back-to-profile:hover {
   color: #1A1A1A;
 }
 
@@ -89,11 +107,12 @@ border-radius: 10px;
 font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  margin-top: 4px;
 }
 
 /* 프로필 메인 */
 .profile-main {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
   background: #FAFAFA;

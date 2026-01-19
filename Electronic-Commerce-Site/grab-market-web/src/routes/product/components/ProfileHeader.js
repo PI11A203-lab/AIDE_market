@@ -1,9 +1,11 @@
 import React from 'react';
 import { Heart, Share2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../config/constants';
 import { getFilledStars } from '../../../utils/ratingCache';
 
 export default function ProfileHeader({ developer, isLiked, onLikeToggle, onShare }) {
+  const { t } = useTranslation();
   // 별점을 숫자로 변환
   const rating = parseFloat(developer.rating) || 0;
   const filledStars = getFilledStars(rating);
@@ -78,7 +80,7 @@ export default function ProfileHeader({ developer, isLiked, onLikeToggle, onShar
               ))}
             </div>
             <span className="text-lg font-bold text-gray-900">{rating.toFixed(1)}</span>
-            <span className="text-[15px] text-gray-500">({developer.reviewCount} reviews)</span>
+            <span className="text-[15px] text-gray-500">({developer.reviewCount} {t('product.price.reviews')})</span>
           </div>
           {/* 태그 - 해시태그 스타일 */}
           <div className="flex flex-wrap gap-2 mb-4">
@@ -95,19 +97,19 @@ export default function ProfileHeader({ developer, isLiked, onLikeToggle, onShar
       <div className="grid grid-cols-4 gap-6 pt-6 border-t border-gray-200">
         <div className="text-center">
           <div className="text-[28px] font-bold text-gray-900 mb-1">{developer.downloads}</div>
-          <div className="text-[13px] text-gray-500">Total Hires</div>
+          <div className="text-[13px] text-gray-500">{t('product.price.totalHires')}</div>
         </div>
         <div className="text-center">
           <div className="text-[28px] font-bold text-gray-900 mb-1">{developer.completionRate}</div>
-          <div className="text-[13px] text-gray-500">Completion Rate</div>
+          <div className="text-[13px] text-gray-500">{t('product.price.completionRate')}</div>
         </div>
         <div className="text-center">
           <div className="text-[28px] font-bold text-gray-900 mb-1">{developer.responseTime}</div>
-          <div className="text-[13px] text-gray-500">Response Time</div>
+          <div className="text-[13px] text-gray-500">{t('product.price.responseTime')}</div>
         </div>
         <div className="text-center">
           <div className="text-[28px] font-bold text-gray-900 mb-1">{developer.skill}%</div>
-          <div className="text-[13px] text-gray-500">Skill Level</div>
+          <div className="text-[13px] text-gray-500">{t('product.price.skillLevel')}</div>
         </div>
       </div>
     </div>

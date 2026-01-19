@@ -3,8 +3,8 @@ import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import ProductHeader from './components/ProductHeader';
-import ProfileHeader from './components/ProfileHeader';
+import ProfileHeader from '../profile/components/ProfileHeader';
+import ProductProfileHeader from './components/ProfileHeader';
 import TabNavigation from './components/TabNavigation';
 import PriceSidebar from './components/PriceSidebar';
 import TrustBadges from './components/TrustBadges';
@@ -14,6 +14,7 @@ import { API_URL } from '../../config/constants';
 import { api } from '../../config/api';
 import { getRatingCache, setRatingCache } from '../../utils/ratingCache';
 import "./index.css";
+import '../profile/index.css';
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -218,7 +219,7 @@ export default function ProductPage() {
           tags: tags.map(tag => tag.name || tag),
           location: 'San Francisco, CA', // API에 없음
           joined: product.createdAt ? new Date(product.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'January 2023',
-          responseTime: '< 2 hours', // API에 없음
+          responseTime: '2 hours', // API에 없음
           completionRate: '99%', // API에 없음
           bio: product.description || 'Specialized in building production-ready AI systems.',
           hexagonStats: stats.teamwork !== undefined ? [
@@ -410,13 +411,18 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <ProductHeader />
+      <ProfileHeader 
+        backButtonLink="/"
+        backButtonText="common.backHome"
+        showMenuButton={false}
+        showBackButton={true}
+      />
 
-      <main className="max-w-[1400px] mx-auto px-12 py-8 pb-20">
+      <main className="max-w-[1200px] mx-auto px-12 py-8 pb-20">
         <div className="grid grid-cols-[1fr_400px] gap-8">
           {/* 메인 컨텐츠 */}
           <div>
-            <ProfileHeader 
+            <ProductProfileHeader 
               developer={developer} 
               isLiked={isLiked} 
               onLikeToggle={handleLikeToggle}

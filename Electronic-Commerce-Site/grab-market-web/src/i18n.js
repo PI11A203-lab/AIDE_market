@@ -1470,6 +1470,11 @@ const verifyToken = (token) => {
           joined: '가입일 {{date}}',
           respondsIn: '{{time}} 내 응답',
           topDeveloper: '상위 1% 개발자',
+          totalHires: '총 고용',
+          completionRate: '완료율',
+          responseTime: '응답 시간',
+          skillLevel: '기술 수준',
+          reviews: '리뷰',
         },
         overview: {
           title: '기술 및 역량',
@@ -5280,6 +5285,11 @@ const verifyToken = (token) => {
           joined: '{{date}}に登録',
           respondsIn: '{{time}}以内に応答',
           topDeveloper: '上位1%開発者',
+          totalHires: '総雇用',
+          completionRate: '完了率',
+          responseTime: '応答時間',
+          skillLevel: 'スキルレベル',
+          reviews: 'レビュー',
         },
         overview: {
           title: '技術と能力',

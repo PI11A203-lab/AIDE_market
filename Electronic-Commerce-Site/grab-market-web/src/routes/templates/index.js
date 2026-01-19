@@ -467,26 +467,6 @@ function TemplatesPage() {
                   );
                   })}
                 </div>
-                <button 
-                  className="nav-button prev"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentSlide((prev) => (prev - 1 + recommendedTemplates.length) % recommendedTemplates.length);
-                  }}
-                  aria-label="Previous slide"
-                >
-                  ‹
-                </button>
-                <button 
-                  className="nav-button next"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentSlide((prev) => (prev + 1) % recommendedTemplates.length);
-                  }}
-                  aria-label="Next slide"
-                >
-                  ›
-                </button>
               </div>
               <div className="indicators">
                 {recommendedTemplates.map((_, index) => (

@@ -6,23 +6,57 @@
 
 /* Header */
 .confirmation-header {
-  background: white;
-  border-bottom: 1px solid #E5E7EB;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
+  height: 78px; /* 메인 페이지 헤더 높이 기준 - 고정값 */
+  box-sizing: border-box;
 }
 
 .confirmation-header-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 40px;
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  height: 100%; /* 부모 높이에 맞춤 */
+  box-sizing: border-box;
 }
 
 .confirmation-header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+}
+
+.confirmation-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1A1A1A;
+  text-decoration: none;
+}
+
+.confirmation-btn-back-to-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #6B7280;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+  margin-top: 4px;
+}
+
+.confirmation-btn-back-to-home:hover {
+  color: #1A1A1A;
 }
 
 .confirmation-header-title {

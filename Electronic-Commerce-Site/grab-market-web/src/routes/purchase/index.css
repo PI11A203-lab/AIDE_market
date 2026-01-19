@@ -1,19 +1,25 @@
 /* 헤더 스타일 (profile 페이지와 동일) */
 .profile-header {
-  background-color: white;
-  border-bottom: 1px solid #E5E7EB;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
+  height: 78px; /* 메인 페이지 헤더 높이 기준 - 고정값 */
+  box-sizing: border-box;
 }
 
 .profile-header .header-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 40px;
+  padding: 18px 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  height: 100%; /* 부모 높이에 맞춤 */
+  box-sizing: border-box;
 }
 
 .profile-header .logo {
@@ -41,6 +47,7 @@
   cursor: pointer;
   transition: color 0.2s;
   text-decoration: none;
+  margin-top: 4px;
 }
 
 .profile-header .btn-back-to-home:hover {

@@ -1,6 +1,73 @@
 /* Tailwind CSS를 사용하므로 기본 스타일은 최소화 */
 /* 추가 커스텀 스타일이 필요한 경우 여기에 작성 */
 
+/* Product Header - 프로필 헤더와 완전히 동일 (프로필 헤더 CSS 복사) */
+.product-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 78px; /* 메인 페이지 헤더 높이 기준 - 고정값 */
+  box-sizing: border-box;
+}
+
+.product-header .header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  height: 100%; /* 부모 높이에 맞춤 */
+  box-sizing: border-box;
+}
+
+.product-header .header-content > * {
+  display: flex;
+  align-items: center;
+}
+
+.product-header .logo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.product-header .logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+/* order 페이지와 동일한 버튼 스타일 적용 */
+.product-header .btn-back-to-home,
+.product-header .btn-back-to-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #6B7280;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+  line-height: 1.5;
+  height: auto;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.product-header .btn-back-to-home:hover,
+.product-header .btn-back-to-profile:hover {
+  color: #1A1A1A;
+}
+
 /* 페이지 하단까지 배경색 채우기 */
 .min-h-screen {
   padding-bottom: 4rem;
@@ -33,8 +100,8 @@
 
 /* 반응형 - 1920px 이상 대형 화면 지원 */
 @media (min-width: 1920px) {
-  .max-w-\[1400px\] {
-    max-width: 1800px;
+  .max-w-\[1200px\] {
+    max-width: 1400px;
   }
 }
 

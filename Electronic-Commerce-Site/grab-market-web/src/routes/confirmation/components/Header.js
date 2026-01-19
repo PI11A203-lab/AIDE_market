@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export default function Header() {
@@ -7,11 +8,18 @@ export default function Header() {
     <header className="confirmation-header">
       <div className="confirmation-header-container">
         <div className="confirmation-header-content">
-          <h1 className="confirmation-header-title">
-            <span className="confirmation-header-text">
-              {t('purchase.confirmation.headerTitle')}
-            </span>
-          </h1>
+          <Link to="/" className="confirmation-logo">
+            {t('header.title')}
+          </Link>
+          <Link 
+            to="/"
+            className="confirmation-btn-back-to-home"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            {t('common.backHome')}
+          </Link>
         </div>
       </div>
     </header>
