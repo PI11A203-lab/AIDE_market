@@ -1,17 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { Search, ShoppingCart, Globe, TrendingUp } from 'lucide-react';
 import { API_URL } from '../../config/constants';
 import LogoutButton from '../home/components/LogoutButton';
 import ProductList from '../home/components/ProductList';
+import CategorySidebar from '../home/components/CategorySidebar';
 import { useTranslation } from 'react-i18next';
 import './index.css';
 
+// 카테고리 ID 매핑 (문자열 → 숫자)
+const CATEGORY_MAP = {
+  'all': null,
+  'fe': 1,
+  'be': 2,
+  'design': 3,
+  'mg': 4,
+  'inf': 5,
+  'sec': 6,
+  'doc': 7
+};
+
 function RankingsPage() {
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]); // 모든 상품 (카테고리 카운트용)
   const [topRankingProducts, setTopRankingProducts] = useState([]); // 고정 랭킹 3개
   const [searchText, setSearchText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all'); // 카테고리 필터
   const [sortBy, setSortBy] = useState('download');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -73,26 +88,106 @@ function RankingsPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 고정 랭킹 3개 가져오기 (한 번만)
+  // 카테고리 정의 (동적으로 count 계산)
+  const categories = useMemo(() => {
+    const baseCategories = [
+      { id: 'all', name: t('home.tabs.all'), icon: '/images/icons/all.png' },
+      { id: 'fe', name: t('home.tabs.fe'), icon: '/images/icons/fe.png' },
+      { id: 'be', name: t('home.tabs.be'), icon: '/images/icons/be.png' },
+      { id: 'design', name: t('home.tabs.design'), icon: '/images/icons/design.png' },
+      { id: 'mg', name: t('home.tabs.mg'), icon: '/images/icons/mg.png' },
+      { id: 'inf', name: t('home.tabs.inf'), icon: '/images/icons/inf.png' },
+      { id: 'sec', name: t('home.tabs.sec'), icon: '/images/icons/sec.png' },
+      { id: 'doc', name: t('home.tabs.doc'), icon: '/images/icons/doc.png' },
+    ];
+
+    // 각 카테고리별 상품 수 계산
+    return baseCategories.map(cat => {
+      let count = 0;
+      if (cat.id === 'all') {
+        count = allProducts.length;
+      } else {
+        const categoryId = CATEGORY_MAP[cat.id];
+        count = allProducts.filter(p => p.category_id === categoryId).length;
+      }
+      return { ...cat, count };
+    });
+  }, [allProducts, t]);
+
+  // 모든 상품 가져오기 (카테고리 카운트용)
   useEffect(() => {
     axios
-      .get(`${API_URL}/api/products`, { params: { limit: 1000, sort: 'download' } })
+      .get(`${API_URL}/api/products`, { params: { limit: 1000 } })
       .then((result) => {
         const allProductsData = result.data.products || result.data || [];
-        const top3 = [...allProductsData]
-          .filter(p => p.download_count > 0)
-          .sort((a, b) => (b.download_count || 0) - (a.download_count || 0))
-          .slice(0, 3)
-          .map((product, index) => ({ ...product, rank: index + 1 }));
-        setTopRankingProducts(top3);
+        setAllProducts(allProductsData);
+      })
+      .catch((error) => {
+        console.error('전체 상품 로드 에러:', error);
+        setAllProducts([]);
+      });
+  }, []);
+
+  // 상위 3개 랭킹 가져오기 (정렬 옵션에 따라 변경)
+  useEffect(() => {
+    const params = {
+      sort: sortBy || 'download',
+      limit: 1000,
+    };
+
+    // 카테고리 필터 추가 (숫자 ID로 변환)
+    const categoryId = CATEGORY_MAP[selectedCategory];
+    if (categoryId !== null && categoryId !== undefined) {
+      params.category = categoryId;
+    }
+
+    // 검색어 추가
+    if (searchText) {
+      params.search = searchText;
+    }
+
+    axios
+      .get(`${API_URL}/api/products`, { params })
+      .then((result) => {
+        const allProductsData = result.data.products || result.data || [];
+        // 정렬 옵션에 따라 상위 3개 선택
+        let top3 = [];
+        if (sortBy === 'download') {
+          top3 = [...allProductsData]
+            .filter(p => p.download_count > 0)
+            .sort((a, b) => (b.download_count || 0) - (a.download_count || 0))
+            .slice(0, 3);
+        } else if (sortBy === 'rating') {
+          top3 = [...allProductsData]
+            .filter(p => parseFloat(p.rating_average || 0) > 0)
+            .sort((a, b) => parseFloat(b.rating_average || 0) - parseFloat(a.rating_average || 0))
+            .slice(0, 3);
+        } else if (sortBy === 'price') {
+          top3 = [...allProductsData]
+            .sort((a, b) => (a.price || 0) - (b.price || 0))
+            .slice(0, 3);
+        } else if (sortBy === 'priceDesc') {
+          top3 = [...allProductsData]
+            .sort((a, b) => (b.price || 0) - (a.price || 0))
+            .slice(0, 3);
+        } else {
+          // 기본값: 다운로드순
+          top3 = [...allProductsData]
+            .filter(p => p.download_count > 0)
+            .sort((a, b) => (b.download_count || 0) - (a.download_count || 0))
+            .slice(0, 3);
+        }
+        
+        const top3WithRank = top3.map((product, index) => ({ ...product, rank: index + 1 }));
+        setTopRankingProducts(top3WithRank);
       })
       .catch((error) => {
         console.error('랭킹 상품 로드 에러:', error);
         setTopRankingProducts([]);
       });
-  }, []);
+  }, [sortBy, selectedCategory, searchText]);
 
-  // 상품 로드 (랭킹 기준으로 정렬)
+  // 상품 로드 (랭킹 기준으로 정렬 + 카테고리 필터)
   useEffect(() => {
     setLoading(true);
     
@@ -101,6 +196,12 @@ function RankingsPage() {
       limit: currentPage === 1 ? 21 : 18, // 1페이지: 상위 3개 제외하고 18개 (6개씩 3줄), 다른 페이지: 18개
       page: currentPage,
     };
+
+    // 카테고리 필터 추가 (숫자 ID로 변환)
+    const categoryId = CATEGORY_MAP[selectedCategory];
+    if (categoryId !== null && categoryId !== undefined) {
+      params.category = categoryId;
+    }
 
     // 검색어 추가
     if (searchText) {
@@ -143,7 +244,7 @@ function RankingsPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, [sortBy, searchText, currentPage, topRankingProducts]);
+  }, [sortBy, searchText, currentPage, topRankingProducts, selectedCategory]);
 
   // 정렬 변경 시 페이지를 1로 리셋
   useEffect(() => {
@@ -154,6 +255,11 @@ function RankingsPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchText]);
+
+  // 카테고리 변경 시 페이지를 1로 리셋
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   // 로그아웃 함수
   const handleLogout = () => {
@@ -355,6 +461,16 @@ function RankingsPage() {
                 <h2 className="more-rankings-title">
                   {t('home.viewAll')}
                 </h2>
+                
+                {/* 카테고리 필터 */}
+                <CategorySidebar
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                  sortBy={sortBy}
+                  onSortChange={setSortBy}
+                />
+
                 {products.length > 0 ? (
                   <ProductList products={products} />
                 ) : !loading ? (

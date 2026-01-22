@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { X as CloseIcon, Copy, Check, Instagram, Link2, Share2 } from 'lucide-react';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export default function ShareModal({ isOpen, onClose, productName, productUrl }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
@@ -11,7 +13,7 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
     try {
       await navigator.clipboard.writeText(productUrl);
       setCopied(true);
-      message.success('링크가 클립보드에 복사되었습니다.');
+      message.success(t('notifications.share.linkCopied'));
       setTimeout(() => {
         setCopied(false);
       }, 2000);
@@ -26,12 +28,12 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
       try {
         document.execCommand('copy');
         setCopied(true);
-        message.success('링크가 클립보드에 복사되었습니다.');
+        message.success(t('notifications.share.linkCopied'));
         setTimeout(() => {
           setCopied(false);
         }, 2000);
       } catch (err) {
-        message.error('링크 복사에 실패했습니다.');
+        message.error(t('notifications.share.linkCopyFail'));
       }
       document.body.removeChild(textArea);
     }
@@ -67,7 +69,7 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
       case 'instagram':
         // Instagram은 웹에서 직접 공유 링크를 제공하지 않으므로 링크 복사 안내
         handleCopyLink();
-        message.info('링크를 복사했습니다. Instagram 앱에서 붙여넣어 공유하세요.');
+        message.info(t('notifications.share.instagramCopyInfo'));
         return;
       case 'x':
         shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;

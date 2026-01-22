@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Search, ShoppingCart, Globe } from 'lucide-react';
+import { Search, ShoppingCart, Globe, X } from 'lucide-react';
+import { message } from 'antd';
 import AvailableDevelopers from './components/AvailableDevelopers';
 import TeamSidebar from './components/TeamSidebar';
 import { API_URL } from '../../config/constants';
@@ -78,7 +79,11 @@ export default function TeamBuilder() {
   }, []);
 
   // URL 파라미터를 업데이트하는 함수
+  // URL 파라미터 업데이트로 인한 불필요한 재실행 방지를 위한 ref
+  const isUpdatingFromState = useRef(false);
+
   const updateURLParams = (teamIds) => {
+    isUpdatingFromState.current = true; // 상태에서 URL을 업데이트하는 중임을 표시
     const searchParams = new URLSearchParams(location.search);
     if (teamIds.length > 0) {
       searchParams.set('team', teamIds.join(','));
@@ -89,6 +94,10 @@ export default function TeamBuilder() {
       pathname: location.pathname,
       search: searchParams.toString()
     });
+    // 다음 렌더링 사이클 후 플래그 리셋
+    setTimeout(() => {
+      isUpdatingFromState.current = false;
+    }, 0);
   };
 
   useEffect(() => {
@@ -101,6 +110,11 @@ export default function TeamBuilder() {
       }
       return [];
     };
+
+    // 상태에서 URL을 업데이트하는 중이면 loadData를 실행하지 않음
+    if (isUpdatingFromState.current) {
+      return;
+    }
 
     const loadData = async () => {
       try {
@@ -127,88 +141,189 @@ export default function TeamBuilder() {
         const productsResponse = await axios.get(`${API_URL}/api/products`);
         const allProducts = productsResponse.data?.products || [];
         
-        if (favoriteProductIds.length === 0) {
-          setAvailableDevelopers([]);
-        } else {
-          // 찜목록에 있는 상품만 필터링
-          const favoriteProducts = allProducts.filter(product => 
-            favoriteProductIds.includes(product.id)
-          );
+        // 찜목록에 있는 상품만 필터링
+        const favoriteProducts = favoriteProductIds.length > 0 
+          ? allProducts.filter(product => favoriteProductIds.includes(product.id))
+          : [];
 
-          // API 응답을 developer 형식으로 변환
-          const developers = favoriteProducts.map(product => ({
-            id: product.id,
-            name: product.name,
-            category: product.category_name || 'その他', // 카테고리 이름 사용
-            categoryId: product.category_id, // 카테고리 ID 추가
-            price: product.price,
-            imageUrl: product.imageUrl,
-            stats: {
-              technical: 95,
-              communication: 90,
-              creativity: 88,
-              speed: 92,
-              reliability: 93,
-              innovation: 90
-            }
-          }));
-          
-          setAvailableDevelopers(developers);
-          
-          // URL 파라미터에서 선택된 팀원 복원
-          const selectedIds = getSelectedIdsFromURL();
-          
-          // localStorage에서 템플릿 팀 정보 복원
-          let restoredTemplateTeamIds = new Set();
-          let templateTeamsInfo = [];
-          try {
-            const savedTemplateTeamIds = localStorage.getItem('selectedTemplateTeamIds');
-            const savedTemplateTeamsInfo = localStorage.getItem('templateTeamsInfo');
-            if (savedTemplateTeamIds) {
-              restoredTemplateTeamIds = new Set(JSON.parse(savedTemplateTeamIds));
-            }
-            if (savedTemplateTeamsInfo) {
-              templateTeamsInfo = JSON.parse(savedTemplateTeamsInfo);
-            }
-          } catch (error) {
-            console.error('템플릿 팀 정보 복원 실패:', error);
-          }
-          
-          if (selectedIds.length > 0) {
-            const restoredTeam = [];
+        // API 응답을 developer 형식으로 변환 (스탯 정보 포함)
+        const developers = await Promise.all(
+          favoriteProducts.map(async (product) => {
+            // 각 상품의 스탯 정보 가져오기
+            let productStats = {
+              teamwork: 50,
+              stability: 50,
+              speed: 50,
+              creativity: 50,
+              productivity: 50,
+              maintainability: 50
+            };
             
-            // 템플릿 팀 멤버 먼저 복원
-            templateTeamsInfo.forEach(templateTeam => {
-              const templateMemberIds = templateTeam.memberIds || [];
-              templateMemberIds.forEach(memberId => {
-                if (selectedIds.includes(memberId)) {
-                  const dev = developers.find(d => d.id === memberId);
-                  if (dev) {
-                    restoredTeam.push({
-                      ...dev,
-                      templateTeamId: templateTeam.id,
-                      templateTeamName: templateTeam.name
-                    });
+            try {
+              const statsResponse = await api.products.getStats(product.id);
+              if (statsResponse.data?.stats) {
+                productStats = {
+                  teamwork: statsResponse.data.stats.teamwork || 50,
+                  stability: statsResponse.data.stats.stability || 50,
+                  speed: statsResponse.data.stats.speed || 50,
+                  creativity: statsResponse.data.stats.creativity || 50,
+                  productivity: statsResponse.data.stats.productivity || 50,
+                  maintainability: statsResponse.data.stats.maintainability || 50
+                };
+              }
+            } catch (error) {
+              console.warn(`상품 ${product.id}의 스탯을 가져오는데 실패했습니다:`, error);
+            }
+            
+            return {
+              id: product.id,
+              name: product.name,
+              category: product.category_name || 'その他',
+              categoryId: product.category_id,
+              price: product.price,
+              imageUrl: product.imageUrl,
+              stats: productStats
+            };
+          })
+        );
+        
+        setAvailableDevelopers(developers);
+        
+        // URL 파라미터에서 선택된 팀원 복원
+        const selectedIds = getSelectedIdsFromURL();
+        
+        // localStorage에서 템플릿 팀 정보 복원
+        let restoredTemplateTeamIds = new Set();
+        let templateTeamsInfo = [];
+        try {
+          const savedTemplateTeamIds = localStorage.getItem('selectedTemplateTeamIds');
+          const savedTemplateTeamsInfo = localStorage.getItem('templateTeamsInfo');
+          if (savedTemplateTeamIds) {
+            restoredTemplateTeamIds = new Set(JSON.parse(savedTemplateTeamIds));
+          }
+          if (savedTemplateTeamsInfo) {
+            templateTeamsInfo = JSON.parse(savedTemplateTeamsInfo);
+          }
+        } catch (error) {
+          console.error('템플릿 팀 정보 복원 실패:', error);
+        }
+        
+        if (selectedIds.length > 0) {
+          const restoredTeam = [];
+          
+          // 템플릿 팀 멤버 먼저 복원
+          for (const templateTeam of templateTeamsInfo) {
+            const templateMemberIds = templateTeam.memberIds || [];
+            for (const memberId of templateMemberIds) {
+              if (selectedIds.includes(memberId)) {
+                // 먼저 developers(찜목록)에서 찾고, 없으면 allProducts에서 찾기
+                let dev = developers.find(d => d.id === memberId);
+                if (!dev) {
+                  const product = allProducts.find(p => p.id === memberId);
+                  if (product) {
+                    // 스탯 정보 가져오기
+                    let productStats = {
+                      teamwork: 50,
+                      stability: 50,
+                      speed: 50,
+                      creativity: 50,
+                      productivity: 50,
+                      maintainability: 50
+                    };
+                    
+                    try {
+                      const statsResponse = await api.products.getStats(product.id);
+                      if (statsResponse.data?.stats) {
+                        productStats = {
+                          teamwork: statsResponse.data.stats.teamwork || 50,
+                          stability: statsResponse.data.stats.stability || 50,
+                          speed: statsResponse.data.stats.speed || 50,
+                          creativity: statsResponse.data.stats.creativity || 50,
+                          productivity: statsResponse.data.stats.productivity || 50,
+                          maintainability: statsResponse.data.stats.maintainability || 50
+                        };
+                      }
+                    } catch (error) {
+                      console.warn(`상품 ${product.id}의 스탯을 가져오는데 실패했습니다:`, error);
+                    }
+                    
+                    dev = {
+                      id: product.id,
+                      name: product.name,
+                      category: product.category_name || 'その他',
+                      categoryId: product.category_id,
+                      price: product.price,
+                      imageUrl: product.imageUrl,
+                      stats: productStats
+                    };
                   }
                 }
-              });
-            });
-            
-            // 나머지 개별 상품 복원 (템플릿 팀에 속하지 않은 것들)
-            const templateMemberIds = templateTeamsInfo.flatMap(t => t.memberIds || []);
-            const individualIds = selectedIds.filter(id => !templateMemberIds.includes(id));
-            individualIds.forEach(id => {
-              const dev = developers.find(d => d.id === id);
-              if (dev && !restoredTeam.find(r => r.id === id)) {
-                restoredTeam.push(dev);
+                if (dev) {
+                  restoredTeam.push({
+                    ...dev,
+                    templateTeamId: templateTeam.id,
+                    templateTeamName: templateTeam.name
+                  });
+                }
               }
-            });
-            
-            setSelectedTeam(restoredTeam);
-            setSelectedTemplateTeamIds(restoredTemplateTeamIds);
-          } else {
-            setSelectedTemplateTeamIds(restoredTemplateTeamIds);
+            }
           }
+          
+          // 나머지 개별 상품 복원 (템플릿 팀에 속하지 않은 것들)
+          const templateMemberIds = templateTeamsInfo.flatMap(t => t.memberIds || []);
+          const individualIds = selectedIds.filter(id => !templateMemberIds.includes(id));
+          for (const id of individualIds) {
+            // 먼저 developers(찜목록)에서 찾고, 없으면 allProducts에서 찾기
+            let dev = developers.find(d => d.id === id);
+            if (!dev) {
+              const product = allProducts.find(p => p.id === id);
+              if (product) {
+                // 스탯 정보 가져오기
+                let productStats = {
+                  teamwork: 50,
+                  stability: 50,
+                  speed: 50,
+                  creativity: 50,
+                  productivity: 50,
+                  maintainability: 50
+                };
+                
+                try {
+                  const statsResponse = await api.products.getStats(product.id);
+                  if (statsResponse.data?.stats) {
+                    productStats = {
+                      teamwork: statsResponse.data.stats.teamwork || 50,
+                      stability: statsResponse.data.stats.stability || 50,
+                      speed: statsResponse.data.stats.speed || 50,
+                      creativity: statsResponse.data.stats.creativity || 50,
+                      productivity: statsResponse.data.stats.productivity || 50,
+                      maintainability: statsResponse.data.stats.maintainability || 50
+                    };
+                  }
+                } catch (error) {
+                  console.warn(`상품 ${product.id}의 스탯을 가져오는데 실패했습니다:`, error);
+                }
+                
+                dev = {
+                  id: product.id,
+                  name: product.name,
+                  category: product.category_name || 'その他',
+                  categoryId: product.category_id,
+                  price: product.price,
+                  imageUrl: product.imageUrl,
+                  stats: productStats
+                };
+              }
+            }
+            if (dev && !restoredTeam.find(r => r.id === id)) {
+              restoredTeam.push(dev);
+            }
+          }
+          
+          setSelectedTeam(restoredTeam);
+          setSelectedTemplateTeamIds(restoredTemplateTeamIds);
+        } else {
+          setSelectedTemplateTeamIds(restoredTemplateTeamIds);
         }
         
         // 템플릿 팀 구성 로드 (항상 실행)
@@ -244,22 +359,86 @@ export default function TeamBuilder() {
             const membersResponse = await api.teamMembers.getByTeam(team.id);
             const members = membersResponse.data?.teamMembers || membersResponse.data?.members || [];
             
+            console.log(`팀 ${team.id} (${team.name})의 멤버 수:`, members.length);
+            
             // 멤버 정보와 상품 정보 결합
-            const membersWithProducts = members.map(member => {
-              const product = allProducts.find(p => p.id === member.product_id);
+            const membersWithProducts = [];
+            
+            for (const member of members) {
+              // product_id를 숫자로 변환하여 타입 일치
+              const memberProductId = typeof member.product_id === 'string' 
+                ? parseInt(member.product_id) 
+                : member.product_id;
+              
+              if (!memberProductId || isNaN(memberProductId)) {
+                console.error(`유효하지 않은 product_id:`, member.product_id);
+                continue;
+              }
+              
+              // allProducts에서 상품 찾기 (타입 일치를 위해 숫자로 변환)
+              let product = allProducts.find(p => {
+                const productId = typeof p.id === 'string' ? parseInt(p.id) : p.id;
+                return productId === memberProductId;
+              });
+              
+              // allProducts에 없으면 API에서 직접 가져오기
+              if (!product) {
+                try {
+                  const productResponse = await axios.get(`${API_URL}/api/products/${memberProductId}`);
+                  product = productResponse.data?.product || productResponse.data;
+                  console.log(`상품 ${memberProductId}를 API에서 가져옴:`, product?.name);
+                } catch (error) {
+                  console.error(`상품 ${memberProductId}를 가져오는 데 실패:`, error);
+                  continue;
+                }
+              }
+              
               if (product) {
-                return {
-                  id: product.id,
+                const productId = typeof product.id === 'string' ? parseInt(product.id) : product.id;
+                const categoryId = typeof product.category_id === 'string' 
+                  ? parseInt(product.category_id) 
+                  : (product.category_id || null);
+                
+                // 스탯 정보 가져오기
+                let productStats = {
+                  teamwork: 50,
+                  stability: 50,
+                  speed: 50,
+                  creativity: 50,
+                  productivity: 50,
+                  maintainability: 50
+                };
+                
+                try {
+                  const statsResponse = await api.products.getStats(productId);
+                  if (statsResponse.data?.stats) {
+                    productStats = {
+                      teamwork: statsResponse.data.stats.teamwork || 50,
+                      stability: statsResponse.data.stats.stability || 50,
+                      speed: statsResponse.data.stats.speed || 50,
+                      creativity: statsResponse.data.stats.creativity || 50,
+                      productivity: statsResponse.data.stats.productivity || 50,
+                      maintainability: statsResponse.data.stats.maintainability || 50
+                    };
+                  }
+                } catch (error) {
+                  console.warn(`상품 ${productId}의 스탯을 가져오는데 실패했습니다:`, error);
+                }
+                
+                membersWithProducts.push({
+                  id: productId,
                   name: product.name,
                   category: product.category_name || 'その他',
-                  categoryId: product.category_id,
+                  categoryId: categoryId,
                   price: product.price,
                   imageUrl: product.imageUrl,
-                  position: member.position
-                };
+                  position: member.position,
+                  stats: productStats
+                });
               }
-              return null;
-            }).filter(Boolean);
+            }
+            
+            console.log(`팀 ${team.id} (${team.name})의 최종 멤버 수:`, membersWithProducts.length);
             
             return {
               id: team.id,
@@ -297,6 +476,7 @@ export default function TeamBuilder() {
   // 템플릿 팀 전체를 AIチーム에 추가
   const addTemplateTeamToSelectedTeam = (templateTeam) => {
     console.log('템플릿 팀 추가 시작:', templateTeam);
+    console.log('템플릿 팀 멤버 전체:', templateTeam.members);
     
     // 템플릿 팀 ID를 숫자로 변환 (타입 일치를 위해)
     const templateTeamId = typeof templateTeam.id === 'string' ? parseInt(templateTeam.id) : templateTeam.id;
@@ -314,6 +494,9 @@ export default function TeamBuilder() {
     }
 
     console.log('템플릿 팀 멤버 수:', templateTeam.members.length);
+    console.log('현재 선택된 팀 크기:', selectedTeam.length);
+    console.log('현재 selectedTeam 멤버 ID:', selectedTeam.map(d => d.id));
+    console.log('최대 팀 크기:', maxTeamSize);
 
     // 최대 팀 크기 확인
     const remainingSlots = maxTeamSize - selectedTeam.length;
@@ -326,32 +509,59 @@ export default function TeamBuilder() {
     // 템플릿 팀의 모든 멤버를 추가하되, 남은 슬롯을 초과하지 않도록 함
     const membersToAdd = templateTeam.members.slice(0, Math.min(templateTeam.members.length, remainingSlots));
     
+    console.log('추가할 멤버 수:', membersToAdd.length);
+    console.log('추가할 멤버 목록:', membersToAdd.map(m => ({ id: m.id, name: m.name })));
+    console.log('템플릿 팀 멤버 ID 목록:', membersToAdd.map(m => {
+      const id = typeof m.id === 'string' ? parseInt(m.id) : m.id;
+      return id;
+    }));
+    
+    // 템플릿 팀의 모든 멤버를 추가
+    // "選択可能한AI開発자" 목록에 있는 상품과 템플릿 팀은 별개이므로,
+    // 템플릿 팀을 추가할 때는 이미 AIチーム에 있는 멤버만 제외
     const developersToAdd = membersToAdd
       .filter(member => {
-        // 이미 추가된 멤버는 제외
-        const alreadyExists = selectedTeam.find(d => d.id === member.id);
-        if (alreadyExists) {
-          console.log('멤버가 이미 추가되어 있습니다:', member.name);
+        // member.id를 숫자로 변환
+        const memberId = typeof member.id === 'string' ? parseInt(member.id) : member.id;
+        
+        // 이미 AIチーム(selectedTeam)에 추가된 멤버만 제외
+        // "選択可能한AI開発자" 목록에만 있는 것은 제외하지 않음
+        // (템플릿 팀과 "選択可能한AI開発자"는 별개의 개념)
+        const alreadyInSelectedTeam = selectedTeam.find(d => {
+          const devId = typeof d.id === 'string' ? parseInt(d.id) : d.id;
+          return devId === memberId;
+        });
+        
+        if (alreadyInSelectedTeam) {
+          console.log('멤버가 이미 AIチーム에 추가되어 있습니다:', member.name, '(ID:', memberId, ')');
+        } else {
+          console.log('멤버를 AIチーム에 추가합니다:', member.name, '(ID:', memberId, ')');
         }
-        return !alreadyExists;
+        return !alreadyInSelectedTeam;
       })
       .map(member => {
+        // ID를 숫자로 통일
+        const memberId = typeof member.id === 'string' ? parseInt(member.id) : member.id;
+        const categoryId = typeof member.categoryId === 'string' 
+          ? parseInt(member.categoryId) 
+          : (member.categoryId || null);
+        
         const developer = {
-          id: member.id,
+          id: memberId,
           name: member.name,
           category: member.category,
-          categoryId: member.categoryId,
+          categoryId: categoryId,
           price: member.price,
           imageUrl: member.imageUrl,
           templateTeamId: templateTeamId, // 템플릿 팀 ID 추가 (숫자로 통일)
           templateTeamName: templateTeam.name, // 템플릿 팀 이름 추가
-          stats: {
-            technical: 95,
-            communication: 90,
-            creativity: 88,
-            speed: 92,
-            reliability: 93,
-            innovation: 90
+          stats: member.stats || {
+            teamwork: 50,
+            stability: 50,
+            speed: 50,
+            creativity: 50,
+            productivity: 50,
+            maintainability: 50
           }
         };
         console.log(`멤버 ${member.name} 변환:`, {
@@ -362,7 +572,14 @@ export default function TeamBuilder() {
         return developer;
       });
 
+    // 템플릿 팀의 모든 멤버를 추가해야 하므로, 필터링 후에도 멤버가 없으면 경고만 표시
     if (developersToAdd.length === 0) {
+      console.warn('템플릿 팀의 모든 멤버가 이미 AIチーム에 추가되어 있습니다.');
+      // 모든 멤버가 이미 추가되어 있어도 템플릿 팀 ID는 추가 (중복 방지용)
+      if (!selectedTemplateTeamIds.has(templateTeamId)) {
+        const newTemplateTeamIds = new Set([...selectedTemplateTeamIds, templateTeamId]);
+        setSelectedTemplateTeamIds(newTemplateTeamIds);
+      }
       return;
     }
 
@@ -375,12 +592,16 @@ export default function TeamBuilder() {
     });
 
     console.log('현재 selectedTeam:', selectedTeam);
+    console.log('현재 selectedTeam 멤버 ID:', selectedTeam.map(d => d.id));
     console.log('현재 selectedTemplateTeamIds:', Array.from(selectedTemplateTeamIds));
+    console.log('추가될 developersToAdd:', developersToAdd.map(d => ({ id: d.id, name: d.name })));
 
     const newTeam = [...selectedTeam, ...developersToAdd];
     const newTemplateTeamIds = new Set([...selectedTemplateTeamIds, templateTeamId]);
     
     console.log('새로운 newTeam:', newTeam);
+    console.log('새로운 newTeam 멤버 ID:', newTeam.map(d => d.id));
+    console.log('새로운 newTeam 크기:', newTeam.length);
     console.log('새로운 newTemplateTeamIds:', Array.from(newTemplateTeamIds));
     
     setSelectedTeam(newTeam);
@@ -392,7 +613,7 @@ export default function TeamBuilder() {
         const teamMembers = newTeam.filter(dev => dev.templateTeamId === id);
         return {
           id: id,
-          name: teamMembers[0]?.templateTeamName || 'Template Team',
+          name: teamMembers[0]?.templateTeamName || t('teamBuilder.template') + ' ' + t('teamBuilder.teamTitle'),
           memberIds: teamMembers.map(m => m.id)
         };
       });
@@ -422,7 +643,7 @@ export default function TeamBuilder() {
         const teamMembers = newTeam.filter(dev => dev.templateTeamId === id);
         return {
           id: id,
-          name: teamMembers[0]?.templateTeamName || 'Template Team',
+          name: teamMembers[0]?.templateTeamName || t('teamBuilder.template') + ' ' + t('teamBuilder.teamTitle'),
           memberIds: teamMembers.map(m => m.id)
         };
       });
@@ -436,6 +657,32 @@ export default function TeamBuilder() {
     updateURLParams(newTeam.map(d => d.id));
   };
 
+  // 템플릿 팀 삭제
+  const deleteTemplateTeam = async (teamId) => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      // 팀 구성 삭제
+      await api.teamCompositions.delete(teamId);
+      
+      // 템플릿 팀 목록에서 제거
+      setTemplateTeams(prev => prev.filter(team => team.id !== teamId));
+      
+      // 선택된 팀에 있다면 제거
+      const templateTeamIdNum = typeof teamId === 'string' ? parseInt(teamId) : teamId;
+      if (selectedTemplateTeamIds.has(templateTeamIdNum)) {
+        removeTemplateTeamFromSelectedTeam(templateTeamIdNum);
+      }
+      
+      message.success(t('notifications.team.templateTeamDeleted'));
+    } catch (error) {
+      console.error('템플릿 팀 삭제 실패:', error);
+      message.error(t('notifications.team.templateTeamDeleteFail'));
+    }
+  };
+
   // 팀에서 제거
   const removeFromTeam = (developerId) => {
     const newTeam = selectedTeam.filter(d => d.id !== developerId);
@@ -444,36 +691,64 @@ export default function TeamBuilder() {
     updateURLParams(newTeam.map(d => d.id));
   };
 
-  // 팀 평균 스탯 계산
+  // 찜목록에서 삭제
+  const removeFromFavorites = async (productId) => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      const userId = user.id;
+      const product = availableDevelopers.find(dev => dev.id === productId);
+      const productName = product?.name || '상품';
+      
+      await api.favorites.delete(userId, productId);
+      
+      // 찜목록에서 제거된 상품을 availableDevelopers에서도 제거
+      setAvailableDevelopers(prev => prev.filter(dev => dev.id !== productId));
+      
+      // 선택된 팀에 있다면 팀에서도 제거
+      if (selectedTeam.find(d => d.id === productId)) {
+        removeFromTeam(productId);
+      }
+      
+      message.success(t('notifications.team.favoriteRemoved', { productName }));
+    } catch (error) {
+      console.error('찜목록에서 삭제 실패:', error);
+      message.error(t('notifications.team.favoriteRemoveFail'));
+    }
+  };
+
+  // 팀 평균 스탯 계산 (실제 API 스탯 사용)
   const calculateTeamStats = () => {
     if (selectedTeam.length === 0) {
       return [
-        { stat: 'Technical', value: 0 },
-        { stat: 'Communication', value: 0 },
-        { stat: 'Creativity', value: 0 },
+        { stat: 'Teamwork', value: 0 },
+        { stat: 'Stability', value: 0 },
         { stat: 'Speed', value: 0 },
-        { stat: 'Reliability', value: 0 },
-        { stat: 'Innovation', value: 0 }
+        { stat: 'Creativity', value: 0 },
+        { stat: 'Productivity', value: 0 },
+        { stat: 'Maintainability', value: 0 }
       ];
     }
 
     const avgStats = selectedTeam.reduce((acc, dev) => ({
-      technical: acc.technical + dev.stats.technical,
-      communication: acc.communication + dev.stats.communication,
-      creativity: acc.creativity + dev.stats.creativity,
-      speed: acc.speed + dev.stats.speed,
-      reliability: acc.reliability + dev.stats.reliability,
-      innovation: acc.innovation + dev.stats.innovation
-    }), { technical: 0, communication: 0, creativity: 0, speed: 0, reliability: 0, innovation: 0 });
+      teamwork: acc.teamwork + (dev.stats?.teamwork || 50),
+      stability: acc.stability + (dev.stats?.stability || 50),
+      speed: acc.speed + (dev.stats?.speed || 50),
+      creativity: acc.creativity + (dev.stats?.creativity || 50),
+      productivity: acc.productivity + (dev.stats?.productivity || 50),
+      maintainability: acc.maintainability + (dev.stats?.maintainability || 50)
+    }), { teamwork: 0, stability: 0, speed: 0, creativity: 0, productivity: 0, maintainability: 0 });
 
     const teamSize = selectedTeam.length;
     return [
-      { stat: 'Technical', value: Math.round(avgStats.technical / teamSize) },
-      { stat: 'Communication', value: Math.round(avgStats.communication / teamSize) },
-      { stat: 'Creativity', value: Math.round(avgStats.creativity / teamSize) },
+      { stat: 'Teamwork', value: Math.round(avgStats.teamwork / teamSize) },
+      { stat: 'Stability', value: Math.round(avgStats.stability / teamSize) },
       { stat: 'Speed', value: Math.round(avgStats.speed / teamSize) },
-      { stat: 'Reliability', value: Math.round(avgStats.reliability / teamSize) },
-      { stat: 'Innovation', value: Math.round(avgStats.innovation / teamSize) }
+      { stat: 'Creativity', value: Math.round(avgStats.creativity / teamSize) },
+      { stat: 'Productivity', value: Math.round(avgStats.productivity / teamSize) },
+      { stat: 'Maintainability', value: Math.round(avgStats.maintainability / teamSize) }
     ];
   };
 
@@ -716,6 +991,104 @@ export default function TeamBuilder() {
           </p>
         </div>
 
+        {/* 육각형 그래프 설명 섹션 */}
+        <div className="hexagon-explanation-section">
+          <div className="hexagon-explanation-card">
+            <div className="hexagon-explanation-header">
+              <div className="hexagon-header-text">
+                <h3 className="hexagon-explanation-title">{t('chart.explanationTitle')}</h3>
+                <p className="hexagon-explanation-subtitle">{t('chart.explanationDescription')}</p>
+              </div>
+            </div>
+            
+            <div className="hexagon-stats-grid">
+              <div className="hexagon-stat-item" style={{ '--stat-color': '#3b82f6' }}>
+                <div className="hexagon-stat-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <div className="hexagon-stat-content">
+                  <h4 className="hexagon-stat-name">Teamwork</h4>
+                  <p className="hexagon-stat-desc">{t('chart.stats.teamwork')}</p>
+                </div>
+              </div>
+              
+              <div className="hexagon-stat-item" style={{ '--stat-color': '#10b981' }}>
+                <div className="hexagon-stat-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                </div>
+                <div className="hexagon-stat-content">
+                  <h4 className="hexagon-stat-name">Stability</h4>
+                  <p className="hexagon-stat-desc">{t('chart.stats.stability')}</p>
+                </div>
+              </div>
+              
+              <div className="hexagon-stat-item" style={{ '--stat-color': '#f59e0b' }}>
+                <div className="hexagon-stat-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline>
+                  </svg>
+                </div>
+                <div className="hexagon-stat-content">
+                  <h4 className="hexagon-stat-name">Speed</h4>
+                  <p className="hexagon-stat-desc">{t('chart.stats.speed')}</p>
+                </div>
+              </div>
+              
+              <div className="hexagon-stat-item" style={{ '--stat-color': '#8b5cf6' }}>
+                <div className="hexagon-stat-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                </div>
+                <div className="hexagon-stat-content">
+                  <h4 className="hexagon-stat-name">Creativity</h4>
+                  <p className="hexagon-stat-desc">{t('chart.stats.creativity')}</p>
+                </div>
+              </div>
+              
+              <div className="hexagon-stat-item" style={{ '--stat-color': '#ec4899' }}>
+                <div className="hexagon-stat-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
+                </div>
+                <div className="hexagon-stat-content">
+                  <h4 className="hexagon-stat-name">Productivity</h4>
+                  <p className="hexagon-stat-desc">{t('chart.stats.productivity')}</p>
+                </div>
+              </div>
+              
+              <div className="hexagon-stat-item" style={{ '--stat-color': '#06b6d4' }}>
+                <div className="hexagon-stat-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                  </svg>
+                </div>
+                <div className="hexagon-stat-content">
+                  <h4 className="hexagon-stat-name">Maintainability</h4>
+                  <p className="hexagon-stat-desc">{t('chart.stats.maintainability')}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="hexagon-tip-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hexagon-tip-icon">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <p className="hexagon-tip-text">{t('chart.synergyNote')}</p>
+            </div>
+          </div>
+        </div>
+
         <div className="team-content-grid">
           <div className="team-left-section">
             <AvailableDevelopers
@@ -724,6 +1097,7 @@ export default function TeamBuilder() {
               maxTeamSize={maxTeamSize}
               onAddToTeam={addToTeam}
               onRemoveFromTeam={removeFromTeam}
+              onDeleteFromFavorites={removeFromFavorites}
             />
 
             {/* 템플릿 팀 섹션 */}
@@ -741,11 +1115,44 @@ export default function TeamBuilder() {
                         borderRadius: '0.75rem',
                         padding: '1.5rem',
                         marginBottom: '1rem',
-                        background: '#ffffff'
+                        background: '#ffffff',
+                        position: 'relative'
                       }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        {/* 템플릿 팀 삭제 버튼 */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteTemplateTeam(team.id);
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: '1rem',
+                            right: '1rem',
+                            background: 'none',
+                            border: 'none',
+                            color: '#6B7280',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 10,
+                            transition: 'all 0.2s',
+                            padding: '4px'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.color = '#EF4444';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.color = '#6B7280';
+                          }}
+                          title="템플릿 팀 삭제"
+                        >
+                          <X size={18} />
+                        </button>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingRight: '2rem' }}>
                           <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1A1A1A', margin: 0 }}>
-                            {team.name}
+                            {team.name?.replace(/템플릿|テンプレート|template/gi, t('teamBuilder.template')) || team.name}
                           </h4>
                           <span style={{ fontSize: '0.875rem', color: '#6B7280' }}>
                             {t('synergy.label')}: {team.synergyScore}

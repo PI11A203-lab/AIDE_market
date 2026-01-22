@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal, message } from 'antd';
 import { Calendar, CreditCard, Package, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../config/api';
 import SubscriptionStatusBadge from './SubscriptionStatusBadge';
 import { formatDate, formatCurrency } from '../utils/formatters';
@@ -10,6 +11,7 @@ export default function SubscriptionCard({
   subscription, 
   onUpdate 
 }) {
+  const { t } = useTranslation();
   const history = useHistory();
 
   const handleCancelSubscription = async () => {
@@ -22,11 +24,11 @@ export default function SubscriptionCard({
       onOk: async () => {
         try {
           await api.subscriptions.cancel(subscription.subscription_id);
-          message.success('구독이 취소되었습니다.');
+          message.success(t('notifications.subscription.cancelled'));
           if (onUpdate) onUpdate();
         } catch (error) {
           console.error('구독 취소 실패:', error);
-          const errorMessage = error.response?.data?.error || '구독 취소에 실패했습니다.';
+          const errorMessage = error.response?.data?.error || t('notifications.subscription.cancelFail');
           message.error(errorMessage);
         }
       }
@@ -41,11 +43,11 @@ export default function SubscriptionCard({
       if (subscriptionDetail.reminder_token) {
         history.push(`/subscription/reminder/${subscriptionDetail.reminder_token}`);
       } else {
-        message.info('이메일 링크는 다음 결제 안내 이메일에서 확인할 수 있습니다.');
+        message.info(t('notifications.subscription.emailLinkInfo'));
       }
     } catch (error) {
       console.error('구독 정보 조회 실패:', error);
-      message.error('구독 정보를 불러올 수 없습니다.');
+      message.error(t('notifications.subscription.loadFail'));
     }
   };
 

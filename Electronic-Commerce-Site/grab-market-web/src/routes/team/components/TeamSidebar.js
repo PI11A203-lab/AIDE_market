@@ -125,7 +125,9 @@ export default function TeamSidebar({
                 console.log(`템플릿 팀 ${templateTeamId} 멤버:`, templateTeamMembers);
                 if (templateTeamMembers.length === 0) return null;
                 
-                const templateTeamName = templateTeamMembers[0]?.templateTeamName || 'Template Team';
+                const templateTeamName = templateTeamMembers[0]?.templateTeamName 
+                  ? templateTeamMembers[0].templateTeamName.replace(/템플릿|テンプレート|template/gi, t('teamBuilder.template'))
+                  : t('teamBuilder.template') + ' ' + t('teamBuilder.teamTitle');
                 const templateTeamTotalPrice = templateTeamMembers.reduce((sum, dev) => sum + dev.price, 0);
                 
                 return (
@@ -136,7 +138,6 @@ export default function TeamSidebar({
                       alignItems: 'center',
                       marginBottom: '0.5rem',
                       padding: '0.5rem',
-                      background: '#F3F4F6',
                       borderRadius: '0.5rem'
                     }}>
                       <div>
@@ -144,7 +145,7 @@ export default function TeamSidebar({
                           {templateTeamName}
                         </h4>
                         <p style={{ fontSize: '0.75rem', color: '#6B7280', margin: '0.25rem 0 0 0' }}>
-                          {templateTeamMembers.length}명 · ¥{templateTeamTotalPrice.toLocaleString()}
+                          {templateTeamMembers.length}{t('teamBuilder.memberUnit')} · ¥{templateTeamTotalPrice.toLocaleString()}
                         </p>
                       </div>
                       <button
@@ -223,7 +224,7 @@ export default function TeamSidebar({
             </div>
 
             {/* 팀 스탯 레이더 차트 */}
-            <TeamStatsChart teamStats={teamStats} />
+            <TeamStatsChart teamStats={teamStats} selectedTeam={selectedTeam} />
 
             {/* 시너지 스코어 */}
             <SynergyScore score={synergyScore} />

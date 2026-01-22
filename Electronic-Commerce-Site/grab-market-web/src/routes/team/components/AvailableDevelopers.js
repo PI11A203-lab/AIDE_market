@@ -24,7 +24,8 @@ export default function AvailableDevelopers({
   selectedTeam, 
   maxTeamSize, 
   onAddToTeam, 
-  onRemoveFromTeam 
+  onRemoveFromTeam,
+  onDeleteFromFavorites
 }) {
   const { t } = useTranslation();
   
@@ -94,6 +95,7 @@ export default function AvailableDevelopers({
               maxTeamSize={maxTeamSize}
               onAddToTeam={onAddToTeam}
               onRemoveFromTeam={onRemoveFromTeam}
+              onDeleteFromFavorites={onDeleteFromFavorites}
               t={t}
             />
           ))}
@@ -103,7 +105,7 @@ export default function AvailableDevelopers({
   );
 }
 
-function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onRemoveFromTeam, t }) {
+function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onRemoveFromTeam, onDeleteFromFavorites, t }) {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -185,6 +187,7 @@ function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onR
                     isFull={isFull}
                     onAdd={onAddToTeam}
                     onRemove={onRemoveFromTeam}
+                    onDeleteFromFavorites={onDeleteFromFavorites}
                   />
                 </div>
               );

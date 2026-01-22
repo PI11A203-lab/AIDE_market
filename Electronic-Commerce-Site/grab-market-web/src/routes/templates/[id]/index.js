@@ -7,7 +7,6 @@ import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import axios from 'axios';
 import LogoutButton from '../../home/components/LogoutButton';
-import ProductList from '../../home/components/ProductList';
 import { TEMPLATE_DETAILS_MAP } from '../templateData';
 import { TEMPLATE_COMPATIBILITY_MAP } from '../templateCompatibility';
 import './index.css';
@@ -255,7 +254,7 @@ function TemplateDetailPage() {
   // 템플릿 구성 그대로 장바구니에 추가
   const handleAddToCart = async () => {
     if (!user) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('notifications.templates.loginRequired'));
       history.push('/login');
       return;
     }
@@ -294,25 +293,25 @@ function TemplateDetailPage() {
 
       if (addedProducts.length > 0) {
         if (failedProducts.length > 0) {
-          message.warning(`${addedProducts.length}개 상품이 장바구니에 추가되었습니다. ${failedProducts.length}개 상품은 추가할 수 없습니다.`);
+          message.warning(t('notifications.templates.cartAddedPartial', { count: addedProducts.length, failedCount: failedProducts.length }));
         } else {
-          message.success(`${addedProducts.length}개 상품이 장바구니에 추가되었습니다.`);
+          message.success(t('notifications.templates.cartAdded', { count: addedProducts.length }));
         }
       } else {
         if (failedProducts.length > 0) {
-          message.error('모든 상품을 장바구니에 추가할 수 없습니다. (이미 구매했거나 장바구니에 있는 상품일 수 있습니다)');
+          message.error(t('notifications.templates.cartAddAllFail'));
         }
       }
     } catch (error) {
       console.error('장바구니 추가 실패:', error);
-      message.error('장바구니 추가 중 오류가 발생했습니다.');
+      message.error(t('notifications.templates.cartAddError'));
     }
   };
 
   // 템플릿 구성 그대로 구매
   const handleBuyNow = () => {
     if (!user) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('notifications.templates.loginRequired'));
       history.push('/login');
       return;
     }
@@ -343,13 +342,13 @@ function TemplateDetailPage() {
   // 템플릿을 팀으로 구성 추가
   const handleAddToTeam = async () => {
     if (!user) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('notifications.templates.loginRequired'));
       history.push('/login');
       return;
     }
 
     if (!products || products.length === 0) {
-      message.warning('추가할 상품이 없습니다.');
+      message.warning(t('notifications.templates.noProductsToAdd'));
       return;
     }
 
@@ -418,16 +417,16 @@ function TemplateDetailPage() {
 
       if (addedMembers.length > 0) {
         if (failedMembers.length > 0) {
-          message.warning(`${addedMembers.length}개 상품이 팀에 추가되었습니다. ${failedMembers.length}개 상품은 추가할 수 없습니다.`);
+          message.warning(t('notifications.templates.teamAddedPartial', { count: addedMembers.length, failedCount: failedMembers.length }));
         } else {
-          message.success(`${addedMembers.length}개 상품이 팀에 추가되었습니다.`);
+          message.success(t('notifications.templates.teamAdded', { count: addedMembers.length }));
         }
         // 팀 페이지로 이동
         setTimeout(() => {
           history.push('/team');
         }, 1000);
       } else {
-        message.error('팀에 추가할 수 있는 상품이 없습니다.');
+        message.error(t('notifications.templates.teamAddAllFail'));
         // 팀 구성이 생성되었지만 멤버가 없으면 삭제
         try {
           await api.teamCompositions.delete(teamId);
@@ -437,7 +436,7 @@ function TemplateDetailPage() {
       }
     } catch (error) {
       console.error('팀 구성 추가 실패:', error);
-      const errorMessage = error.response?.data?.error || error.message || '팀 구성 추가에 실패했습니다.';
+      const errorMessage = error.response?.data?.error || error.message || t('notifications.templates.teamAddError');
       message.error(errorMessage);
     }
   };
@@ -750,7 +749,66 @@ function TemplateDetailPage() {
             <h2 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '24px' }}>
               {t('templates.detail.templateProducts')}
             </h2>
-            <ProductList products={products} />
+            <div className="products-grid">
+              {products.map((product) => {
+                const isPurchased = product.is_purchased === 1 || product.is_purchased === true;
+                
+                return (
+                  <div 
+                    key={product.id} 
+                    className="product-card"
+                    style={{ position: 'relative' }}
+                  >
+                    {isPurchased && (
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(229, 231, 235, 0.8)',
+                        borderRadius: '8px',
+                        zIndex: 10,
+                        pointerEvents: 'none'
+                      }} />
+                    )}
+                    
+                    <Link 
+                      to={`/products/${product.id}`}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                      <div className="card-image">
+                        <div className="avatar-large">
+                          <img
+                            src={`${API_URL}/${product.imageUrl}`}
+                            alt={product.name}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.parentElement.textContent = product.name.substring(0, 2);
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="card-content">
+                        <div className="card-category">
+                          {product.category_name || 'その他'}
+                        </div>
+                        <div className="card-header">
+                          <h3 className="card-title">{product.name}</h3>
+                        </div>
+                        <div className="card-rating">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="#FCD34D" stroke="#FCD34D">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                          </svg>
+                          <span className="rating-value">{parseFloat(product.rating_average || product.rating || 0).toFixed(1)}</span>
+                          <span className="rating-count">({(product.rating_count || 0).toLocaleString()})</span>
+                        </div>
+                        <div className="card-footer">
+                          <span className="price">¥{product.price.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

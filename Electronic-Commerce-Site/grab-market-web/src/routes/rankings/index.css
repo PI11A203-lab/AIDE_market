@@ -201,7 +201,7 @@
 
 .top-ranking-image {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 1.2;
   background: #F9FAFB;
   border-radius: 0;
   display: flex;
@@ -209,12 +209,14 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
+  padding: 10px;
+  padding-bottom: 0;
 }
 
 .top-ranking-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .top-ranking-info {
@@ -275,6 +277,52 @@
   border-bottom: 2px solid #E5E7EB;
 }
 
+/* 랭킹 페이지 카테고리 필터 스타일 */
+.rankings-grid-section .filter-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.rankings-grid-section .filter-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  flex: 1;
+  max-width: 100%;
+}
+
+.rankings-grid-section .filter-tab {
+  padding: 10px 20px;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.rankings-grid-section .filter-tab:hover {
+  background: #F9FAFB;
+}
+
+.rankings-grid-section .filter-tab.active {
+  background: #000000;
+  color: white;
+  border-color: transparent;
+}
+
+.rankings-grid-section .custom-dropdown {
+  position: relative;
+  min-width: 200px;
+}
+
 /* 전체 보기 상품 그리드 - 6개씩 고정 */
 .rankings-content .rankings-grid-section .products-grid,
 .rankings-grid-section .products-grid {
@@ -315,6 +363,10 @@
 
   .rankings-grid-section .products-grid {
     grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  .rankings-grid-section .filter-tabs {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -379,6 +431,18 @@
   .rankings-grid-section .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 16px;
+  }
+
+  .rankings-grid-section .filter-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rankings-grid-section .filter-section {
+    flex-direction: column;
+  }
+
+  .rankings-grid-section .custom-dropdown {
+    width: 100%;
   }
 }
 

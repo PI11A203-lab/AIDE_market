@@ -96,7 +96,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
 
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('notifications.product.selectRating'));
       return;
     }
 
@@ -107,7 +107,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
         // 찜목록에서 제거
         await api.favorites.delete(userData.id, productId);
         setIsLiked(false);
-        message.success('찜목록에서 제거되었습니다.');
+        message.success(t('notifications.product.favoriteRemoved'));
       } else {
         // 찜목록에 추가
         await api.favorites.create({
@@ -115,11 +115,11 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
           product_id: productId,
         });
         setIsLiked(true);
-        message.success('찜목록에 추가되었습니다.');
+        message.success(t('notifications.product.favoriteAddedToFavorites'));
       }
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
-      message.error('찜목록 업데이트에 실패했습니다.');
+      message.error(t('notifications.product.favoriteUpdateFail'));
     }
   };
 
@@ -304,14 +304,14 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
   // 수정 저장
   const handleEditSave = async (reviewId) => {
     if (!editForm.rating || editForm.rating < 1) {
-      message.warning('별점을 선택해주세요.');
+      message.warning(t('notifications.product.selectRating'));
       return;
     }
 
     // 로그인한 유저 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('notifications.product.loginRequired'));
       return;
     }
 
@@ -319,7 +319,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     try {
       userData = JSON.parse(userFromStorage);
     } catch (e) {
-      message.error('사용자 정보를 불러올 수 없습니다.');
+      message.error(t('notifications.product.userInfoLoadFail'));
       return;
     }
 
@@ -346,7 +346,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
         review_images: allImages
       });
 
-      message.success('리뷰가 수정되었습니다.');
+      message.success(t('notifications.product.reviewUpdated'));
       
       // 별점 캐시 삭제 (다음 로드 시 최신 별점으로 갱신)
       if (productId) {
@@ -411,7 +411,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     // 로그인한 유저 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('notifications.product.loginRequired'));
       return;
     }
 
@@ -419,14 +419,14 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     try {
       userData = JSON.parse(userFromStorage);
     } catch (e) {
-      message.error('사용자 정보를 불러올 수 없습니다.');
+      message.error(t('notifications.product.userInfoLoadFail'));
       return;
     }
 
     // 본인 리뷰는 helpful 할 수 없음
     const review = reviewsState.find(r => r.id === reviewId);
     if (review && review.isCurrentUser) {
-      message.warning('본인의 리뷰에는 helpful을 할 수 없습니다.');
+      message.warning(t('notifications.product.ownReviewHelpful'));
       return;
     }
 
@@ -479,7 +479,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     // 로그인한 유저 정보 가져오기
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!userFromStorage) {
-      message.warning('로그인이 필요합니다.');
+      message.warning(t('notifications.product.loginRequired'));
       return;
     }
 
@@ -487,7 +487,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
     try {
       userData = JSON.parse(userFromStorage);
     } catch (e) {
-      message.error('사용자 정보를 불러올 수 없습니다.');
+      message.error(t('notifications.product.userInfoLoadFail'));
       return;
     }
 
@@ -496,7 +496,7 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
       // DELETE 요청에 user_id를 query parameter로 전달
       await api.reviews.delete(reviewId, { params: { user_id: userData.id } });
 
-      message.success('리뷰가 삭제되었습니다.');
+      message.success(t('notifications.product.reviewDeleted'));
       
       // 별점 캐시 삭제 (다음 로드 시 최신 별점으로 갱신)
       if (productId) {

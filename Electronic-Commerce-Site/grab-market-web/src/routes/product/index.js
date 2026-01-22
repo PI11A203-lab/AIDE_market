@@ -507,6 +507,56 @@ export default function ProductPage() {
     }
   };
 
+  // "팀 구성에 추가" 버튼 클릭 핸들러
+  const handleAddToTeam = async () => {
+    if (!user) {
+      message.warning(t('product.messages.loginRequired'));
+      history.push('/login');
+      return;
+    }
+
+    if (isPurchased) {
+      message.warning(t('product.messages.alreadyPurchased'));
+      return;
+    }
+
+    if (!developer || !developer.id) {
+      message.error(t('notifications.product.productLoadFail'));
+      return;
+    }
+
+    try {
+      const userId = user.id;
+      const productId = developer.id;
+      
+      // 찜목록에 추가 (選択可能なAI開発者 목록에 표시되도록)
+      try {
+        await api.favorites.create({
+          user_id: userId,
+          product_id: productId,
+        });
+        message.success(t('notifications.product.favoriteAdded', { productName: developer.name }));
+      } catch (favoriteError) {
+        // 이미 찜목록에 있으면 성공으로 처리
+        if (favoriteError.response?.status === 400) {
+          message.info(t('notifications.product.favoriteAlreadyExists', { productName: developer.name }));
+        } else {
+          console.error('찜목록 추가 실패:', favoriteError);
+          message.warning(t('notifications.product.favoriteAddFail'));
+        }
+      }
+      
+      // 팀 페이지로 이동
+      setTimeout(() => {
+        history.push('/team');
+      }, 1000);
+    } catch (error) {
+      console.error('팀 구성에 추가 실패:', error);
+      const errorMessage = error.response?.data?.error || error.message || '팀 구성에 추가에 실패했습니다.';
+      message.error(errorMessage);
+    }
+  };
+
   // 추천 상품 로드
   const loadRecommendedProducts = async (currentProduct, currentTags, productId) => {
     try {
@@ -873,6 +923,7 @@ export default function ProductPage() {
               developer={developer} 
               onBuyNow={handleBuyNow}
               onAddToCart={handleAddToCart}
+              onAddToTeam={handleAddToTeam}
               isPurchased={isPurchased}
             />
             <TrustBadges />

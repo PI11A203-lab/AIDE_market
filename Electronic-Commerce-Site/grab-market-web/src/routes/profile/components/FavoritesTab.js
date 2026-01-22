@@ -81,7 +81,7 @@ export default function FavoritesTab({ favorites, userId, onRemove }) {
                   handleRemove(e, favoriteId, productId);
                 }}
               >
-                <Heart className="w-5 h-5" />
+                <Heart className="w-5 h-5" fill="#EF4444" />
               </button>
             </div>
           </Link>

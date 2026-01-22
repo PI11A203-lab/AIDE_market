@@ -35,14 +35,16 @@ const CategorySidebar = ({ categories, selectedCategory, onCategoryChange, sortB
     setDropdownOpen(false);
   };
 
-  // 카테고리 필터 탭 (MainPageModern.html 스타일)
-  const filterTabs = [
-    { id: 'all', name: t('home.tabs.all') },
-    { id: 'fe', name: t('home.tabs.fe') },
-    { id: 'be', name: t('home.tabs.be') },
-    { id: 'design', name: t('home.tabs.design') },
-    { id: 'mg', name: t('home.tabs.mg') },
-  ];
+  // 카테고리 필터 탭 - categories prop이 있으면 사용, 없으면 기본값 사용
+  const filterTabs = categories && categories.length > 0 
+    ? categories.map(cat => ({ id: cat.id, name: cat.name }))
+    : [
+        { id: 'all', name: t('home.tabs.all') },
+        { id: 'fe', name: t('home.tabs.fe') },
+        { id: 'be', name: t('home.tabs.be') },
+        { id: 'design', name: t('home.tabs.design') },
+        { id: 'mg', name: t('home.tabs.mg') },
+      ];
 
   return (
     <>

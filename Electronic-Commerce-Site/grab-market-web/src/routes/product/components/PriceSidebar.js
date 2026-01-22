@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Users } from 'lucide-react';
 
-export default function PriceSidebar({ developer, onBuyNow, onAddToCart, isPurchased }) {
+export default function PriceSidebar({ developer, onBuyNow, onAddToCart, isPurchased, onAddToTeam }) {
   const { t, i18n } = useTranslation();
   
   // 날짜를 언어에 맞게 포맷팅하는 함수
@@ -84,6 +85,21 @@ export default function PriceSidebar({ developer, onBuyNow, onAddToCart, isPurch
       >
         {t('product.price.addToCart')}
       </button>
+      
+      {onAddToTeam && (
+        <button 
+          onClick={onAddToTeam}
+          disabled={isPurchased}
+          className={`w-full py-3.5 border rounded-lg text-base font-semibold transition mt-3 flex items-center justify-center gap-2 ${
+            isPurchased
+              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'border-blue-500 bg-white text-blue-600 hover:bg-blue-50'
+          }`}
+        >
+          <Users size={18} />
+          {t('product.price.addToTeam')}
+        </button>
+      )}
       <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
         <div className="flex items-center gap-3 text-sm text-gray-600">
           <svg className="w-5 h-5 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

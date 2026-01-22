@@ -649,7 +649,7 @@ flex-direction: column;
 
 .favorites-grid {
 display: grid;
-grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 gap: 20px;
 }
 
@@ -657,7 +657,7 @@ gap: 20px;
 background: white;
 border: 1px solid #E5E7EB;
 border-radius: 16px;
-padding: 32px 24px;
+padding: 24px 20px;
 text-align: center;
 text-decoration: none;
 transition: all 0.2s;
@@ -746,15 +746,18 @@ color: #1A1A1A;
 display: grid;
 grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 gap: 20px;
+max-width: 100%;
 }
 
 .team-card {
 background: white;
 border: 1px solid #E5E7EB;
 border-radius: 8px;
-padding: 20px;
+padding: 16px;
 cursor: pointer;
 transition: all 0.2s;
+width: 100%;
+box-sizing: border-box;
 }
 
 .team-card:hover {
@@ -767,25 +770,36 @@ display: flex !important;
 justify-content: space-between !important;
 align-items: flex-start !important;
 margin-bottom: 16px !important;
-gap: 16px !important;
+gap: 12px !important;
+width: 100% !important;
+padding-left: 0 !important;
+padding-right: 0 !important;
 }
 
 .team-card .team-header {
 display: flex !important;
 justify-content: space-between !important;
 align-items: flex-start !important;
+padding-left: 10px !important;
+padding-right: 10px !important;
 }
 
 /* 팀 정보 영역 - 왼쪽 정렬 */
 .teams-grid .team-card .team-header .team-info {
 text-align: left !important;
-flex: 1 !important;
+flex: 1 1 auto !important;
+min-width: 0 !important;
+max-width: none !important;
 display: flex !important;
 flex-direction: column !important;
 align-items: flex-start !important;
 gap: 4px !important;
 margin: 0 !important;
 padding: 0 !important;
+padding-right: 12px !important;
+overflow: visible !important;
+writing-mode: horizontal-tb !important;
+text-orientation: mixed !important;
 }
 
 /* 팀 이름 - 명시적으로 왼쪽 정렬 */
@@ -795,9 +809,23 @@ font-weight: 700 !important;
 color: #1A1A1A !important;
 margin: 0 !important;
 text-align: left !important;
-width: 100% !important;
-line-height: 1.2 !important;
+width: fit-content !important;
+min-width: 240px !important;
+max-width: none !important;
+line-height: 1.4 !important;
 align-self: flex-start !important;
+word-break: keep-all !important;
+overflow-wrap: normal !important;
+flex: 0 0 auto !important;
+writing-mode: horizontal-tb !important;
+text-orientation: mixed !important;
+white-space: nowrap !important;
+display: inline-block !important;
+unicode-bidi: embed !important;
+direction: ltr !important;
+text-transform: none !important;
+letter-spacing: normal !important;
+overflow: visible !important;
 }
 
 /* 팀 날짜 - 명시적으로 왼쪽 정렬 */
@@ -814,16 +842,22 @@ align-self: flex-start !important;
 .synergy-badge {
 background: linear-gradient(135deg, #000000 0%, #7c7c7c 100%);
 color: white;
-padding: 8px 12px;
+padding: 8px 10px;
 border-radius: 6px;
 font-size: 13px;
 font-weight: 600;
 text-align: center;
-min-width: 60px;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
+min-width: 55px !important;
+max-width: 70px !important;
+width: auto !important;
+flex: 0 0 auto !important;
+display: flex !important;
+flex-direction: column !important;
+align-items: center !important;
+justify-content: flex-start !important;
+align-self: flex-start !important;
+margin-left: auto !important;
+margin-top: 0 !important;
 }
 
 .synergy-badge .synergy-score {
@@ -904,7 +938,7 @@ line-height: 1.2;
 .btn-favorite-remove {
 width: 40px;
 height: 40px;
-background: #FEF3C7;
+background: #FEE2E2;
   border: none;
 border-radius: 10px;
 display: flex;
@@ -912,13 +946,16 @@ align-items: center;
 justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
-color: #F59E0B;
+color: #EF4444;
 padding: 0;
 }
 
+.btn-favorite-remove svg {
+fill: #EF4444;
+}
+
 .btn-favorite-remove:hover {
-background: #FDE68A;
-transform: scale(1.05);
+background: #FEE2E2;
 }
 
 /* 빈 상태 */
@@ -1156,57 +1193,110 @@ color: #1A1A1A;
 
 /* 모달 푸터 */
 .modal-footer {
-padding: 20px 32px;
-border-top: 1px solid #E5E7EB;
+padding: 24px 32px;
+border-top: 1px solid #F0F0F0;
 display: flex;
-gap: 12px;
+gap: 10px;
 justify-content: flex-end;
+background: #FAFAFA;
 }
 
 .btn-secondary,
-.btn-primary {
-padding: 10px 20px;
+.btn-primary,
+.btn-danger {
+padding: 10px 24px;
 border: none;
-border-radius: 6px;
+border-radius: 8px;
 font-size: 14px;
-font-weight: 600;
+font-weight: 500;
 cursor: pointer;
-transition: all 0.2s;
+transition: all 0.2s ease;
+outline: none;
+box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary {
-background: white;
-color: #374151;
+background: #FFFFFF;
+color: #6B7280;
 border: 1px solid #E5E7EB;
 }
 
 .btn-secondary:hover {
-background: #F3F4F6;
+background: #F9FAFB;
+color: #374151;
+border-color: #D1D5DB;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary:active {
+transform: translateY(1px);
+box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-primary {
-background: #000000;
-color: white;
+background: #1A1A1A;
+color: #FFFFFF;
 }
 
 .btn-primary:hover {
-background: #1A1A1A;
+background: #000000;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.btn-primary:active {
+transform: translateY(1px);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .btn-danger {
-background: white;
-color: #DC2626;
-padding: 10px 20px;
-border: 1px solid #DC2626;
-border-radius: 6px;
-font-size: 14px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.2s;
+background: #FFFFFF;
+color: #EF4444;
+border: 1px solid #FECACA;
 }
 
 .btn-danger:hover {
 background: #FEF2F2;
+color: #DC2626;
+border-color: #FCA5A5;
+box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15);
+}
+
+.btn-danger:active {
+transform: translateY(1px);
+box-shadow: 0 1px 2px rgba(239, 68, 68, 0.1);
+}
+
+.delete-confirm-message {
+padding: 12px 20px;
+background: #FEF2F2;
+color: #DC2626;
+border-radius: 8px;
+font-size: 14px;
+font-weight: 500;
+margin-right: auto;
+border: 1px solid #FECACA;
+flex: 1;
+max-width: 400px;
+}
+
+/* 팀 통계 그래프 스타일 */
+.team-stats-chart {
+margin-bottom: 20px;
+}
+
+.chart-title {
+font-size: 15px;
+font-weight: 600;
+color: #1A1A1A;
+margin-bottom: 12px;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.chart-icon {
+width: 1rem;
+height: 1rem;
 }
 
 /* 반응형 */

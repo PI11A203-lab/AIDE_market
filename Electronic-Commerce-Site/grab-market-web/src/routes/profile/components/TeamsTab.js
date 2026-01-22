@@ -5,10 +5,12 @@ import { API_URL } from '../../../config/constants';
 import { api } from '../../../config/api';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
+import TeamStatsChart from '../../team/components/TeamStatsChart';
 
 export default function TeamsTab({ teams, onTeamUpdate }) {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const history = useHistory();
   const { t, i18n } = useTranslation();
 
@@ -32,6 +34,7 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedTeam(null);
+    setShowDeleteConfirm(false);
     document.body.style.overflow = 'auto';
   };
 
@@ -43,22 +46,29 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
     }
   };
 
-  const handleDeleteTeam = async () => {
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!selectedTeam) return;
     
-    if (window.confirm(t('profile.teams.deleteConfirm'))) {
-      try {
-        await api.teamCompositions.delete(selectedTeam.id);
-        message.success(t('profile.teams.deleteSuccess'));
-        closeModal();
-        if (onTeamUpdate) {
-          onTeamUpdate();
-        }
-      } catch (error) {
-        console.error('팀 삭제 실패:', error);
-        message.error(t('profile.teams.deleteFail'));
+    try {
+      await api.teamCompositions.delete(selectedTeam.id);
+      message.success(t('profile.teams.deleteSuccess'));
+      setShowDeleteConfirm(false);
+      closeModal();
+      if (onTeamUpdate) {
+        onTeamUpdate();
       }
+    } catch (error) {
+      console.error('팀 삭제 실패:', error);
+      message.error(t('profile.teams.deleteFail'));
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
   };
 
   const getSynergyMessage = (score) => {
@@ -76,6 +86,49 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
       return (words[0][0] + words[1][0]).toUpperCase();
     }
     return name.substring(0, 2).toUpperCase();
+  };
+
+  // 팀 통계 계산 (team 페이지와 동일한 로직)
+  const calculateTeamStats = (members) => {
+    if (!members || members.length === 0) {
+      return [
+        { stat: 'Technical', value: 0 },
+        { stat: 'Communication', value: 0 },
+        { stat: 'Creativity', value: 0 },
+        { stat: 'Speed', value: 0 },
+        { stat: 'Reliability', value: 0 },
+        { stat: 'Innovation', value: 0 }
+      ];
+    }
+
+    const avgStats = members.reduce((acc, dev) => {
+      const stats = dev.stats || {
+        technical: 95,
+        communication: 90,
+        creativity: 88,
+        speed: 92,
+        reliability: 93,
+        innovation: 90
+      };
+      return {
+        technical: acc.technical + stats.technical,
+        communication: acc.communication + stats.communication,
+        creativity: acc.creativity + stats.creativity,
+        speed: acc.speed + stats.speed,
+        reliability: acc.reliability + stats.reliability,
+        innovation: acc.innovation + stats.innovation
+      };
+    }, { technical: 0, communication: 0, creativity: 0, speed: 0, reliability: 0, innovation: 0 });
+
+    const teamSize = members.length;
+    return [
+      { stat: 'Technical', value: Math.round(avgStats.technical / teamSize) },
+      { stat: 'Communication', value: Math.round(avgStats.communication / teamSize) },
+      { stat: 'Creativity', value: Math.round(avgStats.creativity / teamSize) },
+      { stat: 'Speed', value: Math.round(avgStats.speed / teamSize) },
+      { stat: 'Reliability', value: Math.round(avgStats.reliability / teamSize) },
+      { stat: 'Innovation', value: Math.round(avgStats.innovation / teamSize) }
+    ];
   };
 
   if (teams.length === 0) {
@@ -107,14 +160,10 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
               className="team-card"
               onClick={() => openModal(team)}
             >
-              <div className="team-header">
-                <div className="team-info" style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <div className="team-name" style={{ textAlign: 'left', width: '100%' }}>{team.name || t('common.untitled')}</div>
-                  <div className="team-date" style={{ textAlign: 'left', width: '100%' }}>{formattedDate}</div>
-                </div>
-                <div className="synergy-badge">
-                  <span className="synergy-score">{team.total_synergy_score || 0}</span>
-                  <div className="synergy-label">{t('profile.teams.synergy')}</div>
+              <div className="team-header" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                <div className="team-info" style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: '1 1 auto', minWidth: 0, width: '100%', maxWidth: 'none', overflow: 'visible' }}>
+                  <div className="team-name" style={{ textAlign: 'left', width: 'fit-content', minWidth: '240px', maxWidth: 'none', writingMode: 'horizontal-tb', whiteSpace: 'nowrap', display: 'inline-block', direction: 'ltr', unicodeBidi: 'embed', textTransform: 'none', letterSpacing: 'normal', overflow: 'visible' }}>{team.name || t('common.untitled')}</div>
+                  <div className="team-date" style={{ textAlign: 'left', width: '100%', writingMode: 'horizontal-tb', whiteSpace: 'normal' }}>{formattedDate}</div>
                 </div>
               </div>
               <div className="team-members">
@@ -194,6 +243,13 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
                 </div>
               </div>
 
+              {/* 팀 통계 그래프 */}
+              {selectedTeam.members && selectedTeam.members.length > 0 && (
+                <div style={{ marginBottom: '32px' }}>
+                  <TeamStatsChart teamStats={calculateTeamStats(selectedTeam.members)} />
+                </div>
+              )}
+
               {/* 팀원 목록 */}
               <h4 className="members-title">{t('profile.teams.membersTitle')}</h4>
               <div className="members-list">
@@ -238,15 +294,31 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
             </div>
 
             <div className="modal-footer">
-              <button className="btn-danger" onClick={handleDeleteTeam}>
-                {t('profile.teams.deleteConfirm')}
-              </button>
-              <button className="btn-secondary" onClick={closeModal}>
-                {t('common.close')}
-              </button>
-              <button className="btn-primary" onClick={handleEditTeam}>
-                {t('profile.teams.edit')}
-              </button>
+              {!showDeleteConfirm ? (
+                <>
+                  <button className="btn-secondary" onClick={closeModal}>
+                    {t('common.close')}
+                  </button>
+                  <button className="btn-primary" onClick={handleEditTeam}>
+                    {t('profile.teams.edit')}
+                  </button>
+                  <button className="btn-danger" onClick={handleDeleteClick}>
+                    {t('profile.teams.delete')}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="delete-confirm-message">
+                    {t('profile.teams.deleteConfirm')}
+                  </div>
+                  <button className="btn-secondary" onClick={handleDeleteCancel}>
+                    {t('reviews.cancel')}
+                  </button>
+                  <button className="btn-danger" onClick={handleDeleteConfirm}>
+                    {t('profile.teams.delete')}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
