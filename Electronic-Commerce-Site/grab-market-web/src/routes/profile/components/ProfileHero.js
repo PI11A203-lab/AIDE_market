@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Github, Settings } from 'lucide-react';
+import { Github, Settings, GraduationCap } from 'lucide-react';
 import { useHistory } from 'react-router-dom';
 import StatsSection from './StatsSection';
 import FollowButton from './FollowButton';
@@ -14,6 +14,10 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
 
   const handleSettingsClick = () => {
     history.push('/profile/settings');
+  };
+
+  const handleStudentVerificationClick = () => {
+    history.push('/profile/student-verification');
   };
 
   // 깃허브 사용자명 추출
@@ -59,6 +63,30 @@ export default function ProfileHero({ user, currentUser, followerCount, followin
                     <Github className="w-5 h-5" />
                     {githubUsername ? `@${githubUsername}` : t('profile.hero.github')}
                   </a>
+                )}
+                {/* 학생 인증 버튼 - 본인 프로필일 때만 표시 */}
+                {currentUser && currentUser.id === user.id && (
+                  <button
+                    onClick={handleStudentVerificationClick}
+                    className="profile-link"
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '6px', 
+                      color: 'rgba(255,255,255,0.9)', 
+                      fontSize: '15px', 
+                      fontWeight: 500,
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      fontFamily: 'inherit'
+                    }}
+                    title={t('profile.hero.studentVerification')}
+                  >
+                    <GraduationCap className="w-5 h-5" />
+                    {t('profile.hero.studentVerification')}
+                  </button>
                 )}
                 {user.role === 'admin' && (
                   <span

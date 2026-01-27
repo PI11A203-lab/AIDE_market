@@ -76,6 +76,7 @@ const resources = {
           followers: '팔로워',
           following: '팔로잉',
           github: 'GitHub',
+          studentVerification: '학생 인증',
         },
         purchases: {
           empty: '구매한 상품이 없습니다',
@@ -779,6 +780,7 @@ const resources = {
           studentVerification: {
             title: '학생 인증',
             manage: '학생 인증 관리',
+            applyButton: '학생 인증 신청하기',
             status: {
               verified: '인증 완료',
               pending: '인증 대기 중',
@@ -2771,6 +2773,7 @@ Currently most popular team combination:
           followers: 'Followers',
           following: 'Following',
           github: 'GitHub',
+          studentVerification: 'Student Verification',
         },
         purchases: {
           empty: 'No purchased products',
@@ -3473,6 +3476,7 @@ Currently most popular team combination:
           studentVerification: {
             title: 'Student Verification',
             manage: 'Manage Student Verification',
+            applyButton: 'Apply for Student Verification',
             status: {
               verified: 'Verified',
               pending: 'Pending',
@@ -4923,6 +4927,7 @@ const verifyToken = (token) => {
           followers: 'フォロワー',
           following: 'フォロー中',
           github: 'GitHub',
+          studentVerification: '学生認証',
         },
         purchases: {
           empty: '購入した商品がありません',
@@ -5626,6 +5631,7 @@ const verifyToken = (token) => {
           studentVerification: {
             title: '学生認証',
             manage: '学生認証管理',
+            applyButton: '学生認証を申請する',
             status: {
               verified: '認証済み',
               pending: '認証待ち',

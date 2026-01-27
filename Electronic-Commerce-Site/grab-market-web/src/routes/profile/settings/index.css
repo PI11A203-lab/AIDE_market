@@ -75,6 +75,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .settings-section-title {
@@ -107,9 +109,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-edit:hover,

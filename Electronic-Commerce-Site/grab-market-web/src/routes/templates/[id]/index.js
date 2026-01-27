@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useHistory } from 'react-router-dom';
-import { Search, ShoppingCart, Globe, ArrowLeft, Users, Package, Code, Smartphone, BarChart3, FileText, Image as ImageIcon } from 'lucide-react';
+import { Search, ShoppingCart, Globe, ArrowLeft, Users, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { api } from '../../../config/api';
@@ -11,19 +11,6 @@ import { TEMPLATE_DETAILS_MAP } from '../templateData';
 import { TEMPLATE_COMPATIBILITY_MAP } from '../templateCompatibility';
 import './index.css';
 
-// 템플릿 카테고리 정의
-const TEMPLATE_CATEGORIES = {
-  web: { name: '웹개발', icon: Code, color: '#667eea' },
-  app: { name: '어플개발', icon: Smartphone, color: '#f093fb' },
-  data: { name: '데이터 분석', icon: BarChart3, color: '#4facfe' },
-  document: { name: '문서', icon: FileText, color: '#43e97b' },
-  image: { name: '이미지생성', icon: ImageIcon, color: '#fa709a' }
-};
-
-// 템플릿 아이콘 매핑 함수
-const getTemplateIcon = (category) => {
-  return TEMPLATE_CATEGORIES[category]?.icon || Code;
-};
 
 function TemplateDetailPage() {
   const { id } = useParams();

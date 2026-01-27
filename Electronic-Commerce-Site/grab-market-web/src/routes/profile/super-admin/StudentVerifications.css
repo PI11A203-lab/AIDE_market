@@ -234,3 +234,108 @@
   color: #666;
   grid-column: 1 / -1;
 }
+
+/* 버튼 스타일 개선 */
+.student-verifications-page .product-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.student-verifications-page .product-actions .btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.student-verifications-page .product-actions .btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.student-verifications-page .product-actions .btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.student-verifications-page .product-actions .btn-approve {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.student-verifications-page .product-actions .btn-approve:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  transform: translateY(-2px);
+}
+
+.student-verifications-page .product-actions .btn-approve:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.student-verifications-page .product-actions .btn-reject {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  color: #dc2626;
+  border: 2px solid #fee2e2;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+}
+
+.student-verifications-page .product-actions .btn-reject:hover {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border-color: #fca5a5;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.2);
+  transform: translateY(-2px);
+}
+
+.student-verifications-page .product-actions .btn-reject:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+}
+
+/* 문서 보기 버튼도 개선 */
+.student-verifications-page .view-document-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.student-verifications-page .view-document-btn:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+  transform: translateY(-2px);
+}
+
+.student-verifications-page .view-document-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+}
