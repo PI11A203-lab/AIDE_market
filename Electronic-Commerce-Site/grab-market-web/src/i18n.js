@@ -971,6 +971,8 @@ const resources = {
         template: '템플릿',
         addTemplateTeam: '추가',
         memberUnit: '명',
+        quickStartTitle: '빠른 시작을 위한 사전 구성 팀',
+        templateCardAIs: '{{count}}개 AI · 시너지: {{synergy}}',
         messages: {
           selectMembers: '팀원을 선택해주세요.',
           loginRequired: '로그인이 필요합니다.',
@@ -1003,6 +1005,16 @@ const resources = {
         showIndividualComparison: '개별 상품 비교 보기',
         teamAverage: '팀 평균',
         legend: '범례',
+      },
+      teamBenefits: {
+        title: 'AI 팀의 효과',
+        subtitle: '개별 AI를 단독으로 사용할 때와 팀으로 조합했을 때의 성능 비교',
+        avgImprovement: '평균 개선도',
+        percentImprovement: '개선률',
+        individual: '개별 평균',
+        team: '팀 평균',
+        tipTitle: '팀 구성의 이점',
+        tipDescription: '여러 AI를 팀으로 구성하면 개별 상품의 약점을 보완하고 강점을 극대화하여 전체적인 성능이 크게 향상됩니다.',
       },
       developerCard: {
         teamwork: '팀워크',
@@ -3653,6 +3665,8 @@ Currently most popular team combination:
         template: 'Template',
         addTemplateTeam: 'Add',
         memberUnit: 'people',
+        quickStartTitle: 'Pre-configured Teams for Quick Start',
+        templateCardAIs: '{{count}} AIs · Synergy: {{synergy}}',
         messages: {
           selectMembers: 'Please select team members.',
           loginRequired: 'Login required.',
@@ -3685,6 +3699,16 @@ Currently most popular team combination:
         showIndividualComparison: 'Show Individual Product Comparison',
         teamAverage: 'Team Average',
         legend: 'Legend',
+      },
+      teamBenefits: {
+        title: 'AI Team Benefits',
+        subtitle: 'Compare performance: Individual AI vs. Team of AIs',
+        avgImprovement: 'Avg Improvement',
+        percentImprovement: 'Improvement %',
+        individual: 'Individual Avg',
+        team: 'Team Avg',
+        tipTitle: 'Benefits of Team Composition',
+        tipDescription: 'By forming a team of multiple AIs, you can compensate for individual weaknesses and maximize strengths, resulting in significantly improved overall performance.',
       },
       developerCard: {
         teamwork: 'Teamwork',
@@ -5794,6 +5818,8 @@ const verifyToken = (token) => {
         template: 'テンプレート',
         addTemplateTeam: '追加',
         memberUnit: '人',
+        quickStartTitle: 'クイックスタート用の事前構成チーム',
+        templateCardAIs: '{{count}}個のAI · シナジー: {{synergy}}',
         messages: {
           selectMembers: 'チームメンバーを選択してください。',
           loginRequired: 'ログインが必要です。',
@@ -5826,6 +5852,16 @@ const verifyToken = (token) => {
         showIndividualComparison: '個別商品比較を表示',
         teamAverage: 'チーム平均',
         legend: '凡例',
+      },
+      teamBenefits: {
+        title: 'AIチームの効果',
+        subtitle: '個別のAIを単独で使う場合と、チームとして組み合わせた場合の性能を比較',
+        avgImprovement: '平均改善度',
+        percentImprovement: '改善率',
+        individual: '個別平均',
+        team: 'チーム平均',
+        tipTitle: 'チーム構成の利点',
+        tipDescription: '複数のAIをチームとして構成することで、個別商品の弱点を補完し、強みを最大化し、全体的な性能が大幅に向上します。',
       },
       developerCard: {
         teamwork: 'チームワーク',

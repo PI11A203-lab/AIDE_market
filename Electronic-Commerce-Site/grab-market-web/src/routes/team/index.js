@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Search, ShoppingCart, Globe, X } from 'lucide-react';
+import { Search, ShoppingCart, Globe, Save } from 'lucide-react';
 import { message } from 'antd';
 import AvailableDevelopers from './components/AvailableDevelopers';
 import TeamSidebar from './components/TeamSidebar';
@@ -474,7 +474,7 @@ export default function TeamBuilder() {
   };
 
   // 템플릿 팀 전체를 AIチーム에 추가
-  const addTemplateTeamToSelectedTeam = (templateTeam) => {
+  const addTemplateTeamToSelectedTeam = async (templateTeam) => {
     console.log('템플릿 팀 추가 시작:', templateTeam);
     console.log('템플릿 팀 멤버 전체:', templateTeam.members);
     
@@ -482,14 +482,29 @@ export default function TeamBuilder() {
     const templateTeamId = typeof templateTeam.id === 'string' ? parseInt(templateTeam.id) : templateTeam.id;
     
     // 템플릿 팀이 이미 추가되어 있는지 확인
-    if (selectedTemplateTeamIds.has(templateTeamId)) {
+    // selectedTemplateTeamIds만 확인하는 것이 아니라, 실제로 selectedTeam에 해당 템플릿 팀의 멤버가 있는지 확인
+    const hasTemplateTeamMembers = selectedTeam.some(dev => {
+      const devTemplateTeamId = typeof dev.templateTeamId === 'string' ? parseInt(dev.templateTeamId) : dev.templateTeamId;
+      return devTemplateTeamId === templateTeamId;
+    });
+    
+    if (hasTemplateTeamMembers) {
       console.log('템플릿 팀이 이미 추가되어 있습니다:', templateTeamId);
+      message.info(t('notifications.team.templateTeamAlreadyAdded') || '템플릿 팀이 이미 추가되어 있습니다.');
       return;
+    }
+    
+    // selectedTemplateTeamIds에서도 제거 (동기화)
+    if (selectedTemplateTeamIds.has(templateTeamId)) {
+      const newSet = new Set(selectedTemplateTeamIds);
+      newSet.delete(templateTeamId);
+      setSelectedTemplateTeamIds(newSet);
     }
 
     // 템플릿 팀 멤버 확인
     if (!templateTeam.members || templateTeam.members.length === 0) {
       console.error('템플릿 팀 멤버가 없습니다:', templateTeam);
+      message.error(t('notifications.team.templateTeamNoMembers') || '템플릿 팀에 멤버가 없습니다.');
       return;
     }
 
@@ -502,6 +517,7 @@ export default function TeamBuilder() {
     const remainingSlots = maxTeamSize - selectedTeam.length;
     if (remainingSlots <= 0) {
       console.log('팀 크기가 최대치에 도달했습니다.');
+      message.warning(t('teamBuilder.messages.maxTeamSizeReached', { max: maxTeamSize }) || `최대 ${maxTeamSize}명까지 선택할 수 있습니다.`);
       return;
     }
 
@@ -511,70 +527,118 @@ export default function TeamBuilder() {
     
     console.log('추가할 멤버 수:', membersToAdd.length);
     console.log('추가할 멤버 목록:', membersToAdd.map(m => ({ id: m.id, name: m.name })));
-    console.log('템플릿 팀 멤버 ID 목록:', membersToAdd.map(m => {
-      const id = typeof m.id === 'string' ? parseInt(m.id) : m.id;
-      return id;
-    }));
     
-    // 템플릿 팀의 모든 멤버를 추가
-    // "選択可能한AI開発자" 목록에 있는 상품과 템플릿 팀은 별개이므로,
-    // 템플릿 팀을 추가할 때는 이미 AIチーム에 있는 멤버만 제외
-    const developersToAdd = membersToAdd
-      .filter(member => {
-        // member.id를 숫자로 변환
-        const memberId = typeof member.id === 'string' ? parseInt(member.id) : member.id;
-        
-        // 이미 AIチーム(selectedTeam)에 추가된 멤버만 제외
-        // "選択可能한AI開発자" 목록에만 있는 것은 제외하지 않음
-        // (템플릿 팀과 "選択可能한AI開発자"는 별개의 개념)
-        const alreadyInSelectedTeam = selectedTeam.find(d => {
-          const devId = typeof d.id === 'string' ? parseInt(d.id) : d.id;
-          return devId === memberId;
-        });
-        
-        if (alreadyInSelectedTeam) {
-          console.log('멤버가 이미 AIチーム에 추가되어 있습니다:', member.name, '(ID:', memberId, ')');
-        } else {
-          console.log('멤버를 AIチーム에 추가합니다:', member.name, '(ID:', memberId, ')');
-        }
-        return !alreadyInSelectedTeam;
-      })
-      .map(member => {
-        // ID를 숫자로 통일
-        const memberId = typeof member.id === 'string' ? parseInt(member.id) : member.id;
-        const categoryId = typeof member.categoryId === 'string' 
-          ? parseInt(member.categoryId) 
-          : (member.categoryId || null);
-        
-        const developer = {
-          id: memberId,
-          name: member.name,
-          category: member.category,
-          categoryId: categoryId,
-          price: member.price,
-          imageUrl: member.imageUrl,
-          templateTeamId: templateTeamId, // 템플릿 팀 ID 추가 (숫자로 통일)
-          templateTeamName: templateTeam.name, // 템플릿 팀 이름 추가
-          stats: member.stats || {
-            teamwork: 50,
-            stability: 50,
-            speed: 50,
-            creativity: 50,
-            productivity: 50,
-            maintainability: 50
+    // 멤버 정보가 불완전한 경우 API에서 직접 가져오기
+    const developersToAdd = await Promise.all(
+      membersToAdd
+        .filter(member => {
+          // member.id를 숫자로 변환
+          const memberId = typeof member.id === 'string' ? parseInt(member.id) : member.id;
+          
+          // 이미 AIチーム(selectedTeam)에 추가된 멤버만 제외
+          const alreadyInSelectedTeam = selectedTeam.find(d => {
+            const devId = typeof d.id === 'string' ? parseInt(d.id) : d.id;
+            return devId === memberId;
+          });
+          
+          if (alreadyInSelectedTeam) {
+            console.log('멤버가 이미 AIチーム에 추가되어 있습니다:', member.name, '(ID:', memberId, ')');
+          } else {
+            console.log('멤버를 AIチーム에 추가합니다:', member.name, '(ID:', memberId, ')');
           }
-        };
-        console.log(`멤버 ${member.name} 변환:`, {
-          id: developer.id,
-          templateTeamId: developer.templateTeamId,
-          templateTeamName: developer.templateTeamName
-        });
-        return developer;
-      });
+          return !alreadyInSelectedTeam;
+        })
+        .map(async (member) => {
+          // ID를 숫자로 통일
+          const memberId = typeof member.id === 'string' ? parseInt(member.id) : member.id;
+          
+          // 멤버 정보가 완전한지 확인
+          let finalMember = member;
+          
+          // 멤버 정보가 불완전하면 API에서 가져오기
+          if (!member.name || !member.price || !member.stats) {
+            try {
+              const productResponse = await axios.get(`${API_URL}/api/products/${memberId}`);
+              const product = productResponse.data?.product || productResponse.data;
+              
+              if (product) {
+                // 스탯 정보 가져오기
+                let productStats = {
+                  teamwork: 50,
+                  stability: 50,
+                  speed: 50,
+                  creativity: 50,
+                  productivity: 50,
+                  maintainability: 50
+                };
+                
+                try {
+                  const statsResponse = await api.products.getStats(memberId);
+                  if (statsResponse.data?.stats) {
+                    productStats = {
+                      teamwork: statsResponse.data.stats.teamwork || 50,
+                      stability: statsResponse.data.stats.stability || 50,
+                      speed: statsResponse.data.stats.speed || 50,
+                      creativity: statsResponse.data.stats.creativity || 50,
+                      productivity: statsResponse.data.stats.productivity || 50,
+                      maintainability: statsResponse.data.stats.maintainability || 50
+                    };
+                  }
+                } catch (error) {
+                  console.warn(`상품 ${memberId}의 스탯을 가져오는데 실패했습니다:`, error);
+                }
+                
+                finalMember = {
+                  id: memberId,
+                  name: product.name || member.name || 'Unknown',
+                  category: product.category_name || member.category || 'その他',
+                  categoryId: product.category_id || member.categoryId || null,
+                  price: product.price || member.price || 0,
+                  imageUrl: product.imageUrl || member.imageUrl || null,
+                  stats: productStats
+                };
+              }
+            } catch (error) {
+              console.error(`상품 ${memberId} 정보를 가져오는데 실패했습니다:`, error);
+              // 실패해도 기본 정보로 진행
+            }
+          }
+          
+          const categoryId = typeof finalMember.categoryId === 'string' 
+            ? parseInt(finalMember.categoryId) 
+            : (finalMember.categoryId || null);
+          
+          const developer = {
+            id: memberId,
+            name: finalMember.name || 'Unknown',
+            category: finalMember.category || 'その他',
+            categoryId: categoryId,
+            price: finalMember.price || 0,
+            imageUrl: finalMember.imageUrl || null,
+            templateTeamId: templateTeamId, // 템플릿 팀 ID 추가 (숫자로 통일)
+            templateTeamName: templateTeam.name, // 템플릿 팀 이름 추가
+            stats: finalMember.stats || {
+              teamwork: 50,
+              stability: 50,
+              speed: 50,
+              creativity: 50,
+              productivity: 50,
+              maintainability: 50
+            }
+          };
+          console.log(`멤버 ${developer.name} 변환:`, {
+            id: developer.id,
+            templateTeamId: developer.templateTeamId,
+            templateTeamName: developer.templateTeamName
+          });
+          return developer;
+        })
+    );
 
     // 템플릿 팀의 모든 멤버를 추가해야 하므로, 필터링 후에도 멤버가 없으면 경고만 표시
     if (developersToAdd.length === 0) {
       console.warn('템플릿 팀의 모든 멤버가 이미 AIチーム에 추가되어 있습니다.');
+      message.info(t('notifications.team.allMembersAlreadyAdded') || '템플릿 팀의 모든 멤버가 이미 추가되어 있습니다.');
       // 모든 멤버가 이미 추가되어 있어도 템플릿 팀 ID는 추가 (중복 방지용)
       if (!selectedTemplateTeamIds.has(templateTeamId)) {
         const newTemplateTeamIds = new Set([...selectedTemplateTeamIds, templateTeamId]);
@@ -657,7 +721,8 @@ export default function TeamBuilder() {
     updateURLParams(newTeam.map(d => d.id));
   };
 
-  // 템플릿 팀 삭제
+  // 템플릿 팀 삭제 (향후 사용 예정)
+  // eslint-disable-next-line no-unused-vars
   const deleteTemplateTeam = async (teamId) => {
     if (!user) {
       return;
@@ -685,8 +750,55 @@ export default function TeamBuilder() {
 
   // 팀에서 제거
   const removeFromTeam = (developerId) => {
+    // 제거할 개발자 찾기
+    const developerToRemove = selectedTeam.find(d => d.id === developerId);
+    
     const newTeam = selectedTeam.filter(d => d.id !== developerId);
     setSelectedTeam(newTeam);
+    
+    // 템플릿 팀의 멤버를 제거한 경우, 해당 템플릿 팀의 모든 멤버가 제거되었는지 확인
+    if (developerToRemove && developerToRemove.templateTeamId) {
+      const templateTeamId = typeof developerToRemove.templateTeamId === 'string' 
+        ? parseInt(developerToRemove.templateTeamId) 
+        : developerToRemove.templateTeamId;
+      
+      // 해당 템플릿 팀의 남은 멤버가 있는지 확인
+      const remainingMembers = newTeam.filter(dev => {
+        const devTemplateTeamId = typeof dev.templateTeamId === 'string' 
+          ? parseInt(dev.templateTeamId) 
+          : dev.templateTeamId;
+        return devTemplateTeamId === templateTeamId;
+      });
+      
+      // 템플릿 팀의 모든 멤버가 제거되었으면 selectedTemplateTeamIds에서도 제거
+      if (remainingMembers.length === 0 && selectedTemplateTeamIds.has(templateTeamId)) {
+        const newSet = new Set(selectedTemplateTeamIds);
+        newSet.delete(templateTeamId);
+        setSelectedTemplateTeamIds(newSet);
+        
+        // localStorage 업데이트
+        try {
+          const templateTeamsInfo = Array.from(newSet).map(id => {
+            const teamMembers = newTeam.filter(dev => {
+              const devTemplateTeamId = typeof dev.templateTeamId === 'string' 
+                ? parseInt(dev.templateTeamId) 
+                : dev.templateTeamId;
+              return devTemplateTeamId === id;
+            });
+            return {
+              id: id,
+              name: teamMembers[0]?.templateTeamName || t('teamBuilder.template') + ' ' + t('teamBuilder.teamTitle'),
+              memberIds: teamMembers.map(m => m.id)
+            };
+          });
+          localStorage.setItem('selectedTemplateTeamIds', JSON.stringify(Array.from(newSet)));
+          localStorage.setItem('templateTeamsInfo', JSON.stringify(templateTeamsInfo));
+        } catch (error) {
+          console.error('템플릿 팀 정보 업데이트 실패:', error);
+        }
+      }
+    }
+    
     // URL 파라미터 업데이트
     updateURLParams(newTeam.map(d => d.id));
   };
@@ -719,7 +831,7 @@ export default function TeamBuilder() {
     }
   };
 
-  // 팀 평균 스탯 계산 (실제 API 스탯 사용)
+  // 팀 평균 스탯 계산 (시너지 보너스 포함)
   const calculateTeamStats = () => {
     if (selectedTeam.length === 0) {
       return [
@@ -732,6 +844,7 @@ export default function TeamBuilder() {
       ];
     }
 
+    // 기본 평균 스탯 계산
     const avgStats = selectedTeam.reduce((acc, dev) => ({
       teamwork: acc.teamwork + (dev.stats?.teamwork || 50),
       stability: acc.stability + (dev.stats?.stability || 50),
@@ -742,13 +855,61 @@ export default function TeamBuilder() {
     }), { teamwork: 0, stability: 0, speed: 0, creativity: 0, productivity: 0, maintainability: 0 });
 
     const teamSize = selectedTeam.length;
+    const baseAvg = {
+      teamwork: avgStats.teamwork / teamSize,
+      stability: avgStats.stability / teamSize,
+      speed: avgStats.speed / teamSize,
+      creativity: avgStats.creativity / teamSize,
+      productivity: avgStats.productivity / teamSize,
+      maintainability: avgStats.maintainability / teamSize
+    };
+
+    // 시너지 보너스 계산
+    // 1. 팀 크기 보너스 (팀원이 많을수록 협업 효과)
+    const teamSizeBonus = Math.min(teamSize * 2, 15); // 최대 15점
+    
+    // 2. 다양성 보너스 (다른 카테고리 조합)
+    const categories = new Set(selectedTeam.map(d => d.categoryId).filter(Boolean));
+    const diversityBonus = Math.min(categories.size * 3, 12); // 최대 12점
+    
+    // 3. 팀워크 스탯 기반 보너스 (팀워크가 높을수록 협업 효과)
+    const teamworkBonus = Math.min(baseAvg.teamwork * 0.15, 10); // 최대 10점
+    
+    // 각 스탯별 시너지 보너스 적용
+    const synergyBonuses = {
+      teamwork: teamSizeBonus + teamworkBonus, // 팀워크는 팀 크기와 팀워크 스탯 보너스
+      stability: teamSizeBonus * 0.5, // 안정성은 팀 크기 보너스의 절반
+      speed: diversityBonus * 0.8, // 속도는 다양성 보너스
+      creativity: diversityBonus + teamworkBonus * 0.5, // 창의성은 다양성 + 팀워크 보너스
+      productivity: teamSizeBonus * 0.7 + diversityBonus * 0.5, // 생산성은 팀 크기 + 다양성
+      maintainability: teamSizeBonus * 0.3 + diversityBonus * 0.4 // 유지보수성은 작은 보너스
+    };
+
     return [
-      { stat: 'Teamwork', value: Math.round(avgStats.teamwork / teamSize) },
-      { stat: 'Stability', value: Math.round(avgStats.stability / teamSize) },
-      { stat: 'Speed', value: Math.round(avgStats.speed / teamSize) },
-      { stat: 'Creativity', value: Math.round(avgStats.creativity / teamSize) },
-      { stat: 'Productivity', value: Math.round(avgStats.productivity / teamSize) },
-      { stat: 'Maintainability', value: Math.round(avgStats.maintainability / teamSize) }
+      { 
+        stat: 'Teamwork', 
+        value: Math.round(Math.min(baseAvg.teamwork + synergyBonuses.teamwork, 100)) 
+      },
+      { 
+        stat: 'Stability', 
+        value: Math.round(Math.min(baseAvg.stability + synergyBonuses.stability, 100)) 
+      },
+      { 
+        stat: 'Speed', 
+        value: Math.round(Math.min(baseAvg.speed + synergyBonuses.speed, 100)) 
+      },
+      { 
+        stat: 'Creativity', 
+        value: Math.round(Math.min(baseAvg.creativity + synergyBonuses.creativity, 100)) 
+      },
+      { 
+        stat: 'Productivity', 
+        value: Math.round(Math.min(baseAvg.productivity + synergyBonuses.productivity, 100)) 
+      },
+      { 
+        stat: 'Maintainability', 
+        value: Math.round(Math.min(baseAvg.maintainability + synergyBonuses.maintainability, 100)) 
+      }
     ];
   };
 
@@ -799,6 +960,75 @@ export default function TeamBuilder() {
   const teamStats = calculateTeamStats();
   const synergyScore = calculateSynergyScore();
   const totalPrice = calculateTotalPrice();
+
+  // 팀 저장 관련 상태
+  const [isSaving, setIsSaving] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [teamName, setTeamName] = useState('');
+
+  // 팀 저장 함수
+  const handleSaveTeam = async () => {
+    if (selectedTeam.length === 0) {
+      message.warning(t('teamBuilder.messages.selectMembers'));
+      return;
+    }
+
+    // 팀 이름이 없으면 입력 받기
+    if (!teamName.trim()) {
+      setShowNameInput(true);
+      return;
+    }
+
+    // 팀 이름이 있으면 저장 진행
+    await saveTeamToServer();
+  };
+
+  const saveTeamToServer = async () => {
+    setIsSaving(true);
+
+    try {
+      // 사용자 정보 가져오기
+      const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (!userFromStorage) {
+        message.error(t('teamBuilder.messages.loginRequired'));
+        setIsSaving(false);
+        return;
+      }
+
+      const userData = JSON.parse(userFromStorage);
+      const userId = userData.id;
+
+      // 1. 팀 구성 생성
+      const teamCompositionResponse = await api.teamCompositions.create({
+        user_id: userId,
+        name: teamName.trim(),
+        total_synergy_score: synergyScore
+      });
+
+      const teamId = teamCompositionResponse.data.teamComposition.id;
+
+      // 2. 각 팀원을 팀 멤버로 추가
+      const memberPromises = selectedTeam.map((dev, index) => 
+        api.teamMembers.create({
+          team_id: teamId,
+          product_id: dev.id,
+          category_id: dev.categoryId,
+          position: index + 1
+        })
+      );
+
+      await Promise.all(memberPromises);
+
+      message.success(t('teamBuilder.messages.saveSuccess'));
+      setTeamName('');
+      setShowNameInput(false);
+    } catch (error) {
+      console.error('팀 저장 실패:', error);
+      message.error(t('teamBuilder.messages.saveFail'));
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -1089,8 +1319,10 @@ export default function TeamBuilder() {
           </div>
         </div>
 
-        <div className="team-content-grid">
-          <div className="team-left-section">
+        {/* 메인 레이아웃: 좌측 AI 선택, 우측 시너지 패널 */}
+        <div className="main-layout">
+          {/* 좌측: AI 선택 영역 */}
+          <div className="ai-selection">
             <AvailableDevelopers
               developers={availableDevelopers}
               selectedTeam={selectedTeam}
@@ -1100,162 +1332,74 @@ export default function TeamBuilder() {
               onDeleteFromFavorites={removeFromFavorites}
             />
 
-            {/* 템플릿 팀 섹션 */}
-            {templateTeams.length > 0 && (
-              <div className="template-teams-section" style={{ marginTop: '2rem' }}>
-                <div className="section-card">
-                  <h3 className="section-title">
-                    <span>{t('teamBuilder.templateTeams') || '템플릿 팀'}</span>
-                  </h3>
-                  
-                  <div className="template-teams-list">
-                    {templateTeams.map((team) => (
-                      <div key={team.id} className="template-team-card" style={{
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '0.75rem',
-                        padding: '1.5rem',
-                        marginBottom: '1rem',
-                        background: '#ffffff',
-                        position: 'relative'
-                      }}>
-                        {/* 템플릿 팀 삭제 버튼 */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteTemplateTeam(team.id);
-                          }}
-                          style={{
-                            position: 'absolute',
-                            top: '1rem',
-                            right: '1rem',
-                            background: 'none',
-                            border: 'none',
-                            color: '#6B7280',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 10,
-                            transition: 'all 0.2s',
-                            padding: '4px'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.color = '#EF4444';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.color = '#6B7280';
-                          }}
-                          title="템플릿 팀 삭제"
-                        >
-                          <X size={18} />
-                        </button>
-                        
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingRight: '2rem' }}>
-                          <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1A1A1A', margin: 0 }}>
-                            {team.name?.replace(/템플릿|テンプレート|template/gi, t('teamBuilder.template')) || team.name}
-                          </h4>
-                          <span style={{ fontSize: '0.875rem', color: '#6B7280' }}>
-                            {t('synergy.label')}: {team.synergyScore}
-                          </span>
-                        </div>
-                        
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
-                          {team.members.map((member) => (
-                            <div key={member.id} style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.5rem',
-                              padding: '0.5rem',
-                              background: '#F3F4F6',
-                              borderRadius: '0.5rem',
-                              fontSize: '0.875rem'
-                            }}>
-                              {member.imageUrl ? (
-                                <img 
-                                  src={`${API_URL}/${member.imageUrl}`}
-                                  alt={member.name}
-                                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
-                                  onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    if (e.target.nextSibling) {
-                                      e.target.nextSibling.textContent = member.name.substring(0, 2);
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <div style={{
-                                  width: '32px',
-                                  height: '32px',
-                                  borderRadius: '50%',
-                                  background: '#9CA3AF',
-                                  color: '#ffffff',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '600'
-                                }}>
-                                  {member.name.substring(0, 2)}
-                                </div>
-                              )}
-                              <span style={{ color: '#1A1A1A' }}>{member.name}</span>
-                              <span style={{ color: '#6B7280' }}>¥{member.price.toLocaleString()}</span>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        <button
-                          onClick={() => addTemplateTeamToSelectedTeam(team)}
-                          disabled={selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)}
-                          style={{
-                            width: '100%',
-                            padding: '0.75rem 1rem',
-                            background: selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)
-                              ? '#E5E7EB'
-                              : '#1A1A1A',
-                            color: selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)
-                              ? '#9CA3AF'
-                              : '#ffffff',
-                            border: 'none',
-                            borderRadius: '0.5rem',
-                            fontSize: '0.875rem',
-                            fontWeight: '600',
-                            cursor: selectedTeam.length >= maxTeamSize || selectedTemplateTeamIds.has(typeof team.id === 'string' ? parseInt(team.id) : team.id)
-                              ? 'not-allowed'
-                              : 'pointer',
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!e.target.disabled) {
-                              e.target.style.background = '#374151';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!e.target.disabled) {
-                              e.target.style.background = '#1A1A1A';
-                            }
-                          }}
-                        >
-                          {t('teamBuilder.addTemplateTeam')}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
-          <TeamSidebar
-            selectedTeam={selectedTeam}
-            maxTeamSize={maxTeamSize}
-            teamStats={teamStats}
-            synergyScore={synergyScore}
-            totalPrice={totalPrice}
-            onRemoveFromTeam={removeFromTeam}
-            onRemoveTemplateTeam={removeTemplateTeamFromSelectedTeam}
-            selectedTemplateTeamIds={selectedTemplateTeamIds}
-          />
+          {/* 우측: 시너지 패널 */}
+          <div className="synergy-panel">
+            <TeamSidebar
+              selectedTeam={selectedTeam}
+              maxTeamSize={maxTeamSize}
+              teamStats={teamStats}
+              synergyScore={synergyScore}
+              totalPrice={totalPrice}
+              onRemoveFromTeam={removeFromTeam}
+              onRemoveTemplateTeam={removeTemplateTeamFromSelectedTeam}
+              selectedTemplateTeamIds={selectedTemplateTeamIds}
+              templateTeams={templateTeams}
+              onAddTemplateTeam={addTemplateTeamToSelectedTeam}
+            />
+          </div>
+        </div>
+
+        {/* 하단: 가격 요약 및 저장 버튼 */}
+        <div className="price-summary">
+          <div className="price-info">
+            <div className="price-label">{t('teamBuilder.teamTotal')}</div>
+            <div className="final-price">¥{totalPrice.toLocaleString()}</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end' }}>
+            {showNameInput && (
+              <input
+                type="text"
+                placeholder={t('teamBuilder.namePlaceholder')}
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && teamName.trim()) {
+                    saveTeamToServer();
+                  }
+                }}
+                style={{
+                  padding: '12px 16px',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  background: '#ffffff',
+                  color: '#1a1a1a',
+                  width: '300px',
+                  outline: 'none',
+                  transition: 'all 0.2s ease'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#2962ff';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(41, 98, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e5e7eb';
+                  e.target.style.boxShadow = 'none';
+                }}
+                autoFocus
+              />
+            )}
+            <button 
+              className="purchase-button"
+              onClick={handleSaveTeam}
+              disabled={isSaving || selectedTeam.length === 0}
+            >
+              <Save style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
+              {isSaving ? t('teamBuilder.saving') : t('teamBuilder.save')}
+            </button>
+          </div>
         </div>
       </main>
     </div>

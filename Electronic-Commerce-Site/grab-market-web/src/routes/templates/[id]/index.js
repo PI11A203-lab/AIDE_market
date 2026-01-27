@@ -615,31 +615,41 @@ function TemplateDetailPage() {
         </button>
 
         {/* 템플릿 헤더 */}
-        <div className="template-header" style={{ marginBottom: '40px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', marginBottom: '24px' }}>
-            <div style={{ 
-              width: '80px', 
-              height: '80px', 
-              borderRadius: '12px', 
-              background: '#F3F4F6',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
-              {React.createElement(getTemplateIcon(template?.category || TEMPLATE_DETAILS_MAP[parseInt(id)]?.category), {
-                size: 40,
-                color: TEMPLATE_CATEGORIES[template?.category || TEMPLATE_DETAILS_MAP[parseInt(id)]?.category]?.color || '#667eea'
-              })}
-            </div>
-            <div style={{ flex: 1 }}>
-              <h1 style={{ fontSize: '32px', fontWeight: 700, marginBottom: '12px' }}>
-                {getLocalizedField(template, 'name') || template.name}
-              </h1>
-              <p style={{ fontSize: '18px', color: '#6B7280', marginBottom: '16px' }}>
-                {getLocalizedField(template, 'description') || template.description || '설명이 없습니다.'}
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '24px', fontSize: '14px', color: '#9CA3AF' }}>
+        <div className="template-header" style={{ marginBottom: '0' }}>
+          <div style={{ marginBottom: '0' }}>
+            <h1 style={{ fontSize: '32px', fontWeight: 700, marginBottom: '16px' }}>
+              {getLocalizedField(template, 'name') || template.name}
+            </h1>
+              {/* 강조된 설명 박스 */}
+              <div style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                padding: '24px',
+                borderRadius: '12px',
+                marginBottom: '20px',
+                boxShadow: '0 4px 6px rgba(102, 126, 234, 0.15)'
+              }}>
+                <p style={{
+                  fontSize: '18px',
+                  color: 'white',
+                  lineHeight: '1.8',
+                  margin: 0,
+                  fontWeight: 500,
+                  whiteSpace: 'pre-line'
+                }}>
+                  {(() => {
+                    const desc = getLocalizedField(template, 'description') || template.description || '설명이 없습니다.';
+                    // 문장 단위로 줄바꿈 처리 (。나 . 기준)
+                    return desc.replace(/[。.]/g, (match, offset, string) => {
+                      // 마지막 문장이 아니면 줄바꿈 추가
+                      if (offset < string.length - 1) {
+                        return match + '\n';
+                      }
+                      return match;
+                    });
+                  })()}
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '24px', fontSize: '14px', color: '#9CA3AF', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Users size={16} />
                   <span>{t('templates.detail.purchased', { count: template.purchase_count || 0 })}</span>
@@ -649,11 +659,9 @@ function TemplateDetailPage() {
                   <span>{t('templates.detail.aiProducts', { count: products.length })}</span>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* 액션 버튼 */}
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+              
+              {/* 액션 버튼 */}
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '0' }}>
             <button
               onClick={handleBuyNow}
               style={{
@@ -720,25 +728,114 @@ function TemplateDetailPage() {
               <Users size={16} />
               {t('templates.detail.addToTeam')}
             </button>
+              </div>
           </div>
         </div>
 
         {/* 프로젝트 설명 섹션 */}
         {(getLocalizedField(template, 'projectDescription') || template.projectDescription) && (
-          <div style={{ marginBottom: '40px', padding: '24px', background: '#F9FAFB', borderRadius: '12px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px' }}>{t('templates.detail.projectDescription')}</h2>
-            <p style={{ fontSize: '16px', color: '#374151', lineHeight: '1.6' }}>
-              {getLocalizedField(template, 'projectDescription') || template.projectDescription}
+          <div style={{
+            marginTop: '24px',
+            marginBottom: '40px',
+            padding: '28px',
+            background: 'linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%)',
+            borderRadius: '16px',
+            border: '1px solid #E5E7EB',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+          }}>
+            <h2 style={{
+              fontSize: '22px',
+              fontWeight: 700,
+              marginBottom: '16px',
+              color: '#1F2937',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <div style={{
+                width: '4px',
+                height: '24px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '2px'
+              }}></div>
+              {t('templates.detail.projectDescription')}
+            </h2>
+            <p style={{
+              fontSize: '17px',
+              color: '#374151',
+              lineHeight: '1.9',
+              whiteSpace: 'pre-line',
+              margin: 0
+            }}>
+              {(() => {
+                const desc = getLocalizedField(template, 'projectDescription') || template.projectDescription;
+                // 문장 단위로 줄바꿈 처리
+                return desc.replace(/[。.]/g, (match, offset, string) => {
+                  if (offset < string.length - 1) {
+                    return match + '\n';
+                  }
+                  return match;
+                });
+              })()}
             </p>
           </div>
         )}
 
         {/* 왜 이 AI로 구성되었는지 */}
         {(getLocalizedField(template, 'whySelected') || template.whySelected) && (
-          <div style={{ marginBottom: '40px', padding: '24px', background: 'white', border: '1px solid #E5E7EB', borderRadius: '12px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px' }}>{t('templates.detail.whySelected')}</h2>
-            <p style={{ fontSize: '16px', color: '#374151', lineHeight: '1.6' }}>
-              {getLocalizedField(template, 'whySelected') || template.whySelected}
+          <div style={{
+            marginBottom: '40px',
+            padding: '28px',
+            background: 'white',
+            border: '2px solid #E5E7EB',
+            borderRadius: '16px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)'
+            }}></div>
+            <h2 style={{
+              fontSize: '22px',
+              fontWeight: 700,
+              marginBottom: '16px',
+              color: '#1F2937',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '4px'
+            }}>
+              <div style={{
+                width: '4px',
+                height: '24px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '2px'
+              }}></div>
+              {t('templates.detail.whySelected')}
+            </h2>
+            <p style={{
+              fontSize: '17px',
+              color: '#374151',
+              lineHeight: '1.9',
+              whiteSpace: 'pre-line',
+              margin: 0
+            }}>
+              {(() => {
+                const desc = getLocalizedField(template, 'whySelected') || template.whySelected;
+                // 문장 단위로 줄바꿈 처리
+                return desc.replace(/[。.]/g, (match, offset, string) => {
+                  if (offset < string.length - 1) {
+                    return match + '\n';
+                  }
+                  return match;
+                });
+              })()}
             </p>
           </div>
         )}
@@ -814,8 +911,31 @@ function TemplateDetailPage() {
 
         {/* 어떤 AI인지 설명 */}
         {((template.aiDescriptions_ja && language === 'ja') || (template.aiDescriptions_en && language === 'en') || (template.aiDescriptions && template.aiDescriptions.length > 0)) && (
-          <div style={{ marginBottom: '60px', padding: '24px', background: 'white', border: '1px solid #E5E7EB', borderRadius: '12px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px' }}>{t('templates.detail.aiDescriptions')}</h2>
+          <div style={{
+            marginBottom: '60px',
+            padding: '28px',
+            background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)',
+            border: '1px solid #E5E7EB',
+            borderRadius: '16px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
+          }}>
+            <h2 style={{
+              fontSize: '22px',
+              fontWeight: 700,
+              marginBottom: '20px',
+              color: '#1F2937',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <div style={{
+                width: '4px',
+                height: '24px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '2px'
+              }}></div>
+              {t('templates.detail.aiDescriptions')}
+            </h2>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {((language === 'ja' && template.aiDescriptions_ja) || (language === 'en' && template.aiDescriptions_en) || template.aiDescriptions || []).map((desc, index) => {
                 const descriptions = (language === 'ja' && template.aiDescriptions_ja) || (language === 'en' && template.aiDescriptions_en) || template.aiDescriptions || [];
@@ -823,17 +943,36 @@ function TemplateDetailPage() {
                 <li 
                   key={index}
                   style={{ 
-                    padding: '12px 0',
-                    borderBottom: index < descriptions.length - 1 ? '1px solid #E5E7EB' : 'none',
-                    fontSize: '16px',
+                    padding: '16px',
+                    marginBottom: index < descriptions.length - 1 ? '12px' : '0',
+                    background: '#F9FAFB',
+                    borderRadius: '8px',
+                    border: '1px solid #E5E7EB',
+                    fontSize: '17px',
                     color: '#374151',
                     display: 'flex',
                     alignItems: 'flex-start',
-                    gap: '12px'
+                    gap: '14px',
+                    lineHeight: '1.7'
                   }}
                 >
-                  <span style={{ color: '#667eea', fontWeight: 600, flexShrink: 0 }}>{index + 1}.</span>
-                  <span>{desc}</span>
+                  <span style={{
+                    color: 'white',
+                    fontWeight: 700,
+                    flexShrink: 0,
+                    width: '28px',
+                    height: '28px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    boxShadow: '0 2px 4px rgba(102, 126, 234, 0.3)'
+                  }}>
+                    {index + 1}
+                  </span>
+                  <span style={{ flex: 1, whiteSpace: 'pre-line' }}>{desc}</span>
                 </li>
                 );
               })}

@@ -1,80 +1,10 @@
 /* ============================================
-   전체 레이아웃
+   전체 레이아웃 - HTML 디자인 적용
    ============================================ */
 .team-builder {
   min-height: 100vh;
-  background-color: #FAFAFA;
-}
-
-/* ============================================
-   헤더 섹션
-   ============================================ */
-.profile-header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 78px; /* 메인 페이지 헤더 높이 기준 - 고정값 */
-  box-sizing: border-box;
-}
-
-.profile-header .header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 18px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  height: 100%; /* 부모 높이에 맞춤 */
-  box-sizing: border-box;
-}
-
-.profile-header .logo {
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.logo {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1A1A1A;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-}
-
-.logo-icon {
-  font-size: 24px;
-}
-
-.logo-text {
-  color: #1A1A1A;
-}
-
-.profile-header .btn-back-to-home {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  background: none;
-  border: none;
-  font-size: 16px;
-  color: #6B7280;
-  cursor: pointer;
-  transition: color 0.2s;
-  text-decoration: none;
-  margin-top: 4px;
-}
-
-.profile-header .btn-back-to-home:hover {
-  color: #1A1A1A;
+  background: #ffffff;
+  color: #000000;
 }
 
 /* ============================================
@@ -83,26 +13,25 @@
 .team-main {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 48px 80px;
+  padding: 40px 20px;
 }
 
 /* 페이지 헤더 */
 .team-intro {
-  padding-bottom: 24px;
-  margin-bottom: 32px;
-  border-bottom: 2px solid #E5E7EB;
+  text-align: center;
+  margin-bottom: 60px;
 }
 
 .team-title {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
-  color: #1A1A1A;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  color: #000000;
 }
 
 .team-subtitle {
   font-size: 16px;
-  color: #6B7280;
+  color: #666;
 }
 
 /* ============================================
@@ -113,17 +42,17 @@
 }
 
 .hexagon-explanation-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: white;
+  border: 1px solid #E5E7EB;
   border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 48px 60px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .hexagon-explanation-header {
   margin-bottom: 40px;
   padding-bottom: 32px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #E5E7EB;
 }
 
 .hexagon-header-text {
@@ -131,16 +60,15 @@
 }
 
 .hexagon-explanation-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 8px 0;
-  letter-spacing: -0.02em;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 12px 0;
 }
 
 .hexagon-explanation-subtitle {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 16px;
+  color: #64748b;
   line-height: 1.6;
   margin: 0;
   font-weight: 400;
@@ -149,7 +77,7 @@
 .hexagon-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
+  gap: 24px;
   margin-bottom: 32px;
 }
 
@@ -157,22 +85,28 @@
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding: 20px;
-  background: #fafafa;
-  border: 1px solid #f3f4f6;
-  border-radius: 14px;
+  padding: 24px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.hexagon-stat-item:hover {
+  border-color: #D1D5DB;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .hexagon-stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: var(--stat-color, #6b7280);
-  color: white;
+  background: #F3F4F6;
+  color: #1A1A1A;
 }
 
 .hexagon-stat-content {
@@ -181,17 +115,16 @@
 }
 
 .hexagon-stat-name {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  color: #111827;
-  margin: 0 0 4px 0;
-  letter-spacing: -0.01em;
+  color: #1e293b;
+  margin: 0 0 6px 0;
 }
 
 .hexagon-stat-desc {
-  font-size: 13px;
-  color: #6b7280;
-  line-height: 1.5;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
   margin: 0;
   font-weight: 400;
 }
@@ -199,458 +132,316 @@
 .hexagon-tip-box {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 16px 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  border-left: 3px solid #3b82f6;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  border-left: 3px solid #6366f1;
 }
 
 .hexagon-tip-icon {
   flex-shrink: 0;
   margin-top: 2px;
-  color: #3b82f6;
+  color: #6366f1;
   stroke-width: 2.5;
 }
 
 .hexagon-tip-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #475569;
   line-height: 1.6;
   margin: 0;
   font-weight: 400;
 }
 
-/* 그리드 레이아웃 */
-.team-content-grid {
+/* ============================================
+   메인 레이아웃 - HTML 스타일
+   ============================================ */
+.main-layout {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 32px;
+  grid-template-columns: 400px 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
 }
 
 /* ============================================
-   개발자 목록 섹션
+   좌측: AI 선택 영역
    ============================================ */
-.available-developers-section {
-  grid-column: 1;
+.ai-selection {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
 }
 
-.section-card {
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
-}
-
-.section-title {
+.ai-selection h2 {
   font-size: 20px;
-  font-weight: 700;
-  color: #1A1A1A;
-  margin-bottom: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+/* ============================================
+   우측: 시너지 패널
+   ============================================ */
+.synergy-panel {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.panel-section {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 32px;
+}
+
+.panel-section h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+/* 추천 템플릿 */
+.template-section {
+  margin-top: 24px;
+}
+
+.template-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #666;
+}
+
+.template-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
 }
 
-.section-icon {
-  width: 24px;
-  height: 24px;
-  color: #1A1A1A;
-}
-
-/* 카테고리별 섹션 */
-.categories-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.category-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 40px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid #F3F4F6;
-}
-
-.category-section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.category-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1A1A1A;
-  margin: 0;
-  display: none;
-  align-items: center;
-  gap: 10px;
-}
-
-.category-title-icon {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.category-content-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.developers-scroll-container {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #D1D5DB transparent;
-  padding: 8px 0;
-}
-
-.developers-scroll-container::-webkit-scrollbar {
-  height: 6px;
-}
-
-.developers-scroll-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.developers-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #D1D5DB;
-  border-radius: 3px;
-}
-
-.developers-scroll-container::-webkit-scrollbar-thumb:hover {
-  background-color: #9CA3AF;
-}
-
-.developers-horizontal-list {
-  display: flex;
-  gap: 16px;
-  padding: 0;
-}
-
-.developer-card-wrapper {
-  flex-shrink: 0;
-  width: 280px;
-  min-width: 280px;
-}
-
-.scroll-button {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border: 2px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.template-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
   cursor: pointer;
   transition: all 0.2s;
-  color: #374151;
-  opacity: 0;
-  pointer-events: none;
 }
 
-.category-content-wrapper:hover .scroll-button {
-  opacity: 1;
-  pointer-events: auto;
+.template-card:hover {
+  border-color: #2962ff;
+  transform: translateY(-2px);
 }
 
-.scroll-button:hover {
-  background-color: white;
-  border-color: #000000;
+.template-name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
   color: #000000;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  transform: translateY(-50%) scale(1.1);
 }
 
-.scroll-button-left {
-  left: 0.5rem;
+.template-ais {
+  font-size: 12px;
+  color: #666;
 }
 
-.scroll-button-right {
-  right: 0.5rem;
+/* 선택된 AI 표시 */
+.selected-ais {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
 }
 
-.scroll-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+.selected-ai-badge {
+  background: #f0f4ff;
+  border: 1px solid #2962ff;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2962ff;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
 }
 
 /* ============================================
-   개발자 카드
+   개발자 카드 - HTML 스타일
    ============================================ */
 .developer-card {
-  min-width: 280px;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  padding: 20px;
-  transition: all 0.3s ease;
   background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
   width: 100%;
   box-sizing: border-box;
 }
 
 .developer-card:hover {
-  border-color: #D1D5DB;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: #2962ff;
 }
 
 .developer-card-selected {
-  border-color: #000000;
-  background: white;
-  transition: all 0.3s ease;
+  border-color: #2962ff;
+  background: #f0f4ff;
 }
 
-.developer-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.developer-card-info {
+.developer-card-content {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
 .developer-avatar {
-  width: 56px;
-  height: 56px;
-  background: #f3f4f6;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  color: white;
   font-size: 20px;
-  font-weight: 700;
   flex-shrink: 0;
+  background: #e3f2fd;
+  color: #000000;
 }
 
 .developer-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 8px;
 }
 
 .developer-details {
-  display: flex;
-  flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .developer-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1A1A1A;
-  margin-bottom: 2px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #000000;
 }
 
 .developer-category {
-  font-size: 13px;
-  color: #6B7280;
-}
-
-.developer-stats-mini {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1A1A1A;
-}
-
-.stat-label {
-  font-size: 11px;
-  color: #9CA3AF;
-  margin-top: 2px;
-}
-
-.developer-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-}
-
-.developer-card-footer button {
-  transition: all 0.3s ease;
-  opacity: 1;
-  transform: scale(1);
+  font-size: 12px;
+  color: #666;
 }
 
 .developer-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1A1A1A;
-}
-
-.btn-add,
-.btn-remove {
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 80px;
-  height: 32px;
-}
-
-.btn-add {
-  background: #000000;
-  color: white;
-}
-
-.btn-add:hover {
-  background: #1A1A1A;
-}
-
-.btn-add:disabled {
-  background: #E5E7EB;
-  color: #9CA3AF;
-  cursor: not-allowed;
-}
-
-.btn-remove {
-  background: #FEF2F2;
-  color: #DC2626;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 6px;
-  min-width: 80px;
-  height: 32px;
-}
-
-.btn-remove:hover {
-  background: #FEE2E2;
-  color: #DC2626;
-}
-
-.btn-icon {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-
-.btn-remove .btn-icon {
-  width: 0.75rem;
-  height: 0.75rem;
+  color: #2962ff;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 
 /* ============================================
-   팀 사이드바 섹션
+   팀 사이드바 - 패널 섹션으로 변경
    ============================================ */
 .team-sidebar {
-  grid-column: 2;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  position: sticky;
-  top: 100px;
+  gap: 24px;
 }
 
 .sidebar-card {
-  background-color: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  padding: 24px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 32px;
   position: relative;
 }
 
 .sidebar-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1A1A1A;
+  font-size: 24px;
+  font-weight: 600;
+  color: #000000;
   margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .team-count {
   font-size: 14px;
-  font-weight: normal;
-  color: #6B7280;
+  font-weight: 500;
+  color: #666;
+  background: #f8f9fa;
+  padding: 4px 12px;
+  border-radius: 12px;
 }
 
 .empty-team {
   text-align: center;
   padding: 60px 20px;
-  color: #9CA3AF;
+  color: #999;
 }
 
 .empty-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 16px;
-  color: #D1D5DB;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  color: #d1d5db;
+  opacity: 0.6;
 }
 
 .empty-subtitle {
-  font-size: 13px;
-  color: #9CA3AF;
-  margin-top: 6px;
+  font-size: 14px;
+  color: #999;
+  margin-top: 8px;
 }
 
 /* 선택된 팀원 목록 */
 .selected-team-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .team-member-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
-  background: #FAFAFA;
-  border-radius: 6px;
+  padding: 16px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.team-member-item:hover {
+  border-color: #2962ff;
+  background: #f0f4ff;
 }
 
 .team-member-avatar {
   width: 40px;
   height: 40px;
-  background: #f3f4f6;
-  border-radius: 6px;
+  background: #e3f2fd;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: white;
-  font-size: 14px;
+  color: #000000;
+  font-size: 16px;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -669,24 +460,26 @@
 .team-member-name {
   font-size: 14px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #000000;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-bottom: 2px;
 }
 
 .team-member-price {
   font-size: 12px;
-  color: #6B7280;
+  color: #666;
+  font-weight: 500;
 }
 
 .team-member-remove {
-  padding: 6px;
+  padding: 8px;
   background: none;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
-  transition: background 0.2s;
+  border-radius: 8px;
+  transition: all 0.2s ease;
   flex-shrink: 0;
   color: #DC2626;
   display: flex;
@@ -695,7 +488,7 @@
 }
 
 .team-member-remove:hover {
-  background: #FEE2E2;
+  background: #FEF2F2;
 }
 
 .remove-icon {
@@ -707,17 +500,29 @@
    팀 스탯 차트
    ============================================ */
 .team-stats-chart {
-  margin-bottom: 20px;
-  padding-bottom: 8px;
+  margin-bottom: 24px;
 }
 
-/* 범례 스타일 개선 */
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.chart-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* 범례 스타일 */
 .team-stats-chart .legend-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 24px;
-  padding: 4px 0;
+  gap: 12px;
+  min-height: 28px;
+  padding: 6px 0;
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -727,21 +532,235 @@
   min-width: 0;
   word-break: break-word;
   overflow-wrap: break-word;
+  font-size: 13px;
+  color: #666;
 }
 
-.chart-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1A1A1A;
-  margin-bottom: 12px;
+/* ============================================
+   팀 매리트 시각화
+   ============================================ */
+.team-benefits {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+}
+
+.benefits-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.benefits-icon {
+  width: 24px;
+  height: 24px;
+  color: #6366f1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.benefits-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+}
+
+.benefits-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.improvement-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.improvement-card {
+  background: #f8f9fa;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.improvement-card:hover {
+  border-color: #D1D5DB;
+  background: white;
+}
+
+.improvement-card.highlight {
+  background: #2962ff;
+  border-color: #2962ff;
+  color: white;
+}
+
+.improvement-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.improvement-card.highlight .improvement-value {
+  color: white;
+}
+
+.improvement-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.improvement-card.highlight .improvement-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-comparisons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-comparison-item {
+  background: #f8f9fa;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.stat-comparison-item:hover {
+  border-color: #D1D5DB;
+  background: white;
+}
+
+.stat-comparison-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat-comparison-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  background: #F3F4F6;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.chart-icon {
-  width: 1rem;
-  height: 1rem;
+.stat-comparison-icon {
+  width: 22px;
+  height: 22px;
+  color: #6366f1;
+}
+
+.stat-comparison-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-comparison-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.stat-comparison-values {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.stat-value-individual {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.stat-value-team {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.stat-improvement-badge {
+  background: #10b981;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stat-comparison-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-bar-label {
+  font-size: 12px;
+  color: #64748b;
+  width: 80px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.stat-bar {
+  flex: 1;
+  height: 10px;
+  background: #E5E7EB;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.stat-bar-fill.individual {
+  background: #6B7280;
+}
+
+.stat-bar-fill.team {
+  background: #2962ff;
+}
+
+.stat-bar-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  width: 40px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 /* ============================================
@@ -750,10 +769,10 @@
 .synergy-score {
   background: #000000;
   color: white;
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 32px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .synergy-header {
@@ -761,234 +780,274 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .synergy-icon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   color: white;
 }
 
 .synergy-label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: white;
 }
 
 .synergy-value {
-  font-size: 48px;
-  font-weight: 700;
+  font-size: 64px;
+  font-weight: 800;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .synergy-message {
-  font-size: 13px;
+  font-size: 14px;
   opacity: 0.9;
+  font-weight: 500;
 }
 
 /* ============================================
-   가격 섹션
+   가격 요약 - HTML 스타일
    ============================================ */
-.team-price-section {
-  padding: 16px 0;
-  border-top: 1px solid #E5E7EB;
-  margin-bottom: 16px;
-}
-
-.price-row {
+.price-summary {
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.price-info {
+  flex: 1;
 }
 
 .price-label {
-  font-size: 15px;
-  color: #6B7280;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-weight: 500;
 }
 
-.price-value {
-  font-size: 24px;
+.final-price {
+  font-size: 32px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.2;
 }
 
-/* ============================================
-   팀 이름 입력 섹션
-   ============================================ */
-.team-name-input-section {
-  margin-bottom: 16px;
-}
-
-/* ============================================
-   저장 버튼
-   ============================================ */
-.btn-confirm {
-  width: 100%;
-  padding: 14px;
-  background: #000000;
+.purchase-button {
+  background: #2962ff;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
+  padding: 14px 32px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-shadow: 0 2px 4px rgba(41, 98, 255, 0.2);
 }
 
-.btn-confirm:hover {
-  background: #1A1A1A;
+.purchase-button:hover {
+  background: #1e4fd4;
+  box-shadow: 0 4px 8px rgba(41, 98, 255, 0.3);
+  transform: translateY(-1px);
 }
 
-.btn-confirm:disabled {
-  background: #E5E7EB;
-  color: #9CA3AF;
+.purchase-button:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* ============================================
-   팁 박스
+   기타 스타일
    ============================================ */
-.team-tip {
-  background: #F0F9FF;
-  border: 1px solid #BAE6FD;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.tip-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.tip-icon {
-  width: 18px;
-  height: 18px;
-  color: #0284C7;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.tip-text {
-  flex: 1;
-}
-
-.tip-title {
-  font-size: 14px;
+.section-title {
+  font-size: 20px;
   font-weight: 600;
-  color: #0C4A6E;
-  margin-bottom: 6px;
+  color: #000000;
+  margin-bottom: 20px;
 }
 
-.tip-description {
-  font-size: 13px;
-  color: #075985;
-  line-height: 1.5;
+.section-icon {
+  width: 28px;
+  height: 28px;
+  color: #000000;
+}
+
+/* 카테고리별 섹션 */
+.categories-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.category-section {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.category-content-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.developers-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #D1D5DB transparent;
+  padding: 12px 0;
+}
+
+.developers-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.developers-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.developers-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #D1D5DB;
+  border-radius: 4px;
+}
+
+.developers-scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: #9CA3AF;
+}
+
+.developers-horizontal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+.developer-card-wrapper {
+  width: 100%;
+}
+
+.scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #475569;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.category-content-wrapper:hover .scroll-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-button:hover {
+  background-color: #f8f9fa;
+  border-color: #2962ff;
+  color: #2962ff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.scroll-button-left {
+  left: 12px;
+}
+
+.scroll-button-right {
+  right: 12px;
+}
+
+.scroll-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.developer-stats-mini {
+  display: none;
+}
+
+.developer-card-footer {
+  display: none;
+}
+
+.btn-add,
+.btn-remove {
+  display: none;
 }
 
 /* ============================================
    반응형 디자인
    ============================================ */
-@media (max-width: 1024px) {
-  .team-content-grid {
+@media (max-width: 968px) {
+  .main-layout {
     grid-template-columns: 1fr;
   }
 
-  .team-sidebar {
+  .ai-selection {
     position: static;
   }
 
-  .hexagon-stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 14px;
+  .price-summary {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .team-main {
+    padding: 20px;
+  }
+
+  .team-title {
+    font-size: 28px;
+  }
+
+  .team-subtitle {
+    font-size: 14px;
   }
 
   .hexagon-explanation-card {
     padding: 32px;
   }
-}
-
-@media (max-width: 768px) {
-  .team-header {
-    padding: 20px 16px;
-  }
-
-  .team-main {
-    padding: 32px 16px 80px;
-  }
-
-  .developer-card {
-    min-width: 240px;
-  }
-
-  .hexagon-explanation-header {
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-  }
-
-  .hexagon-icon-wrapper {
-    width: 44px;
-    height: 44px;
-  }
-
-  .hexagon-explanation-title {
-    font-size: 20px;
-  }
-
-  .hexagon-explanation-subtitle {
-    font-size: 13px;
-  }
 
   .hexagon-stats-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 16px;
   }
 
-  .hexagon-stat-item {
-    padding: 18px;
-  }
-
-  .hexagon-stat-icon {
-    width: 36px;
-    height: 36px;
-  }
-
-  .hexagon-explanation-card {
-    padding: 24px;
-    border-radius: 16px;
-  }
-}
-
-@media (min-width: 1920px) {
-  .team-header {
-    padding: 20px 96px;
-  }
-
-  .team-main {
-    padding: 32px 96px 80px;
-  }
-}
-
-@media (max-width: 1536px) {
-  .team-header {
-    padding: 20px 48px;
-  }
-}
-
-@media (max-width: 480px) {
-  .team-header {
-    padding: 16px;
-  }
-
-  .team-main {
-    padding: 24px 16px 60px;
+  .synergy-value {
+    font-size: 48px;
   }
 }

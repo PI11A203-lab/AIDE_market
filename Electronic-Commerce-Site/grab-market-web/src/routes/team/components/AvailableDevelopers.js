@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import DeveloperCard from './DeveloperCard';
 import { useTranslation } from 'react-i18next';
 
@@ -80,26 +80,21 @@ export default function AvailableDevelopers({
 
   return (
     <div className="available-developers-section">
-      <div className="section-card">
-        <h3 className="section-title">
-          <Users className="section-icon" />
-          {t('teamBuilder.availableTitle')}
-        </h3>
-        
-        <div className="categories-container">
-          {developersByCategory.map(category => (
-            <CategorySection
-              key={category.id}
-              category={category}
-              selectedTeam={selectedTeam}
-              maxTeamSize={maxTeamSize}
-              onAddToTeam={onAddToTeam}
-              onRemoveFromTeam={onRemoveFromTeam}
-              onDeleteFromFavorites={onDeleteFromFavorites}
-              t={t}
-            />
-          ))}
-        </div>
+      <h2>{t('teamBuilder.availableTitle')}</h2>
+      
+      <div className="categories-container">
+        {developersByCategory.map(category => (
+          <CategorySection
+            key={category.id}
+            category={category}
+            selectedTeam={selectedTeam}
+            maxTeamSize={maxTeamSize}
+            onAddToTeam={onAddToTeam}
+            onRemoveFromTeam={onRemoveFromTeam}
+            onDeleteFromFavorites={onDeleteFromFavorites}
+            t={t}
+          />
+        ))}
       </div>
     </div>
   );
@@ -157,9 +152,6 @@ function CategorySection({ category, selectedTeam, maxTeamSize, onAddToTeam, onR
 
   return (
     <div className="category-section">
-      <h4 className="category-title">
-        {category.name}
-      </h4>
       <div className="category-content-wrapper">
         {canScrollLeft && (
           <button 
