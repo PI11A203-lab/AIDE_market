@@ -187,6 +187,7 @@
   color: white;
   margin-bottom: 16px;
   line-height: 1.2;
+  white-space: pre-line; /* 번역 문자열의 \n을 줄바꿈으로 표시 */
 }
 
 .hero-subtitle {
@@ -757,10 +758,18 @@
   font-size: 18px;
   font-weight: 700;
   color: #1A1A1A;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.top-creators-follow-hint {
+  font-size: 13px;
+  color: #6B7280;
+  line-height: 1.4;
+  margin: 0 0 16px 0;
+  padding: 0;
 }
 
 .see-all {
@@ -781,7 +790,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 12px 12px 12px 0; /* 왼쪽 0 → 번호·프로필·이름이 Top Creators 제목과 왼쪽 정렬, 팔로우 버튼은 오른쪽 고정 */
   border-radius: 12px;
   transition: background 0.2s;
   cursor: pointer;
@@ -810,6 +819,8 @@
 
 .creator-info {
   flex: 1;
+  min-width: 0; /* 긴 이름이 있어도 버튼이 밀리지 않도록 flex 영역 축소 허용 */
+  overflow: hidden;
 }
 
 .creator-name {
@@ -817,16 +828,26 @@
   font-weight: 600;
   color: #1A1A1A;
   margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .creator-username {
   font-size: 12px;
   color: #9CA3AF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* ito 옆 버튼처럼 컴팩트한 고정 크기 (이름 길이·팔로우 상태와 무관하게 동일) */
 .follow-btn {
-  width: 90px;
-  padding: 8px 12px;
+  width: 88px;
+  min-width: 88px;
+  max-width: 88px;
+  flex-shrink: 0;
+  padding: 8px 10px;
   background: #EEF2FF;
   color: #6366F1;
   border: none;
@@ -836,6 +857,10 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 .follow-btn:hover {

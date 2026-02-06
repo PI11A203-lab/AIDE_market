@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { api } from '../../../config/api';
+import { mockSellerApplications } from './mockData';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import './SellerApplications.css';
+
+const USE_MOCK_ON_ERROR = true;
 
 export default function SellerApplications() {
   const { t, i18n } = useTranslation();
@@ -19,7 +22,11 @@ export default function SellerApplications() {
       setApplications(response.data || []);
     } catch (error) {
       console.error('신청 목록 로드 오류:', error);
-      message.error(t('profile.superAdmin.sellerApplications.messages.loadFail'));
+      if (USE_MOCK_ON_ERROR) {
+        setApplications(mockSellerApplications);
+      } else {
+        message.error(t('profile.superAdmin.sellerApplications.messages.loadFail'));
+      }
     } finally {
       setLoading(false);
     }

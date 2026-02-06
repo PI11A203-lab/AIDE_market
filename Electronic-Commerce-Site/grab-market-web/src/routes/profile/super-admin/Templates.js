@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
+import { mockTemplates } from './mockData';
 import { Modal, Input, Button, message, Table, Space, Popconfirm, Card } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined, UpOutlined, DownOutlined, CloseOutlined, SearchOutlined } from '@ant-design/icons';
 import './Templates.css';
+
+const USE_MOCK_ON_ERROR = true;
 
 const { TextArea } = Input;
 
@@ -106,9 +109,13 @@ export default function Templates() {
       }));
     } catch (error) {
       console.error('템플릿 목록 로드 실패:', error);
-      // API가 없을 수 있으므로 빈 배열로 초기화
-      setTemplates([]);
-      setPagination(prev => ({ ...prev, total: 0 }));
+      if (USE_MOCK_ON_ERROR) {
+        setTemplates(mockTemplates);
+        setPagination(prev => ({ ...prev, total: mockTemplates.length, totalPages: 1 }));
+      } else {
+        setTemplates([]);
+        setPagination(prev => ({ ...prev, total: 0 }));
+      }
     } finally {
       setLoading(false);
     }

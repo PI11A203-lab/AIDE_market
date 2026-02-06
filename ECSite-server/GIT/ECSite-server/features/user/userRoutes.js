@@ -9,6 +9,9 @@ router.get("/", userController.getAllUsers);
 // 사용자명으로 사용자 조회
 router.get("/username/:username", userController.getUserByUsername);
 
+// 판매자(크리에이터)별 등록 상품 목록 (/:id보다 먼저 정의)
+router.get("/:id/products", userController.getProductsByUserId);
+
 // 팔로우 관련 라우트 (/:id 라우트보다 먼저 정의)
 router.post("/:user_id/follow", userFollowController.followUser);
 router.post("/:user_id/unfollow", userFollowController.unfollowUser);

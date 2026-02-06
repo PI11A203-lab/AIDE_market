@@ -3,7 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import { api } from '../../../config/api';
+import {
+  mockDashboardStats,
+  mockRecentProducts,
+  mockStudentVerifications,
+  mockProducts,
+  mockSellerApplications
+} from './mockData';
 import './SuperAdminDashboard.css';
+
+const USE_MOCK_ON_ERROR = true;
 
 export default function SuperAdminDashboard() {
   const { t } = useTranslation();
@@ -62,18 +71,29 @@ export default function SuperAdminDashboard() {
         }).catch(() => ({ data: { totalCount: 0 } }))
       ]);
 
-      // 최근 상품 목록
+      // 최근 상품 목록 (API가 비어있으면 Mock 사용)
       const recentProductsData = productsRes.data?.products || [];
+      const useProductsMock = recentProductsData.length === 0 && USE_MOCK_ON_ERROR;
+      const displayProducts = useProductsMock ? mockProducts : recentProductsData;
       
-      // 최근 활동 (간단한 목록)
-      const activities = [
-        ...recentProductsData.slice(0, 3).map(p => ({
-          time: t('profile.superAdmin.dashboard.recent'),
-          type: t('profile.superAdmin.dashboard.productRequest'),
-          detail: p.name,
-          status: t('profile.superAdmin.dashboard.pending')
-        }))
-      ];
+      // 최근 활동 (간단한 목록) - Mock 사용 시 학생인증 1건 + 상품 2건
+      let activities = displayProducts.slice(0, 3).map(p => ({
+        time: t('profile.superAdmin.dashboard.recent'),
+        type: t('profile.superAdmin.dashboard.productRequest'),
+        detail: p.nameKey ? t(p.nameKey) : p.name,
+        status: t('profile.superAdmin.dashboard.pending')
+      }));
+      if (useProductsMock && mockStudentVerifications.length > 0) {
+        activities = [
+          {
+            time: t('profile.superAdmin.dashboard.recent'),
+            type: t('profile.superAdmin.dashboard.studentRequest'),
+            detail: `${mockStudentVerifications[0].username} (${mockStudentVerifications[0].email})`,
+            status: t('profile.superAdmin.dashboard.pending')
+          },
+          ...activities
+        ].slice(0, 3);
+      }
 
       const todayAccess = ipStatsTodayRes.data?.todayAccess || ipStatsTodayRes.data?.totalAccess || 0;
       const yesterdayAccess = ipStatsYesterdayRes.data?.todayAccess || ipStatsYesterdayRes.data?.totalAccess || 0;
@@ -84,10 +104,13 @@ export default function SuperAdminDashboard() {
       const accessChange = todayAccess - yesterdayAccess;
       const securityEventsChange = todaySecurityEvents - yesterdaySecurityEvents;
       
-      // pendingProducts와 pendingStudents는 변화량을 0으로 설정 (임시로, 실제로는 이전 데이터와 비교 필요)
-      const pendingProducts = productsRes.data?.totalCount || 0;
-      const pendingStudents = studentsRes.data?.totalCount || 0;
-      const pendingSellerApplications = Array.isArray(sellerApplicationsRes.data) ? sellerApplicationsRes.data.length : 0;
+      // API가 0이면 Mock 데이터 숫자 표시 (학생인증·상품·판매자신청 페이지와 동기화)
+      const rawPendingProducts = productsRes.data?.totalCount ?? recentProductsData.length;
+      const rawPendingStudents = studentsRes.data?.totalCount ?? 0;
+      const rawSellerApps = Array.isArray(sellerApplicationsRes.data) ? sellerApplicationsRes.data.length : 0;
+      const pendingProducts = rawPendingProducts === 0 && USE_MOCK_ON_ERROR ? mockProducts.length : rawPendingProducts;
+      const pendingStudents = rawPendingStudents === 0 && USE_MOCK_ON_ERROR ? mockStudentVerifications.length : rawPendingStudents;
+      const pendingSellerApplications = rawSellerApps === 0 && USE_MOCK_ON_ERROR ? mockSellerApplications.length : rawSellerApps;
 
       setStats({
         pendingProducts,
@@ -101,10 +124,23 @@ export default function SuperAdminDashboard() {
         todayAccessChange: accessChange,
         securityEventsChange: securityEventsChange
       });
-      setRecentProducts(recentProductsData.slice(0, 3));
+      setRecentProducts(displayProducts.slice(0, 3));
       setRecentActivities(activities);
     } catch (error) {
       console.error('대시보드 데이터 로드 실패:', error);
+      if (USE_MOCK_ON_ERROR) {
+        const activities = [
+          ...mockRecentProducts.slice(0, 3).map(p => ({
+            time: t('profile.superAdmin.dashboard.recent'),
+            type: t('profile.superAdmin.dashboard.productRequest'),
+            detail: p.nameKey ? t(p.nameKey) : p.name,
+            status: t('profile.superAdmin.dashboard.pending')
+          }))
+        ];
+        setStats(mockDashboardStats);
+        setRecentProducts(mockRecentProducts);
+        setRecentActivities(activities);
+      }
     } finally {
       setLoading(false);
     }
@@ -219,8 +255,8 @@ export default function SuperAdminDashboard() {
               {recentProducts.length > 0 ? (
                 recentProducts.map((product) => (
                   <tr key={product.id}>
-                    <td>{product.name}</td>
-                    <td>{product.category?.name || '-'}</td>
+                    <td>{product.nameKey ? t(product.nameKey) : product.name}</td>
+                    <td>{product.categoryKey ? t(product.categoryKey) : product.category?.name || '-'}</td>
                     <td>¥{product.price?.toLocaleString() || '0'}</td>
                     <td>{product.creator?.username || '-'}</td>
                     <td>{new Date(product.approval_requested_at || product.createdAt).toLocaleDateString()}</td>

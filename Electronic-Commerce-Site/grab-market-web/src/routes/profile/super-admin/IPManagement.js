@@ -7,8 +7,19 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import {
+  mockIPLogs,
+  mockIPStats,
+  mockIPManagement, // eslint-disable-line no-unused-vars
+  mockAccessTrendData,
+  mockCountryDistribution, // eslint-disable-line no-unused-vars
+  mockHourlyAccessData,
+  mockTopAccessIPs
+} from './mockData';
 import './IPManagement.css';
 import './Products.css'; // 공통 스타일 사용
+
+const USE_MOCK_ON_ERROR = true;
 
 // 색상 팔레트
 const COLORS = ['#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6'];
@@ -59,7 +70,12 @@ export default function IPManagement() {
       }));
     } catch (error) {
       console.error('IP 로그 로드 실패:', error);
-      message.error(t('profile.superAdmin.ipManagement.messages.logsLoadFail'));
+      if (USE_MOCK_ON_ERROR) {
+        setLogs(mockIPLogs);
+        setPagination(prev => ({ ...prev, total: mockIPLogs.length, totalPages: 1 }));
+      } else {
+        message.error(t('profile.superAdmin.ipManagement.messages.logsLoadFail'));
+      }
     } finally {
       setLoading(false);
     }
@@ -127,7 +143,11 @@ export default function IPManagement() {
       });
     } catch (error) {
       console.error('통계 로드 실패:', error);
-      message.error(t('profile.superAdmin.ipManagement.messages.statsLoadFail'));
+      if (USE_MOCK_ON_ERROR) {
+        setStats(mockIPStats);
+      } else {
+        message.error(t('profile.superAdmin.ipManagement.messages.statsLoadFail'));
+      }
     } finally {
       setLoading(false);
     }
@@ -183,6 +203,9 @@ export default function IPManagement() {
         }
       } catch (error) {
         console.error('접속 추이 가져오기 실패:', error);
+        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
+          setData(mockAccessTrendData(days));
+        }
       } finally {
         if (isMountedRef.current) {
           setLoading(false);
@@ -338,6 +361,9 @@ export default function IPManagement() {
         }
       } catch (error) {
         console.error('시간대별 접속 가져오기 실패:', error);
+        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
+          setData(mockHourlyAccessData);
+        }
       } finally {
         if (isMountedRef.current) {
           setLoading(false);
@@ -402,6 +428,9 @@ export default function IPManagement() {
         }
       } catch (error) {
         console.error('TOP 접속 IP 가져오기 실패:', error);
+        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
+          setData(mockTopAccessIPs);
+        }
       } finally {
         if (isMountedRef.current) {
           setLoading(false);

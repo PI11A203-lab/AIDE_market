@@ -52,7 +52,7 @@ export const api = {
   products: {
     /**
      * 전체 상품 목록 조회 (페이지네이션 + 필터)
-     * @param {Object} params - { page, limit, category, sort, search }
+     * @param {Object} params - { page, limit, category, sort, search, creator_id, seller }
      */
     getList: (params = {}) => apiClient.get('/api/products', { params }),
 
@@ -207,6 +207,12 @@ export const api = {
      * @param {number} id - 사용자 ID
      */
     getById: (id) => apiClient.get(`/api/users/${id}`),
+
+    /**
+     * 사용자(판매자)별 등록 상품 목록 조회
+     * @param {number} id - 사용자(판매자) ID
+     */
+    getProducts: (id) => apiClient.get(`/api/users/${id}/products`),
 
     /**
      * 사용자명으로 사용자 조회

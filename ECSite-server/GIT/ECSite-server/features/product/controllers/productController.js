@@ -3,10 +3,10 @@ const productService = require("../services/productService");
 // 全商品一覧 (ページネーション + フィルタ + ソート)
 exports.getProducts = async (req, res) => {
     try {
-        const { page, limit, category, subcategory, search, sort, user_id } = req.query;
+        const { page, limit, category, subcategory, search, sort, user_id, creator_id, seller } = req.query;
         
         // 디버깅: 요청 파라미터 확인
-        console.log('상품 목록 요청 파라미터:', { page, limit, category, subcategory, search, sort, user_id });
+        console.log('상품 목록 요청 파라미터:', { page, limit, category, subcategory, search, sort, user_id, creator_id, seller });
         
         const result = await productService.findAllProducts({
             page: parseInt(page) || 1,
@@ -15,7 +15,9 @@ exports.getProducts = async (req, res) => {
             subcategory,
             search,
             sort: sort || 'download', // 기본값 명시
-            user_id: user_id || null
+            user_id: user_id || null,
+            creator_id: creator_id || null,
+            seller: seller || null
         });
         res.json(result);
     } catch (err) {

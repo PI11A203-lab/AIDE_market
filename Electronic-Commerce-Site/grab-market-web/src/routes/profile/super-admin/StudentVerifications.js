@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import { api } from '../../../config/api';
 import { Modal, Input, message, Image } from 'antd';
+import { mockStudentVerifications, MOCK_STUDENT_DOCUMENT_PATH } from './mockData';
 import './StudentVerifications.css';
 import './Products.css'; // 공통 스타일 사용
+
+const USE_MOCK_ON_ERROR = true;
 
 const { TextArea } = Input;
 
@@ -23,25 +26,43 @@ export default function StudentVerifications() {
   const loadVerifications = useCallback(async () => {
     try {
       setLoading(true);
-      const params = {
-        page: pagination.page,
-        limit: pagination.limit,
-        ...filters
-      };
-      const response = await api.superAdmin.studentVerifications.getPending(params);
-      setVerifications(response.data.verifications || []);
-      setPagination(prev => ({
-        ...prev,
-        total: response.data.totalCount || 0,
-        totalPages: response.data.totalPages || 0
-      }));
+
+      // 개발/데모용: 허가 대기중 리스트는 항상 Mock 데이터 3개만 사용
+      if (USE_MOCK_ON_ERROR) {
+        setVerifications(mockStudentVerifications);
+        setPagination(prev => ({
+          ...prev,
+          total: mockStudentVerifications.length,
+          totalPages: 1
+        }));
+        return;
+      }
+
+      // (추후 실제 API 연동 시 사용할 코드)
+      // const params = {
+      //   page: pagination.page,
+      //   limit: pagination.limit,
+      //   ...filters
+      // };
+      // const response = await api.superAdmin.studentVerifications.getPending(params);
+      // setVerifications(response.data.verifications || []);
+      // setPagination(prev => ({
+      //   ...prev,
+      //   total: response.data.totalCount || 0,
+      //   totalPages: response.data.totalPages || 0
+      // }));
     } catch (error) {
       console.error('학생 인증 목록 로드 실패:', error);
-      message.error(t('profile.superAdmin.studentVerifications.messages.loadFail'));
+      if (USE_MOCK_ON_ERROR) {
+        setVerifications(mockStudentVerifications);
+        setPagination(prev => ({ ...prev, total: mockStudentVerifications.length, totalPages: 1 }));
+      } else {
+        message.error(t('profile.superAdmin.studentVerifications.messages.loadFail'));
+      }
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.limit, filters, t]);
+  }, [t]);
 
   useEffect(() => {
     loadVerifications();
@@ -77,19 +98,12 @@ export default function StudentVerifications() {
     }
   };
 
-  const openDocumentModal = async (user) => {
-    try {
-      const response = await api.superAdmin.studentVerifications.getDocument(user.id);
-      const docPath = response.data.documentPath;
-      // 문서 URL 생성 (백엔드 서버의 파일 경로)
-      const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8081';
-      setDocumentUrl(`${baseUrl}/${docPath}`);
-      setSelectedUser(user);
-      setDocumentModalVisible(true);
-    } catch (error) {
-      console.error('문서 로드 실패:', error);
-      message.error(t('profile.superAdmin.studentVerifications.messages.documentLoadFail'));
-    }
+  const openDocumentModal = (user) => {
+    // 개발/데모용: 백엔드 API 대신 public 폴더의 Mock 이미지를 바로 사용
+    const mockPath = user.documentPath || MOCK_STUDENT_DOCUMENT_PATH;
+    setDocumentUrl(window.location.origin + mockPath);
+    setSelectedUser(user);
+    setDocumentModalVisible(true);
   };
 
   const openRejectModal = (user) => {

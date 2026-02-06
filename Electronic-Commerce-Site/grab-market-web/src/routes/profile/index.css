@@ -1249,21 +1249,21 @@ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .btn-danger {
-background: #FFFFFF;
-color: #EF4444;
-border: 1px solid #FECACA;
+background: #EF4444;
+color: #FFFFFF;
+border: 1px solid #DC2626;
 }
 
 .btn-danger:hover {
-background: #FEF2F2;
-color: #DC2626;
-border-color: #FCA5A5;
-box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15);
+background: #DC2626;
+color: #FFFFFF;
+border-color: #B91C1C;
+box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
 
 .btn-danger:active {
 transform: translateY(1px);
-box-shadow: 0 1px 2px rgba(239, 68, 68, 0.1);
+box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
 }
 
 .delete-confirm-message {

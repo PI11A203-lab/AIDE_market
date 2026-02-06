@@ -3,8 +3,11 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { message, Modal } from 'antd';
 import { api } from '../../../config/api';
+import { mockSellerApplicationDetail } from './mockData';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import './SellerApplicationDetail.css';
+
+const USE_MOCK_ON_ERROR = true;
 
 export default function SellerApplicationDetail() {
   const history = useHistory();
@@ -26,8 +29,15 @@ export default function SellerApplicationDetail() {
       setValidation(response.data.validation);
     } catch (error) {
       console.error('상세 정보 로드 오류:', error);
-      message.error(t('profile.superAdmin.sellerApplications.detail.messages.loadFail'));
-      history.push('/profile/super-admin/seller-applications');
+      if (USE_MOCK_ON_ERROR) {
+        const mock = mockSellerApplicationDetail(userId);
+        setUser(mock.user);
+        setApplication(mock.application);
+        setValidation(mock.validation);
+      } else {
+        message.error(t('profile.superAdmin.sellerApplications.detail.messages.loadFail'));
+        history.push('/profile/super-admin/seller-applications');
+      }
     } finally {
       setLoading(false);
     }

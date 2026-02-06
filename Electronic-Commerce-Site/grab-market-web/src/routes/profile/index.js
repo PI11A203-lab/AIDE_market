@@ -173,18 +173,13 @@ export default function UserProfile() {
           console.error('Failed to load reviews:', error);
         });
 
-      // 팀 목록 가져오기
+      // 팀 목록 가져오기 (템플릿에서 추가한 팀 포함)
       api.teamCompositions.getByUser(userId)
         .then(response => {
           const teamsList = response.data?.teamCompositions || [];
-          // 템플릿에서 생성된 팀 제외 (이름에 "템플릿" 또는 "テンプレート" 또는 "template" 포함)
-          const filteredTeamsList = teamsList.filter(team => {
-            const name = (team.name || '').toLowerCase();
-            return !(name.includes('템플릿') || name.includes('テンプレート') || name.includes('template'));
-          });
           // 각 팀의 멤버 정보도 가져오기
           Promise.all(
-            filteredTeamsList.map(async (team) => {
+            teamsList.map(async (team) => {
               try {
                 const membersResponse = await api.teamMembers.getByTeam(team.id);
                 const members = membersResponse.data?.teamMembers || [];
@@ -377,13 +372,8 @@ export default function UserProfile() {
                     api.teamCompositions.getByUser(userId)
                       .then(response => {
                         const teamsList = response.data?.teamCompositions || [];
-                        // 템플릿에서 생성된 팀 제외 (이름에 "템플릿" 또는 "テンプレート" 또는 "template" 포함)
-                        const filteredTeamsList = teamsList.filter(team => {
-                          const name = (team.name || '').toLowerCase();
-                          return !(name.includes('템플릿') || name.includes('テンプレート') || name.includes('template'));
-                        });
                         Promise.all(
-                          filteredTeamsList.map(async (team) => {
+                          teamsList.map(async (team) => {
                             try {
                               const membersResponse = await api.teamMembers.getByTeam(team.id);
                               const members = membersResponse.data?.teamMembers || [];

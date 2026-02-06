@@ -220,29 +220,127 @@ export default function TeamSidebar({
           <div className="template-section">
             <h3>{t('teamBuilder.quickStartTitle')}</h3>
             <div className="template-cards">
-              {templateTeams.map((team) => (
-                <div 
-                  key={team.id} 
-                  className="template-card"
-                  onClick={async () => {
-                    if (onAddTemplateTeam) {
+              {templateTeams.map((team) => {
+                const isAdded = selectedTemplateTeamIds.has(team.id);
+                const addedMembers = isAdded && selectedTeam
+                  ? selectedTeam.filter(dev => {
+                      const devTemplateId = typeof dev.templateTeamId === 'string' ? parseInt(dev.templateTeamId) : dev.templateTeamId;
+                      return devTemplateId === team.id;
+                    })
+                  : [];
+
+                return (
+                  <div 
+                    key={team.id} 
+                    className={`template-card ${isAdded ? 'template-card-added' : ''}`}
+                    onClick={!isAdded && onAddTemplateTeam ? async () => {
                       try {
                         await onAddTemplateTeam(team);
                       } catch (error) {
                         console.error('템플릿 팀 추가 실패:', error);
                       }
-                    }
-                  }}
-                >
-                  <div className="template-name">{translateTemplateName(team.name)}</div>
-                  <div className="template-ais">
-                    {t('teamBuilder.templateCardAIs', { 
-                      count: team.members.length, 
-                      synergy: team.synergyScore 
-                    })}
+                    } : undefined}
+                    style={{ cursor: isAdded ? 'default' : 'pointer' }}
+                  >
+                    <div className="template-name">{translateTemplateName(team.name)}</div>
+                    {isAdded && addedMembers.length > 0 ? (
+                      <div className="template-added-members">
+                        {addedMembers.map((member) => (
+                          <div
+                            key={member.id}
+                            className="template-member-badge"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: '8px',
+                              padding: '6px 10px',
+                              background: '#F3F4F6',
+                              borderRadius: '8px',
+                            marginBottom: '6px',
+                            position: 'relative'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
+                              <div
+                                style={{
+                                  width: '28px',
+                                  height: '28px',
+                                  borderRadius: '6px',
+                                  overflow: 'hidden',
+                                  flexShrink: 0,
+                                  background: '#FFFFFF',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '10px',
+                                  color: '#6B7280',
+                                  fontWeight: '500'
+                                }}
+                              >
+                                {member.imageUrl ? (
+                                  <img
+                                    src={`${API_URL}/${member.imageUrl}`}
+                                    alt={member.name}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    onError={(e) => {
+                                      e.target.style.display = 'none';
+                                      e.target.parentElement.textContent = member.name?.substring(0, 2) || '?';
+                                    }}
+                                  />
+                                ) : (
+                                  member.name?.substring(0, 2) || '?'
+                                )}
+                              </div>
+                              <span style={{ fontSize: '12px', color: '#1F2937', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</span>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onRemoveFromTeam) onRemoveFromTeam(member.id);
+                              }}
+                              style={{
+                                background: 'rgba(255, 255, 255, 0.9)',
+                                border: 'none',
+                                borderRadius: '50%',
+                                color: '#6B7280',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '4px',
+                                width: '22px',
+                                height: '22px',
+                                flexShrink: 0
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = '#EF4444';
+                                e.currentTarget.style.color = 'white';
+                                e.currentTarget.style.transform = 'scale(1.1)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                                e.currentTarget.style.color = '#6B7280';
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }}
+                              title={t('developerCard.removeFromTeam') || '팀에서 제거'}
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="template-ais">
+                        {t('teamBuilder.templateCardAIs', { 
+                          count: team.members.length, 
+                          synergy: team.synergyScore 
+                        })}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

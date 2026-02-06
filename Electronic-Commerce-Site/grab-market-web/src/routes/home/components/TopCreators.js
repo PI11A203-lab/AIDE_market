@@ -128,6 +128,9 @@ const TopCreators = () => {
           {i18n.exists('home.seeAll') ? t('home.seeAll') : (i18n.exists('home.viewAll') ? t('home.viewAll') : 'See All')}
         </Link>
       </div>
+      <p className="top-creators-follow-hint">
+        {i18n.exists('creators.followHint') ? t('creators.followHint') : 'Get notified when they release new AI & events'}
+      </p>
       <div className="creator-list">
         {creators.map((creator) => (
           <Link 

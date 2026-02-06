@@ -81,6 +81,61 @@ exports.findUserByUsername = async (username) => {
     return user.toJSON();
 };
 
+// 사용자(판매자)별 등록 상품 목록 조회 - created_by 또는 seller 매칭
+exports.findProductsByUserId = async (userId) => {
+    const user = await models.User.findByPk(userId, {
+        attributes: ['id', 'username', 'seller_application_data']
+    });
+    if (!user) return null;
+
+    const userData = user.toJSON();
+    const username = (userData.username || '').trim();
+    let sellerName = null;
+    if (userData.seller_application_data && typeof userData.seller_application_data === 'object') {
+        sellerName = (userData.seller_application_data.seller_name || '').trim() || null;
+    } else if (typeof userData.seller_application_data === 'string') {
+        try {
+            const parsed = JSON.parse(userData.seller_application_data);
+            sellerName = (parsed?.seller_name || '').trim() || null;
+        } catch (e) { /* ignore */ }
+    }
+
+    const conditions = [];
+    const replacements = { userId: parseInt(userId) };
+
+    if (username) {
+        conditions.push('(p.seller IS NOT NULL AND TRIM(p.seller) = :username)');
+        replacements.username = username;
+    }
+    if (sellerName && sellerName !== username) {
+        conditions.push('(p.seller IS NOT NULL AND TRIM(p.seller) = :sellerName)');
+        replacements.sellerName = sellerName;
+    }
+    conditions.push('p.created_by = :userId');
+    const whereClause = conditions.join(' OR ');
+
+    const products = await models.sequelize.query(
+        `SELECT p.id, p.name, p.price, p.seller, p.imageUrl, p.description,
+                p.download_count, p.view_count, p.rating_average, p.rating_count,
+                p.category_id, p.sub_category_id, p.createdAt,
+                c.name_ja as category_name, c.name as category_name_en
+         FROM products p
+         LEFT JOIN categories c ON p.category_id = c.id
+         WHERE (p.approval_status = 'approved' OR p.approval_status IS NULL)
+           AND (${whereClause})
+         ORDER BY p.download_count DESC, p.createdAt DESC`,
+        {
+            replacements,
+            type: models.sequelize.QueryTypes.SELECT
+        }
+    );
+
+    return {
+        products: products || [],
+        pagination: { total: (products || []).length, page: 1, limit: 500, totalPages: 1 }
+    };
+};
+
 // 사용자 생성
 exports.createUser = async ({ username, email, password, role, profile_image }) => {
     if (!username || !email || !password) {

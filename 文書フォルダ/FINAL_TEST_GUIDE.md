@@ -1,67 +1,67 @@
-# 보안 시스템 최종 테스트 가이드
+# セキュリティシステム 最終テストガイド
 
-## 📋 테스트 체크리스트
+## 📋 テストチェックリスト
 
-이 가이드는 보안 시스템의 모든 기능이 정상적으로 작동하는지 확인하는 방법을 제공합니다.
+本ガイドは、セキュリティシステムの全機能が正常に動作することを確認する方法をまとめています。
 
 ---
 
-## 1. DB 확인
+## 1. DB 確認
 
-### 1.1 인덱스 확인
+### 1.1 インデックス確認
 ```bash
 cd ECSite-server/GIT/ECSite-server
 mysql -u root -p aide_market < database/migrations/test_security_system.sql
 ```
 
-또는 직접 MySQL에 접속하여:
+または 직접 MySQL에 접속하여:
 ```sql
--- 인덱스 확인
+-- 인덱스 確認
 SHOW INDEX FROM security_events;
 SHOW INDEX FROM ip_access_logs;
 SHOW INDEX FROM ip_management;
 SHOW INDEX FROM bot_detections;
 
--- 보안 설정 확인
+-- セキュリティ設定確認
 SELECT * FROM security_settings;
 
--- 데이터 확인
+-- データ確認
 SELECT COUNT(*) FROM security_events;
 SELECT COUNT(*) FROM ip_access_logs;
 SELECT COUNT(*) FROM bot_detections;
 ```
 
-### 1.2 보안 설정 확인
+### 1.2 보안 설정 確認
 ```sql
 SELECT * FROM security_settings;
 ```
 
-**예상 결과:**
+**想定結果:**
 - `auto_block_enabled`: true
 - `bot_detection_threshold`: 80
 - `max_login_attempts`: 5
 - `block_duration_hours`: 24
 - `rate_limit_enabled`: true/false
-- 기타 설정들...
+- その他の設定...
 
 ---
 
-## 2. 기본 보안 기능 테스트
+## 2. 基本セキュリティ機能のテスト
 
-### 2.1 IP 차단 테스트
+### 2.1 IP ブロックテスト
 
-**Step 1: Super Admin에서 IP 차단**
-1. 프론트엔드: http://localhost:3000/profile/super-admin/ip-management
-2. IP Management 탭에서 특정 IP 차단
-3. 예: `192.168.1.100` 차단
+**Step 1: Super Admin で IP をブロック**
+1. フロントエンド: http://localhost:3000/profile/super-admin/ip-management
+2. IP Management タブで特定 IP をブロック
+3. 例: `192.168.1.100` をブロック
 
-**Step 2: 차단된 IP로 요청**
+**Step 2: ブロックした IP でリクエスト**
 ```bash
 curl -X GET http://localhost:8081/api/products \
   -H "X-Forwarded-For: 192.168.1.100"
 ```
 
-**예상 결과:** `403 Forbidden`
+**想定結果:** `403 Forbidden`
 ```json
 {
   "success": false,
@@ -69,19 +69,19 @@ curl -X GET http://localhost:8081/api/products \
 }
 ```
 
-**확인 사항:**
-- DB의 `security_events` 테이블에 `ip_blocked` 이벤트 기록됨
-- `ip_management` 테이블에 해당 IP가 `is_blocked = 1`로 기록됨
+**確認項目:**
+- DB の `security_events` テーブルに `ip_blocked` イベントが記録される
+- `ip_management` テーブルに該当 IP が `is_blocked = 1` で記録される
 
 ---
 
-### 2.2 로그인 실패 테스트
+### 2.2 ログイン失敗テスト
 
-**테스트:**
+**テスト:**
 ```bash
-# 5번 연속 로그인 실패
+# 5回連続ログイン失敗
 for i in {1..5}; do
-  echo "시도 $i"
+  echo "試行 $i"
   curl -X POST http://localhost:8081/auth/login \
     -H "Content-Type: application/json" \
     -d '{"email":"test@test.com","password":"wrong"}'
@@ -90,70 +90,70 @@ for i in {1..5}; do
 done
 ```
 
-**예상 결과:**
-- 1-4번: `401 Unauthorized`
-- 5번: `429 Too Many Requests` 또는 `401 Unauthorized` (차단 시작)
-- 6번 이후: `429 Too Many Requests` (차단 중)
+**想定結果:**
+- 1〜4回目: `401 Unauthorized`
+- 5回目: `429 Too Many Requests` または `401 Unauthorized`（ブロック開始）
+- 6回目以降: `429 Too Many Requests`（ブロック中）
 
-**확인 사항:**
-- `security_events` 테이블에 `login_failed` 이벤트 5개 기록
-- `ip_management` 테이블에 해당 IP가 자동 차단됨 (`is_blocked = 1`)
+**確認項目:**
+- `security_events` テーブルに `login_failed` イベントが5件記録される
+- `ip_management` テーブルで該当 IP が自動ブロックされる（`is_blocked = 1`）
 
 ---
 
-### 2.3 봇 탐지 테스트
+### 2.3 ボット検出テスト
 
-**테스트:**
+**テスト:**
 ```bash
-# 봇 User-Agent로 요청
+# ボット User-Agent でリクエスト
 curl -X GET http://localhost:8081/api/products \
   -H "User-Agent: bot/crawler"
 
-# 또는
+# または
 curl -X GET http://localhost:8081/api/products \
   -H "User-Agent: python-requests/2.28.0"
 ```
 
-**예상 결과:**
-- 신뢰도 90% 이상: `403 Forbidden` (즉시 차단)
-- 신뢰도 80-89%: 요청은 통과하지만 `bot_detections` 테이블에 기록
+**想定結果:**
+- 信頼度 90% 以上: `403 Forbidden`（即時ブロック）
+- 信頼度 80〜89%: リクエストは通過するが `bot_detections` テーブルに記録
 
-**확인 사항:**
-- `bot_detections` 테이블에 기록됨
-- `security_events` 테이블에 `bot_detected` 이벤트 기록
-- 신뢰도 90% 이상인 경우 `ip_management` 테이블에 자동 차단
+**確認項目:**
+- `bot_detections` テーブルに記録される
+- `security_events` テーブルに `bot_detected` イベントが記録される
+- 信頼度 90% 以上の場合は `ip_management` テーブルで自動ブロック
 
 ---
 
-## 3. Rate Limiting 테스트
+## 3. Rate Limiting テスト
 
-**테스트:**
+**テスト:**
 ```bash
-# 빠르게 110번 요청 (API Rate Limit: 100회/분)
+# 빠르게 110번 リクエスト (API Rate Limit: 100회/분)
 for i in {1..110}; do
   curl -X GET http://localhost:8081/api/products \
     -w "\nStatus: %{http_code}\n" \
     -o /dev/null -s
   if [ $((i % 10)) -eq 0 ]; then
-    echo "요청 $i 완료"
+    echo "リクエスト $i 完了"
   fi
 done
 ```
 
-**예상 결과:**
+**想定結果:**
 - 1-100번: `200 OK`
 - 101번 이후: `429 Too Many Requests`
 - 응답에 `Retry-After` 헤더 포함
 
-**확인 사항:**
-- `security_events` 테이블에 `api_abuse` 이벤트 기록
-- 110번 요청 시 자동 차단 가능
+**確認 사항:**
+- `security_events` 테이블에 `api_abuse` 이벤트 記録
+- 110번 リクエスト 시 자동 차단 가능
 
 ---
 
-## 4. 스크래핑 탐지 테스트
+## 4. 스크래핑 탐지 テスト
 
-**테스트:**
+**テスト:**
 ```bash
 # 빠르게 35개 상품 페이지 접근
 for i in {1..35}; do
@@ -164,17 +164,17 @@ for i in {1..35}; do
 done
 ```
 
-**예상 결과:**
-- 1-29번: `200 OK` 또는 `404 Not Found`
+**想定結果:**
+- 1-29번: `200 OK` または `404 Not Found`
 - 30번 이후: `403 Forbidden` (자동 차단)
 
-**확인 사항:**
-- `security_events` 테이블에 `scraping` 이벤트 기록
+**確認 사항:**
+- `security_events` 테이블에 `scraping` 이벤트 記録
 - `ip_management` 테이블에 자동 차단
 
 ---
 
-## 5. 메모리 관리 테스트
+## 5. 메모리 관리 テスト
 
 ### 5.1 메모리 통계 조회
 
@@ -229,11 +229,11 @@ curl -X POST http://localhost:8081/api/admin/security/memory/cleanup \
 
 ---
 
-## 6. 그래프 데이터 테스트
+## 6. 그래프 데이터 テスト
 
 ### 6.1 보안 이벤트 그래프 API
 
-**테스트:**
+**テスト:**
 ```bash
 # Super Admin 토큰 필요
 TOKEN="YOUR_TOKEN"
@@ -257,7 +257,7 @@ curl -X GET "http://localhost:8081/api/admin/security/events/top-ips?days=7&limi
 
 ### 6.2 IP 통계 그래프 API
 
-**테스트:**
+**テスト:**
 ```bash
 # 접속 추이
 curl -X GET "http://localhost:8081/api/admin/ip/access/trend?days=7" \
@@ -282,11 +282,11 @@ curl -X GET "http://localhost:8081/api/admin/ip/access/top-ips?days=7&limit=10" 
 
 ---
 
-## 7. Geolocation 테스트
+## 7. Geolocation テスト
 
-**DB 확인:**
+**DB 確認:**
 ```sql
--- 위치 정보가 자동으로 추가되었는지 확인
+-- 위치 정보가 자동으로 추가되었는지 確認
 SELECT 
     ip_address, 
     country, 
@@ -298,22 +298,22 @@ ORDER BY created_at DESC
 LIMIT 10;
 ```
 
-**확인 사항:**
+**確認 사항:**
 - 최근 IP 로그에 `country`와 `city` 정보가 포함됨
 - 위치 정보는 캐시되어 재사용됨 (24시간 TTL)
 
 ---
 
-## 8. 에러 핸들링 테스트
+## 8. 에러 핸들링 テスト
 
 ### 8.1 존재하지 않는 경로 (404)
 
-**테스트:**
+**テスト:**
 ```bash
 curl -X GET http://localhost:8081/api/not-found
 ```
 
-**예상 결과:**
+**想定結果:**
 ```json
 {
   "success": false,
@@ -322,28 +322,28 @@ curl -X GET http://localhost:8081/api/not-found
 }
 ```
 
-### 8.2 잘못된 요청 (400)
+### 8.2 잘못된 リクエスト (400)
 
-**테스트:**
+**テスト:**
 ```bash
-# 필수 파라미터 없이 요청
+# 필수 파라미터 없이 リクエスト
 curl -X POST http://localhost:8081/api/admin/security/events \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{}'
 ```
 
-**예상 결과:** `400 Bad Request` 또는 `500 Internal Server Error`
+**想定結果:** `400 Bad Request` または `500 Internal Server Error`
 
 ### 8.3 권한 없는 접근 (401)
 
-**테스트:**
+**テスト:**
 ```bash
-# 토큰 없이 요청
+# 토큰 없이 リクエスト
 curl -X GET http://localhost:8081/api/admin/security/events
 ```
 
-**예상 결과:**
+**想定結果:**
 ```json
 {
   "success": false,
@@ -353,55 +353,55 @@ curl -X GET http://localhost:8081/api/admin/security/events
 
 ---
 
-## 9. 스케줄러 테스트
+## 9. 스케줄러 テスト
 
-### 9.1 자동 차단 해제 (수동 실행)
+### 9.1 자동 차단 해제 (수동 実行)
 
-**테스트 스크립트:**
+**テスト 스크립트:**
 ```bash
 cd ECSite-server/GIT/ECSite-server
 node scripts/test_schedulers.js
 ```
 
-**또는 Node.js 콘솔에서:**
+**または Node.js 콘솔에서:**
 ```javascript
 const { runManualUnblock } = require('./jobs/autoUnblockScheduler');
 await runManualUnblock();
 ```
 
-**확인 사항:**
+**確認 사항:**
 - 차단 시간이 지난 IP가 자동으로 해제됨
 - `ip_management` 테이블에서 `is_blocked = 0`으로 변경
-- `security_events` 테이블에 `auto_unblock` 이벤트 기록
+- `security_events` 테이블에 `auto_unblock` 이벤트 記録
 
-### 9.2 로그 아카이빙 (수동 실행)
+### 9.2 로그 아카이빙 (수동 実行)
 
-**테스트 스크립트:**
+**テスト 스크립트:**
 ```bash
 cd ECSite-server/GIT/ECSite-server
 node scripts/test_schedulers.js
 ```
 
-**또는 Node.js 콘솔에서:**
+**または Node.js 콘솔에서:**
 ```javascript
 const { runManualArchive } = require('./jobs/logArchiveScheduler');
 await runManualArchive();
 ```
 
-**확인 사항:**
+**確認 사항:**
 - 90일 이상 된 `ip_access_logs` 삭제됨
 - 90일 이상 된 `security_events` (low/medium) 삭제됨
 - 180일 이상 된 `security_events` (high/critical) 삭제됨
 
 ---
 
-## 10. 프론트엔드 확인
+## 10. 프론트엔드 確認
 
 ### 10.1 Security 페이지
 
 **URL:** http://localhost:3000/profile/super-admin/security
 
-**확인 사항:**
+**確認 사항:**
 - [ ] 이벤트 추이 그래프 (라인 차트) 표시
 - [ ] 이벤트 분포 파이 차트 표시
 - [ ] 시간대별 바 차트 표시
@@ -414,7 +414,7 @@ await runManualArchive();
 
 **URL:** http://localhost:3000/profile/super-admin/ip-management
 
-**확인 사항:**
+**確認 사항:**
 - [ ] 접속 추이 그래프 (라인 차트) 표시
 - [ ] 국가별 분포 파이 차트 표시
 - [ ] 시간대별 접속 바 차트 표시
@@ -424,9 +424,9 @@ await runManualArchive();
 
 ---
 
-## 11. 자동화된 테스트 스크립트 실행
+## 11. 자동화된 テスト 스크립트 実行
 
-### 11.1 전체 테스트 스크립트
+### 11.1 전체 テスト 스크립트
 
 **사용 방법:**
 ```bash
@@ -435,18 +435,18 @@ cd ECSite-server/GIT/ECSite-server
 # 토큰을 환경 변수로 설정
 export AUTH_TOKEN="your_super_admin_token"
 
-# 테스트 실행
+# テスト 実行
 node scripts/test_security_system.js
 ```
 
-**주의:** 일부 테스트는 실제 차단이나 실패가 필요하므로, 테스트 환경에서 실행하세요.
+**注意:** 일부 テスト는 실제 차단이나 실패가 필요하므로, テスト 환경에서 実行하세요.
 
 ---
 
-## ✅ 최종 완료 기준
+## ✅ 최종 完了 기준
 
-- [x] **DB 인덱스** 적용 확인
-- [x] **보안 설정** 테이블 생성 및 기본값 확인
+- [x] **DB 인덱스** 적용 確認
+- [x] **보안 설정** 테이블 생성 및 기본값 確認
 - [x] **IP 차단** 정상 작동
 - [x] **로그인 실패 추적** 정상 작동
 - [x] **봇 탐지** 정상 작동
@@ -454,7 +454,7 @@ node scripts/test_security_system.js
 - [x] **스크래핑 탐지** 정상 작동
 - [x] **메모리 관리** 정상 작동
 - [x] **그래프 API** 정상 작동
-- [x] **에러 핸들링** 일관성 확인
+- [x] **에러 핸들링** 일관성 確認
 - [x] **스케줄러** 정상 작동
 - [x] **프론트엔드 그래프** 정상 표시
 
@@ -477,22 +477,22 @@ source database/migrations/create_security_settings.sql;
 ### 메모리 통계가 0일 때
 - 서버가 방금 시작되었거나
 - 캐시가 아직 채워지지 않았을 수 있음
-- 몇 번의 요청 후 다시 확인
+- 몇 번의 リクエスト 후 다시 確認
 
 ### 그래프 데이터가 비어있을 때
 - 실제 보안 이벤트나 IP 로그가 필요함
-- 테스트 요청을 몇 번 보낸 후 확인
+- テスト リクエスト을 몇 번 보낸 후 確認
 
 ---
 
-## 📝 테스트 결과 기록
+## 📝 テスト 결과 記録
 
-테스트 완료 후 다음 정보를 기록하세요:
+テスト 完了 후 다음 정보를 記録하세요:
 
-1. **테스트 일시**: 
-2. **테스트 환경**: (로컬/스테이징/프로덕션)
-3. **통과한 테스트**: 
-4. **실패한 테스트**: 
+1. **テスト 일시**: 
+2. **テスト 환경**: (로컬/스테이징/프로덕션)
+3. **통과한 テスト**: 
+4. **실패한 テスト**: 
 5. **발견된 이슈**: 
 6. **성능 메트릭**:
    - 평균 응답 시간:
@@ -501,5 +501,5 @@ source database/migrations/create_security_settings.sql;
 
 ---
 
-**테스트 완료 후 포트폴리오 문서 작성을 진행하세요!** 🎉
+**テスト 完了 후 포트폴리오 문서 작성을 진행하세요!** 🎉
 

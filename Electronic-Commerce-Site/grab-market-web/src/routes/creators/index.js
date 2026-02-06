@@ -156,6 +156,16 @@ export default function CreatorsPage() {
           <p className="creators-subtitle">
             {i18n.exists('creators.subtitle') ? t('creators.subtitle') : 'Meet the popular creators of the AI marketplace'}
           </p>
+
+          <div className="creators-why-follow">
+            <h3 className="creators-why-follow-title">{i18n.exists('creators.whyFollowTitle') ? t('creators.whyFollowTitle') : 'Why Follow Creators?'}</h3>
+            <ul className="creators-why-follow-list">
+              <li>{i18n.exists('creators.whyFollow1') ? t('creators.whyFollow1') : 'Get notified when they release new AI'}</li>
+              <li>{i18n.exists('creators.whyFollow2') ? t('creators.whyFollow2') : 'Receive special discount and event updates'}</li>
+              <li>{i18n.exists('creators.whyFollow3') ? t('creators.whyFollow3') : 'See all your favorite creators in one place'}</li>
+              <li>{i18n.exists('creators.whyFollow4') ? t('creators.whyFollow4') : 'Never miss the latest from top developers'}</li>
+            </ul>
+          </div>
           
           {creators.length === 0 ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>

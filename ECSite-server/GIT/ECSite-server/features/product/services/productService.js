@@ -10,7 +10,9 @@ exports.findAllProducts = async (options = {}) => {
         subcategory,
         search,
         sort = 'download',
-        user_id = null
+        user_id = null,
+        creator_id = null,
+        seller = null
     } = options;
 
     const offset = (page - 1) * limit;
@@ -67,6 +69,14 @@ exports.findAllProducts = async (options = {}) => {
         whereConditions.push('(p.name LIKE :search OR p.description LIKE :search)');
         replacements.search = `%${search}%`;
     }
+    if (creator_id) {
+        whereConditions.push('(p.created_by = :creator_id OR (p.seller = (SELECT username FROM users WHERE id = :creator_id)))');
+        replacements.creator_id = parseInt(creator_id);
+    }
+    if (seller) {
+        whereConditions.push('p.seller = :seller');
+        replacements.seller = seller;
+    }
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
@@ -119,10 +129,7 @@ exports.findAllProducts = async (options = {}) => {
         }
     );
 
-    const countReplacements = {};
-    if (where.category_id) countReplacements.category_id = where.category_id;
-    if (where.sub_category_id) countReplacements.sub_category_id = where.sub_category_id;
-    if (search) countReplacements.search = `%${search}%`;
+    const countReplacements = { ...replacements };
 
     const countResult = await models.sequelize.query(
         `SELECT COUNT(*) as count FROM Products p

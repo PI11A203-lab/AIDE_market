@@ -239,6 +239,23 @@
   transform: translateY(-2px);
 }
 
+.template-card-added {
+  cursor: default;
+}
+
+.template-card-added:hover {
+  transform: none;
+  border-color: #e0e0e0;
+}
+
+.template-added-members {
+  margin-top: 8px;
+}
+
+.template-added-members .template-member-badge:last-child {
+  margin-bottom: 0;
+}
+
 .template-name {
   font-weight: 600;
   font-size: 14px;

@@ -7,8 +7,20 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import {
+  mockSecurityStats,
+  mockSecurityEvents,
+  mockBots, // eslint-disable-line no-unused-vars
+  mockSecuritySettings,
+  mockEventTrendData,
+  mockEventDistribution,
+  mockHourlySecurityData,
+  mockTopAttackIPs
+} from './mockData';
 import './Security.css';
 import './Products.css'; // 공통 스타일 사용
+
+const USE_MOCK_ON_ERROR = true;
 
 // 색상 팔레트
 const COLORS = ['#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6'];
@@ -115,6 +127,9 @@ export default function Security() {
       });
     } catch (error) {
       console.error('보안 통계 로드 실패:', error);
+      if (USE_MOCK_ON_ERROR) {
+        setStats(mockSecurityStats);
+      }
     }
   };
 
@@ -135,7 +150,12 @@ export default function Security() {
       }));
     } catch (error) {
       console.error('보안 이벤트 로드 실패:', error);
-      message.error(t('profile.superAdmin.security.messages.eventsLoadFail'));
+      if (USE_MOCK_ON_ERROR) {
+        setEvents(mockSecurityEvents);
+        setPagination(prev => ({ ...prev, total: mockSecurityEvents.length, totalPages: 1 }));
+      } else {
+        message.error(t('profile.superAdmin.security.messages.eventsLoadFail'));
+      }
     } finally {
       setLoading(false);
     }
@@ -169,6 +189,9 @@ export default function Security() {
       setSettings(response.data.settings || settings);
     } catch (error) {
       console.error('설정 로드 실패:', error);
+      if (USE_MOCK_ON_ERROR) {
+        setSettings(mockSecuritySettings);
+      }
     }
   };
 
@@ -247,6 +270,9 @@ export default function Security() {
         }
       } catch (error) {
         console.error('이벤트 추이 가져오기 실패:', error);
+        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
+          setData(mockEventTrendData(days));
+        }
       } finally {
         if (isMountedRef.current) {
           setLoading(false);
@@ -347,6 +373,9 @@ export default function Security() {
         }
       } catch (error) {
         console.error('이벤트 분포 가져오기 실패:', error);
+        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
+          setData(mockEventDistribution);
+        }
       } finally {
         if (isMountedRef.current) {
           setLoading(false);
@@ -421,6 +450,9 @@ export default function Security() {
         }
       } catch (error) {
         console.error('시간대별 데이터 가져오기 실패:', error);
+        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
+          setData(mockHourlySecurityData);
+        }
       } finally {
         if (isMountedRef.current) {
           setLoading(false);
@@ -485,6 +517,9 @@ export default function Security() {
         }
       } catch (error) {
         console.error('TOP 공격 IP 가져오기 실패:', error);
+        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
+          setData(mockTopAttackIPs);
+        }
       } finally {
         if (isMountedRef.current) {
           setLoading(false);

@@ -1,23 +1,23 @@
-# 🔄 API 변경사항 가이드 (프론트엔드 참고)
+# 🔄 API変更ガイド（フロントエンド向け）
 
-> 결제 구조 재구현으로 인한 API 변경사항
+> 決済構造の再実装に伴うAPI変更
 
 **Base URL**: `http://localhost:8081`
 
 ---
 
-## ⚠️ 주요 변경사항 요약
+## ⚠️ 主な変更点まとめ
 
-1. **주문 생성 API**: `payment_id` 기반으로 변경 (카드 정보 직접 전송 불가)
-2. **결제수단 등록 API**: 필드명 변경 (`card_cvc` → `cvc`)
-3. **주문 조회 응답**: `orderItems`, `orderCoupons` 포함
-4. **결제수단 응답**: 구조 변경 (카드 정보가 `creditCard` 객체로 분리)
+1. **注文作成API**: `payment_id` ベースに変更（カード情報の直接送信不可）
+2. **決済手段登録API**: フィールド名変更（`card_cvc` → `cvc`）
+3. **注文取得レスポンス**: `orderItems`、`orderCoupons` を含む
+4. **決済手段レスポンス**: 構造変更（カード情報が `creditCard` オブジェクトに分離）
 
 ---
 
-## 📋 1. 주문 생성 API 변경
+## 📋 1. 注文作成APIの変更
 
-### ❌ 기존 방식 (더 이상 사용 불가)
+### ❌ 旧方式（使用不可）
 ```http
 POST /api/orders
 Content-Type: application/json
@@ -36,7 +36,7 @@ Content-Type: application/json
 }
 ```
 
-### ✅ 새로운 방식
+### ✅ 新方式
 ```http
 POST /api/orders
 Content-Type: application/json
@@ -44,15 +44,15 @@ Content-Type: application/json
 {
   "user_id": 1,
   "total_amount": 50000,
-  "payment_id": 1,  // ⚠️ 필수: 미리 등록한 결제수단 ID
-  "status": "pending"  // 선택사항 (기본값: "pending")
+  "payment_id": 1,  // ⚠️ 必須: 事前登録した決済手段ID
+  "status": "pending"  // 任意（デフォルト: "pending"）
 }
 ```
 
-**변경 사항:**
-- ❌ 제거: `payment_method`, `card_company`, `card_number`, `card_cvc`, `exp_month`, `exp_year`, `card_id`
-- ✅ 추가: `payment_id` (필수)
-- 주문 전에 결제수단을 먼저 등록해야 함
+**変更内容:**
+- ❌ 削除: `payment_method`, `card_company`, `card_number`, `card_cvc`, `exp_month`, `exp_year`, `card_id`
+- ✅ 追加: `payment_id`（必須）
+- 注文前に決済手段を登録すること
 
 **응답 예시:**
 ```json
@@ -79,7 +79,7 @@ Content-Type: application/json
       "creditCard": {
         "card_id": 1,
         "card_company": "VISA",
-        "card_holder": "홍길동",
+        "card_holder": "山田太郎",
         "exp_month": 12,
         "exp_year": 2025
       }
@@ -92,17 +92,17 @@ Content-Type: application/json
 
 ---
 
-## 📋 2. 결제수단 등록 API 변경
+## 📋 2. 決済手段登録APIの変更
 
-### 필드명 변경
+### フィールド名の変更
 
-**❌ 기존 필드명:**
+**❌ 旧フィールド名:**
 - `card_cvc`
 
-**✅ 새로운 필드명:**
+**✅ 新フィールド名:**
 - `cvc`
 
-### 요청 예시
+### リクエスト例
 ```http
 POST /api/payment-methods
 Content-Type: application/json
@@ -111,12 +111,12 @@ Content-Type: application/json
   "user_id": 1,
   "payment_method": "credit_card",  // 선택사항 (기본값: "credit_card")
   "card_company": "VISA",  // 선택사항
-  "card_holder": "홍길동",  // 선택사항
-  "card_number": "1234567890123456",  // 필수 (카드 정보 등록 시)
-  "cvc": "123",  // ⚠️ 필드명 변경: card_cvc → cvc
-  "exp_month": 12,  // 선택사항
-  "exp_year": 2025,  // 선택사항
-  "is_default": true  // 선택사항 (기본값: false)
+  "card_holder": "山田太郎",  // 任意
+  "card_number": "1234567890123456",  // 必須（カード登録時）
+  "cvc": "123",  // ⚠️ フィールド名変更: card_cvc → cvc
+  "exp_month": 12,  // 任意
+  "exp_year": 2025,  // 任意
+  "is_default": true  // 任意（デフォルト: false）
 }
 ```
 
@@ -130,27 +130,27 @@ Content-Type: application/json
     "is_default": true,
     "card_id": 1,
     "card_company": "VISA",
-    "card_holder": "홍길동",
-    "card_number": "****-****-****-3456",  // 마스킹 처리됨
+    "card_holder": "山田太郎",
+    "card_number": "****-****-****-3456",  // マスキング済み
     "exp_month": 12,
     "exp_year": 2025
   }
 }
 ```
 
-**변경 사항:**
-- 카드 정보가 평면 구조로 반환됨 (기존과 동일)
-- 카드 번호는 마스킹 처리됨 (`****-****-****-1234`)
+**変更内容:**
+- カード情報はフラット構造で返却（従来通り）
+- カード番号はマスキング済み（`****-****-****-1234`）
 
 ---
 
-## 📋 3. 주문 조회 API 응답 변경
+## 📋 3. 注文取得APIレスポンスの変更
 
-### 주문 조회 응답에 추가된 필드
+### 注文取得レスポンスに追加されたフィールド
 
-**✅ 추가된 필드:**
-- `orderItems`: 구매한 상품 목록
-- `orderCoupons`: 적용된 쿠폰 목록
+**✅ 追加フィールド:**
+- `orderItems`: 購入商品一覧
+- `orderCoupons`: 適用クーポン一覧
 
 ### 응답 예시
 ```http
@@ -181,12 +181,12 @@ GET /api/orders/1
       "creditCard": {
         "card_id": 1,
         "card_company": "VISA",
-        "card_holder": "홍길동",
+        "card_holder": "山田太郎",
         "exp_month": 12,
         "exp_year": 2025
       }
     },
-    "orderItems": [  // ⚠️ 새로 추가됨
+    "orderItems": [  // ⚠️ 新規追加
       {
         "id": 1,
         "order_id": 1,
@@ -206,7 +206,7 @@ GET /api/orders/1
         }
       }
     ],
-    "orderCoupons": [  // ⚠️ 새로 추가됨
+    "orderCoupons": [  // ⚠️ 新規追加
       {
         "order_coupon_id": 1,
         "order_id": 1,
@@ -226,18 +226,18 @@ GET /api/orders/1
 }
 ```
 
-**변경 사항:**
-- `orderItems`: 빈 배열이거나 구매한 상품 목록
-- `orderCoupons`: 빈 배열이거나 적용된 쿠폰 목록
-- 각 항목에 관련 정보(product, coupon)가 포함됨
+**変更内容:**
+- `orderItems`: 空配列または購入商品一覧
+- `orderCoupons`: 空配列または適用クーポン一覧
+- 各項目に関連情報（product, coupon）を含む
 
 ---
 
-## 📋 4. 결제수단 조회 API 응답 변경
+## 📋 4. 決済手段取得APIレスポンスの変更
 
-### 응답 구조 변경
+### レスポンス構造の変更
 
-**기존 응답:**
+**旧レスポンス:**
 ```json
 {
   "paymentMethod": {
@@ -253,7 +253,7 @@ GET /api/orders/1
 }
 ```
 
-**새로운 응답:**
+**新レスポンス:**
 ```json
 {
   "paymentMethod": {
@@ -261,27 +261,27 @@ GET /api/orders/1
     "user_id": 1,
     "payment_method": "credit_card",
     "is_default": true,
-    "card_id": 1,  // ⚠️ 추가됨
-    "card_company": "VISA",  // creditCard에서 평면화
-    "card_holder": "홍길동",  // ⚠️ 추가됨
-    "card_number": "****-****-****-3456",  // 마스킹 처리
+    "card_id": 1,  // ⚠️ 追加
+    "card_company": "VISA",  // creditCardからフラット化
+    "card_holder": "山田太郎",  // ⚠️ 追加
+    "card_number": "****-****-****-3456",  // マスキング済み
     "exp_month": 12,
     "exp_year": 2025
   }
 }
 ```
 
-**변경 사항:**
-- 카드 정보가 평면 구조로 반환됨 (사용 편의성)
-- `card_id` 필드 추가
-- `card_holder` 필드 추가
-- 카드 번호는 마스킹 처리됨
+**変更内容:**
+- カード情報はフラット構造で返却（利用しやすさ）
+- `card_id` フィールド追加
+- `card_holder` フィールド追加
+- カード番号はマスキング済み
 
 ---
 
-## 📋 5. 주문 목록 조회 API
+## 📋 5. 注文一覧取得API
 
-### 응답 구조
+### レスポンス構造
 
 ```http
 GET /api/orders?page=1&limit=20&user_id=1&status=completed
@@ -305,8 +305,8 @@ GET /api/orders?page=1&limit=20&user_id=1&status=completed
       "purchased_at": "2025-01-20T10:30:00.000Z",
       "user": { ... },
       "paymentMethod": { ... },
-      "orderItems": [ ... ],  // ⚠️ 새로 추가됨
-      "orderCoupons": [ ... ]  // ⚠️ 새로 추가됨
+      "orderItems": [ ... ],  // ⚠️ 新規追加
+      "orderCoupons": [ ... ]  // ⚠️ 新規追加
     }
   ]
 }
@@ -314,13 +314,13 @@ GET /api/orders?page=1&limit=20&user_id=1&status=completed
 
 ---
 
-## 🔄 마이그레이션 가이드
+## 🔄 マイグレーションガイド
 
-### 프론트엔드 수정 필요 사항
+### フロントエンドで必要な修正
 
-1. **주문 생성 로직 변경**
+1. **注文作成ロジックの変更**
    ```javascript
-   // ❌ 기존 코드
+   // ❌ 旧コード
    const orderData = {
      user_id: userId,
      total_amount: totalAmount,
@@ -332,87 +332,87 @@ GET /api/orders?page=1&limit=20&user_id=1&status=completed
      exp_year: expYear
    };
    
-   // ✅ 새로운 코드
-   // 1단계: 결제수단 등록 (이미 등록되어 있다면 생략)
+   // ✅ 新コード
+   // 1. 決済手段の登録（既に登録済みなら省略）
    const paymentMethod = await registerPaymentMethod({
      user_id: userId,
      card_company: cardCompany,
      card_number: cardNumber,
-     cvc: cardCvc,  // 필드명 변경
+     cvc: cardCvc,  // フィールド名変更
      exp_month: expMonth,
      exp_year: expYear,
      is_default: true
    });
    
-   // 2단계: 주문 생성
+   // 2. 注文作成
    const orderData = {
      user_id: userId,
      total_amount: totalAmount,
-     payment_id: paymentMethod.id  // 등록한 결제수단 ID 사용
+     payment_id: paymentMethod.id  // 登録した決済手段IDを使用
    };
    ```
 
-2. **결제수단 등록 필드명 변경**
+2. **決済手段登録のフィールド名変更**
    ```javascript
-   // ❌ 기존
+   // ❌ 旧
    card_cvc: "123"
    
-   // ✅ 새로운
+   // ✅ 新
    cvc: "123"
    ```
 
-3. **주문 조회 응답 처리**
+3. **注文取得レスポンスの扱い**
    ```javascript
-   // ✅ 새로운 응답 구조
+   // ✅ 新レスポンス構造
    const order = response.data.order;
    
-   // 구매한 상품 목록
+   // 購入商品一覧
    const products = order.orderItems.map(item => item.product);
    
-   // 적용된 쿠폰 목록
+   // 適用クーポン一覧
    const coupons = order.orderCoupons.map(oc => oc.coupon);
    ```
 
 ---
 
-## 📝 API 엔드포인트 요약
+## 📝 APIエンドポイント一覧
 
-### 주문 관련
-- `POST /api/orders` - 주문 생성 (변경됨)
-- `GET /api/orders` - 주문 목록 조회 (응답 변경)
-- `GET /api/orders/:id` - 주문 상세 조회 (응답 변경)
-- `GET /api/orders/order-number/:orderNumber` - 주문 번호로 조회 (응답 변경)
-- `GET /api/orders/users/:userId` - 사용자별 주문 목록 (응답 변경)
-- `PUT /api/orders/:id` - 주문 업데이트
-- `DELETE /api/orders/:id` - 주문 삭제
+### 注文
+- `POST /api/orders` - 注文作成（変更あり）
+- `GET /api/orders` - 注文一覧取得（レスポンス変更）
+- `GET /api/orders/:id` - 注文詳細取得（レスポンス変更）
+- `GET /api/orders/order-number/:orderNumber` - 注文番号で取得（レスポンス変更）
+- `GET /api/orders/users/:userId` - ユーザー別注文一覧（レスポンス変更）
+- `PUT /api/orders/:id` - 注文更新
+- `DELETE /api/orders/:id` - 注文削除
 
-### 결제수단 관련
-- `POST /api/payment-methods` - 결제수단 등록 (필드명 변경)
-- `GET /api/payment-methods/:id` - 결제수단 조회 (응답 변경)
-- `GET /api/payment-methods/users/:userId` - 사용자별 결제수단 목록 (응답 변경)
-- `PUT /api/payment-methods/:id` - 결제수단 업데이트 (필드명 변경)
-- `DELETE /api/payment-methods/:id` - 결제수단 삭제
-
----
-
-## ⚠️ 주의사항
-
-1. **주문 생성 전 결제수단 등록 필수**
-   - 주문 생성 시 `payment_id`가 필수이므로, 먼저 결제수단을 등록해야 합니다.
-
-2. **카드 정보 암호화**
-   - 카드 번호와 CVC는 서버에서 자동으로 암호화되어 저장됩니다.
-   - 응답에는 마스킹된 카드 번호만 반환됩니다.
-
-3. **결제수단 소유권 검증**
-   - 주문 생성 시 해당 결제수단이 사용자의 것인지 자동으로 검증됩니다.
-
-4. **주문 조회 응답**
-   - `orderItems`와 `orderCoupons`는 항상 배열로 반환됩니다 (빈 배열일 수 있음).
+### 決済手段
+- `POST /api/payment-methods` - 決済手段登録（フィールド名変更）
+- `GET /api/payment-methods/:id` - 決済手段取得（レスポンス変更）
+- `GET /api/payment-methods/users/:userId` - ユーザー別決済手段一覧（レスポンス変更）
+- `PUT /api/payment-methods/:id` - 決済手段更新（フィールド名変更）
+- `DELETE /api/payment-methods/:id` - 決済手段削除
 
 ---
 
-## 📞 문의
+## ⚠️ 注意事項
 
-API 변경사항에 대한 문의는 백엔드 팀에 연락해주세요.
+1. **注文作成前に決済手段の登録が必須**
+   - 注文作成時 `payment_id` が必須のため、先に決済手段を登録してください。
+
+2. **カード情報の暗号化**
+   - カード番号とCVCはサーバーで自動的に暗号化して保存されます。
+   - レスポンスにはマスキングされたカード番号のみ返却されます。
+
+3. **決済手段の所有権検証**
+   - 注文作成時にその決済手段が当該ユーザーのものであるか自動検証されます。
+
+4. **注文取得レスポンス**
+   - `orderItems` と `orderCoupons` は常に配列で返却されます（空配列の場合あり）。
+
+---
+
+## 📞 問い合わせ
+
+API変更に関する問い合わせはバックエンドチームまでご連絡ください。
 

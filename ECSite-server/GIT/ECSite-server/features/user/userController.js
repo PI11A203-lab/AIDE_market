@@ -14,6 +14,21 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
+// 사용자(판매자)별 등록 상품 목록 조회
+exports.getProductsByUserId = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const result = await userService.findProductsByUserId(userId);
+        if (!result) {
+            return res.status(404).json({ error: "사용자를 찾을 수 없습니다" });
+        }
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "상품 목록 조회 실패" });
+    }
+};
+
 // ID로 사용자 조회
 exports.getUserById = async (req, res) => {
     try {

@@ -312,7 +312,7 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
                     {t('profile.teams.deleteConfirm')}
                   </div>
                   <button className="btn-secondary" onClick={handleDeleteCancel}>
-                    {t('reviews.cancel')}
+                    {t('profile.reviews.cancel')}
                   </button>
                   <button className="btn-danger" onClick={handleDeleteConfirm}>
                     {t('profile.teams.delete')}

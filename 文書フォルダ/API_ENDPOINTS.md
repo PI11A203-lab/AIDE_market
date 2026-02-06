@@ -1,50 +1,50 @@
-# AIDE Market API 엔드포인트 문서
+# AIDE Market API エンドポイント文書
 
-> 프론트엔드 개발자를 위한 API 엔드포인트 가이드
+> フロントエンド開発者向け API エンドポイントガイド
 
 **Base URL**: `http://localhost:8081`
 
-> 💡 **프론트엔드 개발 참고**: Base URL은 환경 변수로 관리하는 것을 권장합니다.
+> 💡 **フロントエンド開発の参考**: Base URL は環境変数で管理することを推奨します。
 > ```javascript
 > const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8081';
 > ```
 
 ---
 
-## 📦 1. 상품 관련 (Products)
+## 📦 1. 商品関連 (Products)
 
-### 1.1 전체 상품 목록 (페이지네이션 + 필터)
+### 1.1 商品一覧（ページネーション + フィルタ）
 ```http
 GET /api/products
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
-- `category` (optional): 카테고리 ID로 필터링
-- `sort` (optional): 정렬 옵션
-  - `download` (기본값): 다운로드순
-  - `rating`: 평점순
-  - `price`: 가격 낮은순
-  - `priceDesc`: 가격 높은순
-- `search` (optional): 검색어 (상품명, 설명에서 검색)
+- `page` (任意): ページ番号（デフォルト: 1）
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20）
+- `category` (任意): カテゴリIDでフィルタ
+- `sort` (任意): ソート指定
+  - `download` (デフォルト): ダウンロード数順
+  - `rating`: 評価順
+  - `price`: 価格の安い順
+  - `priceDesc`: 価格の高い順
+- `search` (任意): 検索語（商品名・説明から検索）
 
-**예시:**
+**例:**
 ```javascript
-// 기본 목록 (다운로드순)
+// 一覧（ダウン로ード数順）
 GET /api/products
 
-// 페이지네이션
+// ページネーション
 GET /api/products?page=2&limit=20
 
-// 카테고리 필터 + 검색
+// カテゴリフィルタ + 検索
 GET /api/products?category=1&search=React&sort=rating
 
-// 평점순 정렬
+// 評価順ソート
 GET /api/products?sort=rating&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "products": [
@@ -78,20 +78,20 @@ GET /api/products?sort=rating&limit=10
 
 ---
 
-### 1.2 상품 상세 정보 (AI 통계 + 태그 + 시너지 포함)
+### 1.2 商品詳細（AI統計・タグ・シナジー含む）
 ```http
 GET /api/products/:id
 ```
 
 **Path Parameters:**
-- `id`: 상품 ID
+- `id`: 商品ID
 
-**예시:**
+**例:**
 ```javascript
 GET /api/products/3
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "product": {
@@ -149,20 +149,20 @@ GET /api/products/3
 
 ---
 
-### 1.3 AI 통계 조회 (육각형 차트용)
+### 1.3 AI統計取得（六角チャート用）
 ```http
 GET /api/products/:id/stats
 ```
 
 **Path Parameters:**
-- `id`: 상품 ID
+- `id`: 商品ID
 
-**예시:**
+**例:**
 ```javascript
 GET /api/products/3/stats
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "stats": {
@@ -181,23 +181,23 @@ GET /api/products/3/stats
 
 ---
 
-### 1.4 추천 AI 조회 (시너지)
+### 1.4 おすすめAI取得（シナジー）
 ```http
 GET /api/products/:id/synergies
 ```
 
 **Path Parameters:**
-- `id`: 상품 ID
+- `id`: 商品ID
 
 **Query Parameters:**
-- `limit` (optional): 최대 개수 (기본값: 5)
+- `limit` (任意): 最大件数（デフォルト: 5）
 
-**예시:**
+**例:**
 ```javascript
 GET /api/products/3/synergies?limit=5
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "synergies": [
@@ -221,27 +221,27 @@ GET /api/products/3/synergies?limit=5
 
 ---
 
-### 1.5 카테고리별 대표 상품 조회 (메인 페이지용)
+### 1.5 カテゴリ別代表商品取得（メインページ用）
 ```http
 GET /api/products/featured/category/:categoryId
 ```
 
 **Path Parameters:**
-- `categoryId`: 카테고리 ID
+- `categoryId`: カテゴリID
 
 **Query Parameters:**
-- `limit` (optional): 반환할 상품 개수 (기본값: 4)
+- `limit` (任意): 返却する商品数（デフォルト: 4）
 
-**예시:**
+**例:**
 ```javascript
-// 기본: 4개 상품
+// デフォルト: 4件
 GET /api/products/featured/category/1
 
-// 6개 상품
+// 6件
 GET /api/products/featured/category/1?limit=6
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "products": [
@@ -263,31 +263,31 @@ GET /api/products/featured/category/1?limit=6
 }
 ```
 
-> 💡 **프론트엔드 개발 참고**: 특정 카테고리의 대표 상품만 필요할 때 이 엔드포인트를 사용하면 됩니다. 다운로드 수와 평점이 높은 순으로 정렬됩니다.
+> 💡 **フロントエンド開発の参考**: 特定カテゴリの代表商品だけ必要なときにこのエンドポイントを使用します。ダウンロード数・評価の高い順でソートされます。
 
 ---
 
-### 1.6 카테고리별 상품 목록
+### 1.6 カテゴリ別商品一覧
 ```http
 GET /api/products/category/:categoryId
 ```
 
 **Path Parameters:**
-- `categoryId`: 카테고리 ID
+- `categoryId`: カテゴリID
 
 **Query Parameters:**
-- `subcategory` (optional): 서브카테고리 ID
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
-- `sort` (optional): 정렬 옵션
+- `subcategory` (任意): サブカテゴリID
+- `page` (任意): ページ番号（デフォルト: 1）
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20）
+- `sort` (任意): ソート指定
 
-**예시:**
+**例:**
 ```javascript
 GET /api/products/category/1?page=1&limit=10&sort=download
 GET /api/products/category/1?subcategory=2
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "products": [
@@ -309,24 +309,24 @@ GET /api/products/category/1?subcategory=2
 
 ---
 
-### 1.7 태그별 상품 목록
+### 1.7 タグ別商品一覧
 ```http
 GET /api/products/by-tag/:tagId
 ```
 
 **Path Parameters:**
-- `tagId`: 태그 ID
+- `tagId`: タグID
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호
-- `limit` (optional): 페이지당 항목 수
+- `page` (任意): ページ番号
+- `limit` (任意): 1ページあたりの件数
 
-**예시:**
+**例:**
 ```javascript
 GET /api/products/by-tag/1?page=1&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "products": [...],
@@ -341,7 +341,7 @@ GET /api/products/by-tag/1?page=1&limit=10
 
 ---
 
-### 1.8 상품 생성
+### 1.8 商品作成
 ```http
 POST /api/products
 ```
@@ -359,7 +359,7 @@ POST /api/products
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": {
@@ -373,15 +373,15 @@ POST /api/products
 
 ---
 
-### 1.9 상품 구매
+### 1.9 商品購入
 ```http
 POST /api/products/purchase/:id
 ```
 
 **Path Parameters:**
-- `id`: 상품 ID
+- `id`: 商品ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -390,14 +390,14 @@ POST /api/products/purchase/:id
 
 ---
 
-## 📁 2. 카테고리 관련 (Categories)
+## 📁 2. カテゴリ関連 (Categories)
 
-### 2.1 전체 카테고리 목록
+### 2.1 カテゴリ一覧
 ```http
 GET /api/categories
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "categories": [
@@ -415,24 +415,24 @@ GET /api/categories
 
 ---
 
-### 2.2 메인 페이지용: 카테고리 목록과 각 카테고리의 대표 상품
+### 2.2 メインページ用: カテゴリ一覧と各カテゴリの代表商品
 ```http
 GET /api/categories/with-products
 ```
 
 **Query Parameters:**
-- `productsLimit` (optional): 각 카테고리별 대표 상품 개수 (기본값: 4)
+- `productsLimit` (任意): カテゴリ別代表商品数（デフォルト: 4）
 
-**예시:**
+**例:**
 ```javascript
-// 기본: 각 카테고리당 4개 상품
+// デフォルト: カテゴリあたり4件
 GET /api/categories/with-products
 
-// 각 카테고리당 6개 상품
+// カテゴリあたり6件
 GET /api/categories/with-products?productsLimit=6
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "categories": [
@@ -464,19 +464,19 @@ GET /api/categories/with-products?productsLimit=6
 }
 ```
 
-> 💡 **프론트엔드 개발 참고**: 메인 페이지의 카테고리 표에 각 카테고리의 대표 상품을 표시할 때 이 엔드포인트를 사용하면 됩니다.
+> 💡 **フロントエンド開発の参考**: メインページのカテゴリ表に各カテゴリの代表商品を表示するときにこのエンドポイントを使用します。
 
 ---
 
-### 2.3 서브카테고리 목록
+### 2.3 サブカテゴリ一覧
 ```http
 GET /api/categories/:id/subcategories
 ```
 
 **Path Parameters:**
-- `id`: 카테고리 ID
+- `id`: カテゴリID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "subcategories": [
@@ -494,7 +494,7 @@ GET /api/categories/:id/subcategories
 
 ---
 
-### 2.4 카테고리 생성
+### 2.4 カテゴリ作成
 ```http
 POST /api/categories
 ```
@@ -510,31 +510,31 @@ POST /api/categories
 
 ---
 
-## 📂 2.5 서브카테고리 관련 (SubCategories)
+## 📂 2.5 サブカテゴリ関連 (SubCategories)
 
-### 2.5.1 전체 서브카테고리 목록
+### 2.5.1 サブカテゴリ一覧
 ```http
 GET /api/subcategories
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
-- `category_id` (optional): 카테고리 ID로 필터링
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
+- `category_id` (任意): カテゴリIDでフィルタ
 
-**예시:**
+**例:**
 ```javascript
-// 전체 목록
+// 一覧
 GET /api/subcategories
 
-// 페이지네이션
+// ページネーション
 GET /api/subcategories?page=2&limit=10
 
-// 특정 카테고리의 서브카테고리
+// 特定カテゴリのサブカテゴリ
 GET /api/subcategories?category_id=1
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 70,
@@ -560,15 +560,15 @@ GET /api/subcategories?category_id=1
 
 ---
 
-### 2.5.2 카테고리별 서브카테고리 목록
+### 2.5.2 カテゴリ別サブカテゴリ一覧
 ```http
 GET /api/subcategories/category/:categoryId
 ```
 
 **Path Parameters:**
-- `categoryId`: 카테고리 ID
+- `categoryId`: カテゴリID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "subcategories": [
@@ -590,15 +590,15 @@ GET /api/subcategories/category/:categoryId
 
 ---
 
-### 2.5.3 ID로 서브카테고리 조회
+### 2.5.3 IDでサブカテゴリ取得
 ```http
 GET /api/subcategories/:id
 ```
 
 **Path Parameters:**
-- `id`: 서브카테고리 ID
+- `id`: サブカテゴリID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "subcategory": {
@@ -618,7 +618,7 @@ GET /api/subcategories/:id
 
 ---
 
-### 2.5.4 서브카테고리 생성
+### 2.5.4 サブカテゴリ作成
 ```http
 POST /api/subcategories
 ```
@@ -632,7 +632,7 @@ POST /api/subcategories
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "subcategory": {
@@ -647,13 +647,13 @@ POST /api/subcategories
 
 ---
 
-### 2.5.5 서브카테고리 업데이트
+### 2.5.5 サブカテゴリ更新
 ```http
 PUT /api/subcategories/:id
 ```
 
 **Path Parameters:**
-- `id`: 서브카테고리 ID
+- `id`: サブカテゴリID
 
 **Request Body:**
 ```json
@@ -663,7 +663,7 @@ PUT /api/subcategories/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "subcategory": {
@@ -678,46 +678,46 @@ PUT /api/subcategories/:id
 
 ---
 
-### 2.5.6 서브카테고리 삭제
+### 2.5.6 サブカテゴリ削除
 ```http
 DELETE /api/subcategories/:id
 ```
 
 **Path Parameters:**
-- `id`: 서브카테고리 ID
+- `id`: サブカテゴリID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
 }
 ```
 
-> ⚠️ **주의**: 해당 서브카테고리를 사용하는 상품이 있으면 삭제할 수 없습니다.
+> ⚠️ **注意**: 当該サブカテゴリを使用している商品がある場合は削除できません。
 
 ---
 
-## 👥 2.6 팀 구성 관련 (Team Compositions)
+## 👥 2.6 チーム構成 関連 (Team Compositions)
 
-### 2.6.1 사용자별 팀 구성 목록
+### 2.6.1 ユーザー別 チーム構成 一覧
 ```http
 GET /api/team-compositions/users/:userId
 ```
 
 **Path Parameters:**
-- `userId`: 사용자 ID
+- `userId`: ユーザーID
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**예시:**
+**例:**
 ```javascript
 GET /api/team-compositions/users/1
 GET /api/team-compositions/users/1?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 5,
@@ -728,7 +728,7 @@ GET /api/team-compositions/users/1?page=2&limit=10
     {
       "id": 1,
       "user_id": 1,
-      "name": "프론트엔드 팀",
+      "name": "フロントエンドチーム",
       "total_synergy_score": 420,
       "created_at": "2025-11-18T11:37:59.000Z",
       "updated_at": "2025-11-18T11:37:59.000Z"
@@ -739,22 +739,22 @@ GET /api/team-compositions/users/1?page=2&limit=10
 
 ---
 
-### 2.6.2 전체 팀 구성 목록 (관리자용)
+### 2.6.2 全体 チーム構成 一覧 （管理者用）
 ```http
 GET /api/team-compositions
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**예시:**
+**例:**
 ```javascript
 GET /api/team-compositions
 GET /api/team-compositions?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 50,
@@ -765,7 +765,7 @@ GET /api/team-compositions?page=2&limit=10
     {
       "id": 1,
       "user_id": 1,
-      "name": "프론트엔드 팀",
+      "name": "フロントエンドチーム",
       "total_synergy_score": 420,
       "created_at": "2025-11-18T11:37:59.000Z",
       "updated_at": "2025-11-18T11:37:59.000Z"
@@ -776,21 +776,21 @@ GET /api/team-compositions?page=2&limit=10
 
 ---
 
-### 2.6.3 ID로 팀 구성 조회
+### 2.6.3 IDで チーム構成 取得
 ```http
 GET /api/team-compositions/:id
 ```
 
 **Path Parameters:**
-- `id`: 팀 구성 ID
+- `id`: チーム構成 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "teamComposition": {
     "id": 1,
     "user_id": 1,
-    "name": "프론트엔드 팀",
+    "name": "フロントエンドチーム",
     "total_synergy_score": 420,
     "created_at": "2025-11-18T11:37:59.000Z",
     "updated_at": "2025-11-18T11:37:59.000Z"
@@ -800,7 +800,7 @@ GET /api/team-compositions/:id
 
 ---
 
-### 2.6.4 팀 구성 생성
+### 2.6.4 チーム構成 作成
 ```http
 POST /api/team-compositions
 ```
@@ -809,18 +809,18 @@ POST /api/team-compositions
 ```json
 {
   "user_id": 1,
-  "name": "백엔드 팀",
+  "name": "バックエンドチーム",
   "total_synergy_score": 380
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "teamComposition": {
     "id": 2,
     "user_id": 1,
-    "name": "백엔드 팀",
+    "name": "バックエンドチーム",
     "total_synergy_score": 380,
     "created_at": "2025-11-18T20:50:57.000Z",
     "updated_at": "2025-11-18T20:50:57.000Z"
@@ -830,29 +830,29 @@ POST /api/team-compositions
 
 ---
 
-### 2.6.5 팀 구성 업데이트
+### 2.6.5 チーム構成 更新
 ```http
 PUT /api/team-compositions/:id
 ```
 
 **Path Parameters:**
-- `id`: 팀 구성 ID
+- `id`: チーム構成 ID
 
 **Request Body:**
 ```json
 {
-  "name": "풀스택 팀",
+  "name": "フルスタックチーム",
   "total_synergy_score": 450
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "teamComposition": {
     "id": 1,
     "user_id": 1,
-    "name": "풀스택 팀",
+    "name": "フルスタックチーム",
     "total_synergy_score": 450,
     "created_at": "2025-11-18T11:37:59.000Z",
     "updated_at": "2025-11-18T21:00:00.000Z"
@@ -862,36 +862,36 @@ PUT /api/team-compositions/:id
 
 ---
 
-### 2.6.6 팀 구성 삭제
+### 2.6.6 チーム構成 削除
 ```http
 DELETE /api/team-compositions/:id
 ```
 
 **Path Parameters:**
-- `id`: 팀 구성 ID
+- `id`: チーム構成 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
 }
 ```
 
-> ⚠️ **주의**: 팀 구성 삭제 시 관련된 팀 멤버(team_members)도 함께 삭제됩니다 (CASCADE).
+> ⚠️ **注意**: チーム構成削除時、関連するチームメンバー(team_members)も削除されます (CASCADE)。
 
 ---
 
-## 👤 2.7 팀 멤버 관련 (Team Members)
+## 👤 2.7 チームメンバー 관련 (Team Members)
 
-### 2.7.1 팀별 멤버 목록 조회
+### 2.7.1 チーム別メンバー一覧取得
 ```http
 GET /api/team-members/teams/:teamId
 ```
 
 **Path Parameters:**
-- `teamId`: 팀 구성 ID
+- `teamId`: チーム構成 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "teamMembers": [
@@ -926,15 +926,15 @@ GET /api/team-members/teams/:teamId
 
 ---
 
-### 2.7.2 ID로 팀 멤버 조회
+### 2.7.2 IDで チームメンバー 取得
 ```http
 GET /api/team-members/:id
 ```
 
 **Path Parameters:**
-- `id`: 팀 멤버 ID
+- `id`: チームメンバー ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "teamMember": {
@@ -963,7 +963,7 @@ GET /api/team-members/:id
 
 ---
 
-### 2.7.3 팀 멤버 추가
+### 2.7.3 チームメンバー 追加
 ```http
 POST /api/team-members
 ```
@@ -978,7 +978,7 @@ POST /api/team-members
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "teamMember": {
@@ -992,17 +992,17 @@ POST /api/team-members
 }
 ```
 
-> 💡 **참고**: `position`을 제공하지 않으면 자동으로 현재 팀의 최대 position + 1이 설정됩니다. 같은 팀에 같은 상품을 중복으로 추가할 수 없습니다 (unique constraint).
+> 💡 **参考**: `position` を指定しない場合、現在のチームの最大 position + 1 が自動設定されます。同一チームに同一商品を重複追加できません（unique constraint）。
 
 ---
 
-### 2.7.4 팀 멤버 업데이트
+### 2.7.4 チームメンバー 更新
 ```http
 PUT /api/team-members/:id
 ```
 
 **Path Parameters:**
-- `id`: 팀 멤버 ID
+- `id`: チームメンバー ID
 
 **Request Body:**
 ```json
@@ -1012,7 +1012,7 @@ PUT /api/team-members/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "teamMember": {
@@ -1028,15 +1028,15 @@ PUT /api/team-members/:id
 
 ---
 
-### 2.7.5 팀 멤버 삭제 (ID로)
+### 2.7.5 チームメンバー 削除 (IDで)
 ```http
 DELETE /api/team-members/:id
 ```
 
 **Path Parameters:**
-- `id`: 팀 멤버 ID
+- `id`: チームメンバー ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -1045,16 +1045,16 @@ DELETE /api/team-members/:id
 
 ---
 
-### 2.7.6 팀 멤버 삭제 (team_id와 product_id로)
+### 2.7.6 チームメンバー 削除 （team_id・product_id指定）
 ```http
 DELETE /api/team-members/teams/:teamId/products/:productId
 ```
 
 **Path Parameters:**
-- `teamId`: 팀 구성 ID
-- `productId`: 상품 ID
+- `teamId`: チーム構成 ID
+- `productId`: 商品ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -1063,17 +1063,17 @@ DELETE /api/team-members/teams/:teamId/products/:productId
 
 ---
 
-## 📧 2.8 사용자 메일 설정 관련 (User Mail Settings)
+## 📧 2.8 ユーザーメール設定関連 (User Mail Settings)
 
-### 2.8.1 사용자별 메일 설정 조회
+### 2.8.1 ユーザー別 メール設定 取得
 ```http
 GET /api/user-mail-settings/users/:userId
 ```
 
 **Path Parameters:**
-- `userId`: 사용자 ID
+- `userId`: ユーザーID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "mailSetting": {
@@ -1090,19 +1090,19 @@ GET /api/user-mail-settings/users/:userId
 }
 ```
 
-> 🔒 **보안 참고**: 응답에서 `smtp_password`는 보안상 제외됩니다.
+> 🔒 **セキュリティ参考**: レスポンスでは `smtp_password` はセキュリティ上含まれません.
 
 ---
 
-### 2.8.2 ID로 메일 설정 조회
+### 2.8.2 IDで メール設定 取得
 ```http
 GET /api/user-mail-settings/:id
 ```
 
 **Path Parameters:**
-- `id`: 메일 설정 ID
+- `id`: メール設定ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "mailSetting": {
@@ -1121,22 +1121,22 @@ GET /api/user-mail-settings/:id
 
 ---
 
-### 2.8.3 전체 메일 설정 목록 조회 (관리자용)
+### 2.8.3 メール設定一覧取得（管理者用）
 ```http
 GET /api/user-mail-settings
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**예시:**
+**例:**
 ```javascript
 GET /api/user-mail-settings
 GET /api/user-mail-settings?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 50,
@@ -1161,7 +1161,7 @@ GET /api/user-mail-settings?page=2&limit=10
 
 ---
 
-### 2.8.4 메일 설정 생성 또는 업데이트 (upsert)
+### 2.8.4 メール設定作成または更新（upsert）
 ```http
 POST /api/user-mail-settings
 ```
@@ -1180,7 +1180,7 @@ POST /api/user-mail-settings
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "mailSetting": {
@@ -1198,17 +1198,17 @@ POST /api/user-mail-settings
 }
 ```
 
-> 💡 **참고**: `user_id`가 이미 존재하면 업데이트, 없으면 생성됩니다. `smtp_port`는 1부터 65535 사이의 값이어야 합니다.
+> 💡 **参考**: `user_id` が既に存在すれば更新、なければ作成されます. `smtp_port` は 1〜65535 の値である必要があります.
 
 ---
 
-### 2.8.5 메일 설정 업데이트
+### 2.8.5 メール設定 更新
 ```http
 PUT /api/user-mail-settings/:id
 ```
 
 **Path Parameters:**
-- `id`: 메일 설정 ID
+- `id`: メール設定ID
 
 **Request Body:**
 ```json
@@ -1219,7 +1219,7 @@ PUT /api/user-mail-settings/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "mailSetting": {
@@ -1236,19 +1236,19 @@ PUT /api/user-mail-settings/:id
 }
 ```
 
-> 💡 **참고**: 제공된 필드만 업데이트됩니다 (partial update).
+> 💡 **参考**: 指定したフィールドのみ更新されます（partial update）.
 
 ---
 
-### 2.8.6 메일 설정 삭제 (ID로)
+### 2.8.6 メール設定削除（ID指定）
 ```http
 DELETE /api/user-mail-settings/:id
 ```
 
 **Path Parameters:**
-- `id`: 메일 설정 ID
+- `id`: メール設定ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -1257,15 +1257,15 @@ DELETE /api/user-mail-settings/:id
 
 ---
 
-### 2.8.7 메일 설정 삭제 (user_id로)
+### 2.8.7 メール設定削除（user_id指定）
 ```http
 DELETE /api/user-mail-settings/users/:userId
 ```
 
 **Path Parameters:**
-- `userId`: 사용자 ID
+- `userId`: ユーザーID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -1274,14 +1274,14 @@ DELETE /api/user-mail-settings/users/:userId
 
 ---
 
-## 🏷️ 3. 태그 관련 (Tags)
+## 🏷️ 3. タグ 관련 (Tags)
 
-### 3.1 전체 태그 목록
+### 3.1 全体 タグ 一覧
 ```http
 GET /api/tags
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "tags": [
@@ -1297,7 +1297,7 @@ GET /api/tags
 
 ---
 
-### 3.2 태그 생성
+### 3.2 タグ 作成
 ```http
 POST /api/tags
 ```
@@ -1311,31 +1311,31 @@ POST /api/tags
 
 ---
 
-## 🎫 3.3 쿠폰 관련 (Coupons)
+## 🎫 3.3 クーポン 관련 (Coupons)
 
-### 3.3.1 전체 쿠폰 목록 조회
+### 3.3.1 全体 クーポン 一覧 取得
 ```http
 GET /api/coupons
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
-- `activeOnly` (optional): 활성화된 쿠폰만 조회 (기본값: false)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
+- `activeOnly` (任意): 有効な クーポンのみ 取得 （デフォルト: false)
 
-**예시:**
+**例:**
 ```javascript
-// 전체 목록
+// 一覧
 GET /api/coupons
 
-// 활성화된 쿠폰만
+// 有効な クーポンのみ
 GET /api/coupons?activeOnly=true
 
-// 페이지네이션
+// ページネーション
 GET /api/coupons?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 50,
@@ -1360,15 +1360,15 @@ GET /api/coupons?page=2&limit=10
 
 ---
 
-### 3.3.2 ID로 쿠폰 조회
+### 3.3.2 IDで クーポン 取得
 ```http
 GET /api/coupons/:id
 ```
 
 **Path Parameters:**
-- `id`: 쿠폰 ID
+- `id`: クーポン ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "coupon": {
@@ -1387,20 +1387,20 @@ GET /api/coupons/:id
 
 ---
 
-### 3.3.3 쿠폰 코드로 조회
+### 3.3.3 クーポン コードで取得
 ```http
 GET /api/coupons/code/:code
 ```
 
 **Path Parameters:**
-- `code`: 쿠폰 코드
+- `code`: クーポン 코드
 
-**예시:**
+**例:**
 ```javascript
 GET /api/coupons/code/SAVE20
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "coupon": {
@@ -1419,7 +1419,7 @@ GET /api/coupons/code/SAVE20
 
 ---
 
-### 3.3.4 쿠폰 유효성 검사 및 할인 계산
+### 3.3.4 クーポン 有効性検証と割引計算
 ```http
 POST /api/coupons/validate
 ```
@@ -1432,7 +1432,7 @@ POST /api/coupons/validate
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "coupon": {
@@ -1451,11 +1451,11 @@ POST /api/coupons/validate
 }
 ```
 
-> 💡 **참고**: 쿠폰 코드가 유효한지 검사하고, 주문 금액에 대한 할인 금액과 최종 금액을 계산합니다. 쿠폰이 만료되었거나 비활성화되었거나 최소 주문 금액을 충족하지 못하면 에러를 반환합니다.
+> 💡 **参考**: クーポンコードの有効性を検証し、注文金額に対する割引額と最終金額を計算します。クーポンが期限切れ・無効・最低注文金額未満の場合はエラーを返します。
 
 ---
 
-### 3.3.5 쿠폰 생성
+### 3.3.5 クーポン 作成
 ```http
 POST /api/coupons
 ```
@@ -1473,7 +1473,7 @@ POST /api/coupons
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "coupon": {
@@ -1490,22 +1490,22 @@ POST /api/coupons
 }
 ```
 
-> 💡 **참고**: 
-> - `discount_type`: "amount" (고정 금액) 또는 "rate" (비율)
-> - `discount_value`: 할인 값 (금액 또는 비율)
-> - `max_discount`: 비율 할인 시 최대 할인 금액 (선택)
-> - `min_order`: 최소 주문 금액 (선택)
-> - 코드는 자동으로 대문자로 변환됩니다
+> 💡 **参考**: 
+> - `discount_type`: "amount" (固定金額) または "rate"（率）
+> - `discount_value`: 割引値（金額または率）
+> - `max_discount`: 率割引時の最大割引額（任意）
+> - `min_order`: 最低注文金額（任意）
+> - コードは自動的に大文字に変換されます
 
 ---
 
-### 3.3.6 쿠폰 업데이트
+### 3.3.6 クーポン 更新
 ```http
 PUT /api/coupons/:id
 ```
 
 **Path Parameters:**
-- `id`: 쿠폰 ID
+- `id`: クーポン ID
 
 **Request Body:**
 ```json
@@ -1515,7 +1515,7 @@ PUT /api/coupons/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "coupon": {
@@ -1534,15 +1534,15 @@ PUT /api/coupons/:id
 
 ---
 
-### 3.3.7 쿠폰 삭제
+### 3.3.7 クーポン 削除
 ```http
 DELETE /api/coupons/:id
 ```
 
 **Path Parameters:**
-- `id`: 쿠폰 ID
+- `id`: クーポン ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -1551,26 +1551,26 @@ DELETE /api/coupons/:id
 
 ---
 
-## 👤 3.4 사용자 관련 (Users)
+## 👤 3.4 ユーザー関連 (Users)
 
-> ⚠️ **주의**: `bcrypt` 패키지가 필요합니다. 설치하려면 `npm install bcrypt`를 실행하세요.
+> ⚠️ **注意**: `bcrypt` パッケージが必要です。インストールは `npm install bcrypt`を実行してください.
 
-### 3.4.1 전체 사용자 목록 조회
+### 3.4.1 全体 ユーザー 一覧 取得
 ```http
 GET /api/users
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**예시:**
+**例:**
 ```javascript
 GET /api/users
 GET /api/users?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 100,
@@ -1591,19 +1591,19 @@ GET /api/users?page=2&limit=10
 }
 ```
 
-> 🔒 **보안 참고**: 응답에서 `password_hash`는 보안상 제외됩니다.
+> 🔒 **セキュリティ参考**: レスポンスでは `password_hash` は含まれません.
 
 ---
 
-### 3.4.2 ID로 사용자 조회
+### 3.4.2 IDで ユーザー 取得
 ```http
 GET /api/users/:id
 ```
 
 **Path Parameters:**
-- `id`: 사용자 ID
+- `id`: ユーザーID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "user": {
@@ -1620,20 +1620,20 @@ GET /api/users/:id
 
 ---
 
-### 3.4.3 사용자명으로 사용자 조회
+### 3.4.3 ユーザー名でユーザー 取得
 ```http
 GET /api/users/username/:username
 ```
 
 **Path Parameters:**
-- `username`: 사용자명
+- `username`: ユーザー명
 
-**예시:**
+**例:**
 ```javascript
 GET /api/users/username/john_doe
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "user": {
@@ -1650,7 +1650,7 @@ GET /api/users/username/john_doe
 
 ---
 
-### 3.4.4 사용자 생성
+### 3.4.4 ユーザー 作成
 ```http
 POST /api/users
 ```
@@ -1666,7 +1666,7 @@ POST /api/users
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "user": {
@@ -1681,17 +1681,17 @@ POST /api/users
 }
 ```
 
-> 💡 **참고**: 비밀번호는 자동으로 bcrypt로 해시 처리됩니다. `role`은 기본값이 "user"이며 "admin" 또는 "user"만 허용됩니다.
+> 💡 **参考**: パスワードは自動的にbcryptでハッシュされます。`role` のデフォルトは "user" で、"admin" または "user" のみ指定可能です。
 
 ---
 
-### 3.4.5 사용자 업데이트
+### 3.4.5 ユーザー 更新
 ```http
 PUT /api/users/:id
 ```
 
 **Path Parameters:**
-- `id`: 사용자 ID
+- `id`: ユーザーID
 
 **Request Body:**
 ```json
@@ -1702,7 +1702,7 @@ PUT /api/users/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "user": {
@@ -1717,19 +1717,19 @@ PUT /api/users/:id
 }
 ```
 
-> 💡 **참고**: 비밀번호가 제공되면 자동으로 해시 처리됩니다. 제공된 필드만 업데이트됩니다 (partial update).
+> 💡 **参考**: パスワードが指定された場合は自動的にハッシュされます. 指定したフィールドのみ更新されます（partial update）.
 
 ---
 
-### 3.4.6 사용자 삭제
+### 3.4.6 ユーザー 削除
 ```http
 DELETE /api/users/:id
 ```
 
 **Path Parameters:**
-- `id`: 사용자 ID
+- `id`: ユーザーID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -1744,7 +1744,7 @@ POST /api/users/:id/validate-password
 ```
 
 **Path Parameters:**
-- `id`: 사용자 ID
+- `id`: ユーザーID
 
 **Request Body:**
 ```json
@@ -1753,7 +1753,7 @@ POST /api/users/:id/validate-password
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "valid": true
@@ -1762,35 +1762,35 @@ POST /api/users/:id/validate-password
 
 ---
 
-## 📦 3.5 주문 관련 (Orders)
+## 📦 3.5 注文 관련 (Orders)
 
-### 3.5.1 전체 주문 목록 조회
+### 3.5.1 全体 注文 一覧 取得
 ```http
 GET /api/orders
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
-- `user_id` (optional): 사용자 ID로 필터링
-- `status` (optional): 주문 상태로 필터링 ('pending', 'completed', 'cancelled', 'refunded')
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
+- `user_id` (任意): ユーザーIDで フィルタ
+- `status` (任意): 注文 상태로 フィルタ ('pending', 'completed', 'cancelled', 'refunded')
 
-**예시:**
+**例:**
 ```javascript
-// 전체 목록
+// 一覧
 GET /api/orders
 
-// 사용자별 필터링
+// ユーザー別 フィルタ
 GET /api/orders?user_id=1
 
-// 상태별 필터링
+// 状態別 フィルタ
 GET /api/orders?status=pending
 
-// 페이징
+// ページネーション
 GET /api/orders?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 100,
@@ -1820,29 +1820,29 @@ GET /api/orders?page=2&limit=10
 }
 ```
 
-> 🔒 **보안 참고**: 응답에서 `card_number_encrypted`와 `card_cvc_encrypted`는 보안상 제외됩니다.
+> 🔒 **セキュリティ参考**: レスポンスでは `card_number_encrypted` と `card_cvc_encrypted` は含まれません.
 
 ---
 
-### 3.5.2 사용자별 주문 목록 조회
+### 3.5.2 ユーザー別 注文 一覧 取得
 ```http
 GET /api/orders/users/:userId
 ```
 
 **Path Parameters:**
-- `userId`: 사용자 ID
+- `userId`: ユーザーID
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**예시:**
+**例:**
 ```javascript
 GET /api/orders/users/1
 GET /api/orders/users/1?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 10,
@@ -1864,15 +1864,15 @@ GET /api/orders/users/1?page=2&limit=10
 
 ---
 
-### 3.5.3 ID로 주문 조회
+### 3.5.3 IDで 注文 取得
 ```http
 GET /api/orders/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 ID
+- `id`: 注文 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "order": {
@@ -1897,20 +1897,20 @@ GET /api/orders/:id
 
 ---
 
-### 3.5.4 주문 번호로 주문 조회
+### 3.5.4 注文 번호로 注文 取得
 ```http
 GET /api/orders/order-number/:orderNumber
 ```
 
 **Path Parameters:**
-- `orderNumber`: 주문 번호
+- `orderNumber`: 注文 번호
 
-**예시:**
+**例:**
 ```javascript
 GET /api/orders/order-number/ORD-1703016000000-1234
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "order": {
@@ -1926,7 +1926,7 @@ GET /api/orders/order-number/ORD-1703016000000-1234
 
 ---
 
-### 3.5.5 주문 생성
+### 3.5.5 注文 作成
 ```http
 POST /api/orders
 ```
@@ -1946,7 +1946,7 @@ POST /api/orders
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "order": {
@@ -1964,21 +1964,21 @@ POST /api/orders
 }
 ```
 
-> 💡 **참고**: 
-> - `order_number`는 자동으로 생성됩니다 (형식: ORD-{timestamp}-{random})
-> - 카드 정보(`card_number`, `card_cvc`)는 자동으로 암호화되어 저장됩니다
-> - `status` 기본값은 "pending"입니다
-> - `card_company`는 'VISA', 'Master', 'JCB', 'AMEX', 'Diners', 'etc' 중 하나여야 합니다
+> 💡 **参考**: 
+> - `order_number` は自動生成されます（形式: ORD-{timestamp}-{random})
+> - カード情報（`card_number`, `card_cvc`）は自動的に暗号化して保存されます
+> - `status` のデフォルトは "pending" です
+> - `card_company` は 'VISA', 'Master', 'JCB', 'AMEX', 'Diners', 'etc' のいずれかである必要があります
 
 ---
 
-### 3.5.6 주문 업데이트
+### 3.5.6 注文 更新
 ```http
 PUT /api/orders/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 ID
+- `id`: 注文 ID
 
 **Request Body:**
 ```json
@@ -1988,7 +1988,7 @@ PUT /api/orders/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "order": {
@@ -2003,58 +2003,58 @@ PUT /api/orders/:id
 }
 ```
 
-> 💡 **참고**: 제공된 필드만 업데이트됩니다 (partial update). 주문 상태 변경 시 사용 가능한 상태: 'pending', 'completed', 'cancelled', 'refunded'
+> 💡 **参考**: 指定したフィールドのみ更新されます（partial update）. 注文 상태 변경 시 사용 가능한 상태: 'pending', 'completed', 'cancelled', 'refunded'
 
 ---
 
-### 3.5.7 주문 삭제
+### 3.5.7 注文 削除
 ```http
 DELETE /api/orders/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 ID
+- `id`: 注文 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
 }
 ```
 
-> ⚠️ **주의**: 주문 삭제 시 관련된 주문 아이템(order_items)도 함께 삭제됩니다 (CASCADE).
+> ⚠️ **注意**: 注文削除時、関連する注文 アイテム(order_items)도 함께 削除됩니다 (CASCADE).
 
 ---
 
-## 📋 3.6 주문 아이템 관련 (Order Items)
+## 📋 3.6 注文 アイテム 관련 (Order Items)
 
-### 3.6.1 전체 주문 아이템 목록 조회
+### 3.6.1 全体 注文 アイテム 一覧 取得
 ```http
 GET /api/order-items
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
-- `order_id` (optional): 주문 ID로 필터링
-- `product_id` (optional): 상품 ID로 필터링
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
+- `order_id` (任意): 注文 IDで フィルタ
+- `product_id` (任意): 商品IDで フィルタ
 
-**예시:**
+**例:**
 ```javascript
-// 전체 목록
+// 一覧
 GET /api/order-items
 
-// 주문별 필터링
+// 注文별 フィルタ
 GET /api/order-items?order_id=1
 
-// 상품별 필터링
+// 商品別 フィルタ
 GET /api/order-items?product_id=3
 
-// 페이징
+// ページネーション
 GET /api/order-items?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 100,
@@ -2091,15 +2091,15 @@ GET /api/order-items?page=2&limit=10
 
 ---
 
-### 3.6.2 주문별 주문 아이템 목록 조회
+### 3.6.2 注文별 注文 アイテム 一覧 取得
 ```http
 GET /api/order-items/orders/:orderId
 ```
 
 **Path Parameters:**
-- `orderId`: 주문 ID
+- `orderId`: 注文 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderItems": [
@@ -2127,38 +2127,38 @@ GET /api/order-items/orders/:orderId
 
 ---
 
-### 3.6.3 주문별 주문 아이템 총합 계산
+### 3.6.3 注文별 注文 アイテム 총합 계산
 ```http
 GET /api/order-items/orders/:orderId/total
 ```
 
 **Path Parameters:**
-- `orderId`: 주문 ID
+- `orderId`: 注文 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 30000
 }
 ```
 
-> 💡 **참고**: 주문의 모든 아이템의 (quantity × unit_price) 합계를 계산합니다.
+> 💡 **参考**: 注文의 모든 アイテム의 (quantity × unit_price) 합계를 계산합니다.
 
 ---
 
-### 3.6.4 상품별 주문 아이템 목록 조회
+### 3.6.4 商品別 注文 アイテム 一覧 取得
 ```http
 GET /api/order-items/products/:productId
 ```
 
 **Path Parameters:**
-- `productId`: 상품 ID
+- `productId`: 商品ID
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 50,
@@ -2180,15 +2180,15 @@ GET /api/order-items/products/:productId
 
 ---
 
-### 3.6.5 ID로 주문 아이템 조회
+### 3.6.5 IDで 注文 アイテム 取得
 ```http
 GET /api/order-items/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 아이템 ID
+- `id`: 注文 アイテム ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderItem": {
@@ -2218,7 +2218,7 @@ GET /api/order-items/:id
 
 ---
 
-### 3.6.6 주문 아이템 생성
+### 3.6.6 注文 アイテム 作成
 ```http
 POST /api/order-items
 ```
@@ -2234,7 +2234,7 @@ POST /api/order-items
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderItem": {
@@ -2248,17 +2248,17 @@ POST /api/order-items
 }
 ```
 
-> 💡 **참고**: `quantity` 기본값은 1입니다. `has_review` 기본값은 false입니다.
+> 💡 **参考**: `quantity` 기본값은 1입니다. `has_review` 기본값은 false입니다.
 
 ---
 
-### 3.6.7 주문 아이템 업데이트
+### 3.6.7 注文 アイテム 更新
 ```http
 PUT /api/order-items/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 아이템 ID
+- `id`: 注文 アイテム ID
 
 **Request Body:**
 ```json
@@ -2268,7 +2268,7 @@ PUT /api/order-items/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderItem": {
@@ -2284,15 +2284,15 @@ PUT /api/order-items/:id
 
 ---
 
-### 3.6.8 주문 아이템 삭제
+### 3.6.8 注文 アイテム 削除
 ```http
 DELETE /api/order-items/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 아이템 ID
+- `id`: 注文 アイテム ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -2301,36 +2301,36 @@ DELETE /api/order-items/:id
 
 ---
 
-## 🎟️ 3.7 주문 쿠폰 관련 (Order Coupons)
+## 🎟️ 3.7 注文 クーポン 관련 (Order Coupons)
 
-### 3.6.1 전체 주문 쿠폰 목록 조회
+### 3.6.1 全体 注文 クーポン 一覧 取得
 ```http
 GET /api/order-coupons
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
-- `order_id` (optional): 주문 ID로 필터링
-- `user_id` (optional): 사용자 ID로 필터링
-- `coupon_id` (optional): 쿠폰 ID로 필터링
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
+- `order_id` (任意): 注文 IDで フィルタ
+- `user_id` (任意): ユーザーIDで フィルタ
+- `coupon_id` (任意): クーポン IDで フィルタ
 
-**예시:**
+**例:**
 ```javascript
-// 전체 목록
+// 一覧
 GET /api/order-coupons
 
-// 주문별 필터링
+// 注文별 フィルタ
 GET /api/order-coupons?order_id=1
 
-// 사용자별 필터링
+// ユーザー別 フィルタ
 GET /api/order-coupons?user_id=1
 
-// 페이징
+// ページネーション
 GET /api/order-coupons?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 50,
@@ -2370,15 +2370,15 @@ GET /api/order-coupons?page=2&limit=10
 
 ---
 
-### 3.6.2 주문별 주문 쿠폰 목록 조회
+### 3.6.2 注文별 注文 クーポン 一覧 取得
 ```http
 GET /api/order-coupons/orders/:orderId
 ```
 
 **Path Parameters:**
-- `orderId`: 주문 ID
+- `orderId`: 注文 ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderCoupons": [
@@ -2402,19 +2402,19 @@ GET /api/order-coupons/orders/:orderId
 
 ---
 
-### 3.6.3 사용자별 주문 쿠폰 목록 조회
+### 3.6.3 ユーザー別 注文 クーポン 一覧 取得
 ```http
 GET /api/order-coupons/users/:userId
 ```
 
 **Path Parameters:**
-- `userId`: 사용자 ID
+- `userId`: ユーザーID
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 10,
@@ -2436,19 +2436,19 @@ GET /api/order-coupons/users/:userId
 
 ---
 
-### 3.6.4 쿠폰별 주문 쿠폰 목록 조회
+### 3.6.4 クーポン별 注文 クーポン 一覧 取得
 ```http
 GET /api/order-coupons/coupons/:couponId
 ```
 
 **Path Parameters:**
-- `couponId`: 쿠폰 ID
+- `couponId`: クーポン ID
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "total": 5,
@@ -2470,15 +2470,15 @@ GET /api/order-coupons/coupons/:couponId
 
 ---
 
-### 3.6.5 ID로 주문 쿠폰 조회
+### 3.6.5 IDで 注文 クーポン 取得
 ```http
 GET /api/order-coupons/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 쿠폰 ID
+- `id`: 注文 クーポン ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderCoupon": {
@@ -2511,7 +2511,7 @@ GET /api/order-coupons/:id
 
 ---
 
-### 3.6.6 주문 쿠폰 생성
+### 3.6.6 注文 クーポン 作成
 ```http
 POST /api/order-coupons
 ```
@@ -2526,7 +2526,7 @@ POST /api/order-coupons
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderCoupon": {
@@ -2540,20 +2540,20 @@ POST /api/order-coupons
 }
 ```
 
-> 💡 **참고**: 
-> - 주문의 사용자와 `user_id`가 일치해야 합니다
-> - 같은 주문에 같은 쿠폰을 중복 적용할 수 없습니다
+> 💡 **参考**: 
+> - 注文의 ユーザー와 `user_id`가 일치해야 합니다
+> - 같은 注文에 같은 クーポン을 중복 적용할 수 없습니다
 > - `applied_value`는 실제 적용된 할인 금액입니다
 
 ---
 
-### 3.6.7 주문 쿠폰 업데이트
+### 3.6.7 注文 クーポン 更新
 ```http
 PUT /api/order-coupons/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 쿠폰 ID
+- `id`: 注文 クーポン ID
 
 **Request Body:**
 ```json
@@ -2562,7 +2562,7 @@ PUT /api/order-coupons/:id
 }
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "orderCoupon": {
@@ -2578,15 +2578,15 @@ PUT /api/order-coupons/:id
 
 ---
 
-### 3.6.8 주문 쿠폰 삭제
+### 3.6.8 注文 クーポン 削除
 ```http
 DELETE /api/order-coupons/:id
 ```
 
 **Path Parameters:**
-- `id`: 주문 쿠폰 ID
+- `id`: 注文 クーポン ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -2603,16 +2603,16 @@ GET /api/rankings/monthly
 ```
 
 **Query Parameters:**
-- `year` (optional): 연도 (기본값: 2025)
-- `month` (optional): 월 (기본값: 11)
+- `year` (任意): 연도 （デフォルト: 2025)
+- `month` (任意): 월 （デフォルト: 11)
 
-**예시:**
+**例:**
 ```javascript
 GET /api/rankings/monthly?year=2025&month=11
 GET /api/rankings/monthly  // 기본값: 2025년 11월
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "rankings": [
@@ -2637,12 +2637,12 @@ GET /api/rankings/monthly  // 기본값: 2025년 11월
 
 ## 📊 5. 통계 관련 (Stats / AI Stats)
 
-### 5.1 마켓플레이스 전체 통계
+### 5.1 마켓플레이스 全体 통계
 ```http
 GET /api/stats/overview
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "stats": {
@@ -2666,22 +2666,22 @@ GET /api/stats/overview
 
 ---
 
-### 5.2 AI Stats 전체 목록 조회
+### 5.2 AI Stats 全体 一覧 取得
 ```http
 GET /api/stats
 ```
 
 **Query Parameters:**
-- `page` (optional): 페이지 번호 (기본값: 1)
-- `limit` (optional): 페이지당 항목 수 (기본값: 20)
+- `page` (任意): ページ番号（デフォルト: 1)
+- `limit` (任意): 1ページあたりの件数（デフォルト: 20)
 
-**예시:**
+**例:**
 ```javascript
 GET /api/stats
 GET /api/stats?page=2&limit=10
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "stats": [
@@ -2715,7 +2715,7 @@ GET /api/stats?page=2&limit=10
 
 ---
 
-### 5.3 AI Stats 조회 (ID로)
+### 5.3 AI Stats 取得 (IDで)
 ```http
 GET /api/stats/:id
 ```
@@ -2723,12 +2723,12 @@ GET /api/stats/:id
 **Path Parameters:**
 - `id`: Stats ID
 
-**예시:**
+**例:**
 ```javascript
 GET /api/stats/1
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "stats": {
@@ -2754,7 +2754,7 @@ GET /api/stats/1
 
 ---
 
-### 5.4 AI Stats 생성
+### 5.4 AI Stats 作成
 ```http
 POST /api/stats
 ```
@@ -2776,9 +2776,9 @@ POST /api/stats
 - 모든 필드는 선택사항이며, 기본값은 50입니다
 - `product_id`는 필수입니다
 - 각 값은 0-100 사이여야 합니다
-- 하나의 상품당 하나의 stats만 존재할 수 있습니다
+- 하나의 상품당 하나의 statsのみ 존재할 수 있습니다
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "stats": {
@@ -2797,7 +2797,7 @@ POST /api/stats
 
 ---
 
-### 5.5 AI Stats 업데이트
+### 5.5 AI Stats 更新
 ```http
 PUT /api/stats/:id
 ```
@@ -2816,10 +2816,10 @@ PUT /api/stats/:id
 
 **참고:**
 - 모든 필드는 선택사항입니다
-- 업데이트하려는 필드만 포함하면 됩니다
+- 更新하려는 필드のみ 포함하면 됩니다
 - 각 값은 0-100 사이여야 합니다
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "stats": {
@@ -2838,7 +2838,7 @@ PUT /api/stats/:id
 
 ---
 
-### 5.6 AI Stats 삭제
+### 5.6 AI Stats 削除
 ```http
 DELETE /api/stats/:id
 ```
@@ -2846,7 +2846,7 @@ DELETE /api/stats/:id
 **Path Parameters:**
 - `id`: Stats ID
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "result": true
@@ -2855,14 +2855,14 @@ DELETE /api/stats/:id
 
 ---
 
-### 5.7 상품별 AI Stats 생성/업데이트 (Upsert)
+### 5.7 商品別 AI Stats 作成/更新 (Upsert)
 ```http
 POST /api/products/:id/stats
 PUT /api/products/:id/stats
 ```
 
 **Path Parameters:**
-- `id`: 상품 ID (product_id)
+- `id`: 商品ID (product_id)
 
 **Request Body:**
 ```json
@@ -2877,11 +2877,11 @@ PUT /api/products/:id/stats
 ```
 
 **참고:**
-- 해당 상품의 stats가 없으면 생성하고, 있으면 업데이트합니다
+- 해당 상품의 stats가 없으면 作成하고, 있으면 更新합니다
 - 모든 필드는 선택사항이며, 기본값은 50입니다
 - 각 값은 0-100 사이여야 합니다
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "stats": {
@@ -2902,12 +2902,12 @@ PUT /api/products/:id/stats
 
 ## 🖼️ 6. 배너 관련 (Banners)
 
-### 6.1 배너 목록
+### 6.1 배너 一覧
 ```http
 GET /banners
 ```
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "banners": [
@@ -2924,7 +2924,7 @@ GET /banners
 
 ---
 
-### 6.2 배너 생성
+### 6.2 배너 作成
 ```http
 POST /banners
 ```
@@ -2950,7 +2950,7 @@ POST /image
 - Content-Type: `multipart/form-data`
 - Field: `image` (파일)
 
-**응답:**
+**レスポンス:**
 ```json
 {
   "imageUrl": "uploads/1763279242452.jpeg"
@@ -3019,7 +3019,7 @@ export const marketplaceAPI = {
   getStats: () =>
     axios.get(`${API_BASE_URL}/api/stats/overview`),
   
-  // 태그 관련
+  // タグ 관련
   getTags: () => 
     axios.get(`${API_BASE_URL}/api/tags`),
   
