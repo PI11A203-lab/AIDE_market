@@ -10,9 +10,9 @@ import {
 import {
   mockIPLogs,
   mockIPStats,
-  mockIPManagement, // eslint-disable-line no-unused-vars
+  mockIPManagement,
   mockAccessTrendData,
-  mockCountryDistribution, // eslint-disable-line no-unused-vars
+  mockCountryDistribution,
   mockHourlyAccessData,
   mockTopAccessIPs
 } from './mockData';
@@ -56,11 +56,12 @@ export default function IPManagement() {
   const loadLogs = async () => {
     try {
       setLoading(true);
-      const params = {
-        page: pagination.page,
-        limit: pagination.limit,
-        ...filters
-      };
+      if (USE_MOCK_ON_ERROR) {
+        setLogs(mockIPLogs);
+        setPagination(prev => ({ ...prev, total: mockIPLogs.length, totalPages: 1 }));
+        return;
+      }
+      const params = { page: pagination.page, limit: pagination.limit, ...filters };
       const response = await api.superAdmin.ip.getLogs(params);
       setLogs(response.data.logs || []);
       setPagination(prev => ({
@@ -70,12 +71,7 @@ export default function IPManagement() {
       }));
     } catch (error) {
       console.error('IP 로그 로드 실패:', error);
-      if (USE_MOCK_ON_ERROR) {
-        setLogs(mockIPLogs);
-        setPagination(prev => ({ ...prev, total: mockIPLogs.length, totalPages: 1 }));
-      } else {
-        message.error(t('profile.superAdmin.ipManagement.messages.logsLoadFail'));
-      }
+      message.error(t('profile.superAdmin.ipManagement.messages.logsLoadFail'));
     } finally {
       setLoading(false);
     }
@@ -84,10 +80,12 @@ export default function IPManagement() {
   const loadIPManagement = async () => {
     try {
       setLoading(true);
-      const params = {
-        page: pagination.page,
-        limit: pagination.limit
-      };
+      if (USE_MOCK_ON_ERROR) {
+        setIpManagement(mockIPManagement);
+        setPagination(prev => ({ ...prev, total: mockIPManagement.length, totalPages: 1 }));
+        return;
+      }
+      const params = { page: pagination.page, limit: pagination.limit };
       const response = await api.superAdmin.ip.getManagement(params);
       setIpManagement(response.data.ipManagement || []);
       setPagination(prev => ({
@@ -97,7 +95,12 @@ export default function IPManagement() {
       }));
     } catch (error) {
       console.error('IP 관리 목록 로드 실패:', error);
-      message.error(t('profile.superAdmin.ipManagement.messages.managementLoadFail'));
+      if (USE_MOCK_ON_ERROR) {
+        setIpManagement(mockIPManagement);
+        setPagination(prev => ({ ...prev, total: mockIPManagement.length, totalPages: 1 }));
+      } else {
+        message.error(t('profile.superAdmin.ipManagement.messages.managementLoadFail'));
+      }
     } finally {
       setLoading(false);
     }
@@ -106,48 +109,40 @@ export default function IPManagement() {
   const loadStats = async () => {
     try {
       setLoading(true);
+      if (USE_MOCK_ON_ERROR) {
+        setStats(mockIPStats);
+        return;
+      }
       const today = new Date().toISOString().split('T')[0];
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().split('T')[0];
-      
       const [todayStatsRes, yesterdayStatsRes, managementRes] = await Promise.all([
         api.superAdmin.ip.getStats({ dateFrom: today, dateTo: today }).catch(() => ({ data: {} })),
         api.superAdmin.ip.getStats({ dateFrom: yesterdayStr, dateTo: yesterdayStr }).catch(() => ({ data: {} })),
         api.superAdmin.ip.getManagement({ limit: 1 }).catch(() => ({ data: { totalCount: 0 } }))
       ]);
-      
       const todayAccess = todayStatsRes.data?.todayAccess || todayStatsRes.data?.totalAccess || 0;
       const yesterdayAccess = yesterdayStatsRes.data?.todayAccess || yesterdayStatsRes.data?.totalAccess || 0;
       const todayUniqueIPs = todayStatsRes.data?.uniqueIPs || 0;
       const yesterdayUniqueIPs = yesterdayStatsRes.data?.uniqueIPs || 0;
       const todayCountries = todayStatsRes.data?.countries || 0;
       const yesterdayCountries = yesterdayStatsRes.data?.countries || 0;
-      
       const blocked = managementRes.data?.totalCount || 0;
-      
-      // 변화량 계산 (오늘 - 어제)
-      const accessChange = todayAccess - yesterdayAccess;
-      const uniqueIPsChange = todayUniqueIPs - yesterdayUniqueIPs;
-      const countriesChange = todayCountries - yesterdayCountries;
-      
       setStats({
         todayAccess,
         uniqueIPs: todayUniqueIPs,
         blocked,
         countries: todayCountries,
-        todayAccessChange: accessChange,
-        uniqueIPsChange: uniqueIPsChange,
-        blockedChange: 0, // 차단은 새로 추가된 것만 표시
-        countriesChange: countriesChange
+        todayAccessChange: todayAccess - yesterdayAccess,
+        uniqueIPsChange: todayUniqueIPs - yesterdayUniqueIPs,
+        blockedChange: 0,
+        countriesChange: todayCountries - yesterdayCountries
       });
     } catch (error) {
       console.error('통계 로드 실패:', error);
-      if (USE_MOCK_ON_ERROR) {
-        setStats(mockIPStats);
-      } else {
-        message.error(t('profile.superAdmin.ipManagement.messages.statsLoadFail'));
-      }
+      if (USE_MOCK_ON_ERROR) setStats(mockIPStats);
+      else message.error(t('profile.superAdmin.ipManagement.messages.statsLoadFail'));
     } finally {
       setLoading(false);
     }
@@ -196,20 +191,23 @@ export default function IPManagement() {
     const fetchAccessTrend = async () => {
       if (!isMountedRef.current) return;
       setLoading(true);
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockAccessTrendData(days));
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.ip.getAccessTrendData({ days });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           setData(response.data.data);
         }
       } catch (error) {
         console.error('접속 추이 가져오기 실패:', error);
-        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
-          setData(mockAccessTrendData(days));
-        }
+        if (isMountedRef.current) setData(mockAccessTrendData(days));
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
@@ -280,17 +278,23 @@ export default function IPManagement() {
     }, []);
 
     const fetchCountryDistribution = async () => {
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockCountryDistribution);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.ip.getCountryDistribution({ days: 7 });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           setData(response.data.data);
         }
       } catch (error) {
         console.error('국가별 분포 가져오기 실패:', error);
+        if (isMountedRef.current) setData(mockCountryDistribution);
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
@@ -354,20 +358,23 @@ export default function IPManagement() {
     }, []);
 
     const fetchHourlyAccess = async () => {
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockHourlyAccessData);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.ip.getHourlyAccessDistribution({ days: 7 });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           setData(response.data.data);
         }
       } catch (error) {
         console.error('시간대별 접속 가져오기 실패:', error);
-        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
-          setData(mockHourlyAccessData);
-        }
+        if (isMountedRef.current) setData(mockHourlyAccessData);
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
@@ -421,20 +428,23 @@ export default function IPManagement() {
     }, []);
 
     const fetchTopIPs = async () => {
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockTopAccessIPs);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.ip.getTopAccessIPs({ days: 7, limit: 10 });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           setData(response.data.data);
         }
       } catch (error) {
         console.error('TOP 접속 IP 가져오기 실패:', error);
-        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
-          setData(mockTopAccessIPs);
-        }
+        if (isMountedRef.current) setData(mockTopAccessIPs);
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
@@ -669,7 +679,7 @@ export default function IPManagement() {
                         {ip.is_whitelisted && <span className="badge approved">{t('profile.superAdmin.ipManagement.status.whitelisted')}</span>}
                         {!ip.is_blocked && !ip.is_whitelisted && <span className="badge active">{t('profile.superAdmin.ipManagement.status.normal')}</span>}
                       </td>
-                      <td>{ip.block_reason || '-'}</td>
+                      <td>{ip.block_reason ? (ip.block_reason.startsWith('profile.') ? t(ip.block_reason) : ip.block_reason) : '-'}</td>
                       <td>{ip.blocked_at ? new Date(ip.blocked_at).toLocaleString() : '-'}</td>
                       <td>
                         {ip.is_blocked ? (

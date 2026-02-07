@@ -95,14 +95,26 @@ export default function SuperAdminDashboard() {
         ].slice(0, 3);
       }
 
-      const todayAccess = ipStatsTodayRes.data?.todayAccess || ipStatsTodayRes.data?.totalAccess || 0;
-      const yesterdayAccess = ipStatsYesterdayRes.data?.todayAccess || ipStatsYesterdayRes.data?.totalAccess || 0;
-      const todaySecurityEvents = securityEventsTodayRes.data?.totalCount || 0;
-      const yesterdaySecurityEvents = securityEventsYesterdayRes.data?.totalCount || 0;
-      
-      // 변화량 계산 (오늘 - 어제)
-      const accessChange = todayAccess - yesterdayAccess;
-      const securityEventsChange = todaySecurityEvents - yesterdaySecurityEvents;
+      let todayAccess = ipStatsTodayRes.data?.todayAccess ?? ipStatsTodayRes.data?.totalAccess ?? 0;
+      const yesterdayAccess = ipStatsYesterdayRes.data?.todayAccess ?? ipStatsYesterdayRes.data?.totalAccess ?? 0;
+      let todaySecurityEvents = securityEventsTodayRes.data?.totalCount ?? 0;
+      const yesterdaySecurityEvents = securityEventsYesterdayRes.data?.totalCount ?? 0;
+
+      // 오늘의 접속·세큐리티: API가 0이면 임시 데이터(mockDashboardStats)로 표시
+      if (todayAccess === 0 && USE_MOCK_ON_ERROR) {
+        todayAccess = mockDashboardStats.todayAccess;
+      }
+      if (todaySecurityEvents === 0 && USE_MOCK_ON_ERROR) {
+        todaySecurityEvents = mockDashboardStats.securityEvents;
+      }
+
+      // 변화량 계산 (오늘 - 어제). Mock 사용 시 mockDashboardStats 값 사용
+      const accessChange = (todayAccess === mockDashboardStats.todayAccess && USE_MOCK_ON_ERROR)
+        ? mockDashboardStats.todayAccessChange
+        : todayAccess - yesterdayAccess;
+      const securityEventsChange = (todaySecurityEvents === mockDashboardStats.securityEvents && USE_MOCK_ON_ERROR)
+        ? mockDashboardStats.securityEventsChange
+        : todaySecurityEvents - yesterdaySecurityEvents;
       
       // API가 0이면 Mock 데이터 숫자 표시 (학생인증·상품·판매자신청 페이지와 동기화)
       const rawPendingProducts = productsRes.data?.totalCount ?? recentProductsData.length;
@@ -228,7 +240,7 @@ export default function SuperAdminDashboard() {
           >
             <div className="stat-label">{t('profile.superAdmin.dashboard.stats.securityEvents')}</div>
             <div className="stat-value">{stats.securityEvents}</div>
-            <div className={stats.securityEventsChange !== 0 ? (stats.securityEventsChange > 0 ? "stat-change negative" : "stat-change") : "stat-change"} style={{ color: stats.securityEventsChange > 0 ? '#ef4444' : stats.securityEventsChange < 0 ? '#10b981' : '#666' }}>
+            <div className={stats.securityEventsChange !== 0 ? "stat-change" : "stat-change"} style={{ color: stats.securityEventsChange > 0 ? '#ef4444' : stats.securityEventsChange < 0 ? '#ef4444' : '#666' }}>
               {stats.securityEventsChange > 0 ? t('profile.superAdmin.dashboard.stats.attention') : 
                stats.securityEventsChange < 0 ? `-${Math.abs(stats.securityEventsChange)}` : 
                t('profile.superAdmin.dashboard.stats.normal')}

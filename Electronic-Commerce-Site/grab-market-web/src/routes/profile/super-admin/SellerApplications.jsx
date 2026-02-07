@@ -15,23 +15,45 @@ export default function SellerApplications() {
   const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState('all');
 
+  /** 카테고리(필터)에 맞게 목록 필터링: all | pending | approved | rejected */
+  const filterByStatus = useCallback((list, status) => {
+    if (!list || !list.length) return [];
+    if (status === 'all') return list;
+    if (status === 'pending') {
+      return list.filter((app) => app.role !== 'admin' && app.role !== 'seller' && !app.seller_rejected_at);
+    }
+    if (status === 'approved') {
+      return list.filter((app) => app.role === 'admin' || app.role === 'seller');
+    }
+    if (status === 'rejected') {
+      return list.filter((app) => app.seller_rejected_at != null);
+    }
+    return list;
+  }, []);
+
   const loadApplications = useCallback(async () => {
     setLoading(true);
     try {
+      if (USE_MOCK_ON_ERROR) {
+        const filtered = filterByStatus(mockSellerApplications, filter);
+        setApplications(filtered);
+        return;
+      }
       const response = await api.superAdmin.sellerApplications.getList({ status: filter });
-      setApplications(response.data || []);
+      const data = response.data || [];
+      setApplications(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('신청 목록 로드 오류:', error);
+      message.error(t('profile.superAdmin.sellerApplications.messages.loadFail'));
       if (USE_MOCK_ON_ERROR) {
-        setApplications(mockSellerApplications);
-      } else {
-        message.error(t('profile.superAdmin.sellerApplications.messages.loadFail'));
+        const filtered = filterByStatus(mockSellerApplications, filter);
+        setApplications(filtered);
       }
     } finally {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  }, [filter, filterByStatus]);
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('appLanguage');

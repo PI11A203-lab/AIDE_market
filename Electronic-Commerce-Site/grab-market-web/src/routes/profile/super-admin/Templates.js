@@ -14,8 +14,16 @@ const USE_MOCK_ON_ERROR = true;
 const { TextArea } = Input;
 
 export default function Templates() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const history = useHistory();
+  const language = i18n.language || 'ko';
+
+  const getLocalizedField = (item, field) => {
+    if (!item) return '';
+    if (language === 'ja' && item[`${field}_ja`]) return item[`${field}_ja`];
+    if (language === 'en' && item[`${field}_en`]) return item[`${field}_en`];
+    return item[field] || item[`${field}_ja`] || item[`${field}_en`] || '';
+  };
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0 });
@@ -101,17 +109,28 @@ export default function Templates() {
         page: pagination.page,
         limit: pagination.limit
       });
-      setTemplates(response.data.templates || []);
+      const raw = response.data.templates || [];
+      const normalized = raw.map((t) => ({
+        ...t,
+        product_count: t.product_count ?? (Array.isArray(t.product_ids) ? t.product_ids.length : 0),
+        created_at: t.created_at || t.createdAt || null
+      }));
+      setTemplates(normalized);
       setPagination(prev => ({
         ...prev,
-        total: response.data.total || response.data.count || 0,
-        totalPages: response.data.totalPages || Math.ceil((response.data.total || 0) / pagination.limit)
+        total: response.data.total || response.data.count || normalized.length,
+        totalPages: response.data.totalPages || Math.ceil((response.data.total || normalized.length) / pagination.limit)
       }));
     } catch (error) {
       console.error('템플릿 목록 로드 실패:', error);
       if (USE_MOCK_ON_ERROR) {
-        setTemplates(mockTemplates);
-        setPagination(prev => ({ ...prev, total: mockTemplates.length, totalPages: 1 }));
+        const normalized = mockTemplates.map((t) => ({
+          ...t,
+          product_count: t.product_count ?? (Array.isArray(t.product_ids) ? t.product_ids.length : 0),
+          created_at: t.created_at || t.createdAt || null
+        }));
+        setTemplates(normalized);
+        setPagination(prev => ({ ...prev, total: normalized.length, totalPages: 1 }));
       } else {
         setTemplates([]);
         setPagination(prev => ({ ...prev, total: 0 }));
@@ -134,8 +153,8 @@ export default function Templates() {
   const handleEdit = async (template) => {
     setEditingTemplate(template);
     setFormData({
-      name: template.name || '',
-      description: template.description || '',
+      name: getLocalizedField(template, 'name') || template.name || '',
+      description: getLocalizedField(template, 'description') || template.description || '',
       icon_url: template.icon_url || '',
       product_ids: template.product_ids || []
     });
@@ -171,15 +190,29 @@ export default function Templates() {
     }
 
     try {
-      const saveData = {
-        ...formData,
-        product_ids: selectedProducts.map(p => p.id)
-      };
-      
+      const productIds = selectedProducts.map(p => p.id);
+      let saveData;
+
       if (editingTemplate) {
+        saveData = {
+          name: language === 'ko' ? formData.name : (editingTemplate.name ?? ''),
+          name_ja: language === 'ja' ? formData.name : (editingTemplate.name_ja ?? ''),
+          name_en: language === 'en' ? formData.name : (editingTemplate.name_en ?? ''),
+          description: language === 'ko' ? formData.description : (editingTemplate.description ?? ''),
+          description_ja: language === 'ja' ? formData.description : (editingTemplate.description_ja ?? ''),
+          description_en: language === 'en' ? formData.description : (editingTemplate.description_en ?? ''),
+          icon_url: formData.icon_url || '',
+          product_ids: productIds
+        };
         await api.superAdmin.templates.update(editingTemplate.id, saveData);
         message.success(t('profile.superAdmin.templates.messages.updateSuccess'));
       } else {
+        saveData = {
+          name: formData.name,
+          description: formData.description,
+          icon_url: formData.icon_url || '',
+          product_ids: productIds
+        };
         await api.superAdmin.templates.create(saveData);
         message.success(t('profile.superAdmin.templates.messages.createSuccess'));
       }
@@ -249,12 +282,17 @@ export default function Templates() {
       title: t('profile.superAdmin.templates.table.name'),
       dataIndex: 'name',
       key: 'name',
+      width: 160,
+      ellipsis: true,
+      render: (_, record) => getLocalizedField(record, 'name') || record.name || '-',
     },
     {
       title: t('profile.superAdmin.templates.table.description'),
       dataIndex: 'description',
       key: 'description',
+      width: 200,
       ellipsis: true,
+      render: (_, record) => getLocalizedField(record, 'description') || record.description || '-',
     },
     {
       title: t('profile.superAdmin.templates.table.productCount'),
@@ -273,9 +311,9 @@ export default function Templates() {
     {
       title: t('profile.superAdmin.templates.table.action'),
       key: 'action',
-      width: 200,
+      width: 220,
       render: (_, record) => (
-        <Space size="middle">
+        <Space size="small" wrap={false}>
           <Button
             type="link"
             icon={<EyeOutlined />}

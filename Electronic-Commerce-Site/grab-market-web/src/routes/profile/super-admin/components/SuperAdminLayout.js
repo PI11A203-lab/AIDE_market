@@ -12,10 +12,29 @@ export default function SuperAdminLayout({ children }) {
 
   // 메인에서 선택한 언어(localStorage)를 적용해 전 페이지 동기화
   useEffect(() => {
-    const saved = localStorage.getItem('appLanguage');
-    if (saved && ['ko', 'ja', 'en'].includes(saved) && saved !== i18n.language) {
-      i18n.changeLanguage(saved);
-    }
+    const syncLanguage = () => {
+      const saved = localStorage.getItem('appLanguage');
+      if (saved && ['ko', 'ja', 'en'].includes(saved) && saved !== i18n.language) {
+        i18n.changeLanguage(saved);
+      }
+    };
+    syncLanguage();
+    // 다른 탭 또는 메인에서 언어 변경 시 동기화
+    const onStorage = (e) => {
+      if (e.key === 'appLanguage' && e.newValue && ['ko', 'ja', 'en'].includes(e.newValue)) {
+        i18n.changeLanguage(e.newValue);
+      }
+    };
+    // 탭 전환 후 다시 보일 때 localStorage 기준으로 동기화
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') syncLanguage();
+    };
+    window.addEventListener('storage', onStorage);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, [i18n]);
 
   // localStorage에서 초기 상태 가져오기 (기본값: false - 닫힌 상태)

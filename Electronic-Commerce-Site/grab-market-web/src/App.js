@@ -33,6 +33,7 @@ import SuperAdminStudentVerifications from "./routes/profile/super-admin/Student
 import SuperAdminIPManagement from "./routes/profile/super-admin/IPManagement";
 import SuperAdminSecurity from "./routes/profile/super-admin/Security";
 import SuperAdminTemplates from "./routes/profile/super-admin/Templates";
+import SuperAdminTemplateDetail from "./routes/profile/super-admin/TemplateDetail";
 import SellerApply from "./routes/profile/seller-apply/SellerApply";
 import SellerApplications from "./routes/profile/super-admin/SellerApplications";
 import SellerApplicationDetail from "./routes/profile/super-admin/SellerApplicationDetail";
@@ -122,6 +123,7 @@ function App() {
           <ProtectedRoute exact={true} path="/profile/super-admin/seller-applications" component={SellerApplications} requireSuperAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/super-admin/seller-applications/:userId" component={SellerApplicationDetail} requireSuperAdmin={true} />
           <ProtectedRoute exact={true} path="/profile/super-admin/templates" component={SuperAdminTemplates} requireSuperAdmin={true} />
+          <ProtectedRoute exact={true} path="/profile/super-admin/templates/:id" component={SuperAdminTemplateDetail} requireSuperAdmin={true} />
           
           <Route exact={true} path="/auth/callback">
             <AuthCallback />

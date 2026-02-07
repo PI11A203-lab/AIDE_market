@@ -445,6 +445,13 @@ const resources = {
             topIPs: {
               title: 'TOP 접속 IP 주소 (최근 7일)',
             },
+            blockReasons: {
+              suspiciousPattern: '의심스러운 접근 패턴 (초당 과다 요청)',
+              scrapingBot: '스크래핑 봇 탐지',
+              loginBruteforce: '로그인 브루트포스 시도',
+              apiAbuse: 'API 무차별 대입',
+              maliciousBot: '악성 봇 시그니처',
+            },
           },
           security: {
             title: '보안 관리',
@@ -602,6 +609,14 @@ const resources = {
               deleteConfirmCancel: '취소',
               saveFail: '템플릿 저장에 실패했습니다.',
               deleteFail: '템플릿 삭제에 실패했습니다.',
+              loading: '로딩 중...',
+            },
+            detail: {
+              backToList: '목록으로',
+              notFound: '템플릿을 찾을 수 없습니다.',
+              templateProducts: '포함된 AI 상품',
+              aiProducts: 'AI 상품 {{count}}개',
+              productsLoadFail: '포함 상품을 불러올 수 없습니다.',
             },
           },
           sellerApplications: {
@@ -3186,6 +3201,13 @@ Currently most popular team combination:
             topIPs: {
               title: 'TOP Access IP Addresses (Last 7 Days)',
             },
+            blockReasons: {
+              suspiciousPattern: 'Suspicious access pattern (excessive requests per second)',
+              scrapingBot: 'Scraping bot detected',
+              loginBruteforce: 'Login brute force attempt',
+              apiAbuse: 'API abuse / brute force',
+              maliciousBot: 'Malicious bot signature',
+            },
           },
           security: {
             title: 'Security Management',
@@ -3342,6 +3364,14 @@ Currently most popular team combination:
               deleteConfirmCancel: 'Cancel',
               saveFail: 'Failed to save template.',
               deleteFail: 'Failed to delete template.',
+              loading: 'Loading...',
+            },
+            detail: {
+              backToList: 'Back to List',
+              notFound: 'Template not found.',
+              templateProducts: 'Included AI Products',
+              aiProducts: '{{count}} AI product(s)',
+              productsLoadFail: 'Failed to load included products.',
             },
           },
           sellerApplications: {
@@ -3364,9 +3394,9 @@ Currently most popular team combination:
               viewDetail: 'View Detail',
             },
             status: {
-              approved: '✅ Approved',
-              rejected: '❌ Rejected',
-              pending: '⏳ Pending',
+              approved: 'Approved',
+              rejected: 'Rejected',
+              pending: 'Pending',
             },
             messages: {
               loading: 'Loading...',
@@ -5529,6 +5559,14 @@ const verifyToken = (token) => {
               deleteConfirmCancel: 'キャンセル',
               saveFail: 'テンプレートの保存に失敗しました。',
               deleteFail: 'テンプレートの削除に失敗しました。',
+              loading: '読み込み中...',
+            },
+            detail: {
+              backToList: 'リストに戻る',
+              notFound: 'テンプレートが見つかりません。',
+              templateProducts: '含まれるAI商品',
+              aiProducts: 'AI商品{{count}}件',
+              productsLoadFail: '含まれる商品を読み込めませんでした。',
             },
           },
           sellerApplications: {
@@ -5551,9 +5589,9 @@ const verifyToken = (token) => {
               viewDetail: '詳細を見る',
             },
             status: {
-              approved: '✅ 承認済み',
-              rejected: '❌ 却下',
-              pending: '⏳ 承認待ち',
+              approved: '承認済み',
+              rejected: '却下',
+              pending: '承認待ち',
             },
             messages: {
               loading: '読み込み中...',

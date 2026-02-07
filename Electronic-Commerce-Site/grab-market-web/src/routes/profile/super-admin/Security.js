@@ -10,7 +10,7 @@ import {
 import {
   mockSecurityStats,
   mockSecurityEvents,
-  mockBots, // eslint-disable-line no-unused-vars
+  mockBots,
   mockSecuritySettings,
   mockEventTrendData,
   mockEventDistribution,
@@ -64,40 +64,22 @@ export default function Security() {
 
   const loadStats = async () => {
     try {
+      if (USE_MOCK_ON_ERROR) {
+        setStats(mockSecurityStats);
+        return;
+      }
       const today = new Date().toISOString().split('T')[0];
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().split('T')[0];
       
       const [todayEventsRes, yesterdayEventsRes, todayBotsRes, yesterdayBotsRes, todayStatsRes, yesterdayStatsRes] = await Promise.all([
-        api.superAdmin.security.getEvents({ 
-          limit: 1,
-          dateFrom: today,
-          dateTo: today
-        }).catch(() => ({ data: { totalCount: 0 } })),
-        api.superAdmin.security.getEvents({ 
-          limit: 1,
-          dateFrom: yesterdayStr,
-          dateTo: yesterdayStr
-        }).catch(() => ({ data: { totalCount: 0 } })),
-        api.superAdmin.security.getBots({ 
-          limit: 1,
-          dateFrom: today,
-          dateTo: today
-        }).catch(() => ({ data: { totalCount: 0 } })),
-        api.superAdmin.security.getBots({ 
-          limit: 1,
-          dateFrom: yesterdayStr,
-          dateTo: yesterdayStr
-        }).catch(() => ({ data: { totalCount: 0 } })),
-        api.superAdmin.security.getEventStats({ 
-          dateFrom: today,
-          dateTo: today
-        }).catch(() => ({ data: {} })),
-        api.superAdmin.security.getEventStats({ 
-          dateFrom: yesterdayStr,
-          dateTo: yesterdayStr
-        }).catch(() => ({ data: {} }))
+        api.superAdmin.security.getEvents({ limit: 1, dateFrom: today, dateTo: today }).catch(() => ({ data: { totalCount: 0 } })),
+        api.superAdmin.security.getEvents({ limit: 1, dateFrom: yesterdayStr, dateTo: yesterdayStr }).catch(() => ({ data: { totalCount: 0 } })),
+        api.superAdmin.security.getBots({ limit: 1, dateFrom: today, dateTo: today }).catch(() => ({ data: { totalCount: 0 } })),
+        api.superAdmin.security.getBots({ limit: 1, dateFrom: yesterdayStr, dateTo: yesterdayStr }).catch(() => ({ data: { totalCount: 0 } })),
+        api.superAdmin.security.getEventStats({ dateFrom: today, dateTo: today }).catch(() => ({ data: {} })),
+        api.superAdmin.security.getEventStats({ dateFrom: yesterdayStr, dateTo: yesterdayStr }).catch(() => ({ data: {} }))
       ]);
       
       const todayEvents = todayEventsRes.data?.totalCount || 0;
@@ -108,39 +90,31 @@ export default function Security() {
       const yesterdayAutoBlocked = yesterdayStatsRes.data?.autoBlocked || 0;
       const todayLoginFailed = todayStatsRes.data?.loginFailed || 0;
       const yesterdayLoginFailed = yesterdayStatsRes.data?.loginFailed || 0;
-      
-      // 변화량 계산 (오늘 - 어제)
-      const eventsChange = todayEvents - yesterdayEvents;
-      const botsChange = todayBots - yesterdayBots;
-      const autoBlockedChange = todayAutoBlocked - yesterdayAutoBlocked;
-      const loginFailedChange = todayLoginFailed - yesterdayLoginFailed;
-      
       setStats({
         todayEvents,
         botDetected: todayBots,
         autoBlocked: todayAutoBlocked,
         loginFailed: todayLoginFailed,
-        todayEventsChange: eventsChange,
-        botDetectedChange: botsChange,
-        autoBlockedChange: autoBlockedChange,
-        loginFailedChange: loginFailedChange
+        todayEventsChange: todayEvents - yesterdayEvents,
+        botDetectedChange: todayBots - yesterdayBots,
+        autoBlockedChange: todayAutoBlocked - yesterdayAutoBlocked,
+        loginFailedChange: todayLoginFailed - yesterdayLoginFailed
       });
     } catch (error) {
       console.error('보안 통계 로드 실패:', error);
-      if (USE_MOCK_ON_ERROR) {
-        setStats(mockSecurityStats);
-      }
+      if (USE_MOCK_ON_ERROR) setStats(mockSecurityStats);
     }
   };
 
   const loadEvents = async () => {
     try {
       setLoading(true);
-      const params = {
-        page: pagination.page,
-        limit: pagination.limit,
-        ...filters
-      };
+      if (USE_MOCK_ON_ERROR) {
+        setEvents(mockSecurityEvents);
+        setPagination(prev => ({ ...prev, total: mockSecurityEvents.length, totalPages: 1 }));
+        return;
+      }
+      const params = { page: pagination.page, limit: pagination.limit, ...filters };
       const response = await api.superAdmin.security.getEvents(params);
       setEvents(response.data.events || []);
       setPagination(prev => ({
@@ -150,12 +124,7 @@ export default function Security() {
       }));
     } catch (error) {
       console.error('보안 이벤트 로드 실패:', error);
-      if (USE_MOCK_ON_ERROR) {
-        setEvents(mockSecurityEvents);
-        setPagination(prev => ({ ...prev, total: mockSecurityEvents.length, totalPages: 1 }));
-      } else {
-        message.error(t('profile.superAdmin.security.messages.eventsLoadFail'));
-      }
+      message.error(t('profile.superAdmin.security.messages.eventsLoadFail'));
     } finally {
       setLoading(false);
     }
@@ -164,10 +133,12 @@ export default function Security() {
   const loadBots = async () => {
     try {
       setLoading(true);
-      const params = {
-        page: pagination.page,
-        limit: pagination.limit
-      };
+      if (USE_MOCK_ON_ERROR) {
+        setBots(mockBots);
+        setPagination(prev => ({ ...prev, total: mockBots.length, totalPages: 1 }));
+        return;
+      }
+      const params = { page: pagination.page, limit: pagination.limit };
       const response = await api.superAdmin.security.getBots(params);
       setBots(response.data.bots || []);
       setPagination(prev => ({
@@ -177,7 +148,12 @@ export default function Security() {
       }));
     } catch (error) {
       console.error('봇 목록 로드 실패:', error);
-      message.error(t('profile.superAdmin.security.messages.botsLoadFail'));
+      if (USE_MOCK_ON_ERROR) {
+        setBots(mockBots);
+        setPagination(prev => ({ ...prev, total: mockBots.length, totalPages: 1 }));
+      } else {
+        message.error(t('profile.superAdmin.security.messages.botsLoadFail'));
+      }
     } finally {
       setLoading(false);
     }
@@ -263,20 +239,23 @@ export default function Security() {
     const fetchTrendData = async () => {
       if (!isMountedRef.current) return;
       setLoading(true);
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockEventTrendData(days));
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.security.getEventTrendData({ days });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           setData(response.data.data);
         }
       } catch (error) {
         console.error('이벤트 추이 가져오기 실패:', error);
-        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
-          setData(mockEventTrendData(days));
-        }
+        if (isMountedRef.current) setData(mockEventTrendData(days));
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
@@ -350,9 +329,16 @@ export default function Security() {
     }, []);
 
     const fetchDistribution = async () => {
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockEventDistribution);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.security.getEventDistribution({ days: 7 });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           const eventTypeLabels = {
             login_failed: t('profile.superAdmin.security.charts.loginFailed'),
             bot_detected: t('profile.superAdmin.security.charts.botDetected'),
@@ -361,25 +347,17 @@ export default function Security() {
             suspicious_activity: t('profile.superAdmin.security.charts.suspiciousActivity'),
             ip_blocked: t('profile.superAdmin.security.charts.ipBlocked')
           };
-
           const chartData = response.data.data.map(item => ({
             ...item,
             name: eventTypeLabels[item.name] || item.name
           }));
-          
-          if (isMountedRef.current) {
-            setData(chartData);
-          }
+          setData(chartData);
         }
       } catch (error) {
         console.error('이벤트 분포 가져오기 실패:', error);
-        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
-          setData(mockEventDistribution);
-        }
+        if (isMountedRef.current) setData(mockEventDistribution);
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
@@ -443,20 +421,23 @@ export default function Security() {
     }, []);
 
     const fetchHourlyData = async () => {
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockHourlySecurityData);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.security.getHourlyDistribution({ days: 7 });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           setData(response.data.data);
         }
       } catch (error) {
         console.error('시간대별 데이터 가져오기 실패:', error);
-        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
-          setData(mockHourlySecurityData);
-        }
+        if (isMountedRef.current) setData(mockHourlySecurityData);
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
@@ -510,20 +491,23 @@ export default function Security() {
     }, []);
 
     const fetchTopIPs = async () => {
+      if (USE_MOCK_ON_ERROR) {
+        if (isMountedRef.current) {
+          setData(mockTopAttackIPs);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         const response = await api.superAdmin.security.getTopAttackIPs({ days: 7, limit: 10 });
-        if (isMountedRef.current && response.data.success) {
+        if (isMountedRef.current && response.data?.success && Array.isArray(response.data.data)) {
           setData(response.data.data);
         }
       } catch (error) {
         console.error('TOP 공격 IP 가져오기 실패:', error);
-        if (USE_MOCK_ON_ERROR && isMountedRef.current) {
-          setData(mockTopAttackIPs);
-        }
+        if (isMountedRef.current) setData(mockTopAttackIPs);
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        if (isMountedRef.current) setLoading(false);
       }
     };
 

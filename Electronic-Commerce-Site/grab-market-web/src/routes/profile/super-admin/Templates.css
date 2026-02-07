@@ -2,6 +2,44 @@
   padding: 24px;
 }
 
+/* 테이블 영역: 작업 컬럼만 너비 고정, 행 hover 제거 */
+.templates-page .ant-table-wrapper {
+  overflow-x: auto;
+}
+.templates-page .ant-table-tbody > tr:hover > td {
+  background: transparent !important;
+}
+.templates-page .ant-table-thead > tr > th:last-child,
+.templates-page .ant-table-tbody > tr > td:last-child {
+  width: 220px;
+  min-width: 220px;
+  box-sizing: border-box;
+  white-space: normal;
+}
+.templates-page .ant-table-tbody > tr > td:last-child .ant-space {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 4px 8px;
+  align-items: center;
+}
+.templates-page .ant-table-tbody > tr > td:last-child .ant-space-item {
+  flex-shrink: 0;
+}
+.templates-page .ant-table-tbody > tr > td:last-child .ant-btn {
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+/* 페이지네이션 중앙 정렬 */
+.templates-page .ant-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+.templates-page .ant-pagination .ant-pagination-options {
+  display: none;
+}
+
 .templates-page .page-header {
   display: flex;
   justify-content: space-between;

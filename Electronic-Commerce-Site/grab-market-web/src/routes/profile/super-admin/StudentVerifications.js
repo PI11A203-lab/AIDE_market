@@ -144,8 +144,17 @@ export default function StudentVerifications() {
           <div className="verification-grid">
             {loading ? (
               <div className="loading">{t('profile.superAdmin.studentVerifications.loading')}</div>
-            ) : verifications.length > 0 ? (
-              verifications.map((verification) => (
+            ) : (() => {
+              const searchLower = (filters.search || '').trim().toLowerCase();
+              const filtered = searchLower
+                ? verifications.filter(
+                    (v) =>
+                      (v.username && v.username.toLowerCase().includes(searchLower)) ||
+                      (v.email && v.email.toLowerCase().includes(searchLower))
+                  )
+                : verifications;
+              return filtered.length > 0 ? (
+              filtered.map((verification) => (
                 <div key={verification.id} className="verification-card">
                   <div className="verification-header">
                     <div className="user-avatar">
@@ -192,9 +201,10 @@ export default function StudentVerifications() {
                   </div>
                 </div>
               ))
-            ) : (
+              ) : (
               <div className="empty-state">{t('profile.superAdmin.studentVerifications.empty')}</div>
-            )}
+            );
+            })()}
           </div>
         </div>
 
@@ -208,14 +218,14 @@ export default function StudentVerifications() {
             setSelectedUser(null);
           }}
           footer={null}
-          width={800}
+          width={420}
         >
           {selectedUser && (
             <div>
-              <p><strong>{t('profile.superAdmin.studentVerifications.documentModal.user')}:</strong> {selectedUser.username} ({selectedUser.email})</p>
+              <p style={{ marginBottom: 12, fontSize: 14 }}><strong>{t('profile.superAdmin.studentVerifications.documentModal.user')}:</strong> {selectedUser.username} ({selectedUser.email})</p>
               {documentUrl && (
-                <div style={{ marginTop: '16px' }}>
-                  <Image src={documentUrl} alt="学生証" style={{ maxWidth: '100%' }} />
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+                  <Image src={documentUrl} alt="学生証" style={{ maxWidth: '100%', maxHeight: 380, objectFit: 'contain' }} />
                 </div>
               )}
             </div>
