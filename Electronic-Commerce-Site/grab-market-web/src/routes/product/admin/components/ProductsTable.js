@@ -70,11 +70,6 @@ export default function ProductsTable({ products, onDelete }) {
                         onClick: () => history.push(`/profile/products/${product.id}`),
                       },
                       {
-                        key: 'edit',
-                        label: t('productAdmin.list.table.edit'),
-                        onClick: () => history.push(`/profile/products/${product.id}/edit`),
-                      },
-                      {
                         key: 'public',
                         label: t('productAdmin.list.table.public'),
                         onClick: () => history.push(`/products/${product.id}`),

@@ -6,6 +6,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
+import ScrollToTop from "./components/ScrollToTop";
 
 ReactDOM.render(
   // ✅ ReactDOM.createRoot → ReactDOM.render
@@ -13,6 +14,7 @@ ReactDOM.render(
     <React.Suspense fallback={<div>Loading...</div>}>
       <I18nextProvider i18n={i18n}>
         <BrowserRouter>
+          <ScrollToTop />
           <App />
         </BrowserRouter>
       </I18nextProvider>

@@ -13,20 +13,21 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  color: #0f172a;
-  font-weight: 600;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #6b7280;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: color 0.2s;
   margin-bottom: 20px;
+  text-decoration: none;
+  line-height: 1.5;
 }
 
 .admin-product-detail__back:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  color: #1a1a1a;
 }
 
 .admin-product-detail__header {

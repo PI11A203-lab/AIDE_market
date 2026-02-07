@@ -971,6 +971,7 @@ const resources = {
             },
             statsCards: {
               reviews: '리뷰',
+              distributionTitle: '평점 분포',
             },
             empty: {
               title: '리뷰가 없습니다',
@@ -3726,6 +3727,7 @@ Currently most popular team combination:
             },
             statsCards: {
               reviews: 'Reviews',
+              distributionTitle: 'Rating Distribution',
             },
             empty: {
               title: 'No Reviews',
@@ -5921,6 +5923,7 @@ const verifyToken = (token) => {
             },
             statsCards: {
               reviews: 'レビュー',
+              distributionTitle: '評価分布',
             },
             empty: {
               title: 'レビューがありません',
