@@ -1,24 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import SuperAdminSidebar from './SuperAdminSidebar';
 import './SuperAdminLayout.css';
 
 const SIDEBAR_STORAGE_KEY = 'superAdminSidebarOpen';
 
-const LANGUAGE_OPTIONS = [
-  { value: 'ko', label: '한국어' },
-  { value: 'ja', label: '日本語' },
-  { value: 'en', label: 'English' },
-];
-
 export default function SuperAdminLayout({ children }) {
   const { t, i18n } = useTranslation();
-  const [langOpen, setLangOpen] = useState(false);
-  const langRef = useRef(null);
 
-  // localStorage에서 저장된 언어 로드 및 동기화
+  // 메인에서 선택한 언어(localStorage)를 적용해 전 페이지 동기화
   useEffect(() => {
     const saved = localStorage.getItem('appLanguage');
     if (saved && ['ko', 'ja', 'en'].includes(saved) && saved !== i18n.language) {
@@ -26,24 +18,6 @@ export default function SuperAdminLayout({ children }) {
     }
   }, [i18n]);
 
-  // 언어 전환기 외부 클릭 시 닫기
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (langRef.current && !langRef.current.contains(e.target)) {
-        setLangOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleLanguageChange = (value) => {
-    i18n.changeLanguage(value);
-    setLangOpen(false);
-  };
-
-  const currentLang = LANGUAGE_OPTIONS.find((opt) => opt.value === i18n.language) || LANGUAGE_OPTIONS[2];
-  
   // localStorage에서 초기 상태 가져오기 (기본값: false - 닫힌 상태)
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const saved = localStorage.getItem(SIDEBAR_STORAGE_KEY);
@@ -96,32 +70,6 @@ export default function SuperAdminLayout({ children }) {
             {/* 로고 */}
             <div className="super-admin-header-logo">
               <span>{t('profile.superAdmin.layout.title')}</span>
-            </div>
-
-            {/* 3개국어 전환기 */}
-            <div className="super-admin-lang-dropdown" ref={langRef}>
-              <button
-                type="button"
-                className={`super-admin-lang-button ${langOpen ? 'active' : ''}`}
-                onClick={() => setLangOpen((v) => !v)}
-                aria-label={t('profile.superAdmin.layout.language')}
-                aria-expanded={langOpen}
-              >
-                <span>{currentLang.label}</span>
-                <ChevronDown size={16} strokeWidth={2} />
-              </button>
-              <div className={`super-admin-lang-menu ${langOpen ? 'show' : ''}`}>
-                {LANGUAGE_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className={`super-admin-lang-item ${i18n.language === opt.value ? 'active' : ''}`}
-                    onClick={() => handleLanguageChange(opt.value)}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* 홈 버튼 */}

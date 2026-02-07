@@ -143,69 +143,66 @@ export default function Products() {
             {loading ? (
               <div className="loading">{t('profile.superAdmin.products.loading')}</div>
             ) : products.length > 0 ? (
-              products.map((product) => (
-                <div key={product.id} className="product-card">
-                  <div className="product-header">
-                    <div className="product-avatar">
-                      {product.imageUrl && (
+              products.map((product) => {
+                const productName = product.nameKey ? t(product.nameKey) : product.name;
+                const productStatus = product.status || 'pending';
+                return (
+                  <div key={product.id} className="product-card">
+                    <div className="product-card-image-wrap">
+                      {product.imageUrl ? (
                         <img
                           src={product.imageUrl.startsWith('http') ? product.imageUrl : `${API_URL}/${product.imageUrl}`}
-                          alt={product.nameKey ? t(product.nameKey) : product.name}
+                          alt={productName}
                           className="product-card-image"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextElementSibling?.classList.add('fallback');
                           }}
                         />
-                      )}
-                      <span className={product.imageUrl ? 'product-avatar-fallback' : ''}>
-                        {(product.nameKey ? t(product.nameKey) : product.name)?.charAt(0) || 'P'}
+                      ) : null}
+                      <div className={`product-card-image-fallback ${product.imageUrl ? '' : 'fallback'}`}>
+                        <span className="product-card-image-initial">{(productName || 'P').charAt(0)}</span>
+                      </div>
+                      <span className={`product-card-badge ${productStatus}`}>
+                        {productStatus === 'pending' && t('profile.superAdmin.products.filters.pending')}
+                        {productStatus === 'approved' && t('profile.superAdmin.products.filters.approved')}
+                        {productStatus === 'rejected' && t('profile.superAdmin.products.filters.rejected')}
                       </span>
                     </div>
-                    <div className="product-info">
-                      <h3>{product.nameKey ? t(product.nameKey) : product.name}</h3>
-                      <p>{t('profile.superAdmin.products.card.applicant')}: {product.creator?.username || '-'}</p>
+                    <div className="product-card-body">
+                      <h3 className="product-card-title">{productName}</h3>
+                      <p className="product-card-price">¥{(product.price ?? 0).toLocaleString()}</p>
+                      <div className="product-card-meta">
+                        <span>{product.categoryKey ? t(product.categoryKey) : product.category?.name || '-'}</span>
+                        <span>·</span>
+                        <span>{t('profile.superAdmin.products.card.applicant')}: {product.creator?.username || '-'}</span>
+                      </div>
+                      <p className="product-card-date">
+                        {new Date(product.approval_requested_at || product.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                      </p>
+                      <p className="product-card-description">
+                        {product.descriptionKey ? t(product.descriptionKey) : product.description || t('profile.superAdmin.products.card.noDescription')}
+                      </p>
+                      <div className="product-card-actions">
+                        <button
+                          type="button"
+                          className="product-card-btn product-card-btn-approve"
+                          onClick={() => handleApprove(product.id)}
+                        >
+                          {t('profile.superAdmin.products.actions.approve')}
+                        </button>
+                        <button
+                          type="button"
+                          className="product-card-btn product-card-btn-reject"
+                          onClick={() => openRejectModal(product)}
+                        >
+                          {t('profile.superAdmin.products.actions.reject')}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="product-details">
-                    <div className="detail-row">
-                      <span className="detail-label">{t('profile.superAdmin.products.card.price')}:</span>
-                      <span className="detail-value">¥{product.price?.toLocaleString() || '0'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t('profile.superAdmin.products.card.category')}:</span>
-                      <span className="detail-value">{product.categoryKey ? t(product.categoryKey) : product.category?.name || '-'}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t('profile.superAdmin.products.card.requestDate')}:</span>
-                      <span className="detail-value">
-                        {new Date(product.approval_requested_at || product.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t('profile.superAdmin.products.card.status')}:</span>
-                      <span className="badge pending">{t('profile.superAdmin.products.filters.pending')}</span>
-                    </div>
-                  </div>
-                  <div className="product-description">
-                    {product.descriptionKey ? t(product.descriptionKey) : product.description || t('profile.superAdmin.products.card.noDescription')}
-                  </div>
-                  <div className="product-actions">
-                    <button
-                      className="btn btn-approve"
-                      onClick={() => handleApprove(product.id)}
-                    >
-                      {t('profile.superAdmin.products.actions.approve')}
-                    </button>
-                    <button
-                      className="btn btn-reject"
-                      onClick={() => openRejectModal(product)}
-                    >
-                      {t('profile.superAdmin.products.actions.reject')}
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="empty-state">{t('profile.superAdmin.products.empty')}</div>
             )}
