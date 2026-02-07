@@ -13,6 +13,7 @@ export default function TeamSidebar({
   totalPrice, 
   onRemoveFromTeam,
   onRemoveTemplateTeam,
+  onDeleteTemplateTeam,
   selectedTemplateTeamIds = new Set(),
   templateTeams = [],
   onAddTemplateTeam
@@ -242,7 +243,46 @@ export default function TeamSidebar({
                     } : undefined}
                     style={{ cursor: isAdded ? 'default' : 'pointer' }}
                   >
-                    <div className="template-name">{translateTemplateName(team.name)}</div>
+                    <div className="template-card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: isAdded && addedMembers.length > 0 ? '8px' : 0 }}>
+                      <div className="template-name" style={{ flex: 1, minWidth: 0 }}>{translateTemplateName(team.name)}</div>
+                      {onDeleteTemplateTeam && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteTemplateTeam(team.id);
+                          }}
+                          className="template-card-delete-btn"
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.12)',
+                            border: '1px solid rgba(220, 38, 38, 0.35)',
+                            borderRadius: '50%',
+                            color: '#DC2626',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '6px',
+                            width: '28px',
+                            height: '28px',
+                            flexShrink: 0
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#EF4444';
+                            e.currentTarget.style.color = 'white';
+                            e.currentTarget.style.borderColor = '#EF4444';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)';
+                            e.currentTarget.style.color = '#DC2626';
+                            e.currentTarget.style.borderColor = 'rgba(220, 38, 38, 0.35)';
+                          }}
+                          title={t('teamBuilder.deleteTemplate') || '템플릿 상품 삭제'}
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
+                    </div>
                     {isAdded && addedMembers.length > 0 ? (
                       <div className="template-added-members">
                         {addedMembers.map((member) => (
@@ -295,35 +335,39 @@ export default function TeamSidebar({
                               <span style={{ fontSize: '12px', color: '#1F2937', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</span>
                             </div>
                             <button
+                              type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (onRemoveFromTeam) onRemoveFromTeam(member.id);
                               }}
+                              className="template-product-remove-btn"
                               style={{
-                                background: 'rgba(255, 255, 255, 0.9)',
-                                border: 'none',
+                                background: 'rgba(239, 68, 68, 0.08)',
+                                border: '1px solid rgba(220, 38, 38, 0.3)',
                                 borderRadius: '50%',
-                                color: '#6B7280',
+                                color: '#DC2626',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: '4px',
-                                width: '22px',
-                                height: '22px',
+                                width: '24px',
+                                height: '24px',
                                 flexShrink: 0
                               }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.background = '#EF4444';
                                 e.currentTarget.style.color = 'white';
+                                e.currentTarget.style.borderColor = '#EF4444';
                                 e.currentTarget.style.transform = 'scale(1.1)';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-                                e.currentTarget.style.color = '#6B7280';
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                                e.currentTarget.style.color = '#DC2626';
+                                e.currentTarget.style.borderColor = 'rgba(220, 38, 38, 0.3)';
                                 e.currentTarget.style.transform = 'scale(1)';
                               }}
-                              title={t('developerCard.removeFromTeam') || '팀에서 제거'}
+                              title={t('developerCard.removeFromTeam') || '템플릿 상품 제거'}
                             >
                               <X size={14} />
                             </button>

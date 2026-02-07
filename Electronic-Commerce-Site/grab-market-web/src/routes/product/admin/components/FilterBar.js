@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export default function FilterBar({ filters, categories, onFilterChange, onReset }) {
+export default function FilterBar({ filters, categories, onFilterChange }) {
   const { t } = useTranslation();
   return (
     <div className="filter-bar">
@@ -44,11 +44,6 @@ export default function FilterBar({ filters, categories, onFilterChange, onReset
             <option value="rating">{t('productAdmin.list.filters.sortOptions.rating')}</option>
             <option value="price">{t('productAdmin.list.filters.sortOptions.price')}</option>
           </select>
-        </div>
-        <div className="filter-group">
-          <button className="btn btn-secondary btn-sm" onClick={onReset}>
-            {t('productAdmin.list.filters.reset')}
-          </button>
         </div>
       </div>
     </div>

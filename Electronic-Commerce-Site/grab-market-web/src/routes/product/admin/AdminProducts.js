@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
 import { message } from 'antd';
 import { AdminLayout } from '../../../routes/profile/admin/components';
 import { api } from '../../../config/api';
@@ -127,16 +125,6 @@ export default function AdminProducts() {
     setPagination(prev => ({ ...prev, page: 1 })); // 필터 변경 시 첫 페이지로
   };
 
-  // 필터 리셋
-  const handleReset = () => {
-    setFilters({
-      search: '',
-      category: '',
-      sort: 'recent'
-    });
-    setPagination(prev => ({ ...prev, page: 1 }));
-  };
-
   // 상품 삭제
   const handleDelete = async (productId, productName) => {
     if (!window.confirm(t('productAdmin.list.messages.deleteConfirm', { name: productName }))) {
@@ -166,10 +154,6 @@ export default function AdminProducts() {
         {/* 페이지 헤더 */}
         <div className="page-header">
           <h1 className="page-title">{t('productAdmin.list.title')}</h1>
-          <Link to="/profile/products/new" className="btn btn-primary">
-            <Plus size={20} />
-            {t('productAdmin.list.new')}
-          </Link>
         </div>
 
         {/* 필터 바 */}
@@ -177,7 +161,6 @@ export default function AdminProducts() {
           filters={filters}
           categories={categories}
           onFilterChange={handleFilterChange}
-          onReset={handleReset}
         />
 
         {/* 통계 요약 */}

@@ -1,11 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { Dropdown } from 'antd';
+import { ChevronDown } from 'lucide-react';
 import { API_URL } from '../../../../config/constants';
 import StarRating from './StarRating';
 import { useTranslation } from 'react-i18next';
 
 export default function ProductsTable({ products, onDelete }) {
   const { t } = useTranslation();
+  const history = useHistory();
   return (
     <div className="table-container">
       <table className="table">
@@ -58,32 +61,41 @@ export default function ProductsTable({ products, onDelete }) {
                 </div>
               </td>
               <td>
-                <div className="actions">
-                  <Link
-                    to={`/profile/products/${product.id}`}
-                    className="btn btn-secondary btn-sm"
-                  >
-                    {t('productAdmin.list.table.details')}
-                  </Link>
-                  <Link
-                    to={`/profile/products/${product.id}/edit`}
-                    className="btn btn-secondary btn-sm"
-                  >
-                    {t('productAdmin.list.table.edit')}
-                  </Link>
-                  <Link
-                    to={`/products/${product.id}`}
-                    className="btn btn-secondary btn-sm"
-                  >
-                    {t('productAdmin.list.table.public')}
-                  </Link>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => onDelete(product.id, product.name)}
-                  >
-                    {t('productAdmin.list.table.delete')}
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: 'details',
+                        label: t('productAdmin.list.table.details'),
+                        onClick: () => history.push(`/profile/products/${product.id}`),
+                      },
+                      {
+                        key: 'edit',
+                        label: t('productAdmin.list.table.edit'),
+                        onClick: () => history.push(`/profile/products/${product.id}/edit`),
+                      },
+                      {
+                        key: 'public',
+                        label: t('productAdmin.list.table.public'),
+                        onClick: () => history.push(`/products/${product.id}`),
+                      },
+                      { type: 'divider' },
+                      {
+                        key: 'delete',
+                        label: t('productAdmin.list.table.delete'),
+                        danger: true,
+                        onClick: () => onDelete(product.id, product.name),
+                      },
+                    ],
+                  }}
+                  trigger={['click']}
+                  placement="bottomRight"
+                >
+                  <button className="actions-trigger-btn" type="button">
+                    <ChevronDown size={18} />
+                    <span>{t('productAdmin.list.table.actions')}</span>
                   </button>
-                </div>
+                </Dropdown>
               </td>
             </tr>
           ))}

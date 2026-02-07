@@ -1942,7 +1942,7 @@ const verifyToken = (token) => {
       },
       productAdmin: {
         list: {
-          title: '내 상품',
+          title: '상품 목록',
           new: '새 상품',
           loading: '로딩 중...',
           filters: {
@@ -4188,7 +4188,7 @@ Currently most popular team combination:
       },
       productAdmin: {
         list: {
-          title: 'My Products',
+          title: 'Product List',
           new: 'New Product',
           loading: 'Loading...',
           filters: {
@@ -6388,7 +6388,7 @@ const verifyToken = (token) => {
       },
       productAdmin: {
         list: {
-          title: '私の商品',
+          title: '商品一覧',
           new: '新商品',
           loading: '読み込み中...',
           filters: {

@@ -7,6 +7,7 @@ import axios from 'axios';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import { clearRatingCache } from '../../../utils/ratingCache';
+import { getReviewContent } from '../../../utils/getReviewContent';
 
 export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpfulUpdate }) {
   const { t, i18n } = useTranslation();
@@ -1260,9 +1261,10 @@ export default function ReviewsTab({ reviews, productId, onReviewUpdate, onHelpf
                     )}
                     
                     {/* 리뷰 내용 */}
-                    {review.text && (
-                      <p className="text-[15px] text-gray-600 leading-[1.7] mb-4">{review.text}</p>
-                    )}
+                    {(() => {
+                      const content = getReviewContent(review, i18n.language);
+                      return content ? <p className="text-[15px] text-gray-600 leading-[1.7] mb-4">{content}</p> : null;
+                    })()}
                     
                     {/* 리뷰 이미지 */}
                     {review.review_images && Array.isArray(review.review_images) && review.review_images.length > 0 && (

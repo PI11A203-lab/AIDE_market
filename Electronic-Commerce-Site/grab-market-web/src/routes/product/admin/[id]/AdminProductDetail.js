@@ -101,6 +101,7 @@ export default function AdminProductDetail() {
   const normalizeReview = (raw) => {
     if (!raw) return mockReview;
     return {
+      ...raw,
       id: raw.id,
       author: raw.author || raw.user_name || raw.user?.name || 'Anonymous',
       rating: Number(raw.rating ?? raw.score ?? 0) || 0,

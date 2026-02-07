@@ -51,6 +51,9 @@ export const mockReview = {
   author: 'Sample Buyer',
   rating: 5,
   comment: '정말 유용한 제품이었습니다. 관리용 예시 데이터입니다.',
+  comment_ko: '정말 유용한 제품이었습니다. 관리용 예시 데이터입니다.',
+  comment_en: 'Really useful product. This is sample data for administration.',
+  comment_ja: '本当に便利な製品でした。管理用のサンプルデータです。',
   date: today.toISOString(),
 };
 

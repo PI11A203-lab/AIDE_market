@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import StarRating from '../../../../product/admin/components/StarRating';
 import { useTranslation } from 'react-i18next';
+import { getReviewContent } from '../../../../../utils/getReviewContent';
 
 export default function ReviewItem({ review }) {
   const { t, i18n } = useTranslation();
+  const displayComment = getReviewContent(review, i18n.language);
   const getInitials = (username) => {
     if (!username) return 'U';
     const parts = username.split(' ');
@@ -46,7 +48,7 @@ export default function ReviewItem({ review }) {
           <span className="review-product">
             {review.product?.name}
           </span>
-          <p className="review-text">{review.comment}</p>
+          {displayComment && <p className="review-text">{displayComment}</p>}
           <div className="review-footer">
             <div className="review-helpful">
               <span className="helpful-count">

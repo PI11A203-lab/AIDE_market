@@ -333,6 +333,7 @@ export default function ProductPage() {
             const numericRating = Number(rawRating) || 0;
 
             return {
+              ...review,
               id: review.id,
               author: displayUserName,
               avatar: (displayUserName || 'A').substring(0, 2).toUpperCase(),
@@ -855,6 +856,7 @@ export default function ProductPage() {
                       const numericRating = Number(rawRating) || 0;
 
                       return {
+                        ...review,
                         id: review.id,
                         author: displayUserName,
                         avatar: (displayUserName || 'A').substring(0, 2).toUpperCase(),

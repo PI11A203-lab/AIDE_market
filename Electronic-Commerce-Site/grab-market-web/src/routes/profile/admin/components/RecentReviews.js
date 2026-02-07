@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../../../config/constants';
+import { getReviewContent } from '../../../../utils/getReviewContent';
 
 export default function RecentReviews({ reviews }) {
   const { t, i18n } = useTranslation();
@@ -81,11 +82,10 @@ export default function RecentReviews({ reviews }) {
                   </div>
                 </div>
                 <div className="review-body">
-                  {(review.comment || review.text || review.review_text) && (
-                    <p className="review-content">
-                      {review.comment || review.text || review.review_text}
-                    </p>
-                  )}
+                  {(() => {
+                    const content = getReviewContent(review, i18n.language);
+                    return content ? <p className="review-content">{content}</p> : null;
+                  })()}
                   <span className="review-date">
                     {review.created_at
                       ? new Date(review.created_at).toLocaleDateString(i18n.language, {

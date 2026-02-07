@@ -1344,6 +1344,7 @@ export default function TeamBuilder() {
               totalPrice={totalPrice}
               onRemoveFromTeam={removeFromTeam}
               onRemoveTemplateTeam={removeTemplateTeamFromSelectedTeam}
+              onDeleteTemplateTeam={deleteTemplateTeam}
               selectedTemplateTeamIds={selectedTemplateTeamIds}
               templateTeams={templateTeams}
               onAddTemplateTeam={addTemplateTeamToSelectedTeam}

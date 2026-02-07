@@ -8,7 +8,6 @@ import {
   message,
   Select,
   Slider,
-  Divider,
   Card,
   Space,
 } from 'antd';
@@ -214,8 +213,6 @@ export default function ProductUpload({ onSuccess }) {
           </Form.Item>
         </div>
 
-        <Divider />
-
         <div className="form-section">
           <h3 className="section-title">{t('productAdmin.upload.basicInfo')}</h3>
           
@@ -267,8 +264,6 @@ export default function ProductUpload({ onSuccess }) {
           </Form.Item>
         </div>
 
-        <Divider />
-
         <div className="form-section">
           <h3 className="section-title">{t('productAdmin.upload.category')}</h3>
           
@@ -319,8 +314,6 @@ export default function ProductUpload({ onSuccess }) {
             />
           </Form.Item>
         </div>
-
-        <Divider />
 
         <div className="form-section">
           <h3 className="section-title">{t('productAdmin.upload.statsSection')}</h3>
@@ -400,8 +393,6 @@ export default function ProductUpload({ onSuccess }) {
             />
           </Form.Item>
         </div>
-
-        <Divider />
 
         <Form.Item>
           <Space>

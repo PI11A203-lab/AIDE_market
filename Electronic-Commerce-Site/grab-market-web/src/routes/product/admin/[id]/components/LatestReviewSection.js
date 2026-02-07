@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { ExternalLink } from 'lucide-react';
 import StarRating from '../../components/StarRating';
 import { useTranslation } from 'react-i18next';
+import { getReviewContent } from '../../../../../utils/getReviewContent';
 
 export default function LatestReviewSection({ latestReview, productId, formatDate }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const displayComment = latestReview ? getReviewContent(latestReview, i18n.language) : '';
   return (
     <section className="admin-product-detail__review">
       <div className="section-header">
@@ -29,7 +31,7 @@ export default function LatestReviewSection({ latestReview, productId, formatDat
               <StarRating rating={latestReview.rating} />
             </div>
             <div className="review-date">{formatDate(latestReview.date)}</div>
-            <p className="review-comment">{latestReview.comment || t('productAdmin.detail.latestReview.noComment')}</p>
+            <p className="review-comment">{displayComment || t('productAdmin.detail.latestReview.noComment')}</p>
           </div>
         </div>
       ) : (

@@ -120,6 +120,7 @@ export default function AdminReviews() {
   const normalizeReview = useCallback((review) => {
     // 백엔드 응답: author, author_email, product_id, product_name, product_image, review_text, rating, helpful_count, created_at
     return {
+      ...review,
       id: review.id,
       rating: review.rating || 0,
       comment: review.review_text || review.comment || '',

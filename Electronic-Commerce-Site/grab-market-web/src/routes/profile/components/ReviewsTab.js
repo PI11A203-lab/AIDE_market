@@ -6,6 +6,7 @@ import axios from 'axios';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
 import { clearRatingCache, setRatingCache } from '../../../utils/ratingCache';
+import { getReviewContent } from '../../../utils/getReviewContent';
 import { useTranslation } from 'react-i18next';
 
 export default function ReviewsTab({ reviews, onReviewUpdate }) {
@@ -19,7 +20,7 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
     setEditingId(review.id || review.review_id);
     setEditForm({
       rating: review.rating || 0,
-      comment: review.comment || review.text || review.review_text || ''
+      comment: getReviewContent(review, i18n.language) || ''
     });
   };
 
@@ -373,11 +374,10 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                   )}
                   
                   {/* 리뷰 내용 */}
-                  {(review.comment || review.text || review.review_text) && (
-                    <p className="review-content">
-                      {review.comment || review.text || review.review_text}
-                    </p>
-                  )}
+                  {(() => {
+                    const content = getReviewContent(review, i18n.language);
+                    return content ? <p className="review-content">{content}</p> : null;
+                  })()}
                   
                   {/* 리뷰 이미지 */}
                   {review.review_images && Array.isArray(review.review_images) && review.review_images.length > 0 && (

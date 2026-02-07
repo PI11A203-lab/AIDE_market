@@ -85,7 +85,7 @@
 
 .filter-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 16px;
   align-items: end;
 }
@@ -260,25 +260,30 @@
   color: #6B7280;
 }
 
-/* 액션 버튼 */
-.actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-/* 액션 버튼 사이즈 축소 */
-.actions .btn {
-  height: 36px;
-  padding: 8px 10px;
-  font-size: 13px;
-  line-height: 1.2;
-  border-radius: 8px;
+/* 액션 드롭다운 트리거 */
+.actions-trigger-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 6px;
-  min-width: 64px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.actions-trigger-btn:hover {
+  background: #FAFAFA;
+  border-color: #D1D5DB;
+}
+
+.actions-trigger-btn span {
+  white-space: nowrap;
 }
 
 /* 페이지네이션 */

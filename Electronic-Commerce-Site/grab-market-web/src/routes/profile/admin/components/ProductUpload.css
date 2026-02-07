@@ -85,10 +85,12 @@
   font-size: 12px;
 }
 
-/* 상품 등록 버튼 hover 효과 제거 (기본 색 유지) */
+/* 업로드 버튼 - 파란색 기본 */
+.product-upload-submit-btn,
 .product-upload-submit-btn:hover,
 .product-upload-submit-btn:focus {
-  background-color: #1677ff; /* Ant Design 기본 primary 색상 */
-  border-color: #1677ff;
+  background-color: #1677ff !important;
+  border-color: #1677ff !important;
+  color: #fff !important;
 }
 
