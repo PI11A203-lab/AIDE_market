@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { Search, ShoppingCart, Globe, Save } from 'lucide-react';
 import { message } from 'antd';
@@ -22,11 +22,12 @@ export default function TeamBuilder() {
   const [searchText, setSearchText] = useState('');
   const maxTeamSize = 10;
   const history = useHistory();
-  const location = useLocation();
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || 'en');
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef(null);
+  const [typingText, setTypingText] = useState('');
+  const [typingIndex, setTypingIndex] = useState(0);
 
   const languageOptions = [
     { value: 'ko', label: '한국어' },
@@ -78,44 +79,27 @@ export default function TeamBuilder() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // URL 파라미터를 업데이트하는 함수
-  // URL 파라미터 업데이트로 인한 불필요한 재실행 방지를 위한 ref
-  const isUpdatingFromState = useRef(false);
-
-  const updateURLParams = (teamIds) => {
-    isUpdatingFromState.current = true; // 상태에서 URL을 업데이트하는 중임을 표시
-    const searchParams = new URLSearchParams(location.search);
-    if (teamIds.length > 0) {
-      searchParams.set('team', teamIds.join(','));
-    } else {
-      searchParams.delete('team');
-    }
-    history.replace({
-      pathname: location.pathname,
-      search: searchParams.toString()
-    });
-    // 다음 렌더링 사이클 후 플래그 리셋
-    setTimeout(() => {
-      isUpdatingFromState.current = false;
-    }, 0);
-  };
+  // 타이핑 애니메이션
+  useEffect(() => {
+    const texts = [
+      t('teamBuilder.typing1'),
+      t('teamBuilder.typing2'),
+      t('teamBuilder.typing3'),
+    ].filter(Boolean);
+    if (texts.length === 0) return;
+    setTypingText(texts[0]);
+    setTypingIndex(0);
+    const interval = setInterval(() => {
+      setTypingIndex((prev) => {
+        const nextIndex = (prev + 1) % texts.length;
+        setTypingText(texts[nextIndex]);
+        return nextIndex;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [language, t]);
 
   useEffect(() => {
-    // URL 파라미터에서 선택된 팀원 ID들을 읽어오는 함수
-    const getSelectedIdsFromURL = () => {
-      const searchParams = new URLSearchParams(location.search);
-      const teamParam = searchParams.get('team');
-      if (teamParam) {
-        return teamParam.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
-      }
-      return [];
-    };
-
-    // 상태에서 URL을 업데이트하는 중이면 loadData를 실행하지 않음
-    if (isUpdatingFromState.current) {
-      return;
-    }
-
     const loadData = async () => {
       try {
         // 사용자 정보 가져오기
@@ -137,8 +121,10 @@ export default function TeamBuilder() {
           .map(fav => fav.product_id || fav.product?.id || fav.id)
           .filter(id => id != null);
 
-        // 모든 상품 가져오기 (템플릿 팀 로드를 위해 먼저 가져옴)
-        const productsResponse = await axios.get(`${API_URL}/api/products`);
+        // 모든 상품 가져오기 (템플릿 팀 로드 시 멤버 상품을 찾기 위해 충분히 많이)
+        const productsResponse = await axios.get(`${API_URL}/api/products`, {
+          params: { limit: 500 }
+        });
         const allProducts = productsResponse.data?.products || [];
         
         // 찜목록에 있는 상품만 필터링
@@ -189,145 +175,39 @@ export default function TeamBuilder() {
         
         setAvailableDevelopers(developers);
         
-        // URL 파라미터에서 선택된 팀원 복원
-        const selectedIds = getSelectedIdsFromURL();
+        // 템플릿 팀 구성 로드 (API에서 항상 최신 데이터 가져오기)
+        const loadedTemplateTeams = await loadTemplateTeams(userId, allProducts);
         
-        // localStorage에서 템플릿 팀 정보 복원
+        // localStorage에서 이전 선택 상태 복원
         let restoredTemplateTeamIds = new Set();
-        let templateTeamsInfo = [];
         try {
-          const savedTemplateTeamIds = localStorage.getItem('selectedTemplateTeamIds');
-          const savedTemplateTeamsInfo = localStorage.getItem('templateTeamsInfo');
-          if (savedTemplateTeamIds) {
-            restoredTemplateTeamIds = new Set(JSON.parse(savedTemplateTeamIds));
-          }
-          if (savedTemplateTeamsInfo) {
-            templateTeamsInfo = JSON.parse(savedTemplateTeamsInfo);
+          const saved = localStorage.getItem('selectedTemplateTeamIds');
+          if (saved) {
+            restoredTemplateTeamIds = new Set(JSON.parse(saved));
           }
         } catch (error) {
-          console.error('템플릿 팀 정보 복원 실패:', error);
+          console.error('템플릿 팀 선택 복원 실패:', error);
         }
+        setSelectedTemplateTeamIds(restoredTemplateTeamIds);
         
-        if (selectedIds.length > 0) {
+        // 선택된 템플릿 팀의 멤버를 selectedTeam에 복원 (loadTemplateTeams 결과 사용)
+        if (restoredTemplateTeamIds.size > 0 && loadedTemplateTeams && loadedTemplateTeams.length > 0) {
           const restoredTeam = [];
-          
-          // 템플릿 팀 멤버 먼저 복원
-          for (const templateTeam of templateTeamsInfo) {
-            const templateMemberIds = templateTeam.memberIds || [];
-            for (const memberId of templateMemberIds) {
-              if (selectedIds.includes(memberId)) {
-                // 먼저 developers(찜목록)에서 찾고, 없으면 allProducts에서 찾기
-                let dev = developers.find(d => d.id === memberId);
-                if (!dev) {
-                  const product = allProducts.find(p => p.id === memberId);
-                  if (product) {
-                    // 스탯 정보 가져오기
-                    let productStats = {
-                      teamwork: 50,
-                      stability: 50,
-                      speed: 50,
-                      creativity: 50,
-                      productivity: 50,
-                      maintainability: 50
-                    };
-                    
-                    try {
-                      const statsResponse = await api.products.getStats(product.id);
-                      if (statsResponse.data?.stats) {
-                        productStats = {
-                          teamwork: statsResponse.data.stats.teamwork || 50,
-                          stability: statsResponse.data.stats.stability || 50,
-                          speed: statsResponse.data.stats.speed || 50,
-                          creativity: statsResponse.data.stats.creativity || 50,
-                          productivity: statsResponse.data.stats.productivity || 50,
-                          maintainability: statsResponse.data.stats.maintainability || 50
-                        };
-                      }
-                    } catch (error) {
-                      console.warn(`상품 ${product.id}의 스탯을 가져오는데 실패했습니다:`, error);
-                    }
-                    
-                    dev = {
-                      id: product.id,
-                      name: product.name,
-                      category: product.category_name || 'その他',
-                      categoryId: product.category_id,
-                      price: product.price,
-                      imageUrl: product.imageUrl,
-                      stats: productStats
-                    };
-                  }
-                }
-                if (dev) {
-                  restoredTeam.push({
-                    ...dev,
-                    templateTeamId: templateTeam.id,
-                    templateTeamName: templateTeam.name
-                  });
-                }
-              }
+          for (const team of loadedTemplateTeams) {
+            const teamId = typeof team.id === 'string' ? parseInt(team.id) : team.id;
+            if (!restoredTemplateTeamIds.has(teamId) || !team.members) continue;
+            for (const member of team.members) {
+              restoredTeam.push({
+                ...member,
+                templateTeamId: teamId,
+                templateTeamName: team.name
+              });
             }
           }
-          
-          // 나머지 개별 상품 복원 (템플릿 팀에 속하지 않은 것들)
-          const templateMemberIds = templateTeamsInfo.flatMap(t => t.memberIds || []);
-          const individualIds = selectedIds.filter(id => !templateMemberIds.includes(id));
-          for (const id of individualIds) {
-            // 먼저 developers(찜목록)에서 찾고, 없으면 allProducts에서 찾기
-            let dev = developers.find(d => d.id === id);
-            if (!dev) {
-              const product = allProducts.find(p => p.id === id);
-              if (product) {
-                // 스탯 정보 가져오기
-                let productStats = {
-                  teamwork: 50,
-                  stability: 50,
-                  speed: 50,
-                  creativity: 50,
-                  productivity: 50,
-                  maintainability: 50
-                };
-                
-                try {
-                  const statsResponse = await api.products.getStats(product.id);
-                  if (statsResponse.data?.stats) {
-                    productStats = {
-                      teamwork: statsResponse.data.stats.teamwork || 50,
-                      stability: statsResponse.data.stats.stability || 50,
-                      speed: statsResponse.data.stats.speed || 50,
-                      creativity: statsResponse.data.stats.creativity || 50,
-                      productivity: statsResponse.data.stats.productivity || 50,
-                      maintainability: statsResponse.data.stats.maintainability || 50
-                    };
-                  }
-                } catch (error) {
-                  console.warn(`상품 ${product.id}의 스탯을 가져오는데 실패했습니다:`, error);
-                }
-                
-                dev = {
-                  id: product.id,
-                  name: product.name,
-                  category: product.category_name || 'その他',
-                  categoryId: product.category_id,
-                  price: product.price,
-                  imageUrl: product.imageUrl,
-                  stats: productStats
-                };
-              }
-            }
-            if (dev && !restoredTeam.find(r => r.id === id)) {
-              restoredTeam.push(dev);
-            }
+          if (restoredTeam.length > 0) {
+            setSelectedTeam(restoredTeam);
           }
-          
-          setSelectedTeam(restoredTeam);
-          setSelectedTemplateTeamIds(restoredTemplateTeamIds);
-        } else {
-          setSelectedTemplateTeamIds(restoredTemplateTeamIds);
         }
-        
-        // 템플릿 팀 구성 로드 (항상 실행)
-        await loadTemplateTeams(userId, allProducts);
         
         setLoading(false);
       } catch (error) {
@@ -337,7 +217,7 @@ export default function TeamBuilder() {
     };
 
     loadData();
-  }, [location.search]);
+  }, []);
 
   // 템플릿 팀 구성 로드 함수
   const loadTemplateTeams = async (userId, allProducts) => {
@@ -385,8 +265,14 @@ export default function TeamBuilder() {
               if (!product) {
                 try {
                   const productResponse = await axios.get(`${API_URL}/api/products/${memberProductId}`);
-                  product = productResponse.data?.product || productResponse.data;
-                  console.log(`상품 ${memberProductId}를 API에서 가져옴:`, product?.name);
+                  const rawProduct = productResponse.data?.product || productResponse.data;
+                  // API 응답이 객체가 맞는지 확인 (product 래핑 구조 처리)
+                  product = rawProduct && typeof rawProduct === 'object' && (rawProduct.id || rawProduct.name)
+                    ? rawProduct
+                    : null;
+                  if (product) {
+                    console.log(`상품 ${memberProductId}를 API에서 가져옴:`, product?.name);
+                  }
                 } catch (error) {
                   console.error(`상품 ${memberProductId}를 가져오는 데 실패:`, error);
                   continue;
@@ -428,10 +314,10 @@ export default function TeamBuilder() {
                 membersWithProducts.push({
                   id: productId,
                   name: product.name,
-                  category: product.category_name || 'その他',
+                  category: product.category_name || product.category || 'その他',
                   categoryId: categoryId,
-                  price: product.price,
-                  imageUrl: product.imageUrl,
+                  price: product.price || 0,
+                  imageUrl: product.imageUrl || product.image_url,
                   position: member.position,
                   stats: productStats
                 });
@@ -457,9 +343,11 @@ export default function TeamBuilder() {
       // null 값 제거
       const validTeams = templateTeamsWithMembers.filter(Boolean);
       setTemplateTeams(validTeams);
+      return validTeams;
     } catch (error) {
       console.error('템플릿 팀 구성 로드 실패:', error);
       setTemplateTeams([]);
+      return [];
     }
   };
 
@@ -468,8 +356,6 @@ export default function TeamBuilder() {
     if (selectedTeam.length < maxTeamSize && !selectedTeam.find(d => d.id === developer.id)) {
       const newTeam = [...selectedTeam, developer];
       setSelectedTeam(newTeam);
-      // URL 파라미터 업데이트
-      updateURLParams(newTeam.map(d => d.id));
     }
   };
 
@@ -686,9 +572,6 @@ export default function TeamBuilder() {
     } catch (error) {
       console.error('템플릿 팀 정보 저장 실패:', error);
     }
-    
-    // URL 파라미터 업데이트
-    updateURLParams(newTeam.map(d => d.id));
   };
 
   // 템플릿 팀 전체를 AIチーム에서 제거
@@ -716,9 +599,6 @@ export default function TeamBuilder() {
     } catch (error) {
       console.error('템플릿 팀 정보 업데이트 실패:', error);
     }
-    
-    // URL 파라미터 업데이트
-    updateURLParams(newTeam.map(d => d.id));
   };
 
   // 템플릿 팀 삭제 (향후 사용 예정)
@@ -798,9 +678,6 @@ export default function TeamBuilder() {
         }
       }
     }
-    
-    // URL 파라미터 업데이트
-    updateURLParams(newTeam.map(d => d.id));
   };
 
   // 찜목록에서 삭제
@@ -1214,12 +1091,49 @@ export default function TeamBuilder() {
       </header>
       
       <main className="team-main">
-        <div className="team-intro">
-          <h2 className="team-title">{t('teamBuilder.introTitle')}</h2>
-          <p className="team-subtitle">
-            {t('teamBuilder.introSubtitle', { max: maxTeamSize })}
-          </p>
+        {/* 페이지 헤더 - 템플릿 페이지와 동일한 디자인 */}
+        <div className="team-page-header">
+          <h1 className="team-page-title">{t('teamBuilder.pageTitle')}</h1>
+          <p className="team-page-subtitle">{t('teamBuilder.pageSubtitle')}</p>
+          <div className="team-typing-container">
+            <div className={`team-typing-text ${typingText ? 'team-typing-fade-in' : ''}`} key={typingIndex}>
+              {typingText}
+            </div>
+          </div>
         </div>
+
+        {/* 사용 목적별 가이드 - 목적에 맞는 템플릿 상세페이지로 바로 이동 */}
+        <section className="use-case-section">
+          <h3 className="use-case-title">{t('useCaseGuide.title')}</h3>
+          <p className="use-case-subtitle">{t('useCaseGuide.subtitle')}</p>
+          <div className="use-case-cards">
+            <Link to="/templates/2" className="use-case-card">
+              <span className="use-case-emoji">🌐</span>
+              <span className="use-case-label">{t('useCaseGuide.web.label')}</span>
+              <span className="use-case-desc">{t('useCaseGuide.web.desc')}</span>
+            </Link>
+            <Link to="/templates/1" className="use-case-card">
+              <span className="use-case-emoji">🛒</span>
+              <span className="use-case-label">{t('useCaseGuide.shop.label')}</span>
+              <span className="use-case-desc">{t('useCaseGuide.shop.desc')}</span>
+            </Link>
+            <Link to="/templates/5" className="use-case-card">
+              <span className="use-case-emoji">📱</span>
+              <span className="use-case-label">{t('useCaseGuide.app.label')}</span>
+              <span className="use-case-desc">{t('useCaseGuide.app.desc')}</span>
+            </Link>
+            <Link to="/templates/13" className="use-case-card">
+              <span className="use-case-emoji">📄</span>
+              <span className="use-case-label">{t('useCaseGuide.doc.label')}</span>
+              <span className="use-case-desc">{t('useCaseGuide.doc.desc')}</span>
+            </Link>
+            <a href="#ai-selection" className="use-case-card use-case-card-highlight">
+              <span className="use-case-emoji">✨</span>
+              <span className="use-case-label">{t('useCaseGuide.custom.label')}</span>
+              <span className="use-case-desc">{t('useCaseGuide.custom.desc')}</span>
+            </a>
+          </div>
+        </section>
 
         {/* 육각형 그래프 설명 섹션 */}
         <div className="hexagon-explanation-section">
@@ -1242,7 +1156,7 @@ export default function TeamBuilder() {
                   </svg>
                 </div>
                 <div className="hexagon-stat-content">
-                  <h4 className="hexagon-stat-name">Teamwork</h4>
+                  <h4 className="hexagon-stat-name">{t('chart.statNames.teamwork')}</h4>
                   <p className="hexagon-stat-desc">{t('chart.stats.teamwork')}</p>
                 </div>
               </div>
@@ -1254,7 +1168,7 @@ export default function TeamBuilder() {
                   </svg>
                 </div>
                 <div className="hexagon-stat-content">
-                  <h4 className="hexagon-stat-name">Stability</h4>
+                  <h4 className="hexagon-stat-name">{t('chart.statNames.stability')}</h4>
                   <p className="hexagon-stat-desc">{t('chart.stats.stability')}</p>
                 </div>
               </div>
@@ -1266,7 +1180,7 @@ export default function TeamBuilder() {
                   </svg>
                 </div>
                 <div className="hexagon-stat-content">
-                  <h4 className="hexagon-stat-name">Speed</h4>
+                  <h4 className="hexagon-stat-name">{t('chart.statNames.speed')}</h4>
                   <p className="hexagon-stat-desc">{t('chart.stats.speed')}</p>
                 </div>
               </div>
@@ -1278,7 +1192,7 @@ export default function TeamBuilder() {
                   </svg>
                 </div>
                 <div className="hexagon-stat-content">
-                  <h4 className="hexagon-stat-name">Creativity</h4>
+                  <h4 className="hexagon-stat-name">{t('chart.statNames.creativity')}</h4>
                   <p className="hexagon-stat-desc">{t('chart.stats.creativity')}</p>
                 </div>
               </div>
@@ -1290,7 +1204,7 @@ export default function TeamBuilder() {
                   </svg>
                 </div>
                 <div className="hexagon-stat-content">
-                  <h4 className="hexagon-stat-name">Productivity</h4>
+                  <h4 className="hexagon-stat-name">{t('chart.statNames.productivity')}</h4>
                   <p className="hexagon-stat-desc">{t('chart.stats.productivity')}</p>
                 </div>
               </div>
@@ -1302,7 +1216,7 @@ export default function TeamBuilder() {
                   </svg>
                 </div>
                 <div className="hexagon-stat-content">
-                  <h4 className="hexagon-stat-name">Maintainability</h4>
+                  <h4 className="hexagon-stat-name">{t('chart.statNames.maintainability')}</h4>
                   <p className="hexagon-stat-desc">{t('chart.stats.maintainability')}</p>
                 </div>
               </div>
@@ -1321,17 +1235,55 @@ export default function TeamBuilder() {
 
         {/* 메인 레이아웃: 좌측 AI 선택, 우측 시너지 패널 */}
         <div className="main-layout">
-          {/* 좌측: AI 선택 영역 */}
-          <div className="ai-selection">
-            <AvailableDevelopers
-              developers={availableDevelopers}
-              selectedTeam={selectedTeam}
-              maxTeamSize={maxTeamSize}
-              onAddToTeam={addToTeam}
-              onRemoveFromTeam={removeFromTeam}
-              onDeleteFromFavorites={removeFromFavorites}
-            />
-
+          {/* 좌측: AI 선택 영역 + 팀 합계 금액 (동일 크기 박스) */}
+          <div className="ai-selection-column">
+            <div id="ai-selection" className="ai-selection">
+              <AvailableDevelopers
+                developers={availableDevelopers}
+                selectedTeam={selectedTeam}
+                maxTeamSize={maxTeamSize}
+                onAddToTeam={addToTeam}
+                onRemoveFromTeam={removeFromTeam}
+                onDeleteFromFavorites={removeFromFavorites}
+              />
+            </div>
+            <div className="team-total-box">
+              <div className="price-label">{t('teamBuilder.teamTotal')}</div>
+              <div className="final-price">¥{totalPrice.toLocaleString()}</div>
+              <div className="team-save-actions">
+                {showNameInput && (
+                  <input
+                    type="text"
+                    placeholder={t('teamBuilder.namePlaceholder')}
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && teamName.trim()) {
+                        saveTeamToServer();
+                      }
+                    }}
+                    className="team-name-input"
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#2962ff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(41, 98, 255, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                    autoFocus
+                  />
+                )}
+                <button 
+                  className="purchase-button"
+                  onClick={handleSaveTeam}
+                  disabled={isSaving || selectedTeam.length === 0}
+                >
+                  <Save style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
+                  {isSaving ? t('teamBuilder.saving') : t('teamBuilder.save')}
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* 우측: 시너지 패널 */}
@@ -1349,57 +1301,6 @@ export default function TeamBuilder() {
               templateTeams={templateTeams}
               onAddTemplateTeam={addTemplateTeamToSelectedTeam}
             />
-          </div>
-        </div>
-
-        {/* 하단: 가격 요약 및 저장 버튼 */}
-        <div className="price-summary">
-          <div className="price-info">
-            <div className="price-label">{t('teamBuilder.teamTotal')}</div>
-            <div className="final-price">¥{totalPrice.toLocaleString()}</div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end' }}>
-            {showNameInput && (
-              <input
-                type="text"
-                placeholder={t('teamBuilder.namePlaceholder')}
-                value={teamName}
-                onChange={(e) => setTeamName(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && teamName.trim()) {
-                    saveTeamToServer();
-                  }
-                }}
-                style={{
-                  padding: '12px 16px',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  background: '#ffffff',
-                  color: '#1a1a1a',
-                  width: '300px',
-                  outline: 'none',
-                  transition: 'all 0.2s ease'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#2962ff';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(41, 98, 255, 0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e5e7eb';
-                  e.target.style.boxShadow = 'none';
-                }}
-                autoFocus
-              />
-            )}
-            <button 
-              className="purchase-button"
-              onClick={handleSaveTeam}
-              disabled={isSaving || selectedTeam.length === 0}
-            >
-              <Save style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
-              {isSaving ? t('teamBuilder.saving') : t('teamBuilder.save')}
-            </button>
           </div>
         </div>
       </main>

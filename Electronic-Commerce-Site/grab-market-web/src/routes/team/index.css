@@ -3,7 +3,7 @@
    ============================================ */
 .team-builder {
   min-height: 100vh;
-  background: #ffffff;
+  background: #FAFAFA;
   color: #000000;
 }
 
@@ -16,7 +16,80 @@
   padding: 40px 20px;
 }
 
-/* 페이지 헤더 */
+/* 페이지 헤더 - 템플릿 페이지와 동일한 디자인 */
+.team-page-header {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.team-page-title {
+  font-size: 48px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 16px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  animation: teamFadeInUp 0.8s ease-out;
+}
+
+.team-page-subtitle {
+  font-size: 18px;
+  color: #64748b;
+  margin: 0 0 20px 0;
+  line-height: 1.6;
+  animation: teamFadeInUp 1s ease-out;
+}
+
+.team-typing-container {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.team-typing-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: #6366f1;
+  min-width: 450px;
+  text-align: center;
+  position: relative;
+}
+
+.team-typing-text::after {
+  content: '|';
+  position: absolute;
+  right: -10px;
+  animation: teamBlink 0.7s infinite;
+}
+
+@keyframes teamBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.team-typing-fade-in {
+  animation: teamFadeIn 0.5s ease-in;
+}
+
+@keyframes teamFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes teamFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 기존 team-intro 호환용 */
 .team-intro {
   text-align: center;
   margin-bottom: 60px;
@@ -32,6 +105,85 @@
 .team-subtitle {
   font-size: 16px;
   color: #666;
+}
+
+/* ============================================
+   사용 목적별 가이드 (템플릿 링크)
+   ============================================ */
+.use-case-section {
+  margin-bottom: 48px;
+}
+
+.use-case-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.use-case-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  text-align: center;
+  margin: 0 0 24px 0;
+}
+
+.use-case-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.use-case-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 24px;
+  min-width: 140px;
+  max-width: 180px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.use-case-card:hover {
+  border-color: #2962ff;
+  background: #f8faff;
+  transform: translateY(-2px);
+}
+
+.use-case-card-highlight {
+  border-color: #2962ff;
+  background: #f0f4ff;
+}
+
+.use-case-card-highlight:hover {
+  background: #e8eeff;
+}
+
+.use-case-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.use-case-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+}
+
+.use-case-desc {
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.4;
 }
 
 /* ============================================
@@ -89,12 +241,6 @@
   background: #F9FAFB;
   border: 1px solid #E5E7EB;
   border-radius: 16px;
-  transition: all 0.2s ease;
-}
-
-.hexagon-stat-item:hover {
-  border-color: #D1D5DB;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .hexagon-stat-icon {
@@ -165,16 +311,69 @@
   margin-bottom: 40px;
 }
 
+/* 앵커 링크용 스크롤 오프셋 */
+#ai-selection {
+  scroll-margin-top: 80px;
+}
+
+/* 좌측 열: AI 선택 + 팀 합계 박스 세로 배치, 스크롤 시 함께 고정 */
+.ai-selection-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+}
+
 /* ============================================
    좌측: AI 선택 영역
    ============================================ */
 .ai-selection {
-  background: #f8f9fa;
+  background: white;
+  border: 1px solid #E5E7EB;
   border-radius: 12px;
   padding: 24px;
   height: fit-content;
-  position: sticky;
-  top: 20px;
+}
+
+/* 팀 합계 금액 박스 - 選択可能なAI開発者와 동일한 크기/스타일 */
+.team-total-box {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.team-total-box .price-label {
+  margin-bottom: 4px;
+}
+
+.team-total-box .final-price {
+  margin-bottom: 20px;
+}
+
+.team-save-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.team-name-input {
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #ffffff;
+  color: #1a1a1a;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 .ai-selection h2 {
@@ -205,6 +404,54 @@
   font-weight: 600;
   margin-bottom: 20px;
   color: #000000;
+}
+
+/* 템플릿별 정보: 주요 강점 & 추천 프로젝트 (상품 밑, 팀 통계 위) */
+.template-info-panel {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.template-info-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+}
+
+.template-info-strengths {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.template-info-strength-card {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.template-info-strength-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+}
+
+.template-info-strength-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* チーム統計: 강점 카드와 간격 + 얇은 구분선 */
+.team-stats-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #E5E7EB;
 }
 
 /* 추천 템플릿 */
@@ -268,7 +515,109 @@
   color: #666;
 }
 
-/* 선택된 AI 표시 */
+/* 선택된 AI 표시 - 세로형 카드 */
+.selected-ais-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.selected-ai-card {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.selected-ai-card:hover {
+  border-color: #2962ff;
+  box-shadow: 0 4px 12px rgba(41, 98, 255, 0.12);
+}
+
+/* 세로형 직사각형 이미지 (4:5 비율 - 가로 비율 높임) */
+.selected-ai-card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #F3F4F6;
+}
+
+.selected-ai-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.selected-ai-card-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #9CA3AF;
+  background: #E5E7EB;
+}
+
+.selected-ai-card-info {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.selected-ai-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1F2937;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-ai-card-category {
+  font-size: 11px;
+  color: #6B7280;
+}
+
+.selected-ai-card-price {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2962ff;
+}
+
+.selected-ai-card-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #6B7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.selected-ai-card-remove:hover {
+  background: #EF4444;
+  color: white;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* 기존 selected-ais (호환용) */
 .selected-ais {
   display: flex;
   gap: 12px;
@@ -336,7 +685,7 @@
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
-  background: #e3f2fd;
+  background: #e5e7eb;
   color: #000000;
 }
 
@@ -554,230 +903,214 @@
 }
 
 /* ============================================
-   팀 매리트 시각화
+   팀 매리트 시각화 (v2 - 개선된 시각 구조)
    ============================================ */
+.team-benefits-v2 {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+}
+
+.benefits-v2-header {
+  margin-bottom: 20px;
+}
+
+.benefits-v2-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+}
+
+.benefits-v2-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 개념 시각화: 개별 → 팀 = 시너지 */
+.benefits-v2-concept {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.benefits-v2-concept-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.benefits-v2-concept-item.individual .benefits-v2-concept-label {
+  color: #6b7280;
+}
+
+.benefits-v2-concept-item.team .benefits-v2-concept-label {
+  color: #2962ff;
+}
+
+.benefits-v2-concept-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.benefits-v2-concept-desc {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.benefits-v2-arrow {
+  flex-shrink: 0;
+  color: #94a3b8;
+}
+
+.benefits-v2-result {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.benefits-v2-result-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #10b981;
+}
+
+.benefits-v2-result-label {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* 범례 */
+.benefits-v2-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.benefits-v2-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.benefits-v2-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.benefits-v2-legend-dot.individual {
+  background: #9ca3af;
+}
+
+.benefits-v2-legend-dot.synergy {
+  background: #2962ff;
+}
+
+/* 스탯 행 */
+.benefits-v2-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.benefits-v2-stat-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 90px;
+  align-items: center;
+  gap: 12px;
+}
+
+.benefits-v2-stat-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.benefits-v2-stat-icon {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.benefits-v2-stat-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.benefits-v2-stat-bar-wrap {
+  min-width: 0;
+}
+
+.benefits-v2-stat-bar {
+  display: flex;
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.benefits-v2-bar-segment {
+  height: 100%;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+}
+
+.benefits-v2-bar-segment.individual {
+  background: #9ca3af;
+}
+
+.benefits-v2-bar-segment.synergy {
+  background: #2962ff;
+}
+
+.benefits-v2-stat-values {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.benefits-v2-stat-from {
+  color: #6b7280;
+}
+
+.benefits-v2-stat-arrow {
+  color: #94a3b8;
+}
+
+.benefits-v2-stat-to {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.benefits-v2-stat-gain {
+  margin-left: 4px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+/* 기존 team-benefits (호환용 - TeamBenefits가 team-benefits-v2 사용) */
 .team-benefits {
   margin-bottom: 24px;
   padding: 24px;
   background: white;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-}
-
-.benefits-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #E5E7EB;
-}
-
-.benefits-icon {
-  width: 24px;
-  height: 24px;
-  color: #6366f1;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.benefits-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 6px 0;
-}
-
-.benefits-subtitle {
-  font-size: 14px;
-  color: #64748b;
-  margin: 0;
-  line-height: 1.6;
-}
-
-.improvement-summary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.improvement-card {
-  background: #f8f9fa;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.improvement-card:hover {
-  border-color: #D1D5DB;
-  background: white;
-}
-
-.improvement-card.highlight {
-  background: #2962ff;
-  border-color: #2962ff;
-  color: white;
-}
-
-.improvement-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 6px;
-  line-height: 1;
-}
-
-.improvement-card.highlight .improvement-value {
-  color: white;
-}
-
-.improvement-label {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.improvement-card.highlight .improvement-label {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.stat-comparisons {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.stat-comparison-item {
-  background: #f8f9fa;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 20px;
-  transition: all 0.2s ease;
-}
-
-.stat-comparison-item:hover {
-  border-color: #D1D5DB;
-  background: white;
-}
-
-.stat-comparison-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.stat-comparison-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  background: #F3F4F6;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-comparison-icon {
-  width: 22px;
-  height: 22px;
-  color: #6366f1;
-}
-
-.stat-comparison-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.stat-comparison-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
-
-.stat-comparison-values {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-}
-
-.stat-value-individual {
-  color: #1e293b;
-  font-weight: 600;
-}
-
-.stat-value-team {
-  color: #1e293b;
-  font-weight: 600;
-}
-
-.stat-improvement-badge {
-  background: #10b981;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.stat-comparison-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.stat-bar-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.stat-bar-label {
-  font-size: 12px;
-  color: #64748b;
-  width: 80px;
-  flex-shrink: 0;
-  font-weight: 500;
-}
-
-.stat-bar {
-  flex: 1;
-  height: 10px;
-  background: #E5E7EB;
-  border-radius: 6px;
-  overflow: hidden;
-  position: relative;
-}
-
-.stat-bar-fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: width 0.3s ease;
-}
-
-.stat-bar-fill.individual {
-  background: #6B7280;
-}
-
-.stat-bar-fill.team {
-  background: #2962ff;
-}
-
-.stat-bar-value {
-  font-size: 12px;
-  font-weight: 600;
-  color: #1e293b;
-  width: 40px;
-  text-align: right;
-  flex-shrink: 0;
 }
 
 /* ============================================
@@ -835,7 +1168,7 @@
   border-radius: 16px;
   padding: 24px 32px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -956,12 +1289,17 @@
 .developers-horizontal-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
   padding: 0;
 }
 
 .developer-card-wrapper {
   width: 100%;
+}
+
+/* 선택 가능한 AI 개발자 섹션: 상품 카드 간격 축소 */
+.available-developers-section .developer-card {
+  margin-bottom: 4px;
 }
 
 .scroll-button {

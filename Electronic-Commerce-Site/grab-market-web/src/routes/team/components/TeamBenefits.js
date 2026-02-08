@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Users, Zap, Shield, Lightbulb, Rocket, Wrench } from 'lucide-react';
+import { TrendingUp, Users, Zap, Shield, Lightbulb, Rocket, Wrench, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function TeamBenefits({ teamStats, selectedTeam = [] }) {
@@ -11,55 +11,30 @@ export default function TeamBenefits({ teamStats, selectedTeam = [] }) {
 
     const statKeys = ['teamwork', 'stability', 'speed', 'creativity', 'productivity', 'maintainability'];
     const statLabels = ['Teamwork', 'Stability', 'Speed', 'Creativity', 'Productivity', 'Maintainability'];
-    
-    // selectedTeam에 stats가 있는 멤버만 필터링
     const teamMembersWithStats = selectedTeam.filter(dev => dev.stats && typeof dev.stats === 'object');
-    
-    if (teamMembersWithStats.length === 0) {
-      console.warn('TeamBenefits: stats를 가진 멤버가 없습니다', selectedTeam);
-      return null;
-    }
-    
-    const individualAverages = statKeys.map((key, idx) => {
+
+    if (teamMembersWithStats.length === 0) return null;
+
+    return statKeys.map((key, idx) => {
       const sum = teamMembersWithStats.reduce((acc, dev) => {
-        // stats가 없거나 해당 키가 없으면 기본값 50 사용
         const statValue = dev.stats?.[key];
         return acc + (statValue !== undefined && statValue !== null ? statValue : 50);
       }, 0);
-      const avg = sum / teamMembersWithStats.length;
       return {
         stat: statLabels[idx],
-        value: Math.round(avg)
+        value: Math.round(sum / teamMembersWithStats.length)
       };
     });
-
-    return individualAverages;
   };
 
-  // 팀 스탯과 개별 평균 비교
   const getStatComparison = () => {
     const individualAvg = calculateIndividualAverage();
-    if (!individualAvg || !teamStats || teamStats.length === 0) {
-      console.warn('TeamBenefits: individualAvg 또는 teamStats가 없습니다', { individualAvg, teamStats, selectedTeam });
-      return null;
-    }
+    if (!individualAvg || !teamStats || teamStats.length === 0) return null;
 
     return teamStats.map((teamStat) => {
       const individualStat = individualAvg.find(s => s.stat === teamStat.stat);
-      
-      // 디버깅: individualStat를 찾지 못한 경우
-      if (!individualStat) {
-        console.warn(`TeamBenefits: individualStat를 찾을 수 없습니다. teamStat.stat: ${teamStat.stat}`, {
-          teamStat,
-          individualAvg,
-          availableStats: individualAvg.map(s => s.stat)
-        });
-      }
-      
       const individualValue = individualStat?.value ?? 0;
-      const improvement = individualStat 
-        ? Math.round(teamStat.value - individualValue)
-        : 0;
+      const improvement = individualStat ? Math.round(teamStat.value - individualValue) : 0;
       const improvementPercent = individualStat && individualValue > 0
         ? Math.round((improvement / individualValue) * 100)
         : 0;
@@ -85,94 +60,84 @@ export default function TeamBenefits({ teamStats, selectedTeam = [] }) {
   const comparisons = getStatComparison();
   if (!comparisons || selectedTeam.length === 0) return null;
 
-  // 전체 평균 개선도 계산
-  const totalImprovement = comparisons.reduce((sum, comp) => sum + comp.improvement, 0) / comparisons.length;
-  const totalImprovementPercent = comparisons.reduce((sum, comp) => sum + comp.improvementPercent, 0) / comparisons.length;
+  const totalImprovementPercent = Math.round(
+    comparisons.reduce((sum, comp) => sum + comp.improvementPercent, 0) / comparisons.length
+  );
 
   return (
-    <div className="team-benefits">
-      <div className="benefits-header">
-        <TrendingUp className="benefits-icon" />
-        <div>
-          <h4 className="benefits-title">{t('teamBenefits.title')}</h4>
-          <p className="benefits-subtitle">{t('teamBenefits.subtitle')}</p>
+    <div className="team-benefits-v2">
+      {/* 헤더: 한 문장으로 개념 설명 */}
+      <div className="benefits-v2-header">
+        <h4 className="benefits-v2-title">{t('teamBenefits.title')}</h4>
+        <p className="benefits-v2-subtitle">{t('teamBenefits.subtitle')}</p>
+      </div>
+
+      {/* 개념 시각화: 개별 → 팀 = 시너지 */}
+      <div className="benefits-v2-concept">
+        <div className="benefits-v2-concept-item individual">
+          <span className="benefits-v2-concept-label">{t('teamBenefits.individual')}</span>
+          <span className="benefits-v2-concept-desc">{t('teamBenefits.individualDesc') || '각 AI 단독 사용'}</span>
+        </div>
+        <ArrowRight className="benefits-v2-arrow" size={24} strokeWidth={2.5} />
+        <div className="benefits-v2-concept-item team">
+          <span className="benefits-v2-concept-label">{t('teamBenefits.team')}</span>
+          <span className="benefits-v2-concept-desc">{t('teamBenefits.teamDesc') || '팀으로 조합'}</span>
+        </div>
+        <div className="benefits-v2-result">
+          <span className="benefits-v2-result-value">+{totalImprovementPercent}%</span>
+          <span className="benefits-v2-result-label">{t('teamBenefits.percentImprovement')}</span>
         </div>
       </div>
 
-      {/* 전체 개선도 요약 */}
-      <div className="improvement-summary">
-        <div className="improvement-card">
-          <div className="improvement-value">
-            +{Math.round(totalImprovement)}
-          </div>
-          <div className="improvement-label">{t('teamBenefits.avgImprovement')}</div>
-        </div>
-        <div className="improvement-card highlight">
-          <div className="improvement-value">
-            +{Math.round(totalImprovementPercent)}%
-          </div>
-          <div className="improvement-label">{t('teamBenefits.percentImprovement')}</div>
-        </div>
+      {/* 스탯별 시너지 바로 - 하나의 바에 개별(회색) + 시너지(파랑) */}
+      <div className="benefits-v2-legend">
+        <span className="benefits-v2-legend-item">
+          <span className="benefits-v2-legend-dot individual" />
+          {t('teamBenefits.individual')}
+        </span>
+        <span className="benefits-v2-legend-item">
+          <span className="benefits-v2-legend-dot synergy" />
+          {t('teamBenefits.synergyGain') || '시너지'}
+        </span>
       </div>
 
-      {/* 스탯별 상세 비교 */}
-      <div className="stat-comparisons">
+      <div className="benefits-v2-stats">
         {comparisons.map((comp) => {
           const Icon = statIcons[comp.stat] || TrendingUp;
           const isPositive = comp.improvement > 0;
-          
+
           return (
-            <div key={comp.stat} className="stat-comparison-item">
-              <div className="stat-comparison-header">
-                <div className="stat-comparison-icon-wrapper">
-                  <Icon className="stat-comparison-icon" />
-                </div>
-                <div className="stat-comparison-info">
-                  <div className="stat-comparison-name">{comp.stat}</div>
-                  <div className="stat-comparison-values">
-                    <span className="stat-value-individual">
-                      {t('teamBenefits.individual')}: {comp.individualValue}
-                    </span>
-                    <span className="stat-value-team">
-                      {t('teamBenefits.team')}: {comp.value}
-                    </span>
-                  </div>
-                </div>
-                {isPositive && (
-                  <div className="stat-improvement-badge">
-                    +{comp.improvement} (+{comp.improvementPercent}%)
-                  </div>
-                )}
+            <div key={comp.stat} className="benefits-v2-stat-row">
+              <div className="benefits-v2-stat-info">
+                {comp.stat !== 'Teamwork' && <Icon className="benefits-v2-stat-icon" size={16} />}
+                <span className="benefits-v2-stat-name">{t('chart.statNames.' + comp.stat.toLowerCase())}</span>
               </div>
-              
-              {/* 진행 바 */}
-              <div className="stat-comparison-bars">
-                <div className="stat-bar-container">
-                  <div className="stat-bar-label">{t('teamBenefits.individual')}</div>
-                  <div className="stat-bar">
-                    <div 
-                      className="stat-bar-fill individual" 
-                      style={{ width: `${comp.individualValue}%` }}
+              <div className="benefits-v2-stat-bar-wrap">
+                <div className="benefits-v2-stat-bar">
+                  <div
+                    className="benefits-v2-bar-segment individual"
+                    style={{ width: `${comp.individualValue}%` }}
+                  />
+                  {isPositive && (
+                    <div
+                      className="benefits-v2-bar-segment synergy"
+                      style={{ width: `${comp.improvement}%` }}
                     />
-                  </div>
-                  <div className="stat-bar-value">{comp.individualValue}</div>
+                  )}
                 </div>
-                <div className="stat-bar-container">
-                  <div className="stat-bar-label">{t('teamBenefits.team')}</div>
-                  <div className="stat-bar">
-                    <div 
-                      className="stat-bar-fill team" 
-                      style={{ width: `${comp.value}%` }}
-                    />
-                  </div>
-                  <div className="stat-bar-value">{comp.value}</div>
-                </div>
+              </div>
+              <div className="benefits-v2-stat-values">
+                <span className="benefits-v2-stat-from">{comp.individualValue}</span>
+                <ArrowRight size={12} strokeWidth={2} className="benefits-v2-stat-arrow" />
+                <span className="benefits-v2-stat-to">{comp.value}</span>
+                {isPositive && (
+                  <span className="benefits-v2-stat-gain">+{comp.improvement}</span>
+                )}
               </div>
             </div>
           );
         })}
       </div>
-
     </div>
   );
 }

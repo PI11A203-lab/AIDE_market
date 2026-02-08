@@ -153,6 +153,26 @@ const TEMPLATE_DETAILS_MAP = {
     categoryIds: [3],
     productLimit: 4,
     purchase_count: 298
+  },
+  17: {
+    category: 'web',
+    name: '블로그/컨텐츠',
+    name_ja: 'ブログ/コンテンツ',
+    name_en: 'Blog/Content',
+    description: '블로그 및 콘텐츠 관리 웹사이트를 위한 AI 세트.',
+    categoryIds: [1, 2, 7],
+    productLimit: 6,
+    purchase_count: 423
+  },
+  18: {
+    category: 'web',
+    name: '포트폴리오 사이트',
+    name_ja: 'ポートフォリオサイト',
+    name_en: 'Portfolio Website',
+    description: '개인 또는 기업 포트폴리오 웹사이트를 위한 AI 세트.',
+    categoryIds: [1, 3],
+    productLimit: 5,
+    purchase_count: 512
   }
 };
 

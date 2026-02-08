@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import TeamStatsChart from './TeamStatsChart';
 import TeamBenefits from './TeamBenefits';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { API_URL } from '../../../config/constants';
+import { TEMPLATE_DETAILS_MAP, getTemplateIdByTeamName } from '../../templates/templateData';
 
 export default function TeamSidebar({ 
   selectedTeam, 
@@ -19,6 +20,18 @@ export default function TeamSidebar({
   onAddTemplateTeam
 }) {
   const { t, i18n } = useTranslation();
+  const lang = (i18n.language || 'ko').startsWith('ja') ? 'ja' : (i18n.language || 'ko').startsWith('en') ? 'en' : 'ko';
+  const langKey = lang === 'ja' ? '_ja' : lang === 'en' ? '_en' : '';
+
+  // 선택된 팀에 포함된 첫 번째 템플릿 ID (상품 아래 패널용)
+  const templateIdForPanel = useMemo(() => {
+    const firstWithTemplate = selectedTeam.find(dev => dev.templateTeamName);
+    if (!firstWithTemplate?.templateTeamName) return null;
+    return getTemplateIdByTeamName(firstWithTemplate.templateTeamName);
+  }, [selectedTeam]);
+
+  const templateInfo = templateIdForPanel != null ? TEMPLATE_DETAILS_MAP[templateIdForPanel] : null;
+  const keyStrengths = templateInfo?.keyStrengths;
 
   // 템플릿 이름 번역 함수
   const translateTemplateName = (name) => {
@@ -83,12 +96,8 @@ export default function TeamSidebar({
       return templateNameMap.mobile[currentLang] || templateNameMap.mobile['en'];
     }
     
-    // 매핑되지 않은 경우, "템플릿" 부분만 번역
-    const templateSuffixes = {
-      ko: '템플릿',
-      ja: 'テンプレート',
-      en: 'Template'
-    };
+    // 매핑되지 않은 경우, "템플릿" 부분만 현재 언어로 번역 (3개국어)
+    const templateLabel = t('teamBuilder.template');
     
     // 기존 이름에서 "템플릿", "テンプレート", "template" 제거 후 번역된 접미사 추가
     let translatedName = name
@@ -98,7 +107,7 @@ export default function TeamSidebar({
       .trim();
     
     if (translatedName) {
-      return `${translatedName} ${templateSuffixes[currentLang] || templateSuffixes['en']}`;
+      return `${translatedName} ${templateLabel}`;
     }
     
     // 기본값
@@ -118,98 +127,81 @@ export default function TeamSidebar({
           </div>
         ) : (
           <>
-            {/* 선택된 AI 표시 */}
-            <div className="selected-ais">
+            {/* 선택된 AI 표시 - 세로형 카드 */}
+            <div className="selected-ais-cards">
               {selectedTeam.map((dev) => (
                 <div 
                   key={dev.id} 
-                  className="selected-ai-badge"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '8px',
-                    padding: '8px 12px',
-                    background: '#F3F4F6',
-                    borderRadius: '8px',
-                    position: 'relative'
-                  }}
+                  className="selected-ai-card"
                 >
-                  {/* 상품 이미지 */}
-                  <div
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '6px',
-                      overflow: 'hidden',
-                      flexShrink: 0,
-                      background: '#FFFFFF',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      color: '#6B7280',
-                      fontWeight: '500'
-                    }}
-                  >
-                    {dev.imageUrl ? (
-                      <img
-                        src={`${API_URL}/${dev.imageUrl}`}
-                        alt={dev.name}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover'
-                        }}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.parentElement.textContent = dev.name.substring(0, 2);
-                        }}
-                      />
-                    ) : (
-                      dev.name.substring(0, 2)
-                    )}
-                  </div>
-                  <span style={{ flex: 1, fontSize: '14px', color: '#1F2937' }}>{dev.name}</span>
                   <button
+                    className="selected-ai-card-remove"
                     onClick={(e) => {
                       e.stopPropagation();
                       onRemoveFromTeam(dev.id);
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#6B7280',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '4px',
-                      borderRadius: '4px',
-                      transition: 'all 0.2s',
-                      flexShrink: 0
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#EF4444';
-                      e.currentTarget.style.color = 'white';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'none';
-                      e.currentTarget.style.color = '#6B7280';
                     }}
                     title={t('developerCard.removeFromTeam') || '팀에서 제거'}
                   >
                     <X size={16} />
                   </button>
+                  {/* 세로형 이미지 영역 */}
+                  <div className="selected-ai-card-image">
+                    {dev.imageUrl ? (
+                      <img
+                        src={`${API_URL}/${dev.imageUrl}`}
+                        alt={dev.name}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          const fallback = e.target.parentElement.querySelector('.selected-ai-card-fallback');
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div 
+                      className="selected-ai-card-fallback"
+                      style={{ display: dev.imageUrl ? 'none' : 'flex' }}
+                    >
+                      {dev.name.substring(0, 2)}
+                    </div>
+                  </div>
+                  {/* 상품 정보 */}
+                  <div className="selected-ai-card-info">
+                    <span className="selected-ai-card-name">{dev.name}</span>
+                    {dev.category && (
+                      <span className="selected-ai-card-category">{dev.category}</span>
+                    )}
+                    {dev.price != null && (
+                      <span className="selected-ai-card-price">¥{Number(dev.price).toLocaleString()}</span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* 팀 스탯 레이더 차트 */}
-            <TeamStatsChart teamStats={teamStats} selectedTeam={selectedTeam} />
+            {/* 템플릿별 정보: 주요 강점 (상품 밑, 팀 통계 위) */}
+            {keyStrengths?.length > 0 && (
+              <div className="template-info-panel">
+                <h3 className="template-info-section-title">{t('teamBuilder.keyStrengthsTitle')}</h3>
+                <div className="template-info-strengths">
+                  {keyStrengths.map((item, idx) => (
+                    <div key={idx} className="template-info-strength-card">
+                      <h4 className="template-info-strength-title">
+                        {item[`title${langKey}`] || item.title}
+                      </h4>
+                      <p className="template-info-strength-desc">
+                        {item[`description${langKey}`] || item.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-            {/* 팀 매리트 시각화 */}
-            <TeamBenefits teamStats={teamStats} selectedTeam={selectedTeam} />
+            {/* 팀 스탯 (강점 카드와 간격·구분선) */}
+            <div className="team-stats-section">
+              <TeamStatsChart teamStats={teamStats} selectedTeam={selectedTeam} />
+              <TeamBenefits teamStats={teamStats} selectedTeam={selectedTeam} />
+            </div>
           </>
         )}
       </div>

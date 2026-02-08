@@ -119,11 +119,11 @@ function TemplateDetailPage() {
   // 실제 상품 데이터를 가져와서 템플릿에 매핑
   const loadProductsForTemplate = useCallback(async (templateId) => {
     try {
-      // 전체 상품 목록 가져오기
+      // 전체 상품 목록 가져오기 (템플릿 카테고리 매칭을 위해 충분히 많이)
       const response = await axios.get(`${API_URL}/api/products`, { 
-        params: { limit: 100, sort: 'download' } 
+        params: { limit: 200, sort: 'download' } 
       });
-      const allProducts = response.data.products || response.data || [];
+      const allProducts = response.data?.products || [];
       
       // 템플릿 상세 정보 가져오기
       const templateDetail = TEMPLATE_DETAILS_MAP[templateId];
@@ -176,7 +176,15 @@ function TemplateDetailPage() {
       };
       
       setTemplate(mergedTemplate);
-      setProducts(mergedTemplate.products || []);
+      let productsToSet = mergedTemplate.products || [];
+      // API는 성공했지만 상품이 비어있으면 (카테고리 매칭 상품 없음 등) 프론트 폴백 시도
+      if (productsToSet.length === 0) {
+        const templateData = await loadProductsForTemplate(parseInt(id));
+        if (templateData?.products?.length) {
+          productsToSet = templateData.products;
+        }
+      }
+      setProducts(productsToSet);
     } catch (error) {
       console.error('템플릿 상세 로드 실패:', error);
       // API가 없을 때 실제 상품 데이터를 가져와서 템플릿 구성
@@ -345,10 +353,11 @@ function TemplateDetailPage() {
       // 템플릿 이름 가져오기 (다국어 지원)
       const templateName = getLocalizedField(template, 'name') || template.name || 'Template';
       
-      // 팀 구성 생성
+      // 팀 구성 생성 (접미사는 현재 언어로 저장)
+      const templateLabel = t('teamBuilder.template');
       const teamCompositionResponse = await api.teamCompositions.create({
         user_id: userId,
-        name: `${templateName} 템플릿`,
+        name: `${templateName} ${templateLabel}`,
         total_synergy_score: 85
       });
 

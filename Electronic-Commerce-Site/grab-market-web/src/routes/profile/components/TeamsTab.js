@@ -79,6 +79,17 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
     return t('synergy.keepBuilding');
   };
 
+  // 팀 이름에 포함된 "템플릿/テンプレート/template" 접미사를 현재 언어로 표시 (3개국어)
+  const displayTeamName = (name) => {
+    if (!name) return t('common.untitled');
+    const templateLabel = t('teamBuilder.template');
+    // 접미사만 있는 경우
+    if (/^(템플릿|テンプレート|template)\s*$/i.test(name.trim())) return templateLabel;
+    // 앞부분 + 접미사: 접미사를 현재 언어로 치환 (공백 하나 유지)
+    const result = name.replace(/(\s)(템플릿|テンプレート|template)\s*$/gi, `$1${templateLabel}`);
+    return result.trim() || name;
+  };
+
   const getInitials = (name) => {
     if (!name) return '?';
     const words = name.split(' ');
@@ -162,7 +173,7 @@ export default function TeamsTab({ teams, onTeamUpdate }) {
             >
               <div className="team-header" style={{ paddingLeft: 0, paddingRight: 0 }}>
                 <div className="team-info" style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: '1 1 auto', minWidth: 0, width: '100%', maxWidth: 'none', overflow: 'visible' }}>
-                  <div className="team-name" style={{ textAlign: 'left', width: 'fit-content', minWidth: '240px', maxWidth: 'none', writingMode: 'horizontal-tb', whiteSpace: 'nowrap', display: 'inline-block', direction: 'ltr', unicodeBidi: 'embed', textTransform: 'none', letterSpacing: 'normal', overflow: 'visible' }}>{team.name || t('common.untitled')}</div>
+                  <div className="team-name" style={{ textAlign: 'left', width: 'fit-content', minWidth: '240px', maxWidth: 'none', writingMode: 'horizontal-tb', whiteSpace: 'nowrap', display: 'inline-block', direction: 'ltr', unicodeBidi: 'embed', textTransform: 'none', letterSpacing: 'normal', overflow: 'visible' }}>{displayTeamName(team.name)}</div>
                   <div className="team-date" style={{ textAlign: 'left', width: '100%', writingMode: 'horizontal-tb', whiteSpace: 'normal' }}>{formattedDate}</div>
                 </div>
               </div>

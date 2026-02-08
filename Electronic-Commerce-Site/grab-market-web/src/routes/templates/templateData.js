@@ -41,7 +41,15 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [1, 2], // 프론트엔드, 백엔드
     productLimit: 6,
-    purchase_count: 342
+    purchase_count: 342,
+    keyStrengths: [
+      { title: '빠른 개발 속도', title_ja: '迅速な開発速度', title_en: 'Fast Development Speed', description: 'Frontend와 Backend의 완벽한 협업으로 개발 시간 30% 단축', description_ja: 'フロントエンドとバックエンドの完璧な連携で開発時間を30%短縮', description_en: '30% reduction in development time through perfect collaboration between Frontend and Backend' },
+      { title: '안정적인 서비스', title_ja: '安定したサービス', title_en: 'Stable Service', description: '검증된 백엔드 로직과 최적화된 프론트엔드로 안정성 확보', description_ja: '検証済みバックエンドロジックと最適化されたフロントエンドで安定性を確保', description_en: 'Ensuring stability with verified backend logic and optimized frontend' },
+      { title: '완벽한 문서화', title_ja: '完璧なドキュメント', title_en: 'Perfect Documentation', description: '코드 작성과 동시에 자동 문서 생성으로 유지보수 용이', description_ja: 'コード作成と同時に自動ドキュメント生成で保守が容易', description_en: 'Easy maintenance with automatic document generation alongside code writing' }
+    ],
+    recommendedProjects: ['쇼핑몰 웹사이트', '업무 관리 시스템', '포트폴리오 사이트', '예약 시스템'],
+    recommendedProjects_ja: ['ショッピングモールウェブサイト', '業務管理システム', 'ポートフォリオサイト', '予約システム'],
+    recommendedProjects_en: ['Shopping Mall Website', 'Business Management System', 'Portfolio Site', 'Reservation System']
   },
   2: {
     category: 'web',
@@ -80,7 +88,15 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [1, 2],
     productLimit: 5,
-    purchase_count: 289
+    purchase_count: 289,
+    keyStrengths: [
+      { title: '반응형 디자인', title_ja: 'レスポンシブデザイン', title_en: 'Responsive Design', description: '모바일·태블릿·데스크톱 최적화로 어디서나 완벽한 표시', description_ja: 'モバイル・タブレット・デスクトップ最適化でどこでも完璧な表示', description_en: 'Perfect display anywhere with mobile, tablet and desktop optimization' },
+      { title: '쉬운 콘텐츠 관리', title_ja: '簡単なコンテンツ管理', title_en: 'Easy Content Management', description: 'CMS로 비개발자도 콘텐츠 업데이트 가능', description_ja: 'CMSで非開発者もコンテンツ更新が可能', description_en: 'Non-developers can update content with CMS' },
+      { title: 'SEO 최적화', title_ja: 'SEO最適化', title_en: 'SEO Optimization', description: '검색 엔진 최적화로 노출도 향상', description_ja: '検索エンジン最適化で露出向上', description_en: 'Improved visibility with search engine optimization' }
+    ],
+    recommendedProjects: ['회사 홈페이지', '랜딩 페이지', '소개 페이지', '이벤트 페이지'],
+    recommendedProjects_ja: ['会社ホームページ', 'ランディングページ', '紹介ページ', 'イベントページ'],
+    recommendedProjects_en: ['Company Homepage', 'Landing Page', 'Intro Page', 'Event Page']
   },
   3: {
     category: 'web',
@@ -119,7 +135,15 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [1, 2],
     productLimit: 4,
-    purchase_count: 156
+    purchase_count: 156,
+    keyStrengths: [
+      { title: '미디어 재생', title_ja: 'メディア再生', title_en: 'Media Playback', description: '오디오 스트리밍 및 플레이어로 사용자 경험 극대화', description_ja: 'オーディオストリーミングとプレーヤーでユーザー体験を最大化', description_en: 'Maximize user experience with audio streaming and player' },
+      { title: '플레이리스트 관리', title_ja: 'プレイリスト管理', title_en: 'Playlist Management', description: '플레이리스트 생성·편집·공유 기능', description_ja: 'プレイリスト作成・編集・共有機能', description_en: 'Playlist create, edit and share features' },
+      { title: '검색·추천', title_ja: '検索・推薦', title_en: 'Search & Recommendation', description: '음악 검색과 맞춤 추천으로 발견 경험 향상', description_ja: '音楽検索とパーソナライズ推薦で発見体験を向上', description_en: 'Improve discovery with music search and personalized recommendations' }
+    ],
+    recommendedProjects: ['음악 스트리밍', '팟캐스트 사이트', '오디오 갤러리', '라디오 앱'],
+    recommendedProjects_ja: ['音楽ストリーミング', 'ポッドキャストサイト', 'オーディオギャラリー', 'ラジオアプリ'],
+    recommendedProjects_en: ['Music Streaming', 'Podcast Site', 'Audio Gallery', 'Radio App']
   },
   17: {
     category: 'web',
@@ -161,7 +185,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [1, 2, 7], // 프론트엔드, 백엔드, 문서
     productLimit: 6,
-    purchase_count: 423
+    purchase_count: 423,
+    keyStrengths: [
+      { title: '콘텐츠 관리', title_ja: 'コンテンツ管理', title_en: 'Content Management', description: '텍스트 에디터·카테고리·태그로 체계적인 콘텐츠 관리', description_ja: 'テキストエディタ・カテゴリー・タグで体系的なコンテンツ管理', description_en: 'Systematic content management with editor, categories and tags' },
+      { title: '검색·SEO', title_ja: '検索・SEO', title_en: 'Search & SEO', description: '전문 검색과 검색 엔진 최적화로 노출 극대화', description_ja: '全文検索と検索エンジン最適化で露出を最大化', description_en: 'Maximize visibility with full-text search and SEO' },
+      { title: '댓글·소통', title_ja: 'コメント・交流', title_en: 'Comments & Engagement', description: '댓글·답글·알림으로 독자와 소통 강화', description_ja: 'コメント・返信・通知で読者との交流を強化', description_en: 'Strengthen reader engagement with comments, replies and notifications' }
+    ]
   },
   18: {
     category: 'web',
@@ -203,7 +232,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [1, 3], // 프론트엔드, 이미지
     productLimit: 5,
-    purchase_count: 512
+    purchase_count: 512,
+    keyStrengths: [
+      { title: '작품 전시', title_ja: '作品展示', title_en: 'Work Showcase', description: '이미지 갤러리·라이트박스로 작품을 효과적으로 전시', description_ja: '画像ギャラリー・ライトボックスで作品を効果的に展示', description_en: 'Effectively showcase work with image gallery and lightbox' },
+      { title: '반응형·애니메이션', title_ja: 'レスポンシブ・アニメーション', title_en: 'Responsive & Animation', description: '모바일 최적화와 스크롤 애니메이션으로 임팩트', description_ja: 'モバイル最適化とスクロールアニメーションでインパクト', description_en: 'Impact with mobile optimization and scroll animations' },
+      { title: '연락·SNS', title_ja: '連絡・SNS', title_en: 'Contact & SNS', description: '연락처 폼과 SNS 링크로 문의·프로필 연결', description_ja: 'お問い合わせフォームとSNSリンクで問い合わせ・プロフィール接続', description_en: 'Connect inquiries and profiles with contact form and SNS links' }
+    ]
   },
 
   // 어플개발 카테고리 (4-7)
@@ -244,7 +278,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [3],
     productLimit: 5,
-    purchase_count: 298
+    purchase_count: 298,
+    keyStrengths: [
+      { title: 'Swift·네이티브', title_ja: 'Swift・ネイティブ', title_en: 'Swift & Native', description: 'Swift와 UIKit/SwiftUI로 애플 플랫폼에 최적화', description_ja: 'SwiftとUIKit/SwiftUIでアップルプラットフォームに最適化', description_en: 'Optimized for Apple platform with Swift and UIKit/SwiftUI' },
+      { title: 'Core Data·네트워킹', title_ja: 'Core Data・ネットワーキング', title_en: 'Core Data & Networking', description: '로컬 저장과 API 연동으로 안정적인 데이터 처리', description_ja: 'ローカル保存とAPI連携で安定したデータ処理', description_en: 'Stable data handling with local storage and API integration' },
+      { title: '푸시·알림', title_ja: 'プッシュ・通知', title_en: 'Push & Notifications', description: 'APNs 기반 푸시 알림으로 사용자 참여 유도', description_ja: 'APNsベースのプッシュ通知でユーザー参加を促進', description_en: 'Drive user engagement with APNs push notifications' }
+    ]
   },
   5: {
     category: 'app',
@@ -283,7 +322,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [3],
     productLimit: 5,
-    purchase_count: 287
+    purchase_count: 287,
+    keyStrengths: [
+      { title: 'Kotlin·Jetpack', title_ja: 'Kotlin・Jetpack', title_en: 'Kotlin & Jetpack', description: 'Kotlin과 Jetpack으로 현대적인 안드로이드 개발', description_ja: 'KotlinとJetpackで現代的Android開発', description_en: 'Modern Android development with Kotlin and Jetpack' },
+      { title: 'Room·Retrofit', title_ja: 'Room・Retrofit', title_en: 'Room & Retrofit', description: '로컬 DB와 REST API로 데이터 계층 완성', description_ja: 'ローカルDBとREST APIでデータ層を完成', description_en: 'Complete data layer with local DB and REST API' },
+      { title: 'Firebase 연동', title_ja: 'Firebase連携', title_en: 'Firebase Integration', description: '클라우드 서비스로 확장성과 실시간 동기화', description_ja: 'クラウドサービスで拡張性とリアルタイム同期', description_en: 'Scalability and real-time sync with cloud services' }
+    ]
   },
   6: {
     category: 'app',
@@ -322,7 +366,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [3],
     productLimit: 4,
-    purchase_count: 234
+    purchase_count: 234,
+    keyStrengths: [
+      { title: '건강 데이터', title_ja: '健康データ', title_en: 'Health Data', description: '걸음·심박·칼로리 등 헬스 데이터 수집·추적', description_ja: '歩数・心拍・カロリーなどヘルスデータ収集・追跡', description_en: 'Collect and track health data like steps, heart rate and calories' },
+      { title: '분석·시각화', title_ja: '分析・可視化', title_en: 'Analysis & Visualization', description: '통계·차트로 트렌드 파악과 목표 달성 확인', description_ja: '統計・チャートでトレンド把握と目標達成確認', description_en: 'Understand trends and track goals with stats and charts' },
+      { title: '맞춤 추천', title_ja: 'パーソナライズ推薦', title_en: 'Personalized Recommendations', description: '개인 맞춤 운동·알림으로 지속적인 관리 지원', description_ja: 'パーソナライズ運動・通知で持続的な管理をサポート', description_en: 'Support ongoing management with personalized exercise and reminders' }
+    ]
   },
   7: {
     category: 'app',
@@ -361,7 +410,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [3],
     productLimit: 4,
-    purchase_count: 312
+    purchase_count: 312,
+    keyStrengths: [
+      { title: '텍스트·이미지 기록', title_ja: 'テキスト・画像記録', title_en: 'Text & Image Records', description: '다양한 폰트·스타일과 사진 첨부로 풍부한 일기', description_ja: '多様なフォント・スタイルと写真添付で豊かな日記', description_en: 'Rich diary entries with fonts, styles and photo attachments' },
+      { title: '태그·검색', title_ja: 'タグ・検索', title_en: 'Tags & Search', description: '태그 분류와 날짜·키워드 검색으로 기록 관리', description_ja: 'タグ分類と日付・キーワード検索で記録管理', description_en: 'Manage records with tag classification and date/keyword search' },
+      { title: '백업·동기화', title_ja: 'バックアップ・同期', title_en: 'Backup & Sync', description: '클라우드 백업과 다기기 동기화로 안전한 보관', description_ja: 'クラウドバックアップと複数デバイス同期で安全に保管', description_en: 'Safe storage with cloud backup and multi-device sync' }
+    ]
   },
 
   // 데이터 분석 카테고리 (8-10)
@@ -402,7 +456,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [1, 4, 5], // 프론트엔드(시각화), 관리(분석), 인프라(데이터)
     productLimit: 6,
-    purchase_count: 456
+    purchase_count: 456,
+    keyStrengths: [
+      { title: '데이터 통합·정제', title_ja: 'データ統合・精製', title_en: 'Data Integration & Cleaning', description: '다양한 소스 데이터 수집과 품질 개선으로 신뢰도 확보', description_ja: '多様なソースのデータ収集と品質改善で信頼性を確保', description_en: 'Ensure reliability through multi-source collection and quality improvement' },
+      { title: '통계·예측', title_ja: '統計・予測', title_en: 'Statistics & Prediction', description: '매출·고객·트렌드 분석과 예측 모델로 의사결정 지원', description_ja: '売上・顧客・トレンド分析と予測モデルで意思決定を支援', description_en: 'Support decision-making with analysis and prediction models' },
+      { title: '대시보드·시각화', title_ja: 'ダッシュボード・可視化', title_en: 'Dashboard & Visualization', description: '차트·대시보드로 인사이트를 한눈에 전달', description_ja: 'チャート・ダッシュボードでインサイトを一目で伝達', description_en: 'Communicate insights at a glance with charts and dashboards' }
+    ]
   },
   9: {
     category: 'data',
@@ -444,7 +503,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [2, 5, 6], // 백엔드(API), 인프라(데이터), 보안
     productLimit: 7,
-    purchase_count: 389
+    purchase_count: 389,
+    keyStrengths: [
+      { title: '전처리·특징 추출', title_ja: '前処理・特徴抽出', title_en: 'Preprocessing & Feature Extraction', description: '데이터 정제·변환과 특징 엔지니어링으로 학습 품질 향상', description_ja: 'データ精製・変換と特徴エンジニアリングで学習品質向上', description_en: 'Improve training quality with cleaning and feature engineering' },
+      { title: '모델 학습·튜닝', title_ja: 'モデル学習・チューニング', title_en: 'Model Training & Tuning', description: '다양한 알고리즘과 하이퍼파라미터 튜닝으로 최적 모델', description_ja: '多様なアルゴリズムとハイパーパラメータチューニングで最適モデル', description_en: 'Optimal model with algorithms and hyperparameter tuning' },
+      { title: '평가·배포', title_ja: '評価・デプロイ', title_en: 'Evaluation & Deployment', description: '성능 평가·검증 후 프로덕션 배포까지 원스톱', description_ja: '性能評価・検証から本番デプロイまでワンストップ', description_en: 'One-stop from performance evaluation to production deployment' }
+    ]
   },
   10: {
     category: 'data',
@@ -483,7 +547,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [1, 2, 5], // 프론트엔드(UI), 백엔드(API), 인프라(데이터)
     productLimit: 5,
-    purchase_count: 278
+    purchase_count: 278,
+    keyStrengths: [
+      { title: '다양한 차트', title_ja: '多様なチャート', title_en: 'Various Charts', description: '막대·선·원형 등 차트로 데이터를 직관적으로 표현', description_ja: '棒・線・円形などチャートでデータを直感的に表現', description_en: 'Intuitively represent data with bar, line, pie and more' },
+      { title: '대화형·실시간', title_ja: '対話型・リアルタイム', title_en: 'Interactive & Real-time', description: '인터랙션과 실시간 업데이트로 생동감 있는 대시보드', description_ja: 'インタラクションとリアルタイム更新で生き生きしたダッシュボード', description_en: 'Lively dashboards with interaction and real-time updates' },
+      { title: '필터·내보내기', title_ja: 'フィルター・エクスポート', title_en: 'Filter & Export', description: '다차원 필터와 PDF·이미지 내보내기로 활용도 극대화', description_ja: '多次元フィルターとPDF・画像エクスポートで活用度を最大化', description_en: 'Maximize utility with multi-dimensional filters and export' }
+    ]
   },
 
   // 문서 카테고리 (11-13)
@@ -524,7 +593,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [5, 7], // 인프라(데이터 수집), 문서
     productLimit: 4,
-    purchase_count: 234
+    purchase_count: 234,
+    keyStrengths: [
+      { title: '데이터→리포트', title_ja: 'データ→レポート', title_en: 'Data to Report', description: '다양한 소스 수집부터 구조화된 리포트 자동 생성', description_ja: '多様なソース収集から構造化レポート自動生成まで', description_en: 'From multi-source collection to structured report generation' },
+      { title: '템플릿·포맷', title_ja: 'テンプレート・フォーマット', title_en: 'Template & Format', description: '일관된 포맷과 그래프 삽입으로 전문적인 완성도', description_ja: '一貫したフォーマットとグラフ挿入で専門的な完成度', description_en: 'Professional finish with consistent format and graph insertion' },
+      { title: 'PDF 출력', title_ja: 'PDF出力', title_en: 'PDF Output', description: '최종 리포트를 PDF로 바로 생성·공유', description_ja: '最終レポートをPDFで即座に生成・共有', description_en: 'Generate and share final reports as PDF instantly' }
+    ]
   },
   12: {
     category: 'document',
@@ -563,7 +637,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [2, 7], // 백엔드(API), 문서
     productLimit: 3,
-    purchase_count: 189
+    purchase_count: 189,
+    keyStrengths: [
+      { title: '실시간·문서 번역', title_ja: 'リアルタイム・文書翻訳', title_en: 'Real-time & Document Translation', description: '텍스트 실시간 번역과 전체 문서 자동 번역 지원', description_ja: 'テキストリアルタイム翻訳と全文書自動翻訳をサポート', description_en: 'Support real-time text and full-document automatic translation' },
+      { title: '품질·용어', title_ja: '品質・用語', title_en: 'Quality & Terminology', description: '번역 품질 검증과 전문 용어 사전으로 정확도 향상', description_ja: '翻訳品質検証と専門用語辞書で精度向上', description_en: 'Improve accuracy with quality verification and term bases' },
+      { title: '다국어 지원', title_ja: '多言語サポート', title_en: 'Multilingual Support', description: '여러 언어 동시 지원으로 글로벌 커버리지', description_ja: '複数言語同時サポートでグローバルカバレッジ', description_en: 'Global coverage with simultaneous multi-language support' }
+    ]
   },
   13: {
     category: 'document',
@@ -602,7 +681,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [4, 7], // 관리(자동화), 문서
     productLimit: 5,
-    purchase_count: 267
+    purchase_count: 267,
+    keyStrengths: [
+      { title: '템플릿·자동 입력', title_ja: 'テンプレート・自動入力', title_en: 'Templates & Auto-fill', description: '재사용 템플릿과 데이터 기반 자동 입력으로 반복 작업 축소', description_ja: '再利用テンプレートとデータベース自動入力で反復作業を削減', description_en: 'Reduce repetitive work with templates and data-driven auto-fill' },
+      { title: '문법·스타일 검토', title_ja: '文法・スタイルレビュー', title_en: 'Grammar & Style Review', description: '문법·맞춤법 검사와 스타일 일관성으로 품질 확보', description_ja: '文法・スペルチェックとスタイル一貫性で品質を確保', description_en: 'Ensure quality with grammar check and style consistency' },
+      { title: '비교·병합', title_ja: '比較・マージ', title_en: 'Compare & Merge', description: '문서 버전 비교·병합으로 협업 효율 향상', description_ja: '文書バージョン比較・マージで協業効率を向上', description_en: 'Improve collaboration with document version compare and merge' }
+    ]
   },
 
   // 이미지생성 카테고리 (14-16)
@@ -643,7 +727,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [3],
     productLimit: 4,
-    purchase_count: 345
+    purchase_count: 345,
+    keyStrengths: [
+      { title: '로고 생성', title_ja: 'ロゴ生成', title_en: 'Logo Generation', description: '텍스트 프롬프트에서 브랜드에 맞는 로고 생성', description_ja: 'テキストプロンプトからブランドに合ったロゴを生成', description_en: 'Generate brand-appropriate logos from text prompts' },
+      { title: '스타일·색상', title_ja: 'スタイル・色', title_en: 'Style & Color', description: '다양한 스타일 변환과 브랜드 색상 맞춤', description_ja: '多様なスタイル変換とブランド色カスタム', description_en: 'Various style transforms and brand color customization' },
+      { title: '벡터·포맷', title_ja: 'ベクター・フォーマット', title_en: 'Vector & Format', description: '확장 가능한 벡터와 PNG·SVG·PDF 지원', description_ja: '拡張可能なベクターとPNG・SVG・PDFサポート', description_en: 'Scalable vector and PNG, SVG, PDF support' }
+    ]
   },
   15: {
     category: 'image',
@@ -682,7 +771,12 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [3],
     productLimit: 5,
-    purchase_count: 423
+    purchase_count: 423,
+    keyStrengths: [
+      { title: '마케팅 이미지', title_ja: 'マーケティング画像', title_en: 'Marketing Images', description: '배너·포스터·SNS용 이미지를 컨셉에 맞게 빠르게 생성', description_ja: 'バナー・ポスター・SNS用画像をコンセプトに合わせて迅速に生成', description_en: 'Quickly generate banners, posters and SNS images to match concepts' },
+      { title: '템플릿·오버레이', title_ja: 'テンプレート・オーバーレイ', title_en: 'Templates & Overlay', description: '다양한 크기 배너 템플릿과 텍스트 오버레이', description_ja: '多様なサイズのバナーテンプレートとテキストオーバーレイ', description_en: 'Various banner templates and text overlay' },
+      { title: 'SNS 최적화', title_ja: 'SNS最適化', title_en: 'SNS Optimization', description: '플랫폼별 크기·편집으로 SNS 활용 극대화', description_ja: 'プラットフォーム別サイズ・編集でSNS活用を最大化', description_en: 'Maximize SNS use with platform-specific sizing and editing' }
+    ]
   },
   16: {
     category: 'image',
@@ -721,6 +815,33 @@ export const TEMPLATE_DETAILS_MAP = {
     ],
     categoryIds: [3],
     productLimit: 4,
-    purchase_count: 298
+    purchase_count: 298,
+    keyStrengths: [
+      { title: '다양한 스타일', title_ja: '多様なスタイル', title_en: 'Various Styles', description: '다양한 스타일의 일러스트 생성으로 창의적 표현', description_ja: '多様なスタイルのイラスト生成で創造的表現', description_en: 'Creative expression with illustrations in various styles' },
+      { title: '스타일 전송·색상', title_ja: 'スタイル転送・色', title_en: 'Style Transfer & Color', description: '기존 스타일 적용과 색상 팔레트 맞춤', description_ja: '既存スタイル適用と色パレットカスタム', description_en: 'Apply existing styles and customize color palettes' },
+      { title: '디테일·해상도', title_ja: 'ディテール・解像度', title_en: 'Detail & Resolution', description: '세부 편집과 해상도 향상으로 완성도 높은 결과', description_ja: '詳細編集と解像度向上で完成度の高い結果', description_en: 'High-quality results with detail editing and resolution enhancement' }
+    ]
   }
 };
+
+/** 팀 이름(예: "쇼핑몰 템플릿")에서 TEMPLATE_DETAILS_MAP 키(숫자 ID) 반환 */
+export function getTemplateIdByTeamName(teamName) {
+  if (!teamName || typeof teamName !== 'string') return null;
+  const normalized = teamName
+    .replace(/\s*템플릿\s*$/i, '')
+    .replace(/\s*テンプレート\s*$/i, '')
+    .replace(/\s*template\s*$/i, '')
+    .trim();
+  if (!normalized) return null;
+  for (const id of Object.keys(TEMPLATE_DETAILS_MAP)) {
+    const numId = parseInt(id, 10);
+    if (Number.isNaN(numId)) continue;
+    const data = TEMPLATE_DETAILS_MAP[id];
+    if (!data) continue;
+    if (data.name === normalized || data.name_ja === normalized || data.name_en === normalized) return numId;
+    if (data.name && normalized.includes(data.name)) return numId;
+    if (data.name_ja && normalized.includes(data.name_ja)) return numId;
+    if (data.name_en && normalized.includes(data.name_en)) return numId;
+  }
+  return null;
+}

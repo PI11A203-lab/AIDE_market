@@ -98,7 +98,7 @@ export default function TeamStatsChart({ teamStats, selectedTeam = [] }) {
             // 모든 데이터를 같은 형식으로 변환 (stat 이름 기준으로 통합)
             const allStats = ['Teamwork', 'Stability', 'Speed', 'Creativity', 'Productivity', 'Maintainability'];
             const combinedData = allStats.map(statName => {
-              const result = { stat: statName };
+              const result = { stat: t('chart.statNames.' + statName.toLowerCase()) || statName };
               // 팀 평균
               const teamStat = teamStats.find(s => s.stat === statName);
               result.value = teamStat ? teamStat.value : 0;
@@ -128,9 +128,9 @@ export default function TeamStatsChart({ teamStats, selectedTeam = [] }) {
             );
           })()
         ) : (
-          // 팀 전체만 표시
+          // 팀 전체만 표시 (stat 이름 번역)
           <RadarChart 
-            data={teamStats} 
+            data={teamStats.map(s => ({ ...s, stat: t('chart.statNames.' + s.stat.toLowerCase()) || s.stat }))} 
             name={t('chart.teamAverage')} 
             stroke="#1a1a1a" 
             fill="#1a1a1a"
