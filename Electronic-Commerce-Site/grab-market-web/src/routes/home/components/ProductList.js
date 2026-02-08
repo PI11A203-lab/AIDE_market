@@ -17,11 +17,11 @@ const getCategoryKey = (categoryId) => {
   return categoryMap[categoryId] || null;
 };
 
-const ProductList = ({ products }) => {
+const ProductList = ({ products, showRank }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="products-grid">
+    <div className={`products-grid ${showRank ? 'products-grid--with-rank' : ''}`}>
       {products.map((product) => {
         const isPurchased = product.is_purchased === 1 || product.is_purchased === true;
         
@@ -42,7 +42,9 @@ const ProductList = ({ products }) => {
                 pointerEvents: 'none'
               }} />
             )}
-            
+            {showRank && product.rank != null && (
+              <div className="product-card-rank">#{product.rank}</div>
+            )}
             <div className="card-image">
               <div className="avatar-large">
                 <img

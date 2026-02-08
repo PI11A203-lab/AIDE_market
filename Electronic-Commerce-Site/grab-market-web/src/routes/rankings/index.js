@@ -381,23 +381,14 @@ function RankingsPage() {
       <main className="rankings-main">
         {/* 페이지 헤더 */}
         <div className="rankings-header">
-          <div className="rankings-header-content">
-            <div className="rankings-title-section">
-              <div>
-                <h1 className="rankings-title">{t('home.rankingTitle')}</h1>
-                <p className="rankings-subtitle">{t('home.rankingSubtitle')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 필터 및 정렬 섹션 */}
-        <div className="rankings-filters">
-          <div className="filter-tabs">
+          <h1 className="rankings-title">{t('home.rankingTitle')}</h1>
+          <p className="rankings-subtitle">{t('rankings.pageSubtitle')}</p>
+          {/* 정렬 필터 - 헤더와 통합 */}
+          <div className="rankings-sort-bar">
             {sortOptions.map((option) => (
               <button
                 key={option.value}
-                className={`filter-tab ${sortBy === option.value ? 'active' : ''}`}
+                className={`rankings-sort-btn ${sortBy === option.value ? 'active' : ''}`}
                 onClick={() => setSortBy(option.value)}
               >
                 {option.label}
@@ -415,16 +406,19 @@ function RankingsPage() {
             </div>
           ) : (
             <>
-              {/* 랭킹 상위 3개 강조 표시 (항상 표시) */}
+              {/* 랭킹 상위 3개 - 포디엄 스타일 */}
               {topRankingProducts.length > 0 && (
-                <div className="top-three-rankings">
-                  {topRankingProducts.map((product, index) => (
+                <div className="top-three-section">
+                  <div className="top-three-rankings podium">
+                    {topRankingProducts.map((product, index) => (
                         <Link
                           key={product.id}
                           to={`/products/${product.id}`}
-                          className={`top-ranking-card rank-${index + 1}`}
+                          className={`top-ranking-card rank-${index + 1} podium-${index + 1}`}
                         >
-                          <div className="top-ranking-rank-badge">#{product.rank}</div>
+                          <div className={`top-ranking-rank-badge medal-${index + 1}`}>
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} #{product.rank}
+                          </div>
                           <div className="top-ranking-image">
                             <img
                               src={`${API_URL}/${product.imageUrl}`}
@@ -454,13 +448,11 @@ function RankingsPage() {
                         </Link>
                     ))}
                   </div>
+                </div>
               )}
 
-              {/* 전체 보기 상품 그리드 */}
+              {/* 전체 순위 그리드 */}
               <div className="rankings-grid-section">
-                <h2 className="more-rankings-title">
-                  {t('home.viewAll')}
-                </h2>
                 
                 {/* 카테고리 필터 */}
                 <CategorySidebar
@@ -472,7 +464,10 @@ function RankingsPage() {
                 />
 
                 {products.length > 0 ? (
-                  <ProductList products={products} />
+                  <ProductList 
+                    products={products.map((p, i) => ({ ...p, rank: 4 + (currentPage - 1) * 18 + i }))} 
+                    showRank 
+                  />
                 ) : !loading ? (
                   <div style={{ textAlign: 'center', padding: '80px 0' }}>
                     <p style={{ color: '#6B7280', fontSize: '18px' }}>{t('home.noProducts')}</p>

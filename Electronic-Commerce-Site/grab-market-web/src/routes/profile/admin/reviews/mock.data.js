@@ -107,11 +107,12 @@ export const mockReviews = [
   }
 ];
 
+// 상품 mock (rating_count: 상품별 mock 리뷰 개수 - generateMockReviews에서 사용)
 export const mockProducts = [
-  { id: 75, name: 'MidjourneyAI', icon: '🎨' },
-  { id: 21, name: 'Artelia', icon: '🖼️' },
-  { id: 3, name: 'Reacton', icon: '⚛️' },
-  { id: 4, name: 'VueJin', icon: '🔒' },
-  { id: 5, name: 'Nexty', icon: '📊' }
+  { id: 75, name: 'MidjourneyAI', icon: '🎨', rating_count: 5 },
+  { id: 21, name: 'Artelia', icon: '🖼️', rating_count: 8 },
+  { id: 3, name: 'Reacton', icon: '⚛️', rating_count: 4 },
+  { id: 4, name: 'VueJin', icon: '🔒', rating_count: 6 },
+  { id: 5, name: 'Nexty', icon: '📊', rating_count: 3 }
 ];
 

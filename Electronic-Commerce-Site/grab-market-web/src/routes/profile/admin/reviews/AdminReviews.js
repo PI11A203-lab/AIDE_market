@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { message } from 'antd';
 import { AdminLayout } from '../components';
 import { api } from '../../../../config/api';
 import {
@@ -9,7 +8,8 @@ import {
   ReviewsList,
   Pagination
 } from './components';
-import { mockReviewsStats, mockReviews, mockProducts } from './mock.data';
+import { mockReviewsStats, mockProducts } from './mock.data';
+import { generateMockReviews, toAdminReviewFormat } from '../../../../utils/mockReviews';
 import './AdminReviews.css';
 import { useTranslation } from 'react-i18next';
 
@@ -140,9 +140,97 @@ export default function AdminReviews() {
     };
   }, []);
 
+  // 상품별 mock 리뷰 생성 (API 실패 시)
+  const buildMockReviewsFromProducts = useCallback((productsList) => {
+    const all = [];
+    (productsList || []).forEach(product => {
+      const count = product.rating_count ?? product.review_count ?? 3;
+      const name = product.name || product.nameKey || 'Product';
+      const generated = generateMockReviews(product.id, Math.min(count, 15), name);
+      generated.forEach(mock => all.push(toAdminReviewFormat(mock, product)));
+    });
+    return all;
+  }, []);
+
+  // 리뷰 통계 계산 (mock 리뷰에서)
+  const computeStatsFromReviews = useCallback((reviewsList) => {
+    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    let sum = 0;
+    const now = new Date();
+    const thisMonth = now.getFullYear() * 100 + (now.getMonth() + 1);
+    let monthCount = 0;
+    let positive = 0;
+    let needsAttention = 0;
+
+    reviewsList.forEach(r => {
+      const rating = Math.round(r.rating || 0);
+      if (rating >= 1 && rating <= 5) dist[rating]++;
+      sum += r.rating || 0;
+      const d = new Date(r.created_at || r.date);
+      if (d.getFullYear() * 100 + (d.getMonth() + 1) === thisMonth) monthCount++;
+      if (rating >= 4) positive++;
+      else if (rating >= 1 && rating <= 3) needsAttention++;
+    });
+
+    const total = reviewsList.length;
+    return {
+      ratingDistribution: dist,
+      totalReviews: total,
+      averageRating: total > 0 ? (sum / total).toFixed(1) : '0',
+      thisMonth: monthCount,
+      positive,
+      needsAttention
+    };
+  }, []);
+
   // 리뷰 목록 로드
   const loadReviews = useCallback(async () => {
     setLoading(true);
+
+    const applyMockReviews = () => {
+      const productsList = products.length > 0 ? products : mockProducts;
+      const allMock = buildMockReviewsFromProducts(productsList);
+
+      // 필터 적용
+      let filtered = [...allMock];
+      if (filters.product) {
+        filtered = filtered.filter(r => String(r.product?.id) === String(filters.product));
+      }
+      if (filters.rating) {
+        const target = parseInt(filters.rating, 10);
+        filtered = filtered.filter(r => Math.round(r.rating) === target);
+      }
+      if (filters.search) {
+        const q = (filters.search || '').toLowerCase();
+        filtered = filtered.filter(r =>
+          (r.user?.username || '').toLowerCase().includes(q) ||
+          (r.comment || r.review_text || '').toLowerCase().includes(q)
+        );
+      }
+      if (filters.sort === 'recent') {
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (filters.sort === 'oldest') {
+        filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      } else if (filters.sort === 'rating-high') {
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      } else if (filters.sort === 'rating-low') {
+        filtered.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+      }
+
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / pagination.limit));
+      const start = (pagination.page - 1) * pagination.limit;
+      const paged = filtered.slice(start, start + pagination.limit);
+
+      setReviews(paged);
+      setPagination(prev => ({
+        ...prev,
+        total,
+        totalPages
+      }));
+      setStats(computeStatsFromReviews(allMock));
+    };
+
     try {
       const params = {
         page: pagination.page,
@@ -155,6 +243,13 @@ export default function AdminReviews() {
 
       const response = await api.admin.getReviewsList(params);
       const rawReviews = response.data?.reviews || [];
+
+      // API 실패 또는 리뷰 없음/적음 → 상품 mock 리뷰 사용 (데모용)
+      if (!rawReviews || rawReviews.length < 2) {
+        applyMockReviews();
+        return;
+      }
+
       const normalizedReviews = rawReviews.map(normalizeReview);
       const paginationData = response.data?.pagination || {
         total: 0,
@@ -171,18 +266,11 @@ export default function AdminReviews() {
       }));
     } catch (error) {
       console.error('Failed to load reviews:', error);
-      message.error(t('profile.admin.reviewsPage.empty.descWithFilters'));
-      // 실패 시 mock 데이터 사용
-      setReviews(mockReviews);
-      setPagination(prev => ({
-        ...prev,
-        total: mockReviews.length,
-        totalPages: Math.ceil(mockReviews.length / prev.limit)
-      }));
+      applyMockReviews();
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.page, pagination.limit, normalizeReview, t]);
+  }, [filters, pagination.page, pagination.limit, products, buildMockReviewsFromProducts, computeStatsFromReviews, normalizeReview]);
 
   useEffect(() => {
     loadProducts();

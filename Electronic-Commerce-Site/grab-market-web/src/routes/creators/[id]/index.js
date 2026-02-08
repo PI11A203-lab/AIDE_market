@@ -10,7 +10,7 @@ import FollowListModal from '../../profile/components/FollowListModal';
 import { Github, Package, Download, Star, MessageCircle } from 'lucide-react';
 import '../index.css';
 
-const CHART_COLORS = ['#6366F1', '#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE'];
+const CHART_COLORS = ['#000000', '#1a1a1a', '#333333', '#4d4d4d', '#666666'];
 
 export default function CreatorDetailPage() {
   const { t, i18n } = useTranslation();

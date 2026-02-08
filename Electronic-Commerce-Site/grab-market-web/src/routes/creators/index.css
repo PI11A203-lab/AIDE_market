@@ -294,14 +294,14 @@
 }
 
 .creator-detail-main {
-  padding-top: 80px;
+  padding-top: 24px;
   min-height: calc(100vh - 80px);
 }
 
 .creator-detail-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 20px 60px;
+  padding: 16px 20px 60px;
 }
 
 .creator-loading,
@@ -336,11 +336,10 @@
 .seller-profile-header {
   display: flex;
   gap: 40px;
-  padding: 32px 0;
-  margin-bottom: 40px;
+  padding: 24px 40px;
+  margin-bottom: 32px;
   background: white;
   border-radius: 16px;
-  padding: 32px 40px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -498,7 +497,7 @@
 .seller-stat-icon {
   width: 40px;
   height: 40px;
-  color: #6366F1;
+  color: #374151;
   flex-shrink: 0;
 }
 

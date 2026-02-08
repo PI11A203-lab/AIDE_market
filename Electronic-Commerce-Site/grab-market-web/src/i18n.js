@@ -1219,6 +1219,9 @@ const resources = {
         sellerApplyLink: 'AI 개발자로서 당신의 제품을 판매하고 수익을 창출하세요. 판매자로 전환하여 마켓플레이스에서 상품을 등록하고 판매할 수 있습니다.',
         sellerApplyClickHere: '여기를 클릭하세요',
       },
+      rankings: {
+        pageSubtitle: '다운로드·평점·가격 순으로 검증된 인기 AI를 한눈에 확인하세요. 프로젝트에 필요한 AI를 빠르게 찾는 가장 확실한 방법입니다.',
+      },
       templates: {
         pageTitle: 'AI 프로젝트 템플릿',
         pageSubtitle: '프로젝트 유형별로 필요한 AI 상품을 한눈에 확인하고 선택하세요',
@@ -2303,6 +2306,9 @@ const verifyToken = (token) => {
         noProducts: 'No matching products found',
         sellerApplyLink: 'Sell your products as an AI developer and generate revenue. Become a seller to register and sell products in the marketplace.',
         sellerApplyClickHere: 'Click here',
+      },
+      rankings: {
+        pageSubtitle: 'Discover popular AI ranked by downloads, ratings, and price. The fastest way to find the right AI for your project.',
       },
       templates: {
         pageTitle: 'AI Project Templates',
@@ -4504,6 +4510,9 @@ Currently most popular team combination:
         sellerApplyLink: 'AI開発者としてあなたの製品を販売し、収益を創出しましょう。販売者に転換してマーケットプレイスで商品を登録し、販売できます。',
         sellerApplyClickHere: 'ここをクリック',
       },
+      rankings: {
+        pageSubtitle: 'ダウンロード・評価・価格順で検証された人気AIを一目で確認。プロジェクトに必要なAIを素早く見つける最も確実な方法です。',
+      },
       templates: {
         pageTitle: 'AIプロジェクトテンプレート',
         pageSubtitle: 'プロジェクトタイプごとに必要なAI商品を一目で確認して選択できます',
@@ -5823,7 +5832,7 @@ const verifyToken = (token) => {
             categoryFallback: 'AI開発者',
           },
           recentReviews: {
-            title: '最近の3レビュー',
+            title: '最近のレビュー',
             empty: 'レビューがありません',
             productFallback: 'AI開発者',
           },

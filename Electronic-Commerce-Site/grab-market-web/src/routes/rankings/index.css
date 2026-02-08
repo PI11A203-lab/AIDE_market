@@ -37,79 +37,56 @@
 /* 랭킹 페이지 헤더 */
 .rankings-header {
   margin-bottom: 40px;
-}
-
-.rankings-header-content {
-  background: linear-gradient(135deg, #000000 0%, #7c7c7c 100%);
-  border-radius: 24px;
-  padding: 48px 60px;
-  position: relative;
-  overflow: hidden;
-}
-
-.rankings-header-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><circle cx="300" cy="100" r="100" fill="rgba(255,255,255,0.1)"/><circle cx="350" cy="250" r="80" fill="rgba(255,255,255,0.05)"/></svg>');
-  background-size: cover;
-  opacity: 0.5;
-}
-
-.rankings-title-section {
-  position: relative;
-  z-index: 1;
+  text-align: center;
 }
 
 .rankings-title {
-  font-size: 40px;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 8px;
+  font-size: 36px;
+  font-weight: 800;
+  color: #1A1A1A;
+  margin-bottom: 12px;
   line-height: 1.2;
+  letter-spacing: -0.5px;
 }
 
 .rankings-subtitle {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
+  font-size: 17px;
+  color: #6B7280;
+  line-height: 1.6;
+  margin: 0 auto 24px;
+  max-width: 560px;
 }
 
-/* 필터 섹션 */
-.rankings-filters {
-  margin-bottom: 32px;
-}
-
-.filter-tabs {
+/* 정렬 바 */
+.rankings-sort-bar {
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
-.filter-tab {
-  padding: 12px 24px;
+.rankings-sort-btn {
+  padding: 10px 20px;
   background: white;
-  border: 2px solid transparent;
+  border: 1px solid #E5E7EB;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #6B7280;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.filter-tab:hover {
+.rankings-sort-btn:hover {
   background: #F9FAFB;
-  border-color: #E5E7EB;
+  border-color: #D1D5DB;
+  color: #374151;
 }
 
-.filter-tab.active {
-  background: #000000;
+.rankings-sort-btn.active {
+  background: #1A1A1A;
   color: white;
-  border-color: transparent;
+  border-color: #1A1A1A;
 }
 
 /* 랭킹 콘텐츠 */
@@ -117,12 +94,48 @@
   width: 100%;
 }
 
-/* 상위 3개 랭킹 카드 */
-.top-three-rankings {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+/* Top 3 섹션 */
+.top-three-section {
   margin-bottom: 48px;
+}
+
+/* 포디엄 레이아웃 - 2위가 중앙에서 올라온 형태 */
+.top-three-rankings.podium {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  align-items: end;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.top-three-rankings.podium .top-ranking-card.podium-1 {
+  order: 2;
+  transform: translateY(0);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.top-three-rankings.podium .top-ranking-card.podium-2,
+.top-three-rankings.podium .top-ranking-card.podium-3 {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.top-three-rankings.podium .top-ranking-card.podium-2 {
+  order: 1;
+  transform: translateY(24px);
+}
+
+.top-three-rankings.podium .top-ranking-card.podium-3 {
+  order: 3;
+  transform: translateY(24px);
+}
+
+.top-three-rankings.podium .top-ranking-card:hover {
+  transform: translateY(-2px) !important;
+}
+
+.top-three-rankings.podium .top-ranking-card.podium-1:hover {
+  transform: translateY(-4px) !important;
 }
 
 .top-ranking-card {
@@ -174,9 +187,9 @@
   right: 16px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #1A1A1A;
   z-index: 10;
@@ -184,17 +197,17 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.top-ranking-card.rank-1 .top-ranking-rank-badge {
+.top-ranking-rank-badge.medal-1 {
   background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
   color: #92400E;
 }
 
-.top-ranking-card.rank-2 .top-ranking-rank-badge {
+.top-ranking-rank-badge.medal-2 {
   background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
   color: #475569;
 }
 
-.top-ranking-card.rank-3 .top-ranking-rank-badge {
+.top-ranking-rank-badge.medal-3 {
   background: linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%);
   color: #92400E;
 }
@@ -263,18 +276,59 @@
   border-top: 1px solid #F3F4F6;
 }
 
-/* 더 많은 랭킹 섹션 */
+/* 전체 순위 섹션 */
 .rankings-grid-section {
-  margin-top: 32px;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.rankings-grid-header {
+  margin-bottom: 24px;
 }
 
 .more-rankings-title {
-  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px;
   font-weight: 700;
   color: #1A1A1A;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #E5E7EB;
+  margin: 0;
+}
+
+.rankings-grid-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 28px;
+  padding: 0 8px;
+  background: #F3F4F6;
+  color: #6B7280;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+/* 그리드 상품 카드 랭크 배지 */
+.rankings-content .product-card {
+  position: relative;
+}
+
+.rankings-content .product-card-rank {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6B7280;
+  border-radius: 8px;
+  z-index: 5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 /* 랭킹 페이지 카테고리 필터 스타일 */
@@ -350,8 +404,22 @@
 }
 
 @media (max-width: 1200px) {
-  .top-three-rankings {
+  .top-three-rankings.podium {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .top-three-rankings.podium .top-ranking-card.podium-1,
+  .top-three-rankings.podium .top-ranking-card.podium-2,
+  .top-three-rankings.podium .top-ranking-card.podium-3 {
+    transform: none;
+  }
+
+  .top-three-rankings.podium .top-ranking-card.podium-3 {
+    order: 4;
+    grid-column: 1 / -1;
+    max-width: 400px;
+    justify-self: center;
   }
 
   .top-ranking-rank-badge {
@@ -381,26 +449,29 @@
     padding: 20px;
   }
 
-  .rankings-header-content {
-    padding: 32px 24px;
-  }
-
-  .rankings-title-section {
-    text-align: left;
-  }
-
   .rankings-title {
-    font-size: 32px;
+    font-size: 28px;
   }
 
   .rankings-subtitle {
-    font-size: 16px;
+    font-size: 15px;
   }
 
-  .top-three-rankings {
+  .top-three-rankings.podium {
     grid-template-columns: 1fr;
     gap: 20px;
     margin-bottom: 32px;
+  }
+
+  .top-three-rankings.podium .top-ranking-card.podium-3 {
+    grid-column: 1;
+    max-width: none;
+  }
+
+  .top-three-rankings.podium .top-ranking-card.podium-1,
+  .top-three-rankings.podium .top-ranking-card.podium-2,
+  .top-three-rankings.podium .top-ranking-card.podium-3 {
+    transform: none !important;
   }
 
   .top-ranking-info {
@@ -450,8 +521,13 @@
   .rankings-grid-section .products-grid {
     grid-template-columns: 1fr !important;
   }
+
   .rankings-title {
     font-size: 24px;
+  }
+
+  .rankings-subtitle {
+    font-size: 14px;
   }
 
   .top-ranking-stats {
