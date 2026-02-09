@@ -42,6 +42,7 @@ import RankingsPage from "./routes/rankings";
 import ResourcesPage from "./routes/resources";
 import TemplatesPage from "./routes/templates";
 import TemplateDetailPage from "./routes/templates/[id]";
+import ChatbotWidget from "./components/chatbot/ChatbotWidget";
 
 function App() {
   const location = useLocation();
@@ -131,6 +132,7 @@ function App() {
         </Switch>
       </div>
       {!isOrderPage && <div id="footer"></div>}
+      <ChatbotWidget />
     </div>
   );
 }
