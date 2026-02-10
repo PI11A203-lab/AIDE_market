@@ -286,3 +286,27 @@
     width: 100%;
   }
 }
+
+/* 신청 폼 모달: 스크롤 가능하도록 고정 높이 + body만 스크롤 */
+.seller-info-apply-modal.ant-modal .ant-modal-content {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* 닫기 버튼과 스크롤바가 겹치지 않도록 body를 아래로 띄움 */
+.seller-info-apply-modal .ant-modal-body {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  margin-top: 56px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px;
+  -webkit-overflow-scrolling: touch;
+}
+/* 모달 안에서 뜨는 antd message가 모달 위에 보이도록 */
+.seller-info-apply-modal ~ .ant-message,
+.ant-message {
+  z-index: 1050 !important;
+}

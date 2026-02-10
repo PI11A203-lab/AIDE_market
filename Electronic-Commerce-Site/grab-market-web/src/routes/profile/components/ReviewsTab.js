@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, X, Check } from 'lucide-react';
-import { message, Image } from 'antd';
+import { message, Image, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { api } from '../../../config/api';
 import { API_URL } from '../../../config/constants';
@@ -9,25 +10,33 @@ import { clearRatingCache, setRatingCache } from '../../../utils/ratingCache';
 import { getReviewContent } from '../../../utils/getReviewContent';
 import { useTranslation } from 'react-i18next';
 
+const MAX_REVIEW_IMAGES = 5;
+
 export default function ReviewsTab({ reviews, onReviewUpdate }) {
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ rating: 0, comment: '' });
+  const [editForm, setEditForm] = useState({ rating: 0, title: '', comment: '', images: [] });
+  const [uploadingImages, setUploadingImages] = useState([]);
   const [deletingId, setDeletingId] = useState(null);
   const { t, i18n } = useTranslation();
 
   // 수정 시작
   const handleEditStart = (review) => {
     setEditingId(review.id || review.review_id);
+    const images = Array.isArray(review.review_images) ? [...review.review_images] : [];
     setEditForm({
       rating: review.rating || 0,
-      comment: getReviewContent(review, i18n.language) || ''
+      title: review.title || '',
+      comment: getReviewContent(review, i18n.language) || '',
+      images
     });
+    setUploadingImages([]);
   };
 
   // 수정 취소
   const handleEditCancel = () => {
     setEditingId(null);
-    setEditForm({ rating: 0, comment: '' });
+    setEditForm({ rating: 0, title: '', comment: '', images: [] });
+    setUploadingImages([]);
   };
 
   // 수정 저장
@@ -53,10 +62,26 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
     }
 
     try {
+      // 새로 추가한 이미지 업로드
+      let uploadedUrls = [];
+      if (uploadingImages.length > 0) {
+        const uploadPromises = uploadingImages.map(async (file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+          const response = await api.upload.image(formData);
+          return response.data.imageUrl;
+        });
+        uploadedUrls = await Promise.all(uploadPromises);
+      }
+      const allImages = [...(editForm.images || []), ...uploadedUrls];
+
+      // 이미지 삭제가 반영되려면 항상 배열로 전달 (빈 배열이면 이미지 전부 삭제)
       await api.reviews.update(reviewId, {
         user_id: userData.id,
         rating: editForm.rating,
-        review_text: editForm.comment.trim()
+        title: editForm.title.trim() || null,
+        review_text: editForm.comment.trim(),
+        review_images: allImages
       });
 
       message.success(t('profile.reviews.updateSuccess'));
@@ -95,7 +120,8 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
       }
 
       setEditingId(null);
-      setEditForm({ rating: 0, comment: '' });
+      setEditForm({ rating: 0, title: '', comment: '', images: [] });
+      setUploadingImages([]);
     } catch (error) {
       console.error('Failed to update review:', error);
       const errorMessage = error.response?.data?.error || t('profile.reviews.updateFail');
@@ -321,6 +347,16 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
               {isEditing ? (
                 <div className="space-y-4 pb-6">
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.reviews.reviewTitleLabel')}</label>
+                  <input
+                    type="text"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder={t('profile.reviews.reviewTitlePlaceholder')}
+                  />
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.reviews.ratingLabel')}</label>
                   <div className="flex items-center gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -346,6 +382,79 @@ export default function ReviewsTab({ reviews, onReviewUpdate }) {
                     rows={4}
                     placeholder={t('profile.reviews.reviewPlaceholder')}
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.reviews.reviewImagesLabel')}</label>
+                  <div className="flex flex-wrap gap-3 items-start">
+                    {(editForm.images || []).map((imageUrl, index) => (
+                      <div key={`existing-${index}`} className="relative review-edit-image-wrap">
+                        <Image
+                          src={imageUrl.startsWith('http') ? imageUrl : `${API_URL}/${imageUrl}`}
+                          alt={t('profile.reviews.reviewImage', { index: index + 1 })}
+                          className="object-cover rounded-lg"
+                          width={100}
+                          height={100}
+                          preview={false}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setEditForm({
+                            ...editForm,
+                            images: editForm.images.filter((_, i) => i !== index)
+                          })}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                          title={t('profile.reviews.removeImage')}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    {uploadingImages.map((file, index) => (
+                      <div key={`new-${index}`} className="relative review-edit-image-wrap">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={t('profile.reviews.reviewImage', { index: (editForm.images?.length || 0) + index + 1 })}
+                          className="object-cover rounded-lg w-[100px] h-[100px]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setUploadingImages(uploadingImages.filter((_, i) => i !== index))}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                          title={t('profile.reviews.removeImage')}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    {(editForm.images?.length || 0) + uploadingImages.length < MAX_REVIEW_IMAGES && (
+                      <Upload
+                        name="image"
+                        listType="picture-card"
+                        showUploadList={false}
+                        accept="image/*"
+                        beforeUpload={(file) => {
+                          const isImage = file.type.startsWith('image/');
+                          if (!isImage) {
+                            message.error(t('profile.reviews.imageOnly'));
+                            return Upload.LIST_IGNORE;
+                          }
+                          const isLt5M = file.size / 1024 / 1024 < 5;
+                          if (!isLt5M) {
+                            message.error(t('profile.reviews.imageSize'));
+                            return Upload.LIST_IGNORE;
+                          }
+                          setUploadingImages(prev => [...prev, file]);
+                          return false;
+                        }}
+                      >
+                        <div className="flex flex-col items-center justify-center">
+                          <PlusOutlined />
+                          <span className="mt-1 text-xs">{t('profile.reviews.addImage')}</span>
+                        </div>
+                      </Upload>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t('profile.reviews.reviewImagesHint', { max: MAX_REVIEW_IMAGES })}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button

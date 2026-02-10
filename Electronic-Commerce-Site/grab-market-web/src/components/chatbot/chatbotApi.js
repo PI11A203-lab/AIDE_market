@@ -60,8 +60,9 @@ export async function askOllama(prompt, model = "gemma3:4b") {
  * @param {string} userMessage - 사용자 메시지
  * @param {Array} conversationHistory - 이전 대화 히스토리
  * @param {string} [language] - 사이트 언어(ko/en/ja). 이 언어로 답변하도록 지시.
+ * @param {boolean} [isFirstMessage] - true면 첫 메시지. 앱에서 이미 인사말을 표시했으므로 Ollama는 인사말로 시작하지 않음.
  */
-export function buildPromptForAIDE(userMessage, conversationHistory = [], language) {
+export function buildPromptForAIDE(userMessage, conversationHistory = [], language, isFirstMessage = false) {
   const raw = (language || "").toLowerCase();
   const lang = raw.startsWith("ja") || raw === "jp" ? "ja" : raw.startsWith("en") ? "en" : "ko";
   const languageInstruction =
@@ -96,8 +97,8 @@ AIDE Market에서는 학생 할인을 제공합니다. 아래 단계를 따라 �
 - "추천해줘", "인기 있는 거" 요청 시: "템플릿 페이지에서 쇼핑몰, 회사 홈페이지, Android 앱, 데이터 분석 등 카테고리별 템플릿을 확인해 보시고, 해당 템플릿을 클릭하면 상세 페이지로 이동해 구매할 수 있습니다"처럼 안내하세요. "(/templates)" 같은 경로는 쓰지 마세요. 절대 "AI 모델이 상품을 추천해줍니다" 같은 존재하지 않는 단계를 넣지 마세요.
 
 [인사말 규칙 - 절대 준수]
-- 채팅에서 맨 처음 사용자 메시지에 대한 답변일 때만: 사용자가 인사만 했으면(안녕, こんにちは, hello 등) 인사말(웃음 이모지 포함)로 시작할 수 있습니다. 맨 처음이어도 구체적인 질문을 했으면 인사 없이 질문 되받기로 시작하세요.
-- 두 번째 메시지 이후(이미 도우미가 한 번이라도 답한 적이 있으면): 절대 인사말("안녕하세요 😊", "Hello 😊", "こんにちは 😊" 등)로 시작하지 마세요. 무조건 질문 되받기나 맥락 도입문 한 문장으로만 시작하세요.
+- 첫 메시지에 대한 답변이어도 인사말("안녕하세요 😊", "Hello 😊", "こんにちは 😊" 등)로 시작하지 마세요. 채팅 앱에서 이미 인사말을 표시했으므로, 무조건 질문 되받기나 맥락 도입문 한 문장으로만 시작하세요.
+- 두 번째 메시지 이후도 동일: 절대 인사말로 시작하지 마세요. 질문 되받기나 맥락 도입문 한 문장으로만 시작하세요.
 [중요 - 반드시 지킬 것]
 - 사용자가 구체적인 질문을 했을 때는 질문을 한 줄로 되받거나 맥락에 맞는 짧은 도입문으로 시작하세요. 반드시 답변 언어(한국어/영어/일본어)로만 작성하고, 다른 언어 단어·문장을 답변에 섞지 마세요.
 - 질문 유형별로 핵심만 답하세요. 불릿은 줄바꿈과 하이픈(-)으로 구분하세요. 구역 사이에는 빈 줄을 넣으세요. (답변이 일본어나 영어여도 이 줄바꿈·구역 구분 규칙은 동일 적용)
@@ -112,7 +113,7 @@ AIDE Market에서는 학생 할인을 제공합니다. 아래 단계를 따라 �
   - 학생 할인은 쿠폰 할인과 중복 적용 가능하며, 최대 70%까지 할인받을 수 있습니다.
   - 학생 인증은 1년간 유효하며, 만료 전에 갱신하면 됩니다.
 
-[이번 턴] ${conversationHistory.length === 0 ? "지금이 채팅에서 사용자의 첫 번째 메시지입니다. 사용자가 인사만 했을 때(안녕, こんにちは, hello 등)에만 인사말(웃음 이모지 포함)로 시작하세요. 구체적인 질문을 했으면 인사 없이 질문 되받기·도입문으로만 시작하세요." : "지금은 두 번째 메시지 이후입니다. '안녕하세요 😊' 같은 인사말로 시작하지 마세요. 반드시 질문 되받기나 맥락 도입문 한 문장으로만 시작하세요."}
+[이번 턴] ${isFirstMessage || conversationHistory.length === 0 ? "첫 메시지에 대한 답변이지만, 인사말은 앱에서 이미 보여줬으므로 '안녕하세요' 등으로 시작하지 마세요. 반드시 질문 되받기나 맥락 도입문 한 문장으로만 시작하세요." : "지금은 두 번째 메시지 이후입니다. '안녕하세요 😊' 같은 인사말로 시작하지 마세요. 반드시 질문 되받기나 맥락 도입문 한 문장으로만 시작하세요."}
 
 [답변 언어 - 최우선] ${lang === "en" ? "The user interface is in English. Your entire response MUST be in English only. Do not use Korean or Japanese. Every word must be English." : lang === "ja" ? "답변은 반드시 日本語만 사용하세요. 한국어·영어 단어나 문장을 답변 안에 넣지 마세요. 예시에 나온 한국어(모르셔도, 설명드릴게요 등)는 쓰지 말고, 같은 의미를 일본어로만 쓰세요." : "지금 사용자 인터페이스 언어가 한국어이므로, 도우미의 답변은 반드시 한국어로만 작성하세요. 다른 언어를 섞지 마세요."}`;
 

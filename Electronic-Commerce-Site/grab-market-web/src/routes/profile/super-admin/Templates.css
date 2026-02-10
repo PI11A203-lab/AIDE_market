@@ -30,14 +30,45 @@
   white-space: nowrap;
 }
 
-/* 페이지네이션 중앙 정렬 */
+/* 페이지네이션 중앙 정렬 + 회색 숫자만 표시 */
 .templates-page .ant-pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 24px;
+}
+.templates-page .ant-pagination .ant-pagination-item,
+.templates-page .ant-pagination .ant-pagination-prev,
+.templates-page .ant-pagination .ant-pagination-next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .templates-page .ant-pagination .ant-pagination-options {
   display: none;
+}
+/* 페이지네이션: 사각형 없이 회색 숫자만 */
+.templates-page .ant-pagination .ant-pagination-item,
+.templates-page .ant-pagination .ant-pagination-item-active,
+.templates-page .ant-pagination .ant-pagination-prev,
+.templates-page .ant-pagination .ant-pagination-next {
+  border: none !important;
+  background: transparent !important;
+  min-width: auto !important;
+}
+.templates-page .ant-pagination .ant-pagination-item a,
+.templates-page .ant-pagination .ant-pagination-item-active a,
+.templates-page .ant-pagination .ant-pagination-prev .ant-pagination-item-link,
+.templates-page .ant-pagination .ant-pagination-next .ant-pagination-item-link {
+  color: #6b7280 !important;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+.templates-page .ant-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.templates-page .ant-pagination .ant-pagination-next:hover .ant-pagination-item-link,
+.templates-page .ant-pagination .ant-pagination-item:hover a {
+  color: #374151 !important;
 }
 
 .templates-page .page-header {

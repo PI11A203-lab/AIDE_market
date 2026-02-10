@@ -4,16 +4,35 @@ import { useHistory } from "react-router-dom";
 import { askOllama, buildPromptForAIDE } from "./chatbotApi";
 import "./ChatbotWidget.css";
 
-/** 봇 답변이 템플릿 페이지로 유도하는 내용인지 (버튼 표시 조건 1) - 한/영/일 */
+/**
+ * 봇 답변이 "사이트 기능 설명"(전체 소개)인지 여부.
+ * 이 경우 템플릿이 언급돼도 바로가기 버튼을 보이지 않음.
+ */
+function isSiteOverviewMessage(content) {
+  const t = String(content || "");
+  const lead = t.slice(0, 180);
+  return (
+    /(마켓플레이스|marketplace|マーケットプレイス|販売・購入|AIプロンプトを販売|AI\s*프로ンプ트.*판매)/.test(lead) &&
+    (/입니다\.|입니다\s|\.\s*$|is\s+(a\s+)?marketplace|です\.|です\s|このサイト|사이트는|what\s+is\s+this|site\s+is/i.test(t) ||
+      /(코딩\s*실력이\s*없어도|even\s+without\s+coding|コーディング.*なくても)/i.test(lead))
+  );
+}
+
+/**
+ * 봇 답변이 "템플릿 설명/유도"인지만 판별 (버튼 표시).
+ * - 템플릿 페이지로 가라, 카테고리별 템플릿 확인해 보라 등 명시적 유도일 때만 true.
+ * - 사이트 전체 소개에서 템플릿이 나열만 된 경우는 false.
+ */
 function isTemplateRelatedMessage(content) {
   const t = String(content || "");
+  if (isSiteOverviewMessage(content)) return false;
   return (
-    /템플릿\s*페이지|카테고리별\s*템플릿|템플릿을\s*확인|템플릿에서\s*확인/.test(t) ||
-    (t.includes("템플릿") && (t.includes("확인") || t.includes("이동") || t.includes("구매"))) ||
-    /テンプレート\s*ページ|テンプレートを\s*確認|カテゴリ別|クリックすると\s*詳細|詳細ページに\s*移動/.test(t) ||
-    (t.includes("テンプレート") && (t.includes("確認") || t.includes("購入") || t.includes("移動"))) ||
-    /template\s*page|templates\s*by\s*categor|click\s*to\s*view|detail\s*page|view\s*templates/.test(t) ||
-    (t.toLowerCase().includes("template") && (t.includes("confirm") || t.includes("purchase") || t.includes("view") || t.includes("click")))
+    /템플릿\s*페이지\s*에서|카테고리별\s*템플릿\s*을\s*확인|템플릿을\s*확인해\s*보시고|상세\s*페이지로\s*이동/.test(t) ||
+    (t.includes("템플릿 페이지") || (t.includes("템플릿") && /확인해\s*보시고|이동해\s*구매/.test(t))) ||
+    /テンプレート\s*ページ\s*で|テンプレート\s*を\s*確認し|カテゴリ別\s*テンプレート|詳細\s*ページ\s*に\s*移動|クリックすると\s*詳細/.test(t) ||
+    (t.includes("テンプレートページ") || (t.includes("テンプレート") && /確認してください|確認して|移動して|購入できます/.test(t))) ||
+    /template\s+page|templates\s+by\s+categor|view\s+templates|go\s+to\s+(the\s+)?templates|click\s+to\s+view|detail\s+page/.test(t.toLowerCase()) ||
+    (t.toLowerCase().includes("template") && /view|go\s+to|check\s+out|see\s+our\s+templates/.test(t.toLowerCase()))
   );
 }
 
@@ -128,6 +147,51 @@ function HelpContent({ content }) {
   );
 }
 
+/** 로그인된 유저 이름 가져오기 (localStorage/sessionStorage) */
+function getChatbotUserName() {
+  try {
+    const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (!raw) return null;
+    const user = JSON.parse(raw);
+    return user?.nickname || user?.name || user?.username || null;
+  } catch {
+    return null;
+  }
+}
+
+/** 메인 페이지 언어 설정 → ko | ja | en */
+function getChatbotLang(i18n) {
+  const raw = (i18n?.language || "").toLowerCase();
+  if (raw.startsWith("ja") || raw === "jp") return "ja";
+  if (raw.startsWith("en")) return "en";
+  return "ko";
+}
+
+/** 첫 인사말 (메인 페이지 언어에 맞춤) */
+function getGreetingText(lang, userName) {
+  if (lang === "ja") return userName ? `こんにちは 👋 ${userName}さん` : "こんにちは 👋";
+  if (lang === "en") return userName ? `Hello 👋 ${userName}` : "Hello 👋";
+  return userName ? `안녕하세요 👋 ${userName}님` : "안녕하세요 👋";
+}
+
+/** 단순 인사인지 판별 (한/일/영 짧은 인사) → true면 Ollama 호출 없이 짧은 답만 */
+function isSimpleGreeting(text) {
+  const s = (text || "").trim();
+  if (!s || s.length > 35) return false;
+  const lower = s.toLowerCase();
+  const ko = /^(안녕|안녕하세요|하이|반가워)$/;
+  const ja = /^(おはよう|おはいよう|おはようございます|こんにちは|こんばんは|やあ|おっす|はい|ねえ)$/;
+  const en = /^(hello|hi|hey|hey there|good morning|good afternoon|good evening|gm|gmorning|howdy|yo)$/;
+  return ko.test(s) || ja.test(s) || en.test(lower);
+}
+
+/** 단순 인사일 때 쓸 짧은 답 (메인 페이지 언어) */
+function getShortHelpReply(lang) {
+  if (lang === "ja") return "何かお手伝いしましょうか？";
+  if (lang === "en") return "What can I help you with?";
+  return "무엇을 도와드릴까요?";
+}
+
 export default function ChatbotWidget() {
   const { t, i18n } = useTranslation();
   const history = useHistory();
@@ -176,12 +240,27 @@ export default function ChatbotWidget() {
 
   const runSendMessage = async (text) => {
     const userMessage = { role: "user", content: text };
+    const isFirstMessage = messages.length === 0;
+    const lang = getChatbotLang(i18n);
+
     setMessages((prev) => [...prev, userMessage]);
+
+    if (isFirstMessage) {
+      const userName = getChatbotUserName();
+      const greeting = getGreetingText(lang, userName);
+      setMessages((prev) => [...prev, { role: "bot", content: greeting }]);
+    }
+
+    if (isSimpleGreeting(text)) {
+      setMessages((prev) => [...prev, { role: "bot", content: getShortHelpReply(lang) }]);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const prevMessages = messages.filter((m) => m.role === "user" || m.role === "bot").map((m) => ({ role: m.role, content: m.content }));
-      const prompt = buildPromptForAIDE(text, prevMessages, i18n.language);
+      const prompt = buildPromptForAIDE(text, prevMessages, i18n.language, isFirstMessage);
       const reply = await askOllama(prompt);
       setMessages((prev) => [...prev, { role: "bot", content: reply || "답변을 생성하지 못했어요. 다시 한 번 물어봐 주세요." }]);
     } catch (err) {

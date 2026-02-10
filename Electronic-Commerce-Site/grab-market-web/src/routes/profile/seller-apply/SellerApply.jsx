@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { message } from 'antd';
 import { api } from '../../../config/api';
 import './SellerApply.css';
 
-export default function SellerApply() {
+export default function SellerApply({ isModal, onSuccess, onCancel }) {
   const history = useHistory();
   const { i18n, t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-  
+  const [submitError, setSubmitError] = useState('');
+  const rejectedMessageShownRef = useRef(false);
+
   const [formData, setFormData] = useState({
     seller_name: '',
     contact_email: '',
@@ -32,18 +34,23 @@ export default function SellerApply() {
       if (status.hasApplied) {
         if (status.status === 'approved') {
           message.info(t('sellerApply.alreadyApproved'));
-          history.push('/profile');
+          if (isModal && onSuccess) onSuccess();
+          else history.push('/profile');
         } else if (status.status === 'pending') {
           message.warning(t('sellerApply.alreadyPending'));
-          history.push('/profile');
+          if (isModal && onSuccess) onSuccess();
+          else history.push('/profile');
         } else if (status.status === 'rejected') {
-          message.warning(t('sellerApply.rejected', { reason: status.rejectionReason || '없음' }));
+          if (!rejectedMessageShownRef.current) {
+            rejectedMessageShownRef.current = true;
+            message.warning(t('sellerApply.rejected', { reason: status.rejectionReason || '없음' }));
+          }
         }
       }
     } catch (error) {
       console.error('신청 상태 확인 오류:', error);
     }
-  }, [history, t]);
+  }, [history, t, isModal, onSuccess]);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -55,19 +62,21 @@ export default function SellerApply() {
     }
   }, []);
 
+  const dataLoadDoneRef = useRef(false);
   useEffect(() => {
+    if (dataLoadDoneRef.current) return;
+    dataLoadDoneRef.current = true;
+
     const savedLanguage = localStorage.getItem('appLanguage');
     if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
       i18n.changeLanguage(savedLanguage);
     }
-    
-    // 신청 상태 확인
     loadApplicationStatus();
-    // 카테고리 목록 가져오기
     loadCategories();
   }, [i18n, loadApplicationStatus, loadCategories]);
 
   const handleChange = (e) => {
+    if (submitError) setSubmitError('');
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -81,14 +90,16 @@ export default function SellerApply() {
     if (loading) return;
     
     setLoading(true);
-    
+    setSubmitError('');
     try {
       await api.seller.apply(formData);
       message.success(t('sellerApply.success'));
-      history.push('/profile');
+      if (isModal && onSuccess) onSuccess();
+      else history.push('/profile');
     } catch (error) {
       console.error('신청 오류:', error);
       const errorMessage = error.response?.data?.error || t('sellerApply.error');
+      setSubmitError(errorMessage);
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -103,6 +114,12 @@ export default function SellerApply() {
       <div className="seller-apply-content">
         <h1 className="page-title">{t('sellerApply.pageTitle')}</h1>
         <p className="page-subtitle">{t('sellerApply.pageSubtitle')}</p>
+
+        {submitError && (
+          <div className="seller-apply-submit-error" role="alert">
+            {submitError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="seller-apply-form">
           {/* 기본 정보 */}
@@ -265,7 +282,7 @@ export default function SellerApply() {
           </section>
 
           <div className="form-actions">
-            <button type="button" onClick={() => history.goBack()} className="btn-cancel">
+            <button type="button" onClick={() => (isModal && onCancel ? onCancel() : history.goBack())} className="btn-cancel">
               {t('common.close')}
             </button>
             <button type="submit" disabled={loading} className="btn-submit">

@@ -785,7 +785,7 @@ export default function ProductPage() {
 
         {/* 카테고리 기반 추천 상품 섹션 */}
         {recommendedProducts.length > 0 && developer && (
-          <div style={{ marginTop: '60px', paddingTop: '40px', borderTop: '1px solid #E5E7EB' }}>
+          <div className="product-detail-cards-section" style={{ marginTop: '60px', paddingTop: '40px', borderTop: '1px solid #E5E7EB' }}>
             <div style={{ marginBottom: '24px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '8px' }}>
                 {t('product.recommended.categoryTitle', { category: developer.category || 'AI' })}
@@ -800,7 +800,7 @@ export default function ProductPage() {
 
         {/* 다른 고객들이 자주 조회하는 상품 섹션 - 슬라이더 */}
         {viewedProducts.length > 0 && (
-          <div style={{ marginTop: '60px', paddingTop: '40px', borderTop: '1px solid #E5E7EB' }}>
+          <div className="product-detail-cards-section" style={{ marginTop: '60px', paddingTop: '40px', borderTop: '1px solid #E5E7EB' }}>
             <div style={{ marginBottom: '24px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '8px' }}>
                 {t('product.viewed.title')}

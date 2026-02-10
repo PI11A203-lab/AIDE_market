@@ -1,10 +1,27 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import ProductShowcaseTab from './ProductShowcaseTab';
+import { getShowcaseConfig } from '../config/productShowcaseConfig';
 
-export default function ProjectsTab({ projects }) {
+export default function ProjectsTab({ projects, developer }) {
+  const { t } = useTranslation();
+  const config = developer?.id != null ? getShowcaseConfig(developer.id) : null;
+
+  if (config) {
+    return (
+      <ProductShowcaseTab
+        productKey={config.productKey}
+        productName={developer.name}
+        techKey={config.techKey}
+        demoImageUrl={config.demoImageUrl}
+      />
+    );
+  }
+
   if (!projects || projects.length === 0) {
     return (
       <p className="text-gray-500 text-center py-10">
-        No projects available
+        {t('product.showcase.empty')}
       </p>
     );
   }
@@ -36,4 +53,3 @@ export default function ProjectsTab({ projects }) {
     </div>
   );
 }
-

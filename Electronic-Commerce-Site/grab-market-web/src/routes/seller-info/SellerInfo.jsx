@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Modal } from 'antd';
+import SellerApply from '../profile/seller-apply/SellerApply';
 import './SellerInfo.css';
 
 export default function SellerInfo() {
   const { i18n, t } = useTranslation();
   const [user, setUser] = useState(null);
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const initialLoadDoneRef = useRef(false);
 
   useEffect(() => {
+    if (initialLoadDoneRef.current) return;
+    initialLoadDoneRef.current = true;
+
     const savedLanguage = localStorage.getItem('appLanguage');
     if (savedLanguage && ['ko', 'ja', 'en'].includes(savedLanguage)) {
       i18n.changeLanguage(savedLanguage);
     }
 
-    // 로그인 상태 확인
     const userFromStorage = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (userFromStorage) {
       try {
@@ -132,16 +138,34 @@ export default function SellerInfo() {
         </section>
 
         <div className="action-buttons">
-          {user && user.role === 'user' ? (
-            <Link to="/profile/seller-apply" className="btn-primary">
+          {user ? (
+            <button type="button" className="btn-primary" onClick={() => setShowApplyModal(true)}>
               {t('sellerInfo.applyButton')}
-            </Link>
+            </button>
           ) : (
             <Link to="/login" className="btn-primary">
               {t('sellerInfo.loginToApply')}
             </Link>
           )}
         </div>
+
+        <Modal
+          title={null}
+          open={showApplyModal}
+          onCancel={() => setShowApplyModal(false)}
+          footer={null}
+          width={720}
+          centered
+          destroyOnClose
+          maskClosable={false}
+          className="seller-info-apply-modal"
+        >
+          <SellerApply
+            isModal
+            onSuccess={() => setShowApplyModal(false)}
+            onCancel={() => setShowApplyModal(false)}
+          />
+        </Modal>
       </div>
     </div>
   );
