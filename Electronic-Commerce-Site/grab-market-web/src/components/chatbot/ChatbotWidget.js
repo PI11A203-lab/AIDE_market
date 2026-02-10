@@ -459,7 +459,14 @@ export default function ChatbotWidget() {
                     <div className="chatbot-welcome">
                       <strong>{t("chatbot.welcomeTitle")}</strong>
                       <br />
-                      {t("chatbot.welcomeSub")}
+                      {t("chatbot.welcomeSub")
+                        .split("\n")
+                        .map((line, idx, arr) => (
+                          <React.Fragment key={idx}>
+                            {line}
+                            {idx < arr.length - 1 && <br />}
+                          </React.Fragment>
+                        ))}
                     </div>
                   )}
                   {messages.map((msg, i) => (

@@ -5027,7 +5027,7 @@ Currently most popular team combination:
         faq: 'よくある質問',
         backToList: '一覧',
         welcomeTitle: '会話を始めましょう!',
-        welcomeSub: '質問を入力するか、ホームのボタンをタップしてください。',
+        welcomeSub: '質問を入力するか、ホームのボタンを\nタップしてください。',
         goToTemplates: 'テンプレートページへ',
         inputPlaceholder: 'メッセージを入力...',
         send: '送信',
