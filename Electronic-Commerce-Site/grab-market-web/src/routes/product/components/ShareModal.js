@@ -44,7 +44,7 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
       try {
         await navigator.share({
           title: productName,
-          text: `${productName}를 확인해보세요!`,
+          text: t('notifications.share.shareMessage', { name: productName }),
           url: productUrl,
         });
         onClose();
@@ -88,7 +88,7 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">공유하기</h3>
+          <h3 className="text-xl font-bold text-gray-900">{t('notifications.share.shareModalTitle')}</h3>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
@@ -105,7 +105,7 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
               className="w-full flex items-center gap-3 px-4 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors"
             >
               <Share2 className="w-5 h-5" />
-              <span className="font-semibold">공유하기</span>
+              <span className="font-semibold">{t('notifications.share.shareButton')}</span>
             </button>
           )}
 
@@ -117,12 +117,12 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
             {copied ? (
               <>
                 <Check className="w-5 h-5 text-green-600" />
-                <span className="font-semibold text-green-600">복사 완료!</span>
+                <span className="font-semibold text-green-600">{t('notifications.share.copyComplete')}</span>
               </>
             ) : (
               <>
                 <Copy className="w-5 h-5 text-gray-600" />
-                <span className="font-semibold text-gray-900">링크 복사</span>
+                <span className="font-semibold text-gray-900">{t('notifications.share.copyLink')}</span>
               </>
             )}
           </button>
@@ -151,7 +151,7 @@ export default function ShareModal({ isOpen, onClose, productName, productUrl })
           <div className="mt-4 p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-2 mb-1">
               <Link2 className="w-4 h-4 text-gray-500" />
-              <span className="text-xs text-gray-500 font-medium">공유 링크</span>
+              <span className="text-xs text-gray-500 font-medium">{t('notifications.share.shareLinkLabel')}</span>
             </div>
             <p className="text-sm text-gray-700 break-all">{productUrl}</p>
           </div>

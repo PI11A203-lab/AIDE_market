@@ -56,7 +56,7 @@ export default function ProfileHeader({ developer, isLiked, onLikeToggle, onShar
               <button 
                 onClick={onShare}
                 className="w-11 h-11 border border-gray-200 rounded-lg flex items-center justify-center bg-white hover:border-gray-900 hover:bg-gray-50 transition-all"
-                title="공유"
+                title={t('notifications.share.shareTooltip')}
               >
                 <Share2 className="w-5 h-5" />
               </button>
