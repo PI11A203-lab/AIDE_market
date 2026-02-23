@@ -39,7 +39,11 @@ export default function AdminHero({ admin }) {
                 )}
                 <div className="profile-link">
                   <Calendar size={20} />
-                  <strong style={{ color: '#111827', marginRight: '4px' }}>{admin.follower_count || 0}</strong> {t('profile.admin.hero.followers')}
+                  {/* 팔로워 숫자를 흰색으로 표시 */}
+                  <strong style={{ color: '#FFFFFF', marginRight: '4px' }}>
+                    {admin.follower_count || 0}
+                  </strong>{' '}
+                  {t('profile.admin.hero.followers')}
                 </div>
               </div>
             </div>
