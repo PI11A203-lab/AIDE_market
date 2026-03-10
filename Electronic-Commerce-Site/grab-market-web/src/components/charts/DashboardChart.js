@@ -2,10 +2,30 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { SimpleLineChart } from './LineChart';
 import { SimpleBarChart } from './BarChart';
 import { api } from '../../config/api';
+import {
+  salesLabels as mockSalesLabels,
+  salesDatasets as mockSalesDatasets,
+  couponLabels as mockCouponLabels,
+  couponDatasets as mockCouponDatasets,
+} from '../../routes/profile/admin/mock.data';
+
+const ADMIN_MOCK_EMAIL = 'admin@email.com';
+
+function isAdminMockAccount() {
+  try {
+    const raw = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!raw) return false;
+    const user = JSON.parse(raw);
+    return (user.email || '').toLowerCase() === ADMIN_MOCK_EMAIL;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * 관리자 대시보드 그래프 카드
  * 월별 매출 / 쿠폰 사용량 탭 전환 지원
+ * admin@email.com 계정일 때만 판매·쿠폰 mock 데이터 표시
  */
 export const DashboardChart = () => {
   const [activeChart, setActiveChart] = useState('sales'); // 'sales' | 'coupons'
@@ -16,7 +36,17 @@ export const DashboardChart = () => {
   useEffect(() => {
     const loadCharts = async () => {
       setLoading(true);
+      const useMock = isAdminMockAccount();
+
       try {
+        // admin@email.com 이면 API 무시하고 항상 mock 사용 (그래프가 있어 보이도록)
+        if (useMock) {
+          setSalesData({ labels: mockSalesLabels, datasets: mockSalesDatasets });
+          setCouponData({ labels: mockCouponLabels, datasets: mockCouponDatasets });
+          setLoading(false);
+          return;
+        }
+
         // 매출/판매 차트
         const salesRes = await api.admin.getSalesChart();
         console.log('Sales chart response:', salesRes.data);
@@ -53,7 +83,7 @@ export const DashboardChart = () => {
           ],
         });
 
-        // 쿠폰 사용량 (월별) - 월별 판매 그래프와 동일한 형식
+        // 쿠폰 사용량 (월별)
         const couponRes = await api.admin.getCouponUsage();
         console.log('Coupon usage response:', couponRes.data);
         const couponRaw = Array.isArray(couponRes.data) ? couponRes.data : [];
@@ -76,9 +106,13 @@ export const DashboardChart = () => {
       } catch (error) {
         console.error('Failed to load dashboard charts:', error);
         console.error('Error details:', error.response?.data || error.message);
-        // 에러 발생 시에도 빈 데이터로 설정 (빈 메시지 표시)
-        setSalesData({ labels: [], datasets: [] });
-        setCouponData({ labels: [], datasets: [] });
+        if (useMock) {
+          setSalesData({ labels: mockSalesLabels, datasets: mockSalesDatasets });
+          setCouponData({ labels: mockCouponLabels, datasets: mockCouponDatasets });
+        } else {
+          setSalesData({ labels: [], datasets: [] });
+          setCouponData({ labels: [], datasets: [] });
+        }
       } finally {
         setLoading(false);
       }

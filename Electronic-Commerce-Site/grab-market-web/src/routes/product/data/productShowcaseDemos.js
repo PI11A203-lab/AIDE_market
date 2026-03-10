@@ -3,12 +3,11 @@
  * i18n product.showcase.demos 에 병합됨.
  */
 const code = (s) => s;
-const prompt = (s) => s;
 
 export const showcaseDemosKo = {
   frontend: {
     javascript: { code: code("document.getElementById('btn').addEventListener('click', () => {\n  counter.textContent = Number(counter.textContent) + 1;\n});"), result: '✓ DOM 바인딩 완료\n✓ 클릭 시 카운터 증가' },
-    typescript: { code: code("const greet = (name: string): string => `Hello, ${name}`;\nconst n: number = 42;"), result: '✓ 타입 검사 통과\n✓ greet("User") → "Hello, User"' },
+    typescript: { code: code(`const greet = (name: string): string => \`Hello, \${name}\`;\nconst n: number = 42;`), result: '✓ 타입 검사 통과\n✓ greet("User") → "Hello, User"' },
     react: { code: code("const [count, setCount] = useState(0);\nreturn <button onClick={() => setCount(c => c + 1)}>{count}</button>;"), result: '✓ 훅·JSX 렌더\n✓ 클릭 시 상태 갱신' },
     vue: { code: code("<script setup>\nconst count = ref(0);\n</script>\n<template>\n  <button @click=\"count++\">{{ count }}</button>\n</template>"), result: '✓ ref·템플릿 반응형\n✓ 클릭 시 count 증가' },
     next: { code: code("export async function getServerSideProps() {\n  const res = await fetch(API);\n  return { props: { data: await res.json() } };\n}"), result: '✓ SSR 데이터 로드\n✓ props로 페이지 전달' },
@@ -109,7 +108,7 @@ export const showcaseDemosKo = {
 export const showcaseDemosEn = {
   frontend: {
     javascript: { code: code("document.getElementById('btn').addEventListener('click', () => {\n  counter.textContent = Number(counter.textContent) + 1;\n});"), result: '✓ DOM bound\n✓ Counter increments on click' },
-    typescript: { code: code("const greet = (name: string): string => `Hello, ${name}`;\nconst n: number = 42;"), result: '✓ Type check passed\n✓ greet("User") → "Hello, User"' },
+    typescript: { code: code(`const greet = (name: string): string => \`Hello, \${name}\`;\nconst n: number = 42;`), result: '✓ Type check passed\n✓ greet("User") → "Hello, User"' },
     react: { code: code("const [count, setCount] = useState(0);\nreturn <button onClick={() => setCount(c => c + 1)}>{count}</button>;"), result: '✓ Hooks & JSX render\n✓ State updates on click' },
     vue: { code: code("<script setup>\nconst count = ref(0);\n</script>\n<template>\n  <button @click=\"count++\">{{ count }}</button>\n</template>"), result: '✓ ref & template reactivity\n✓ count increments on click' },
     next: { code: code("export async function getServerSideProps() {\n  const res = await fetch(API);\n  return { props: { data: await res.json() } };\n}"), result: '✓ SSR data loaded\n✓ Props passed to page' },

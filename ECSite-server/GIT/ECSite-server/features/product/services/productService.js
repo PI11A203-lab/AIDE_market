@@ -66,7 +66,8 @@ exports.findAllProducts = async (options = {}) => {
         replacements.sub_category_id = where.sub_category_id;
     }
     if (search) {
-        whereConditions.push('(p.name LIKE :search OR p.description LIKE :search)');
+        // 상품명·설명 + 메인 카테고리명(name, name_ja) + 서브카테고리명으로 검색
+        whereConditions.push('(p.name LIKE :search OR p.description LIKE :search OR c.name LIKE :search OR c.name_ja LIKE :search OR sc.name LIKE :search)');
         replacements.search = `%${search}%`;
     }
     if (creator_id) {
@@ -131,8 +132,12 @@ exports.findAllProducts = async (options = {}) => {
 
     const countReplacements = { ...replacements };
 
+    // search 시 c, sc 참조하므로 count 쿼리에도 동일 JOIN 필요
+    const countFrom = search
+        ? `FROM Products p LEFT JOIN Categories c ON p.category_id = c.id LEFT JOIN Categories sc ON p.sub_category_id = sc.id`
+        : `FROM Products p`;
     const countResult = await models.sequelize.query(
-        `SELECT COUNT(*) as count FROM Products p
+        `SELECT COUNT(*) as count ${countFrom}
          ${whereClause}`,
         {
             replacements: countReplacements,

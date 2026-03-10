@@ -1,11 +1,23 @@
-// 관리자 대시보드 그래프용 목 데이터
+// 관리자 대시보드 그래프용 목 데이터 (admin@email.com 계정 전용 데모)
+// 2025-04 ~ 2026-03 (12개월)
 
-export const salesLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+/** 상단 카드 표시용 (総商品・総売上・フォロワー・レビュー) */
+export const mockStats = {
+  totalProducts: 42,
+  totalRevenue: 1850000,
+  followers: 128,
+  reviews: 96,
+};
+
+export const salesLabels = [
+  '2025-04', '2025-05', '2025-06', '2025-07', '2025-08', '2025-09',
+  '2025-10', '2025-11', '2025-12', '2026-01', '2026-02', '2026-03'
+];
 
 export const salesDatasets = [
   {
     label: 'Revenue (¥)',
-    data: [350000, 420000, 380000, 450000, 500000, 480000, 520000, 490000, 530000, 560000, 540000, 580000],
+    data: [1240000, 1380000, 1310000, 1520000, 1680000, 1590000, 1850000, 1720000, 1980000, 2150000, 2080000, 2280000],
     borderColor: 'rgb(16, 185, 129)',
     backgroundColor: 'rgba(16, 185, 129, 0.1)',
     borderWidth: 2,
@@ -16,7 +28,7 @@ export const salesDatasets = [
   },
   {
     label: 'Sales Count',
-    data: [12, 15, 13, 16, 18, 17, 19, 18, 20, 22, 21, 23],
+    data: [142, 168, 155, 189, 208, 196, 224, 218, 248, 272, 262, 288],
     borderColor: 'rgb(59, 130, 246)',
     borderDash: [5, 5],
     borderWidth: 2,

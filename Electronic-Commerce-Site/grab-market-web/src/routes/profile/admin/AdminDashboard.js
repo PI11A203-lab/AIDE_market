@@ -9,8 +9,11 @@ import {
   RecentReviews,
   AdminLayout,
 } from './components';
+import { mockStats } from './mock.data';
 import '../index.css';
 import { useTranslation } from 'react-i18next';
+
+const ADMIN_MOCK_EMAIL = 'admin@email.com';
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
@@ -49,6 +52,7 @@ export default function AdminDashboard() {
 
       const userData = JSON.parse(userFromStorage);
       const userId = userData.id;
+      const isAdminMock = (userData.email || '').toLowerCase() === ADMIN_MOCK_EMAIL;
 
       // Admin 정보 가져오기
       try {
@@ -63,7 +67,7 @@ export default function AdminDashboard() {
           id: apiUser.id,
           username: apiUser.username || apiUser.nickname || 'Admin',
           email: apiUser.email || '',
-          follower_count: apiUser.follower_count || 0,
+          follower_count: isAdminMock ? mockStats.followers : (apiUser.follower_count || 0),
           github_url: apiUser.github_url || null,
           avatar: avatarDisplay || (apiUser.username || 'Admin').substring(0, 2),
           profile_image: apiUser.profile_image || null
@@ -74,26 +78,26 @@ export default function AdminDashboard() {
           id: userData.id,
           username: userData.username || 'Admin',
           email: userData.email || '',
-          follower_count: 0,
+          follower_count: isAdminMock ? mockStats.followers : 0,
           github_url: null,
           avatar: (userData.username || 'Admin').substring(0, 2)
         });
       }
 
-      // 통계 데이터 가져오기
+      // 통계 데이터 가져오기 (admin@email.com 은 표시 숫자만 mock)
       try {
         const statsResponse = await api.admin.getStats();
         const statsData = statsResponse.data;
-        setStats({
-          // 백엔드 키(totalProducts 등)에 맞춰 매핑
+        const next = {
           totalProducts: statsData.totalProducts ?? statsData.total_products ?? 0,
           totalRevenue: statsData.totalRevenue ?? statsData.total_revenue ?? 0,
           followers: statsData.followers ?? 0,
           reviews: statsData.totalReviews ?? statsData.reviews ?? 0
-        });
-
+        };
+        setStats(isAdminMock ? mockStats : next);
       } catch (error) {
         console.error('Failed to load stats:', error);
+        if (isAdminMock) setStats(mockStats);
       }
 
       // 최근 상품 5개 가져오기

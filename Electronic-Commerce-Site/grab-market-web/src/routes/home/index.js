@@ -24,6 +24,18 @@ const CATEGORY_MAP = {
   'doc': 7
 };
 
+// 카테고리별 다국어 검색용 이름 (한/일/영) - 부분 일치 시 해당 카테고리로 매칭
+const CATEGORY_SEARCH_NAMES = {
+  all: ['전체', 'すべて', 'All'],
+  fe: ['프론트엔드', 'フロントエンド', 'Frontend'],
+  be: ['백엔드', 'バックエンド', 'Backend'],
+  design: ['디자인', 'デザイン', 'Design'],
+  mg: ['AI/ML', 'AI', 'ML'],
+  inf: ['인프라', 'インフラ', 'Infrastructure'],
+  sec: ['보안', 'セキュリティ', 'Security'],
+  doc: ['문서', 'ドキュメント', 'Documentation'],
+};
+
 function MainPage() {
   const [products, setProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]); // 모든 상품 (카테고리 카운트용)
@@ -187,11 +199,13 @@ function MainPage() {
   const currentLangLabel =
     languageOptions.find((opt) => opt.value === language)?.label || 'Language';
 
-  // 검색어가 카테고리 이름과 일치하는지 확인하고 자동 필터링
+  // 검색어가 카테고리 이름에 포함되면(부분 일치, 한/일/영 공통) 해당 카테고리로 자동 필터링
   useEffect(() => {
     if (searchText) {
-      const matchedCategory = categories.find(
-        cat => cat.name.toLowerCase() === searchText.toLowerCase().trim()
+      const trimmed = searchText.toLowerCase().trim();
+      const namesToCheck = (cat) => [cat.name, ...(CATEGORY_SEARCH_NAMES[cat.id] || [])].filter(Boolean);
+      const matchedCategory = categories.find(cat =>
+        namesToCheck(cat).some(n => String(n).toLowerCase().includes(trimmed))
       );
       
       if (matchedCategory && selectedCategory !== matchedCategory.id) {
@@ -234,13 +248,14 @@ function MainPage() {
       params.category = categoryId;
     }
 
-    // 검색어 추가 (카테고리 이름이 아닌 경우에만 상품 이름 검색으로 사용)
+    // 검색어가 카테고리 이름에 포함되면(부분 일치, 한/일/영 공통) 해당 카테고리만 사용, 아니면 상품명/카테고리명 검색으로 전달
     if (searchText) {
-      const matchedCategory = categories.find(
-        cat => cat.name.toLowerCase() === searchText.toLowerCase().trim()
+      const trimmed = searchText.toLowerCase().trim();
+      const namesToCheck = (cat) => [cat.name, ...(CATEGORY_SEARCH_NAMES[cat.id] || [])].filter(Boolean);
+      const matchedCategory = categories.find(cat =>
+        namesToCheck(cat).some(n => String(n).toLowerCase().includes(trimmed))
       );
       
-      // 카테고리 이름과 일치하지 않으면 상품 이름 검색으로 사용
       if (!matchedCategory) {
         params.search = searchText;
       }
